@@ -357,7 +357,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -368,8 +368,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -382,9 +382,9 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 1
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>resultsummary/</code> <span
@@ -407,31 +407,34 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongf22828d">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong94cc9b4">
 <span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>Repository version:</strong> f22828d
+aria-hidden="true"></span> <strong>Repository version:</strong> 94cc9b4
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongf22828d"
+<div id="strongRepositoryversionstrong94cc9b4"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -440,7 +443,7 @@ and connecting the code version to the results is critical for
 reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version f22828d.
+The results in this page were generated with repository version 94cc9b4.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -465,6 +468,9 @@ Ignored files:
     Ignored:    output/example/figure/
     Ignored:    output/simulation/.DS_Store
     Ignored:    output/simulation/figure/
+
+Unstaged changes:
+    Modified:   analysis/index.Rmd
 
 </code></pre>
 <p>
@@ -509,6 +515,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+94cc9b4
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -569,11 +592,47 @@ Start workflowr project.
 </div>
 <div id="introduction" class="section level3">
 <h3>Introduction</h3>
-<p>Here is an introduction.</p>
+<p>The idea of FASH is to make <strong>F</strong>unction
+<strong>A</strong>daptive <strong>SH</strong>rinkage. FASH considers the
+following scenarios:</p>
+<ul>
+<li>There are <span class="math inline">\(N\)</span> set of series data:
+<span class="math inline">\(\boldsymbol{y} = \{y_i(t_j):
+j\in[n_j]\}_{i=1}^{N}\)</span>, where <span
+class="math inline">\(n_j\)</span> is the length of the <span
+class="math inline">\(j\)</span>-th series.</li>
+<li>For each series <span class="math inline">\(y_i(t)\)</span>, we
+assume it relates to a smooth function <span
+class="math inline">\(f_i(t)\)</span>.</li>
+<li>For example, <span class="math inline">\(y_i(t) = f_i(t) +
+\epsilon_i(t)\)</span>, where <span
+class="math inline">\(\epsilon_i(t)\)</span> is the noise term.</li>
+</ul>
+<p>The goal of FASH is to infer the smooth function <span
+class="math inline">\(f_i(t)\)</span> for each series <span
+class="math inline">\(y_i(t)\)</span>, by providing its posterior
+distribution <span
+class="math inline">\(P(f_i(t)|\boldsymbol{y})\)</span>.</p>
 </div>
-<div id="l-based-gp" class="section level3">
-<h3>L-based GP</h3>
-<p>Describe the L-based GP family.</p>
+<div id="finite-mixture-of-gp" class="section level3">
+<h3>Finite Mixture of GP</h3>
+<p>To make inference of each <span
+class="math inline">\(f_i(t)\)</span>, we consider a finite mixture of
+<span class="math inline">\(K\)</span> Gaussian processes (GP) prior The
+prior is defined as follows: <span
+class="math display">\[f_i|\pi_1,...,\pi_K \overset{iid}{\sim}
+\sum_{k=1}^{K} \pi_k\text{GP}(m_k,C_k),\]</span> where <span
+class="math inline">\(\pi_k\)</span> is the mixing proportion, <span
+class="math inline">\(m_k\)</span> is the mean function, and <span
+class="math inline">\(C_k\)</span> is the covariance function of the
+<span class="math inline">\(k\)</span>-th GP.</p>
+<p>For now, let’s consider the mean function <span
+class="math inline">\(m_k\)</span> is zero, and each GP component
+defined through the following ordinary differential equation (ODE):
+<span class="math display">\[Lf(t) = \sigma_k W(t),\]</span> where <span
+class="math inline">\(W(t)\)</span> is a Gaussian white noise process
+and <span class="math inline">\(L\)</span> is a known linear
+differential operator.</p>
 </div>
 <div id="laplace-approximation" class="section level3">
 <h3>Laplace Approximation</h3>

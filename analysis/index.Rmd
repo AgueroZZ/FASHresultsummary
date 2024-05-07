@@ -10,12 +10,30 @@ editor_options:
 
 ### Introduction
 
-Here is an introduction.
+The idea of FASH is to make **F**unction **A**daptive **SH**rinkage. FASH considers the following scenarios:
 
-### L-based GP
+- There are $N$ set of series data: $\boldsymbol{y} = \{y_i(t_j): j\in[n_j]\}_{i=1}^{N}$, where $n_j$ is the length of the $j$-th series.
+- For each series $y_i(t)$, we assume it relates to a smooth function $f_i(t)$.
+- For example, $y_i(t) = f_i(t) + \epsilon_i(t)$, where $\epsilon_i(t)$ is the noise term.
 
-Describe the L-based GP family.
+The goal of FASH is to infer the smooth function $f_i(t)$ for each series $y_i(t)$, by providing its posterior distribution $P(f_i(t)|\boldsymbol{y})$.
 
-### Laplace Approximation
+### Finite Mixture of GP
+
+To make inference of each $f_i(t)$, we consider a finite mixture of $K$ Gaussian processes (GP) prior The prior is defined as follows:
+$$f_i|\pi_1,...,\pi_K \overset{iid}{\sim} \sum_{k=1}^{K} \pi_k\text{GP}(m_k,C_k),$$
+where $\pi_k$ is the mixing proportion, $m_k$ is the mean function, and $C_k$ is the covariance function of the $k$-th GP. 
+
+For now, let's consider the mean function $m_k$ is zero, and each GP component defined through the following ordinary differential equation (ODE):
+$$Lf(t) = \sigma_k W(t),$$
+where $W(t)$ is a Gaussian white noise process and $L$ is a known linear differential operator.
+
+
+### Empirical Bayes
+
+xxx
+
+
+### Laplace approximation
 
 
