@@ -7,6 +7,8 @@ navbar:
     href: index.html
   - text: About
     href: about.html
+  - text: Simulation
+    href: simulation.html
   - text: License
     href: license.html
 output:

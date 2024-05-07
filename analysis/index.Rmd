@@ -89,4 +89,5 @@ This approach of adaptive shrinkage method becomes useful when we are dealing wi
 In some applications above, when each series has a same number of observations and the observations are equally spaced, it is possible to directly apply the $\texttt{mash}$ approach in Urbut et al, 2018.
 However, when the observations are not equally spaced or when each series has different number of observations, the $\texttt{mash}$ approach is not directly applicable.
 
-
+### **Example**
+*[Simulation](simulation.html)*: We will simulate the data and show the observed time series for each category of pollutants.

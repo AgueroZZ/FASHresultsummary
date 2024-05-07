@@ -11,7 +11,7 @@
 
 
 
-<title>Summary of the FASH project</title>
+<title>Plan for Function Adaptive SHrinkage (FASH)</title>
 
 <script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -349,7 +349,8 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Summary of the FASH project</h1>
+<h1 class="title toc-ignore">Plan for <strong>F</strong>unction
+<strong>A</strong>daptive <strong>SH</strong>rinkage (FASH)</h1>
 
 </div>
 
@@ -357,7 +358,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -368,8 +369,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -382,9 +383,9 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 1
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>resultsummary/</code> <span
@@ -407,31 +408,34 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong169c82b">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong330c239">
 <span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>Repository version:</strong> 169c82b
+aria-hidden="true"></span> <strong>Repository version:</strong> 330c239
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrong169c82b"
+<div id="strongRepositoryversionstrong330c239"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -440,7 +444,7 @@ and connecting the code version to the results is critical for
 reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version 169c82b.
+The results in this page were generated with repository version 330c239.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -458,6 +462,8 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.Rhistory
     Ignored:    code/.DS_Store
     Ignored:    code/function/.DS_Store
     Ignored:    output/.DS_Store
@@ -465,6 +471,15 @@ Ignored files:
     Ignored:    output/example/figure/
     Ignored:    output/simulation/.DS_Store
     Ignored:    output/simulation/figure/
+
+Untracked files:
+    Untracked:  code/cpp/Gaussian_just_fixed.o
+    Untracked:  code/cpp/Gaussian_just_fixed.so
+    Untracked:  code/cpp/Gaussian_theta_known.o
+    Untracked:  code/cpp/Gaussian_theta_known.so
+
+Unstaged changes:
+    Modified:   analysis/index.Rmd
 
 </code></pre>
 <p>
@@ -509,6 +524,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+330c239
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-07
+</td>
+<td>
+wflow_git_commit(c("analysis/simulation.Rmd", "analysis/index.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+c1d7a7f
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -619,10 +668,10 @@ Start workflowr project.
 </div>
 </div>
 <div id="introduction" class="section level3">
-<h3>Introduction</h3>
-<p>The idea of FASH is to make <strong>F</strong>unction
-<strong>A</strong>daptive <strong>SH</strong>rinkage. FASH considers the
-following scenarios:</p>
+<h3><strong>Introduction</strong></h3>
+<p>The <strong>F</strong>unction <strong>A</strong>daptive
+<strong>SH</strong>rinkage (FASH) project considers the following
+scenarios:</p>
 <ul>
 <li>There are <span class="math inline">\(N\)</span> set of series data:
 <span class="math inline">\(\boldsymbol{y} = \{y_i(t_j):
@@ -640,34 +689,195 @@ class="math inline">\(\epsilon_i(t)\)</span> is the noise term.</li>
 class="math inline">\(f_i(t)\)</span> for each series <span
 class="math inline">\(y_i(t)\)</span>, by providing its posterior
 distribution <span
-class="math inline">\(P(f_i(t)|\boldsymbol{y})\)</span>.</p>
+class="math inline">\(p(f_i(t)|\boldsymbol{y})\)</span>.</p>
 </div>
 <div id="finite-mixture-of-gp" class="section level3">
-<h3>Finite Mixture of GP</h3>
+<h3><strong>Finite Mixture of GP</strong></h3>
 <p>To make inference of each <span
 class="math inline">\(f_i(t)\)</span>, we consider a finite mixture of
-<span class="math inline">\(K\)</span> Gaussian processes (GP) prior The
-prior is defined as follows: <span
+<span class="math inline">\(K\)</span> Gaussian processes (GP) prior, as
+motivated in <a
+href="https://www.nature.com/articles/s41588-018-0268-8">Urbut et al,
+2018</a>. The prior is defined as follows: <span
 class="math display">\[f_i|\pi_1,...,\pi_K \overset{iid}{\sim}
 \sum_{k=1}^{K} \pi_k\text{GP}(m_k,C_k),\]</span> where <span
 class="math inline">\(\pi_k\)</span> is the mixing proportion, <span
 class="math inline">\(m_k\)</span> is the mean function, and <span
 class="math inline">\(C_k\)</span> is the covariance function of the
 <span class="math inline">\(k\)</span>-th GP.</p>
-<p>For now, let’s consider the mean function <span
+<p>For now, let’s assume the mean function <span
 class="math inline">\(m_k\)</span> is zero, and each GP component
 defined through the following ordinary differential equation (ODE):
 <span class="math display">\[Lf(t) = \sigma_k W(t),\]</span> where <span
 class="math inline">\(W(t)\)</span> is a Gaussian white noise process
-and <span class="math inline">\(L\)</span> is a known linear
-differential operator.</p>
+and <span class="math inline">\(L\)</span> is a known <span
+class="math inline">\(p\)</span>th order linear differential operator.
+Given the <span class="math inline">\(L\)</span> operator, the
+covariance function <span class="math inline">\(C_k\)</span> is
+completely specified by the single standard deviation parameter <span
+class="math inline">\(\sigma_k\)</span>. Specifically, this prior
+shrinks the function <span class="math inline">\(g\)</span> toward the
+base model <span class="math inline">\(\text{Null}\{L\}\)</span>, which
+is the set of functions that satisfy <span class="math inline">\(Lf =
+0\)</span>. The smaller <span class="math inline">\(\sigma_k\)</span>
+is, the stronger the shrinkage is.</p>
+<p>By choosing different <span class="math inline">\(L\)</span>
+operator, this one-parameter GP family can produce prior that encodes
+different kinds of shapes. Some examples are discussed in <a
+href="https://www.tandfonline.com/doi/full/10.1080/10618600.2023.2289532">Zhang
+et.al 2023</a> and <a href="https://arxiv.org/abs/2305.09914">Zhang
+et.al 2024</a>.</p>
+<div id="example-integrated-wiener-process" class="section level4">
+<h4><em>Example: Integrated Wiener Process</em></h4>
+<p>For example, when <span class="math inline">\(L =
+\frac{d^2}{dt^2}\)</span>, the prior is called a second-order Integrated
+Wiener Process (IWP) prior, which shrinks the function toward the base
+model <span class="math inline">\(\text{Null}\{L\} =
+\text{span}\{1,t\}\)</span>.</p>
+<p>When all the observations are Gaussian, the posterior mean <span
+class="math inline">\(\mathbb{E}(f|\boldsymbol{y}_i)\)</span> using the
+second order IWP is shown to be exactly the cubic smoothing spline
+estimate in <a href="https://www.jstor.org/stable/2239347">Kimeldorf and
+Wahba, 1970</a>.</p>
+</div>
+<div id="example-seasonal-gaussian-process" class="section level4">
+<h4><em>Example: Seasonal Gaussian Process</em></h4>
+<p>When <span class="math inline">\(L = \frac{d^2}{dt^2} +
+\alpha^2\)</span>, the prior is called a seasonal Gaussian process
+(sGP), which shrinks the function toward the base model <span
+class="math inline">\(\text{Null}\{L\} = \text{span}\{\sin(\alpha
+t),\cos(\alpha t)\}\)</span>.</p>
+<p>This prior can be used to model quasi-periodic function, which has
+mostly periodic behavior but with amplitude slowly varying overtime.</p>
+</div>
 </div>
 <div id="empirical-bayes" class="section level3">
-<h3>Empirical Bayes</h3>
-<p>xxx</p>
+<h3><strong>Empirical Bayes</strong></h3>
+<p>For now, assume that we are fixing the <span
+class="math inline">\(L\)</span> operator to be the <span
+class="math inline">\(p\)</span>th order IWP, and only the standard
+deviation parameter <span class="math inline">\(\sigma_k\)</span> is
+varying across different GP components. Following the practice of <a
+href="https://academic.oup.com/biostatistics/article/18/2/275/2557030?login=true">Stehpens,
+2017</a> and <a
+href="https://www.nature.com/articles/s41588-018-0268-8">Urbut et al,
+2018</a>, we use a dense grid of <span
+class="math inline">\(\{\sigma_k:k\in[K]\}\)</span>, and use empirical
+Bayes to estimate the prior mixture weights <span
+class="math inline">\(\boldsymbol{\pi} =
+\{\pi_1,...,\pi_K\}\)</span>.</p>
+<p>Let <span class="math inline">\(\mathbf{L}_{ik}\)</span> denotes the
+marginal likelihood of the <span class="math inline">\(i\)</span>-th
+series data under the <span class="math inline">\(k\)</span>-th GP
+component, the empirical Bayes estimate of <span
+class="math inline">\(\boldsymbol{\pi}\)</span> is obtained by
+maximizing the following objective function: <span
+class="math display">\[\hat{\boldsymbol{\pi}} =
+\arg\max_{\boldsymbol{\pi}} \sum_{i=1}^{N} \log\left(\sum_{k=1}^{K}
+\pi_k \mathbf{L}_{ik}\right).\]</span> This can be solved using either
+the interior point method or the Sequential Quadratic Programming (SQP)
+method (<span class="math inline">\(\texttt{mixqp}\)</span>) in <a
+href="https://www.tandfonline.com/doi/full/10.1080/10618600.2019.1689985">Kim
+et al, 2020</a>.</p>
+<p>With the estimated weights <span
+class="math inline">\(\hat{\boldsymbol{\pi}}\)</span>, we can then
+obtain the posterior distribution of each <span
+class="math inline">\(f_i(t)\)</span> as the following mixture: <span
+class="math display">\[p(f_i(t)|\boldsymbol{y}, \hat{\boldsymbol{\pi}})
+= \sum_{k=1}^{K} \tilde{\pi}_k
+p(f_i(t)|\boldsymbol{y}_i,\sigma_k),\]</span> where the posterior
+mixture weights <span class="math inline">\(\tilde{\pi}_k\)</span> is
+defined as <span class="math inline">\(\tilde{\pi}_k = \frac{\hat{\pi}_k
+\mathbf{L}_{ik}}{\sum_{k=1}^{K} \hat{\pi}_k
+\mathbf{L}_{ik}}\)</span>.</p>
+<p>In certain application, the posterior mixture weights can be
+visualized through a structure plot as discussed in <a
+href="https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006599">Dey
+et al, 2017</a>, and observations can be grouped into similar clusters
+based on the structure plot.</p>
 </div>
-<div id="laplace-approximation" class="section level3">
-<h3>Laplace approximation</h3>
+<div id="computation-issue" class="section level3">
+<h3><strong>Computation Issue</strong></h3>
+<p>To simplify the posterior computation with each GP component, we
+apply the following two tricks:</p>
+<ul>
+<li><strong>Finite Element Method</strong>: The finite element method
+approximates each GP <span class="math inline">\(f(t)\)</span> as a
+linear combination of basis functions: <span class="math inline">\(f(t)
+= \sum_{l=1}^{m} w_l \psi_l(t)\)</span>, where the <span
+class="math inline">\(m\)</span> basis functions <span
+class="math inline">\(\psi_l(t)\)</span> are fixed and the weights <span
+class="math inline">\(\boldsymbol{w}\)</span> follow Gaussian
+distribution. This simplifies the computation of each <span
+class="math inline">\(p(f_i(t)|\boldsymbol{y}_i,\sigma_k)\)</span> to
+<span
+class="math inline">\(p(\boldsymbol{w}|\boldsymbol{y}_i,\sigma_k)\)</span>.
+The weights not only have smaller dimension than the function <span
+class="math inline">\(f(t)\)</span>, but also have sparse precision
+matrices. See <a
+href="https://www.tandfonline.com/doi/full/10.1080/10618600.2023.2289532">Zhang
+et al, 2023</a> and <a
+href="https://academic.oup.com/jrsssb/article/73/4/423/7034732?login=true">Lindgren
+et.al, 2011</a> for more details.</li>
+<li><strong>Laplace Approximation</strong>: An efficient way to compute
+the posterior of the weights <span
+class="math inline">\(\boldsymbol{w}\)</span> is to use the Laplace
+approximation, as discussed in <a
+href="https://rss.onlinelibrary.wiley.com/doi/full/10.1111/j.1467-9868.2008.00700.x">Rue
+et al, 2009</a>. The Laplace approximation approximates the posterior
+distribution as a Gaussian distribution with the mode at the posterior
+mean and the covariance matrix as the inverse of the Hessian matrix at
+the mode: <span class="math inline">\(p_G(\boldsymbol{w}|\boldsymbol{y},
+\sigma_k) = \mathcal{N}(\hat{\boldsymbol{w}}, \hat{V})\)</span>.</li>
+</ul>
+<p>In this way, the complicated integration required in the posterior
+computation is replaced by simpler optimization tasks with sparse
+matrices. When the observations are Gaussian, the Laplace approximation
+is exact. When the observations are not Gaussian, the Laplace
+approximation provides reasonable approximation with very small amount
+of computation cost.</p>
+</div>
+<div id="why-is-it-interesting" class="section level3">
+<h3><strong>Why is it interesting?</strong></h3>
+<p>This approach of adaptive shrinkage method becomes useful when we are
+dealing with a good number of series data, with some hidden structure
+among them. For example:</p>
+<ul>
+<li><strong>Gene Expression Data</strong>: FASH can be used to identify
+and group dynamic eQTLs that react differently to different (continuous)
+conditions, such as differentiation time (<a
+href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6623972/">Strober
+et.al, 2019</a>) or oxygen level (<a
+href="https://elifesciences.org/articles/57345">Ward et.al,
+2021</a>).</li>
+<li><strong>COVID Mortality Data</strong>: FASH can be used to infer and
+group the COVID mortality rate at different countries (or states), and
+identify the countries (states) that have similar mortality rate
+trend.</li>
+<li><strong>Cause-specific Mortality Data</strong>: FASH can be used to
+model the mortality series over time for different type of causes (for
+example, in Canada), and identify the causes that have similar mortality
+rate trend.</li>
+<li><strong>Financial Data</strong>: FASH can be used to infer and group
+the stock price trend at different companies, and identify the companies
+that have similar stock price behavior.</li>
+<li><strong>Environmental Data</strong>: FASH can be used to model the
+concentration of different pollutants overtime, and identify type of
+pollutants that have similar behavior.</li>
+</ul>
+<p>In some applications above, when each series has a same number of
+observations and the observations are equally spaced, it is possible to
+directly apply the <span class="math inline">\(\texttt{mash}\)</span>
+approach in Urbut et al, 2018. However, when the observations are not
+equally spaced or when each series has different number of observations,
+the <span class="math inline">\(\texttt{mash}\)</span> approach is not
+directly applicable.</p>
+</div>
+<div id="simulation" class="section level3">
+<h3><strong>Simulation</strong></h3>
+<p><em><a href="simulation.html">Simulation</a></em>: We will simulate
+the data and show the observed time series for each category of
+pollutants.</p>
 </div>
 
 
