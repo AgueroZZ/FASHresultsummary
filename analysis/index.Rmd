@@ -3,9 +3,19 @@ title: "Summary of the FASH project"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
-    toc: false
+    toc: true
 editor_options:
   chunk_output_type: console
 ---
 
-This is some preliminary summary of the FASH project. 
+### Introduction
+
+Here is an introduction.
+
+### L-based GP
+
+Describe the L-based GP family.
+
+### Laplace Approximation
+
+
