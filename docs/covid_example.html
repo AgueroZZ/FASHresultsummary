@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Example: COVID mortality data across countries</title>
+
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">resultsummary</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="simulation.html">Simulation</a>
+</li>
+<li>
+  <a href="covid_example.html">COVID-19 Example</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Example: COVID mortality data across
+countries</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2024-05-08
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong> <code>resultsummary/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguncommittedchanges"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240507code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240507)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240507code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240507)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong8a17f4d">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong> 8a17f4d
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrong8a17f4d"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version 8a17f4d.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.Rhistory
+    Ignored:    code/.DS_Store
+    Ignored:    code/function/.DS_Store
+    Ignored:    output/.DS_Store
+    Ignored:    output/example/.DS_Store
+    Ignored:    output/example/figure/
+    Ignored:    output/simulation/.DS_Store
+    Ignored:    output/simulation/figure/
+
+Untracked files:
+    Untracked:  code/cpp/Gaussian_just_fixed.o
+    Untracked:  code/cpp/Gaussian_just_fixed.so
+    Untracked:  code/cpp/Gaussian_theta_known.o
+    Untracked:  code/cpp/Gaussian_theta_known.so
+    Untracked:  code/cpp/Poisson_covid.o
+    Untracked:  code/cpp/Poisson_covid.so
+    Untracked:  code/cpp/Poisson_just_fixed_covid.o
+    Untracked:  code/cpp/Poisson_just_fixed_covid.so
+
+Unstaged changes:
+    Modified:   analysis/covid_example.Rmd
+    Modified:   analysis/index.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/covid_example.Rmd</code>) and
+HTML (<code>docs/covid_example.html</code>) files. If you’ve configured
+a remote Git repository (see <code>?wflow_git_remote</code>), click on
+the hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+8a17f4d
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-07
+</td>
+<td>
+wflow_git_commit(c("analysis/_site.yml", "analysis/covid_example.Rmd",
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="setup" class="section level2">
+<h2><strong>Setup:</strong></h2>
+<p>We consider the daily COVID-19 death count in different (European)
+countries. The data is obtained from COVID-19 Data Repository by the
+Center for Systems Science and Engineering (CSSE) at Johns Hopkins
+University (Dong, Du, and Gardner, 2020).</p>
+<p>The number of COVID-19 deaths (per million) in each country is
+denoted as <span class="math inline">\(y_{i}(x_j)\)</span>, where <span
+class="math inline">\(i\)</span> indexes the country and <span
+class="math inline">\(j\)</span> indexes the day.</p>
+<p>To model the true (log) mortality rate <span
+class="math inline">\(f_i(t_j)\)</span>, we assume that the death count
+<span class="math inline">\(y_{i}(x_j)\)</span> is Poisson distributed
+with mean <span class="math inline">\(f_i(t_j)\)</span>: <span
+class="math display">\[y_{i}(x_j) \sim
+\text{Poisson}(\exp(v_{ij}^T\boldsymbol{\beta}_i + f_i(x_j))),\]</span>
+where <span class="math inline">\(v_{ij}\)</span> is the fixed effect
+that denotes the weekdays.</p>
+</div>
+<div id="data" class="section level2">
+<h2><strong>Data:</strong></h2>
+<p>We filtered out some countries/observations that look suspicious:</p>
+<pre class="r"><code>full_data_covid &lt;- read.csv(file = paste0(data_dir, &quot;/owid-covid-data.csv&quot;), header = T)
+full_data_covid &lt;- full_data_covid %&gt;% filter(date &gt; &quot;2020-01-01&quot;)
+full_data_covid$y &lt;- round(full_data_covid$new_deaths_per_million)
+full_data_covid$quality &lt;- abs((full_data_covid$y-full_data_covid$new_deaths_smoothed_per_million)/(full_data_covid$new_deaths_smoothed_per_million + 1))
+full_data_covid$Date &lt;- as.Date(full_data_covid$date)
+full_data_covid$x &lt;- (as.Date(full_data_covid$date) %&gt;% as.numeric())/31
+## Assume COVID death rate is approximately 0 at time 2020-01-01, so set intercept being -3. Also, assume the derivatives are all zero at this point.
+full_data_covid$x &lt;- full_data_covid$x - (as.numeric(as.Date(&quot;2020-01-01&quot;))/31)
+full_data_covid$weekdays &lt;- weekdays(as.Date(full_data_covid$date))
+full_data_covid$weekdays &lt;- factor(full_data_covid$weekdays,
+                                    levels = c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;, &quot;Saturday&quot;, &quot;Sunday&quot;),
+                                    ordered = F)
+full_data_covid_EU &lt;- full_data_covid %&gt;% filter(continent == &quot;Europe&quot;) %&gt;% select(Date, x, y, weekdays, location, iso_code, quality)</code></pre>
+<p>The final selected countries/data are:</p>
+<pre class="r"><code>datasets &lt;- list()
+available_countries &lt;- unique(full_data_covid_EU$location)
+selected_countries &lt;- c()
+for (country in available_countries) {
+  full_data &lt;- full_data_covid_EU %&gt;% filter(location == country, !is.na(y), !is.na(quality))
+  full_data &lt;- full_data %&gt;% filter(quality &lt;= 1.0, y != 0)
+  if(sum(full_data$y != 0) &lt; 300) {
+    next
+  }
+  else{
+    selected_countries &lt;- c(selected_countries, country)
+    datasets[[country]] &lt;- full_data %&gt;% arrange(Date)
+  }
+}
+par(mfrow = c(6, 6), mar = c(2, 2, 1, 1))  # Adjust margins as needed
+for (i in 1:34) {
+  plot(datasets[[i]]$x, (datasets[[i]]$y), type = &#39;p&#39;,  # Change to &#39;p&#39; for points
+       main = paste0(selected_countries[i]), xlab = &quot;x&quot;, ylab = &quot;y&quot;,
+       cex = 0.1,
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  # Adjust text size as needed
+}
+par(mfrow = c(1, 1), mar = c(5, 4, 4, 2) + 0.1)</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="empirical-bayes" class="section level2">
+<h2><strong>Empirical Bayes:</strong></h2>
+<p>We compute the L-matrix and use EB to optimize the prior weights:</p>
+<pre class="r"><code>p_vec &lt;- 3
+log_prec_vec &lt;- sort(unique(c(seq(0, 5, by = 0.1), seq(5, 10, by = 1), seq(-5,0, by = 1))))
+psd_iwp_vec &lt;- exp(-.5*log_prec_vec)
+L_vecs &lt;- mclapply(datasets, function(dataset) {
+  compute_log_likelihood_ospline_seq2(
+    dataset = dataset,
+    p = p_vec,
+    num_knots = 50,
+    psd_iwp_vector = psd_iwp_vec,
+    pred_step = 1,
+    betaprec = 0.0001
+  )
+}, mc.cores = num_cores)
+L_matrix &lt;- do.call(rbind, L_vecs)</code></pre>
+<pre class="r"><code>fit.sqp &lt;- mixsqp(L = L_matrix, log = TRUE)</code></pre>
+<pre><code>Running mix-SQP algorithm 0.3-54 on 34 x 61 matrix
+convergence tol. (SQP):     1.0e-08
+conv. tol. (active-set):    1.0e-10
+zero threshold (solution):  1.0e-08
+zero thresh. (search dir.): 1.0e-14
+l.s. sufficient decrease:   1.0e-02
+step size reduction factor: 7.5e-01
+minimum step size:          1.0e-08
+max. iter (SQP):            1000
+max. iter (active-set):     20
+number of EM iterations:    10
+Computing SVD of 34 x 61 matrix.
+Matrix is not low-rank; falling back to full matrix.
+iter        objective max(rdual) nnz stepsize max.diff nqp nls
+   1 +1.538397161e+00  -- EM --   58 1.00e+00 2.28e-02  --  --
+   2 +1.509279945e+00  -- EM --   58 1.00e+00 7.27e-03  --  --
+   3 +1.499756515e+00  -- EM --   57 1.00e+00 4.72e-03  --  --
+   4 +1.495089189e+00  -- EM --   57 1.00e+00 3.74e-03  --  --
+   5 +1.492096433e+00  -- EM --   57 1.00e+00 3.12e-03  --  --
+   6 +1.489901914e+00  -- EM --   57 1.00e+00 2.65e-03  --  --
+   7 +1.488195224e+00  -- EM --   57 1.00e+00 2.23e-03  --  --
+   8 +1.486832613e+00  -- EM --   57 1.00e+00 1.83e-03  --  --
+   9 +1.485729526e+00  -- EM --   57 1.00e+00 1.74e-03  --  --
+  10 +1.484827268e+00  -- EM --   56 1.00e+00 1.67e-03  --  --
+   1 +1.484081530e+00 +2.995e-02  56  ------   ------   --  --
+   2 +1.483090543e+00 +2.737e-02  36 1.00e+00 1.77e-02  20   1
+   3 +1.482635217e+00 +2.544e-02  16 1.00e+00 1.16e-01  20   1
+   4 +1.470402456e+00 +2.006e-03   8 1.00e+00 2.38e-01  20   1
+   5 +1.470218700e+00 +2.595e-05   8 1.00e+00 1.41e-01   5   1
+   6 +1.470218699e+00 -3.290e-08   8 1.00e+00 9.04e-05   2   1
+Optimization took 0.01 seconds.
+Convergence criteria met---optimal solution found.</code></pre>
+<pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
+plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
+     pch = 20,lwd = 2,xlab = &quot;SQP iteration&quot;,
+     ylab = &quot;objective&quot;,xaxp = c(1,numiter,numiter - 1))</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>prior_weight &lt;- data.frame(p = rep(p_vec, each = length(psd_iwp_vec)), psd_iwp = psd_iwp_vec, prior_weight = fit.sqp$x)</code></pre>
+</div>
+<div id="posterior-inference" class="section level2">
+<h2><strong>Posterior Inference:</strong></h2>
+<p>We carry out the posterior computation based on Finite Element Method
+and Laplace approximation:</p>
+<pre class="r"><code>num_datasets &lt;- length(datasets)
+num_weights &lt;- sum(prior_weight$prior_weight != 0)
+posterior_weights_matrix &lt;- matrix(nrow = num_datasets, ncol = num_weights)
+
+# Loop through each dataset and perform fitting
+fitted_datasets &lt;- list()
+for (i in seq_along(datasets)) {
+  dataset &lt;- datasets[[i]]
+  fit_result_final &lt;- fit_ospline_with_prior2(
+    num_cores = num_cores,
+    dataset = dataset,
+    num_knots = 50,
+    prior_weight = prior_weight,
+    betaprec = 0.0001,
+    pred_step = 1
+  )
+  posterior_weights_matrix[i, ] &lt;- fit_result_final$posterior_weights[, &quot;posterior_weight&quot;]
+  fitted_datasets[[i]] &lt;- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
+}
+names(fitted_datasets) &lt;- selected_countries
+colnames(posterior_weights_matrix) &lt;- paste(as.character(fit_result_final$posterior_weights[, &quot;p&quot;]),
+                                            as.character(fit_result_final$posterior_weights[, &quot;psd_iwp&quot;]), sep = &quot;_&quot;)</code></pre>
+<p>First, take a look at the structure plot of the posterior
+weights:</p>
+<pre class="r"><code>posterior_weights_df &lt;- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id &lt;- 1:nrow(posterior_weights_df)
+melted_data &lt;- melt(posterior_weights_df, id.vars = &quot;id&quot;)
+melted_data$variable2 &lt;- sub(&quot;_.*&quot;, &quot;&quot;, melted_data$variable)
+melted_data$variable3 &lt;- as.factor(round(as.numeric(sub(&quot;*._&quot;, &quot;&quot;, melted_data$variable)), 3))
+melted_data$id &lt;- selected_countries
+
+ggplot(melted_data, aes(x = as.factor(id), y = value, fill = variable3)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  labs(x = &quot;Country&quot;, y = &quot;Weight&quot;, fill = &quot;PSD&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;Structure Plot of Posterior Weights&quot;) +
+  coord_flip()  </code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>There are many suggested structures for the posterior weights. Let’s
+group them into <span class="math inline">\(4\)</span> clusters using
+the hierarchical clustering method:</p>
+<pre class="r"><code># Normalize the data
+wide_data &lt;- scale(posterior_weights_matrix)
+# Perform hierarchical clustering
+d &lt;- dist(wide_data, method = &quot;euclidean&quot;)  # Distance matrix
+fit &lt;- hclust(d, method = &quot;ward.D2&quot;)  # Clustering
+clusters &lt;- cutree(fit, k = 4)
+## Recode the factor so cluster 2 be 1, 1 be 2, 4 be 3, 3 be 4
+clusters &lt;- as.numeric(factor(clusters, levels = c(2, 1, 4, 3), labels = c(1, 2, 3, 4)))
+melted_data$cluster &lt;- clusters
+posterior_weights_df$id &lt;- 1:nrow(posterior_weights_df)
+posterior_weights_df$cluster &lt;- clusters
+melted_data &lt;- melt(posterior_weights_df, id.vars = c(&quot;id&quot;, &quot;cluster&quot;))
+melted_data$variable2 &lt;- sub(&quot;_.*&quot;, &quot;&quot;, melted_data$variable)
+melted_data$variable3 &lt;- as.factor(round(as.numeric(sub(&quot;*._&quot;, &quot;&quot;, melted_data$variable)), 3))
+melted_data$id &lt;- selected_countries
+melted_data &lt;- melted_data %&gt;% arrange(cluster)
+ggplot(melted_data, aes(x = id, y = value, fill = variable3)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  facet_wrap(~cluster, scales = &quot;free_y&quot;) +  # Facet by cluster
+  labs(x = &quot;Country&quot;, y = &quot;Weight&quot;, fill = &quot;PSD&quot;) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +  # Rotate x-axis labels for better readability
+  ggtitle(&quot;Structure Plot of Posterior Weights by Cluster&quot;) +
+  coord_flip()  </code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Note that group 1 mostly consists of countries in western Europe,
+group 2 and group 3 mostly consists of countries in eastern Europe.</p>
+<p>Let’s visualize the smoothing result for each cluster. For cluster
+1:</p>
+<pre class="r"><code>cluster1_countries &lt;- selected_countries[clusters == 1]
+cluster2_countries &lt;- selected_countries[clusters == 2]
+cluster3_countries &lt;- selected_countries[clusters == 3]
+cluster4_countries &lt;- selected_countries[clusters == 4]
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
+for (country in cluster1_countries[1:16]) {
+  agg_result &lt;- fitted_datasets[[country]]
+  plot(datasets[[country]]$Date, agg_result$median, type = &#39;l&#39;, 
+       main = paste0(country), xlab = &quot;&quot;, ylab = &quot;&quot;, col = &quot;blue&quot;,
+       cex = 0.5, ylim = c(0,max(datasets[[country]]$y)*1.2),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
+  points(datasets[[country]]$Date, datasets[[country]]$y, col = &quot;black&quot;, cex = 0.1)
+  polygon(c(datasets[[country]]$Date, rev(datasets[[country]]$Date)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>For cluster 2:</p>
+<pre class="r"><code>par(mfrow = c(4, 3), mar = c(2, 2, 1, 1))  
+for (country in cluster2_countries[1:11]) {
+  agg_result &lt;- fitted_datasets[[country]]
+  plot(datasets[[country]]$Date, agg_result$median, type = &#39;l&#39;,  
+       main = paste0(country), xlab = &quot;&quot;, ylab = &quot;&quot;, col = &quot;blue&quot;,
+       cex = 0.5, ylim = c(0,max(datasets[[country]]$y)*1.2),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7) 
+  points(datasets[[country]]$Date, datasets[[country]]$y, col = &quot;black&quot;, cex = 0.1)
+  polygon(c(datasets[[country]]$Date, rev(datasets[[country]]$Date)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>For cluster 3:</p>
+<pre class="r"><code>par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))  
+for (country in cluster3_countries[1:6]) {
+  agg_result &lt;- fitted_datasets[[country]]
+  plot(datasets[[country]]$Date, agg_result$median, type = &#39;l&#39;,  
+       main = paste0(country), xlab = &quot;&quot;, ylab = &quot;&quot;, col = &quot;blue&quot;,
+       cex = 0.5, ylim = c(0,max(datasets[[country]]$y)*1.2),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7) 
+  points(datasets[[country]]$Date, datasets[[country]]$y, col = &quot;black&quot;, cex = 0.1)
+  polygon(c(datasets[[country]]$Date, rev(datasets[[country]]$Date)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>For cluster 4:</p>
+<pre class="r"><code>par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))  
+for (country in cluster4_countries[1:1]) {
+  agg_result &lt;- fitted_datasets[[country]]
+  plot(datasets[[country]]$Date, agg_result$median, type = &#39;l&#39;,  
+       main = paste0(country), xlab = &quot;&quot;, ylab = &quot;&quot;, col = &quot;blue&quot;,
+       cex = 0.5, ylim = c(0,max(datasets[[country]]$y)*1.2),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7) 
+  points(datasets[[country]]$Date, datasets[[country]]$y, col = &quot;black&quot;, cex = 0.1)
+  polygon(c(datasets[[country]]$Date, rev(datasets[[country]]$Date)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><strong>Summary:</strong> Overall, many countries (mostly western
+Europe) in cluster 1 were seriously affected by the initial wave.
+Whereas countries in cluster 2 and 3 (mostly eastern Europe) were
+significantly less affected during the first initial wave.</p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS Monterey 12.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Toronto
+tzcode source: internal
+
+attached base packages:
+[1] parallel  splines   stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] forcats_1.0.0   stringr_1.5.0   dplyr_1.1.3     purrr_1.0.2    
+ [5] readr_2.1.4     tidyr_1.3.0     tibble_3.2.1    ggplot2_3.5.1  
+ [9] tidyverse_2.0.0 lubridate_1.9.3 ISOweek_0.6-2   mixsqp_0.3-54  
+[13] reshape2_1.4.4  Matrix_1.6-3    TMB_1.9.7       BayesGP_0.1.1  
+
+loaded via a namespace (and not attached):
+ [1] sass_0.4.7        utf8_1.2.3        generics_0.1.3    stringi_1.7.12   
+ [5] lattice_0.21-8    hms_1.1.3         digest_0.6.33     magrittr_2.0.3   
+ [9] evaluate_0.22     grid_4.3.1        timechange_0.2.0  fastmap_1.1.1    
+[13] rprojroot_2.0.3   workflowr_1.7.1   plyr_1.8.9        jsonlite_1.8.7   
+[17] whisker_0.4.1     promises_1.2.1    fansi_1.0.5       scales_1.3.0     
+[21] jquerylib_0.1.4   cli_3.6.1         rlang_1.1.1       munsell_0.5.0    
+[25] withr_2.5.1       cachem_1.0.8      yaml_2.3.7        tools_4.3.1      
+[29] tzdb_0.4.0        colorspace_2.1-0  httpuv_1.6.11     vctrs_0.6.4      
+[33] R6_2.5.1          lifecycle_1.0.3   git2r_0.33.0      fs_1.6.3         
+[37] irlba_2.3.5.1     pkgconfig_2.0.3   gtable_0.3.4      pillar_1.9.0     
+[41] bslib_0.5.1       later_1.3.1       glue_1.6.2        Rcpp_1.0.11      
+[45] tidyselect_1.2.0  xfun_0.40         rstudioapi_0.15.0 knitr_1.44       
+[49] farver_2.1.1      htmltools_0.5.6.1 labeling_0.4.3    rmarkdown_2.25   
+[53] compiler_4.3.1   </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
