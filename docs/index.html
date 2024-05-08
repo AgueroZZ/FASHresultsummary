@@ -338,6 +338,9 @@ div.tocify {
   <a href="simulation.html">Simulation</a>
 </li>
 <li>
+  <a href="covid_example.html">COVID-19 Example</a>
+</li>
+<li>
   <a href="license.html">License</a>
 </li>
       </ul>
@@ -382,7 +385,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-05-07
+<strong>Last updated:</strong> 2024-05-08
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -429,13 +432,13 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstronge7cf254">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong77c1aae">
 <span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>Repository version:</strong> e7cf254
+aria-hidden="true"></span> <strong>Repository version:</strong> 77c1aae
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstronge7cf254"
+<div id="strongRepositoryversionstrong77c1aae"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -444,7 +447,7 @@ and connecting the code version to the results is critical for
 reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version e7cf254.
+The results in this page were generated with repository version 77c1aae.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -477,6 +480,10 @@ Untracked files:
     Untracked:  code/cpp/Gaussian_just_fixed.so
     Untracked:  code/cpp/Gaussian_theta_known.o
     Untracked:  code/cpp/Gaussian_theta_known.so
+    Untracked:  code/cpp/Poisson_covid.o
+    Untracked:  code/cpp/Poisson_covid.so
+    Untracked:  code/cpp/Poisson_just_fixed_covid.o
+    Untracked:  code/cpp/Poisson_just_fixed_covid.so
 
 </code></pre>
 <p>
@@ -521,6 +528,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+77c1aae
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-08
+</td>
+<td>
+wflow_git_commit(c("analysis/covid_example.Rmd", "analysis/index.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+e48d4fd
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -704,8 +745,8 @@ Start workflowr project.
 <strong>SH</strong>rinkage (FASH) project considers the following
 scenarios:</p>
 <ul>
-<li>There are <span class="math inline">\(N\)</span> set of series data:
-<span class="math inline">\(\boldsymbol{y} = \{y_i(t_j):
+<li>There are <span class="math inline">\(N\)</span> sets of series
+data: <span class="math inline">\(\boldsymbol{y} = \{y_i(t_j):
 j\in[n_j]\}_{i=1}^{N}\)</span>, where <span
 class="math inline">\(n_j\)</span> is the length of the <span
 class="math inline">\(j\)</span>-th series.</li>
@@ -732,12 +773,12 @@ href="https://www.nature.com/articles/s41588-018-0268-8">Urbut et al,
 2018</a>. The prior is defined as follows: <span
 class="math display">\[f_i|\pi_1,...,\pi_K \overset{iid}{\sim}
 \sum_{k=1}^{K} \pi_k\text{GP}(m_k,C_k),\]</span> where <span
-class="math inline">\(\pi_k\)</span> is the mixing proportion, <span
+class="math inline">\(\pi_k\)</span> is the prior mixing weight, <span
 class="math inline">\(m_k\)</span> is the mean function, and <span
 class="math inline">\(C_k\)</span> is the covariance function of the
 <span class="math inline">\(k\)</span>-th GP.</p>
 <p>For now, let’s assume the mean function <span
-class="math inline">\(m_k\)</span> is zero, and each GP component
+class="math inline">\(m_k\)</span> is zero, and each GP component is
 defined through the following ordinary differential equation (ODE):
 <span class="math display">\[Lf(t) = \sigma_k W(t),\]</span> where <span
 class="math inline">\(W(t)\)</span> is a Gaussian white noise process
@@ -746,15 +787,16 @@ class="math inline">\(p\)</span>th order linear differential operator.
 Given the <span class="math inline">\(L\)</span> operator, the
 covariance function <span class="math inline">\(C_k\)</span> is
 completely specified by the single standard deviation parameter <span
-class="math inline">\(\sigma_k\)</span>. Specifically, this prior
-shrinks the function <span class="math inline">\(g\)</span> toward the
-base model <span class="math inline">\(\text{Null}\{L\}\)</span>, which
-is the set of functions that satisfy <span class="math inline">\(Lf =
-0\)</span>. The smaller <span class="math inline">\(\sigma_k\)</span>
-is, the stronger the shrinkage is.</p>
-<p>By choosing different <span class="math inline">\(L\)</span>
-operator, this one-parameter GP family can produce prior that encodes
-different kinds of shapes. Some examples are discussed in <a
+class="math inline">\(\sigma_k\)</span>.</p>
+<p>This prior shrinks the function <span
+class="math inline">\(g\)</span> toward the base model <span
+class="math inline">\(\text{Null}\{L\}\)</span>, which is the set of
+functions that satisfy <span class="math inline">\(Lf = 0\)</span>. The
+smaller <span class="math inline">\(\sigma_k\)</span> is, the stronger
+the shrinkage is. By choosing different <span
+class="math inline">\(L\)</span> operator, this one-parameter GP family
+can produce prior that encodes different kinds of shapes. Some examples
+are discussed in <a
 href="https://www.tandfonline.com/doi/full/10.1080/10618600.2023.2289532">Zhang
 et.al 2023</a> and <a href="https://arxiv.org/abs/2305.09914">Zhang
 et.al 2024</a>.</p>
@@ -767,9 +809,9 @@ model <span class="math inline">\(\text{Null}\{L\} =
 \text{span}\{1,t\}\)</span>.</p>
 <p>When all the observations are Gaussian, the posterior mean <span
 class="math inline">\(\mathbb{E}(f|\boldsymbol{y}_i)\)</span> using the
-second order IWP is shown to be exactly the cubic smoothing spline
-estimate in <a href="https://www.jstor.org/stable/2239347">Kimeldorf and
-Wahba, 1970</a>.</p>
+second order IWP is exactly the cubic smoothing spline estimate in <a
+href="https://www.jstor.org/stable/2239347">Kimeldorf and Wahba,
+1970</a>.</p>
 </div>
 <div id="example-seasonal-gaussian-process" class="section level4">
 <h4><em>Example: Seasonal Gaussian Process</em></h4>
@@ -784,11 +826,11 @@ mostly periodic behavior but with amplitude slowly varying overtime.</p>
 </div>
 <div id="empirical-bayes" class="section level3">
 <h3><strong>Empirical Bayes</strong></h3>
-<p>For now, assume that we are fixing the <span
-class="math inline">\(L\)</span> operator to be the <span
-class="math inline">\(p\)</span>th order IWP, and only the standard
-deviation parameter <span class="math inline">\(\sigma_k\)</span> is
-varying across different GP components. Following the practice of <a
+<p>For now, assume that the <span class="math inline">\(L\)</span>
+operator is fixed to be the <span class="math inline">\(p\)</span>th
+order IWP, and only the standard deviation parameter <span
+class="math inline">\(\sigma_k\)</span> is varying across different GP
+components. Following the practice of <a
 href="https://academic.oup.com/biostatistics/article/18/2/275/2557030?login=true">Stehpens,
 2017</a> and <a
 href="https://www.nature.com/articles/s41588-018-0268-8">Urbut et al,
@@ -805,9 +847,9 @@ class="math inline">\(\boldsymbol{\pi}\)</span> is obtained by
 maximizing the following objective function: <span
 class="math display">\[\hat{\boldsymbol{\pi}} =
 \arg\max_{\boldsymbol{\pi}} \sum_{i=1}^{N} \log\left(\sum_{k=1}^{K}
-\pi_k \mathbf{L}_{ik}\right).\]</span> This can be solved using either
-the interior point method or the Sequential Quadratic Programming (SQP)
-method (<span class="math inline">\(\texttt{mixqp}\)</span>) in <a
+\pi_k \mathbf{L}_{ik}\right).\]</span> This can be solved using interior
+point method or Sequential Quadratic Programming (<span
+class="math inline">\(\texttt{mixqp}\)</span>) in <a
 href="https://www.tandfonline.com/doi/full/10.1080/10618600.2019.1689985">Kim
 et al, 2020</a>.</p>
 <p>With the estimated weights <span
@@ -844,8 +886,8 @@ class="math inline">\(p(f_i(t)|\boldsymbol{y}_i,\sigma_k)\)</span> to
 <span
 class="math inline">\(p(\boldsymbol{w}|\boldsymbol{y}_i,\sigma_k)\)</span>.
 The weights not only have smaller dimension than the function <span
-class="math inline">\(f(t)\)</span>, but also have sparse precision
-matrices. See <a
+class="math inline">\(f(t)\)</span>, but also have a sparse precision
+matrix. See <a
 href="https://www.tandfonline.com/doi/full/10.1080/10618600.2023.2289532">Zhang
 et al, 2023</a> and <a
 href="https://academic.oup.com/jrsssb/article/73/4/423/7034732?login=true">Lindgren
@@ -862,7 +904,7 @@ the mode: <span class="math inline">\(p_G(\boldsymbol{w}|\boldsymbol{y},
 \sigma_k) = \mathcal{N}(\hat{\boldsymbol{w}}, \hat{V})\)</span>.</li>
 </ul>
 <p>In this way, the complicated integration required in the posterior
-computation is replaced by simpler optimization tasks with sparse
+computation is replaced by a simpler optimization task with sparse
 matrices. When the observations are Gaussian, the Laplace approximation
 is exact. When the observations are not Gaussian, the Laplace
 approximation provides reasonable approximation with very small amount
@@ -883,32 +925,25 @@ href="https://elifesciences.org/articles/57345">Ward et.al,
 2021</a>).</li>
 <li><strong>COVID Mortality Data</strong>: FASH can be used to infer and
 group the COVID mortality rate at different countries (or states), and
-identify the countries (states) that have similar mortality rate
-trend.</li>
+identify the countries (states) with similar mortality trends. See
+<em><a href="covid_example.html">this</a></em> for an example.</li>
 <li><strong>Cause-specific Mortality Data</strong>: FASH can be used to
-model the mortality series over time for different type of causes (for
-example, in Canada), and identify the causes that have similar mortality
-rate trend.</li>
-<li><strong>Financial Data</strong>: FASH can be used to infer and group
-the stock price trend at different companies, and identify the companies
-that have similar stock price behavior.</li>
+model different cause-specific mortality series over time (for example,
+in Canada), and identify the causes with similar mortality pattern.</li>
+<li><strong>Financial Data</strong>: FASH can be used to smooth and
+group the stock price trends at different companies.</li>
 <li><strong>Environmental Data</strong>: FASH can be used to model the
 concentration of different pollutants overtime, and identify type of
-pollutants that have similar behavior.</li>
+pollutants that have similar behavior. See <em><a
+href="simulation.html">this simulation</a></em> for an example.</li>
 </ul>
 <p>In some applications above, when each series has a same number of
-observations and the observations are equally spaced, it is possible to
-directly apply the <span class="math inline">\(\texttt{mash}\)</span>
-approach in Urbut et al, 2018. However, when the observations are not
-equally spaced or when each series has different number of observations,
-the <span class="math inline">\(\texttt{mash}\)</span> approach is not
-directly applicable.</p>
-</div>
-<div id="example" class="section level3">
-<h3><strong>Example</strong></h3>
-<p><em><a href="simulation.html">Simulation</a></em>: We will simulate
-the data and show the observed time series for each category of
-pollutants.</p>
+observations that are equally spaced, it is possible to directly apply
+the <span class="math inline">\(\texttt{mash}\)</span> approach in Urbut
+et al, 2018. However, when the observations are not equally spaced or
+when each series has a different number of observations, the <span
+class="math inline">\(\texttt{mash}\)</span> approach is not directly
+applicable.</p>
 </div>
 
 
