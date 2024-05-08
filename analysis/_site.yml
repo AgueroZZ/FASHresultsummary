@@ -9,6 +9,8 @@ navbar:
     href: about.html
   - text: Simulation
     href: simulation.html
+  - text: COVID-19 Example
+    href: covid_example.html
   - text: License
     href: license.html
 output:

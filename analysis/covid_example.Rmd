@@ -1,0 +1,280 @@
+---
+title: "Example: COVID mortality data across countries"
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+```{r include=FALSE}
+library(BayesGP)
+library(TMB)
+library(Matrix)
+library(splines)
+library(parallel)
+library(reshape2)
+library(mixsqp)
+library(ISOweek)
+library(lubridate)
+library(tidyverse)
+cpp_dir <- paste0(getwd(), "/code/cpp")
+figure_dir <- paste0(getwd(), "/output/example")
+data_dir <- paste0(getwd(), "/data")
+result_dir <- paste0(getwd(), "/output/example")
+function_dir <- paste0(getwd(), "/code/function")
+source(paste0(function_dir, "/functions_fitting_Poisson_covid.R"))
+compile(paste0(cpp_dir, "/Poisson_covid.cpp"))
+compile(paste0(cpp_dir, "/Poisson_just_fixed_covid.cpp"))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_covid")))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_just_fixed_covid")))
+num_cores <- detectCores() - 1
+```
+
+## **Setup:**
+
+We consider the daily COVID-19 death count in different (European) countries. The data is obtained from COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University (Dong, Du, and Gardner, 2020).
+
+The number of COVID-19 deaths (per million) in each country is denoted as $y_{i}(x_j)$, where $i$ indexes the country and $j$ indexes the day. 
+
+To model the true (log) mortality rate $f_i(t_j)$, we assume that the death count $y_{i}(x_j)$ is Poisson distributed with mean $f_i(t_j)$:
+$$y_{i}(x_j) \sim \text{Poisson}(\exp(v_{ij}^T\boldsymbol{\beta}_i + f_i(x_j))),$$
+where $v_{ij}$ is the fixed effect that denotes the weekdays.
+
+
+## **Data:**
+
+We filtered out some countries/observations that look suspicious:
+
+```{r}
+full_data_covid <- read.csv(file = paste0(data_dir, "/owid-covid-data.csv"), header = T)
+full_data_covid <- full_data_covid %>% filter(date > "2020-01-01")
+full_data_covid$y <- round(full_data_covid$new_deaths_per_million)
+full_data_covid$quality <- abs((full_data_covid$y-full_data_covid$new_deaths_smoothed_per_million)/(full_data_covid$new_deaths_smoothed_per_million + 1))
+full_data_covid$Date <- as.Date(full_data_covid$date)
+full_data_covid$x <- (as.Date(full_data_covid$date) %>% as.numeric())/31
+## Assume COVID death rate is approximately 0 at time 2020-01-01, so set intercept being -3. Also, assume the derivatives are all zero at this point.
+full_data_covid$x <- full_data_covid$x - (as.numeric(as.Date("2020-01-01"))/31)
+full_data_covid$weekdays <- weekdays(as.Date(full_data_covid$date))
+full_data_covid$weekdays <- factor(full_data_covid$weekdays,
+                                    levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
+                                    ordered = F)
+full_data_covid_EU <- full_data_covid %>% filter(continent == "Europe") %>% select(Date, x, y, weekdays, location, iso_code, quality)
+```
+
+The final selected countries/data are:
+
+```{r}
+datasets <- list()
+available_countries <- unique(full_data_covid_EU$location)
+selected_countries <- c()
+for (country in available_countries) {
+  full_data <- full_data_covid_EU %>% filter(location == country, !is.na(y), !is.na(quality))
+  full_data <- full_data %>% filter(quality <= 1.0, y != 0)
+  if(sum(full_data$y != 0) < 300) {
+    next
+  }
+  else{
+    selected_countries <- c(selected_countries, country)
+    datasets[[country]] <- full_data %>% arrange(Date)
+  }
+}
+par(mfrow = c(6, 6), mar = c(2, 2, 1, 1))  # Adjust margins as needed
+for (i in 1:34) {
+  plot(datasets[[i]]$x, (datasets[[i]]$y), type = 'p',  # Change to 'p' for points
+       main = paste0(selected_countries[i]), xlab = "x", ylab = "y",
+       cex = 0.1,
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  # Adjust text size as needed
+}
+par(mfrow = c(1, 1), mar = c(5, 4, 4, 2) + 0.1)
+```
+
+## **Empirical Bayes:**
+
+We compute the L-matrix and use EB to optimize the prior weights:
+```{r, eval=FALSE}
+p_vec <- 3
+log_prec_vec <- sort(unique(c(seq(0, 5, by = 0.1), seq(5, 10, by = 1), seq(-5,0, by = 1))))
+psd_iwp_vec <- exp(-.5*log_prec_vec)
+L_vecs <- mclapply(datasets, function(dataset) {
+  compute_log_likelihood_ospline_seq2(
+    dataset = dataset,
+    p = p_vec,
+    num_knots = 50,
+    psd_iwp_vector = psd_iwp_vec,
+    pred_step = 1,
+    betaprec = 0.0001
+  )
+}, mc.cores = num_cores)
+L_matrix <- do.call(rbind, L_vecs)
+```
+
+```{r echo=FALSE}
+p_vec <- 3
+log_prec_vec <- sort(unique(c(seq(0, 5, by = 0.1), seq(5, 10, by = 1), seq(-5,0, by = 1))))
+psd_iwp_vec <- exp(-.5*log_prec_vec)
+load(paste0(result_dir, "/L_matrix.rda"))
+```
+
+```{r}
+fit.sqp <- mixsqp(L = L_matrix, log = TRUE)
+numiter <- nrow(fit.sqp$progress)
+plot(1:numiter,fit.sqp$progress$objective,type = "b",
+     pch = 20,lwd = 2,xlab = "SQP iteration",
+     ylab = "objective",xaxp = c(1,numiter,numiter - 1))
+prior_weight <- data.frame(p = rep(p_vec, each = length(psd_iwp_vec)), psd_iwp = psd_iwp_vec, prior_weight = fit.sqp$x)
+```
+
+
+## **Posterior Inference:**
+
+We carry out the posterior computation based on Finite Element Method and Laplace approximation:
+```{r, eval=FALSE}
+num_datasets <- length(datasets)
+num_weights <- sum(prior_weight$prior_weight != 0)
+posterior_weights_matrix <- matrix(nrow = num_datasets, ncol = num_weights)
+
+# Loop through each dataset and perform fitting
+fitted_datasets <- list()
+for (i in seq_along(datasets)) {
+  dataset <- datasets[[i]]
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = num_cores,
+    dataset = dataset,
+    num_knots = 50,
+    prior_weight = prior_weight,
+    betaprec = 0.0001,
+    pred_step = 1
+  )
+  posterior_weights_matrix[i, ] <- fit_result_final$posterior_weights[, "posterior_weight"]
+  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
+}
+names(fitted_datasets) <- selected_countries
+colnames(posterior_weights_matrix) <- paste(as.character(fit_result_final$posterior_weights[, "p"]),
+                                            as.character(fit_result_final$posterior_weights[, "psd_iwp"]), sep = "_")
+```
+
+```{r echo=FALSE}
+load(paste0(result_dir, "/posterior_weights_matrix.rda"))
+load(paste0(result_dir, "/fitted_datasets.rda"))
+```
+
+First, take a look at the structure plot of the posterior weights:
+
+```{r}
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- 1:nrow(posterior_weights_df)
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- as.factor(round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+melted_data$id <- selected_countries
+
+ggplot(melted_data, aes(x = as.factor(id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Country", y = "Weight", fill = "PSD") +
+  theme_minimal() +
+  ggtitle("Structure Plot of Posterior Weights") +
+  coord_flip()  
+```
+
+There are many suggested structures for the posterior weights. Let's group them into $4$ clusters using the hierarchical clustering method:
+
+```{r} 
+# Normalize the data
+wide_data <- scale(posterior_weights_matrix)
+# Perform hierarchical clustering
+d <- dist(wide_data, method = "euclidean")  # Distance matrix
+fit <- hclust(d, method = "ward.D2")  # Clustering
+clusters <- cutree(fit, k = 4)
+## Recode the factor so cluster 2 be 1, 1 be 2, 4 be 3, 3 be 4
+clusters <- as.numeric(factor(clusters, levels = c(2, 1, 4, 3), labels = c(1, 2, 3, 4)))
+melted_data$cluster <- clusters
+posterior_weights_df$id <- 1:nrow(posterior_weights_df)
+posterior_weights_df$cluster <- clusters
+melted_data <- melt(posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- as.factor(round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+melted_data$id <- selected_countries
+melted_data <- melted_data %>% arrange(cluster)
+ggplot(melted_data, aes(x = id, y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~cluster, scales = "free_y") +  # Facet by cluster
+  labs(x = "Country", y = "Weight", fill = "PSD") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +  # Rotate x-axis labels for better readability
+  ggtitle("Structure Plot of Posterior Weights by Cluster") +
+  coord_flip()  
+```
+
+
+Note that group 1 mostly consists of countries in western Europe, group 2 and group 3 mostly consists of countries in eastern Europe. 
+
+Let's visualize the smoothing result for each cluster. 
+For cluster 1:
+```{r}
+cluster1_countries <- selected_countries[clusters == 1]
+cluster2_countries <- selected_countries[clusters == 2]
+cluster3_countries <- selected_countries[clusters == 3]
+cluster4_countries <- selected_countries[clusters == 4]
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
+for (country in cluster1_countries[1:16]) {
+  agg_result <- fitted_datasets[[country]]
+  plot(datasets[[country]]$Date, agg_result$median, type = 'l', 
+       main = paste0(country), xlab = "", ylab = "", col = "blue",
+       cex = 0.5, ylim = c(0,max(datasets[[country]]$y)*1.2),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
+  points(datasets[[country]]$Date, datasets[[country]]$y, col = "black", cex = 0.1)
+  polygon(c(datasets[[country]]$Date, rev(datasets[[country]]$Date)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+```
+
+
+For cluster 2:
+```{r}
+par(mfrow = c(4, 3), mar = c(2, 2, 1, 1))  
+for (country in cluster2_countries[1:11]) {
+  agg_result <- fitted_datasets[[country]]
+  plot(datasets[[country]]$Date, agg_result$median, type = 'l',  
+       main = paste0(country), xlab = "", ylab = "", col = "blue",
+       cex = 0.5, ylim = c(0,max(datasets[[country]]$y)*1.2),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7) 
+  points(datasets[[country]]$Date, datasets[[country]]$y, col = "black", cex = 0.1)
+  polygon(c(datasets[[country]]$Date, rev(datasets[[country]]$Date)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+```
+
+For cluster 3:
+```{r}
+par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))  
+for (country in cluster3_countries[1:6]) {
+  agg_result <- fitted_datasets[[country]]
+  plot(datasets[[country]]$Date, agg_result$median, type = 'l',  
+       main = paste0(country), xlab = "", ylab = "", col = "blue",
+       cex = 0.5, ylim = c(0,max(datasets[[country]]$y)*1.2),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7) 
+  points(datasets[[country]]$Date, datasets[[country]]$y, col = "black", cex = 0.1)
+  polygon(c(datasets[[country]]$Date, rev(datasets[[country]]$Date)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+```
+
+For cluster 4:
+```{r}
+par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))  
+for (country in cluster4_countries[1:1]) {
+  agg_result <- fitted_datasets[[country]]
+  plot(datasets[[country]]$Date, agg_result$median, type = 'l',  
+       main = paste0(country), xlab = "", ylab = "", col = "blue",
+       cex = 0.5, ylim = c(0,max(datasets[[country]]$y)*1.2),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7) 
+  points(datasets[[country]]$Date, datasets[[country]]$y, col = "black", cex = 0.1)
+  polygon(c(datasets[[country]]$Date, rev(datasets[[country]]$Date)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+```
