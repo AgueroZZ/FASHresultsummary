@@ -278,3 +278,8 @@ for (country in cluster4_countries[1:1]) {
           col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
 }
 ```
+
+
+**Summary:** Overall, many countries (mostly western Europe) in cluster 1 were seriously affected by the initial wave. Whereas countries in cluster 2 and 3 (mostly eastern Europe) were significantly less affected during the first initial wave.
+
+

@@ -40,14 +40,17 @@ where $y_i(x_j)$ denotes the measured concentration of the $i$-th pollutant at t
 We observe $N = 48$ pollutants at $n = 100$ time points. 
 The time points $\boldsymbol{x}$ for each pollutant are generated from a uniform distribution on the interval $[0, 5]$. 
 
-We are interested in inferring the true concentration of each pollutant, and we use a finite mixture of second order IWP with different $\sigma_k$ as the prior.
+We are interested in inferring the true concentration of each pollutant as well as grouping them into similar categories.
+
+We assign each true concentration function an independent prior, which is a finite mixture of second order IWP with different $\sigma_k$.
 
 ### **Data**
 
-We assume there are three categories of pollutants (A,B and C), and the true concentration of each pollutant is generated from a random linear combination of the cubic-B spline basis.
-In category A, the true concentration is generated from the cubic-B spline basis with 5 knots. 
-In category B, the true concentration is generated from the cubic-B spline basis with 10 knots. 
-In category C, the true concentration is generated from the cubic-B spline basis with 20 knots.
+We assume there are three true categories of pollutants (A,B and C), and the true concentration of each pollutant is generated from a random linear combination of the cubic-B spline basis.
+
+- In category A, the true concentration is generated from the cubic-B spline basis with 5 knots. 
+- In category B, the true concentration is generated from the cubic-B spline basis with 10 knots. 
+- In category C, the true concentration is generated from the cubic-B spline basis with 20 knots.
 
 ```{r}
 # Generate indices of groups
@@ -76,12 +79,12 @@ The observed time series for each category are shown below (observations in poin
 Category A:
 
 ```{r}
-par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  # Adjust margins as needed
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
 for (i in 1:16) {
-  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  # Change to 'p' for points
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  
        main = paste("Dataset", i), xlab = "x", ylab = "y",
        cex = 0.1,
-       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  # Adjust text size as needed
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
   lines(datasets[[i]]$x, datasets[[i]]$truef, col = "red")
 }
 ```
@@ -89,12 +92,12 @@ for (i in 1:16) {
 Category B:
 
 ```{r}
-par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  # Adjust margins as needed
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
 for (i in 17:32) {
-  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  # Change to 'p' for points
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  
        main = paste("Dataset", i), xlab = "x", ylab = "y",
        cex = 0.1,
-       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  # Adjust text size as needed
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
   lines(datasets[[i]]$x, datasets[[i]]$truef, col = "red")
 }
 ```
@@ -103,12 +106,12 @@ for (i in 17:32) {
 Category C:
 
 ```{r}
-par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  # Adjust margins as needed
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
 for (i in 33:48) {
-  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  # Change to 'p' for points
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  
        main = paste("Dataset", i), xlab = "x", ylab = "y",
        cex = 0.1,
-       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  # Adjust text size as needed
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
   lines(datasets[[i]]$x, datasets[[i]]$truef, col = "red")
 }
 ```
@@ -116,7 +119,7 @@ for (i in 33:48) {
 
 ### **Empirical Bayes**
 
-We setup the grid of $\sigma_k$ as the following: (actually, a scaled version of $\sigm_k$, called the predictive standard deviation (PSD)).
+We setup the grid of $\sigma_k$ as the following: (actually, a scaled version of it, called the predictive standard deviation (PSD)).
 ```{r, eval=FALSE}
 set.seed(123)
 p_vec <- 2
@@ -144,7 +147,7 @@ psd_iwp_vec <- 1/exp(.5*log_prec)
 load(paste0(result_dir, "/L_matrix.rda"))
 ```
 
-Then, we make use of \texttt{mixsqp} to make  
+Then, we make use of $\texttt{mixsqp}$ to estimate the prior weights:  
 ```{r}
 fit.sqp <- mixsqp(L = L_matrix, log = TRUE)
 numiter <- nrow(fit.sqp$progress)
@@ -215,12 +218,12 @@ ggplot(melted_data, aes(x = as.factor(id), y = value, fill = variable3)) +
 The fitted curves for pollutants in category A:
 
 ```{r}
-par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  # Adjust margins as needed
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
 for (i in 1:16) {
-  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  # Change to 'p' for points
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  
        main = paste("Dataset", i), xlab = "x", ylab = "y",
        cex = 0.2,
-       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  # Adjust text size as needed
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
   lines(datasets[[i]]$x, datasets[[i]]$truef, col = "red", lty = "dashed", lwd = 1.5)
   lines(fitted_datasets[[i]]$x, fitted_datasets[[i]]$mean, col = "blue", lwd = 1.2)
 }
@@ -230,12 +233,12 @@ for (i in 1:16) {
 The fitted curves for pollutants in category B:
 
 ```{r}
-par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  # Adjust margins as needed
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
 for (i in 17:32) {
-  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  # Change to 'p' for points
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  
        main = paste("Dataset", i), xlab = "x", ylab = "y",
        cex = 0.2,
-       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  # Adjust text size as needed
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
   lines(datasets[[i]]$x, datasets[[i]]$truef, col = "red", lty = "dashed", lwd = 1.5)
   lines(fitted_datasets[[i]]$x, fitted_datasets[[i]]$mean, col = "blue", lwd = 1.2)
 }
@@ -245,12 +248,12 @@ for (i in 17:32) {
 The fitted curves for pollutants in category C:
 
 ```{r}
-par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  # Adjust margins as needed
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
 for (i in 33:48) {
-  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  # Change to 'p' for points
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  
        main = paste("Dataset", i), xlab = "x", ylab = "y",
        cex = 0.2,
-       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  # Adjust text size as needed
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
   lines(datasets[[i]]$x, datasets[[i]]$truef, col = "red", lty = "dashed", lwd = 1.5)
   lines(fitted_datasets[[i]]$x, fitted_datasets[[i]]$mean, col = "blue", lwd = 1.2)
 }
