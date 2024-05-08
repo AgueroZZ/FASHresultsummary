@@ -1,4 +1,4 @@
-# resultsummary
+# Report of the FASH project 
 
 A [workflowr][] project.
 
