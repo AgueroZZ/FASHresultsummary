@@ -32,6 +32,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
 <!-- Add a small amount of space between sections. -->
@@ -269,7 +271,13 @@ $(document).ready(function () {
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/AgueroZZ/resultsummary">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -288,7 +296,7 @@ countries</h1>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -299,8 +307,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -309,16 +317,16 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-05-08
+<strong>Last updated:</strong> 2024-05-10
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
-<strong>Knit directory:</strong> <code>resultsummary/</code> <span
+<strong>Knit directory:</strong> <code>FASHresultsummary/</code> <span
 class="glyphicon glyphicon-question-sign" aria-hidden="true"
 title="This is the local directory in which the code in this file was executed.">
 </span>
@@ -338,21 +346,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -443,13 +448,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong8a17f4d">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree0f67dfb6f4f54e9a7832c48d83b26a42dcae25edtargetblank0f67dfba">
 <span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>Repository version:</strong> 8a17f4d
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/0f67dfb6f4f54e9a7832c48d83b26a42dcae25ed" target="_blank">0f67dfb</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrong8a17f4d"
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree0f67dfb6f4f54e9a7832c48d83b26a42dcae25edtargetblank0f67dfba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -458,7 +465,8 @@ and connecting the code version to the results is critical for
 reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version 8a17f4d.
+The results in this page were generated with repository version
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/0f67dfb6f4f54e9a7832c48d83b26a42dcae25ed" target="_blank">0f67dfb</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -495,10 +503,7 @@ Untracked files:
     Untracked:  code/cpp/Poisson_covid.so
     Untracked:  code/cpp/Poisson_just_fixed_covid.o
     Untracked:  code/cpp/Poisson_just_fixed_covid.so
-
-Unstaged changes:
-    Modified:   analysis/covid_example.Rmd
-    Modified:   analysis/index.Rmd
+    Untracked:  output/example/mod_datasets.rda
 
 </code></pre>
 <p>
@@ -549,7 +554,59 @@ Message
 Rmd
 </td>
 <td>
-8a17f4d
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/0f67dfb6f4f54e9a7832c48d83b26a42dcae25ed/analysis/covid_example.Rmd" target="_blank">0f67dfb</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-10
+</td>
+<td>
+wflow_git_commit(c("analysis/covid_example.Rmd",
+"code/function/functions_fitting_Poisson_covid.R",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/f25b5c421a7f8345ea6268318a5af34db95b0f4c/docs/covid_example.html" target="_blank">f25b5c4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-08
+</td>
+<td>
+initialize the website again!
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/77c1aae2d30a7c6ec7229caccc4e615c394b1150/analysis/covid_example.Rmd" target="_blank">77c1aae</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-08
+</td>
+<td>
+wflow_git_commit(c("analysis/covid_example.Rmd", "analysis/index.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8a17f4d5d62f4f1d935cad030d16a4e341066a70/analysis/covid_example.Rmd" target="_blank">8a17f4d</a>
 </td>
 <td>
 Ziang Zhang
@@ -627,6 +684,43 @@ for (i in 1:34) {
 }
 par(mfrow = c(1, 1), mar = c(5, 4, 4, 2) + 0.1)</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
+Past versions of unnamed-chunk-3-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-3-1.png" target="_blank">574c0a1</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="empirical-bayes" class="section level2">
 <h2><strong>Empirical Bayes:</strong></h2>
@@ -676,13 +770,50 @@ iter        objective max(rdual) nnz stepsize max.diff nqp nls
    4 +1.470402456e+00 +2.006e-03   8 1.00e+00 2.38e-01  20   1
    5 +1.470218700e+00 +2.595e-05   8 1.00e+00 1.41e-01   5   1
    6 +1.470218699e+00 -3.290e-08   8 1.00e+00 9.04e-05   2   1
-Optimization took 0.01 seconds.
+Optimization took 0.00 seconds.
 Convergence criteria met---optimal solution found.</code></pre>
 <pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
 plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
      pch = 20,lwd = 2,xlab = &quot;SQP iteration&quot;,
      ylab = &quot;objective&quot;,xaxp = c(1,numiter,numiter - 1))</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-6-1.png" target="_blank">574c0a1</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>prior_weight &lt;- data.frame(p = rep(p_vec, each = length(psd_iwp_vec)), psd_iwp = psd_iwp_vec, prior_weight = fit.sqp$x)</code></pre>
 </div>
 <div id="posterior-inference" class="section level2">
@@ -727,6 +858,43 @@ ggplot(melted_data, aes(x = as.factor(id), y = value, fill = variable3)) +
   ggtitle(&quot;Structure Plot of Posterior Weights&quot;) +
   coord_flip()  </code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-9-1.png" target="_blank">574c0a1</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>There are many suggested structures for the posterior weights. Let’s
 group them into <span class="math inline">\(4\)</span> clusters using
 the hierarchical clustering method:</p>
@@ -755,6 +923,43 @@ ggplot(melted_data, aes(x = id, y = value, fill = variable3)) +
   ggtitle(&quot;Structure Plot of Posterior Weights by Cluster&quot;) +
   coord_flip()  </code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-10-1.png" target="_blank">574c0a1</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Note that group 1 mostly consists of countries in western Europe,
 group 2 and group 3 mostly consists of countries in eastern Europe.</p>
 <p>Let’s visualize the smoothing result for each cluster. For cluster
@@ -776,6 +981,43 @@ for (country in cluster1_countries[1:16]) {
           col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
 }</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-11-1.png" target="_blank">574c0a1</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>For cluster 2:</p>
 <pre class="r"><code>par(mfrow = c(4, 3), mar = c(2, 2, 1, 1))  
 for (country in cluster2_countries[1:11]) {
@@ -790,6 +1032,43 @@ for (country in cluster2_countries[1:11]) {
           col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
 }</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-12-1.png" target="_blank">574c0a1</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>For cluster 3:</p>
 <pre class="r"><code>par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))  
 for (country in cluster3_countries[1:6]) {
@@ -804,6 +1083,43 @@ for (country in cluster3_countries[1:6]) {
           col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
 }</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-13-1.png" target="_blank">574c0a1</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>For cluster 4:</p>
 <pre class="r"><code>par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))  
 for (country in cluster4_countries[1:1]) {
@@ -818,10 +1134,190 @@ for (country in cluster4_countries[1:1]) {
           col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
 }</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-14-1.png" target="_blank">574c0a1</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><strong>Summary:</strong> Overall, many countries (mostly western
 Europe) in cluster 1 were seriously affected by the initial wave.
 Whereas countries in cluster 2 and 3 (mostly eastern Europe) were
 significantly less affected during the first initial wave.</p>
+<p><strong>Follow-up Question:</strong> What countries were more
+affected by the Delta wave than the initial wave? Select based on the
+false sign rate.</p>
+<p>Let’s define the following time periods as initial wave and Delta
+wave:</p>
+<pre class="r"><code>refined_time &lt;- seq(as.Date(&quot;2020-01-01&quot;), as.Date(&quot;2022-04-26&quot;), by = 1)
+refined_x &lt;- (as.numeric(refined_time)/31) - (as.numeric(as.Date(&quot;2020-01-01&quot;))/31)
+
+## Initial time:
+initial_wave &lt;- c(as.Date(&quot;2020-03-01&quot;), as.Date(&quot;2020-11-01&quot;))
+initial_index &lt;- which(refined_time &gt;= initial_wave[1] &amp; refined_time &lt;= initial_wave[2])
+
+## Delta time:
+delta_wave &lt;- c(as.Date(&quot;2021-07-01&quot;), as.Date(&quot;2022-01-01&quot;))
+delta_index &lt;- which(refined_time &gt;= delta_wave[1] &amp; refined_time &lt;= delta_wave[2])
+
+extract_posterior &lt;- function(fit_result, refined_x){
+  func &lt;- function(path){
+    max(path[delta_index]) - max(path[initial_index])
+  }
+  intercept &lt;- -3
+  coef_samples &lt;- fit_result$samps_coef
+  B_new &lt;- BayesGP:::local_poly_helper(knots = fit_result$knots, refined_x = refined_x, p = fit_result$p)
+  samps_fitted &lt;- as.matrix(B_new) %*% t(coef_samples[,1:ncol(B_new)])
+  samples &lt;- samps_fitted + intercept
+  apply(samples, 2, func)
+}
+
+aggregate_functional_with_prior &lt;- function(x, fit_results_with_prior) {
+  fit_results &lt;- fit_results_with_prior$fitted_results
+  samples_functional &lt;- lapply(fit_results, extract_posterior, refined_x = x)
+  posterior_weights &lt;- fit_results_with_prior$posterior_weights[[&quot;posterior_weight&quot;]]
+  # Sample indices of the fit results based on posterior weights
+  sampled_indices &lt;- sample(seq_along(fit_results), size = 8000, replace = TRUE, prob = posterior_weights)
+
+  # Tabulate the frequency of each index
+  tabulated_indices &lt;- table(sampled_indices)
+
+  # Initialize an empty list to collect samples
+  sampled_fits_list &lt;- vector(&quot;list&quot;, length = length(tabulated_indices))
+
+  # Retrieve and store the required number of columns from each sampled fit&#39;s samps_fitted
+  names(tabulated_indices) &lt;- as.integer(names(tabulated_indices))  # Ensure names are integer
+  for (i in seq_along(tabulated_indices)) {
+    idx &lt;- as.integer(names(tabulated_indices)[i])
+    count &lt;- tabulated_indices[[i]]
+    sampled_fits_list[[i]] &lt;- (samples_functional[[idx]])[1:count]
+  }
+
+  # Combine all samples into one vector
+  sampled_fits &lt;- unlist(sampled_fits_list)
+}</code></pre>
+<p>We can compute the posterior samples of their maximum difference
+between the Delta wave and the initial wave:</p>
+<pre class="r"><code>functional_datasets &lt;- list()
+for (i in seq_along(datasets)) {
+  fit_result_final &lt;- 
+  posterior_weights_matrix[i, ] &lt;- fit_result_final$posterior_weights[, &quot;posterior_weight&quot;]
+  functional_datasets[[i]] &lt;- aggregate_functional_with_prior(x = refined_x, fit_results_with_prior = fit_result_final)
+}
+names(functional_datasets) &lt;- selected_countries</code></pre>
+<p>Produce a histogram for country in cluster 1:</p>
+<pre class="r"><code>par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))
+for (country in cluster1_countries[1:16]) {
+  samples &lt;- functional_datasets[[country]]
+  hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
+}</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Produce a histogram for country in cluster 2:</p>
+<pre class="r"><code>par(mfrow = c(4, 3), mar = c(2, 2, 1, 1))
+for (country in cluster2_countries[1:11]) {
+  samples &lt;- functional_datasets[[country]]
+  hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
+}</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Produce a histogram for country in cluster 3:</p>
+<pre class="r"><code>par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))
+for (country in cluster3_countries[1:6]) {
+  samples &lt;- functional_datasets[[country]]
+  hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
+}</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Produce a histogram for country in cluster 4:</p>
+<pre class="r"><code>par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))
+for (country in cluster4_countries[1:1]) {
+  samples &lt;- functional_datasets[[country]]
+  hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
+}</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>To decide the significance of the difference, we can compute the
+false sign rate:</p>
+<pre class="r"><code>names(functional_datasets) &lt;- c(&quot;AL&quot;, &quot;AT&quot;, &quot;BY&quot;, &quot;BE&quot;, &quot;BA&quot;, &quot;BG&quot;, &quot;HR&quot;, &quot;CY&quot;, &quot;CZ&quot;, &quot;DK&quot;, &quot;EE&quot;, &quot;FR&quot;, &quot;DE&quot;, &quot;GR&quot;, &quot;HU&quot;, &quot;IT&quot;, &quot;XK&quot;, &quot;LV&quot;, &quot;LT&quot;, &quot;MD&quot;, &quot;ME&quot;, &quot;NL&quot;, &quot;MK&quot;, &quot;PL&quot;, &quot;PT&quot;, &quot;RO&quot;, &quot;RU&quot;, &quot;RS&quot;, &quot;SK&quot;, &quot;SI&quot;, &quot;ES&quot;, &quot;CH&quot;, &quot;UA&quot;, &quot;GB&quot;)
+names(clusters) &lt;- names(functional_datasets)
+loca_false_sign_rate &lt;- sapply(functional_datasets, function(samples) {
+  min((sum(samples &lt; 0)/length(samples)), (sum(samples &gt; 0)/length(samples)))
+})
+ordered_false_sign_rate &lt;- sort(loca_false_sign_rate)
+cumulative_false_sign_rate &lt;- cumsum(ordered_false_sign_rate)/seq_along(ordered_false_sign_rate)
+clusters_ordered &lt;- clusters[match(names(ordered_false_sign_rate), names(clusters))]
+plot(cumulative_false_sign_rate, type = &quot;o&quot;, xlab = &quot;Ordered Countries&quot;, ylab = &quot;Cumulative False Sign Rate&quot;, ylim = c(0,1))
+text(1:length(ordered_false_sign_rate), cumulative_false_sign_rate, labels = names(ordered_false_sign_rate), pos = 3, cex = 0.6, col = clusters_ordered)
+legend(&quot;topleft&quot;, legend = c(&quot;Cluster 1&quot;, &quot;Cluster 2&quot;, &quot;Cluster 3&quot;, &quot;Cluster 4&quot;), fill = c(1, 2, 3, 4))
+abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>To conclude how many countries were more affected by the Delta wave
+than the initial wave:</p>
+<pre class="r"><code>loca_false_sign_rate_delta_more &lt;- sapply(functional_datasets, function(samples) {
+  (sum(samples &lt; 0)/length(samples))
+})
+ordered_false_sign_rate_delta_more &lt;- sort(loca_false_sign_rate_delta_more)
+cumulative_false_sign_rate_delta_more &lt;- cumsum(ordered_false_sign_rate_delta_more)/seq_along(ordered_false_sign_rate_delta_more)
+clusters_ordered &lt;- clusters[match(names(ordered_false_sign_rate_delta_more), names(clusters))]
+plot(cumulative_false_sign_rate_delta_more, type = &quot;o&quot;, xlab = &quot;Ordered Countries&quot;, ylab = &quot;Cumulative False Sign Rate&quot;, ylim = c(0,1))
+text(1:length(cumulative_false_sign_rate_delta_more), cumulative_false_sign_rate_delta_more, labels = names(cumulative_false_sign_rate_delta_more), pos = 3, cex = 0.6, col = clusters_ordered)
+legend(&quot;topleft&quot;, legend = c(&quot;Cluster 1&quot;, &quot;Cluster 2&quot;, &quot;Cluster 3&quot;, &quot;Cluster 4&quot;), fill = c(1, 2, 3, 4))
+abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>To conclude how many countries were more affected by the initial wave
+than the Delta wave:</p>
+<pre class="r"><code>loca_false_sign_rate_initial_more &lt;- sapply(functional_datasets, function(samples) {
+  (sum(samples &gt; 0)/length(samples))
+})
+ordered_false_sign_rate_initial_more &lt;- sort(loca_false_sign_rate_initial_more)
+cumulative_false_sign_rate_initial_more &lt;- cumsum(ordered_false_sign_rate_initial_more)/seq_along(ordered_false_sign_rate_initial_more)
+cumulative_false_sign_rate_initial_more</code></pre>
+<pre><code>         BE          CZ          FR          IT          PT          ES 
+0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+         GB          NL          CH          GR          DK          SI 
+0.000000000 0.000062500 0.001291667 0.018125000 0.044795455 0.076645833 
+         AL          CY          AT          SK          BA          ME 
+0.135163462 0.188839286 0.236683333 0.280281250 0.321676471 0.358645833 
+         DE          EE          BY          LT          HU          HR 
+0.391769737 0.421900000 0.449380952 0.474369318 0.497211957 0.518156250 
+         BG          XK          LV          MD          MK          PL 
+0.537430000 0.555221154 0.571694444 0.586991071 0.601232759 0.614525000 
+         RO          RU          RS          UA 
+0.626959677 0.638617187 0.649568182 0.659875000 </code></pre>
+<pre class="r"><code>clusters_ordered &lt;- clusters[match(names(ordered_false_sign_rate_initial_more), names(clusters))]
+plot(cumulative_false_sign_rate_initial_more, type = &quot;o&quot;, xlab = &quot;Ordered Countries&quot;, ylab = &quot;Cumulative False Sign Rate&quot;, ylim = c(0,1))
+text(1:length(cumulative_false_sign_rate_initial_more), cumulative_false_sign_rate_initial_more, labels = names(cumulative_false_sign_rate_initial_more), pos = 3, cex = 0.6, col = clusters_ordered)
+legend(&quot;topleft&quot;, legend = c(&quot;Cluster 1&quot;, &quot;Cluster 2&quot;, &quot;Cluster 3&quot;, &quot;Cluster 4&quot;), fill = c(1, 2, 3, 4))
+abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -854,22 +1350,24 @@ other attached packages:
  [5] readr_2.1.4     tidyr_1.3.0     tibble_3.2.1    ggplot2_3.5.1  
  [9] tidyverse_2.0.0 lubridate_1.9.3 ISOweek_0.6-2   mixsqp_0.3-54  
 [13] reshape2_1.4.4  Matrix_1.6-3    TMB_1.9.7       BayesGP_0.1.1  
+[17] workflowr_1.7.1
 
 loaded via a namespace (and not attached):
- [1] sass_0.4.7        utf8_1.2.3        generics_0.1.3    stringi_1.7.12   
- [5] lattice_0.21-8    hms_1.1.3         digest_0.6.33     magrittr_2.0.3   
- [9] evaluate_0.22     grid_4.3.1        timechange_0.2.0  fastmap_1.1.1    
-[13] rprojroot_2.0.3   workflowr_1.7.1   plyr_1.8.9        jsonlite_1.8.7   
-[17] whisker_0.4.1     promises_1.2.1    fansi_1.0.5       scales_1.3.0     
-[21] jquerylib_0.1.4   cli_3.6.1         rlang_1.1.1       munsell_0.5.0    
-[25] withr_2.5.1       cachem_1.0.8      yaml_2.3.7        tools_4.3.1      
-[29] tzdb_0.4.0        colorspace_2.1-0  httpuv_1.6.11     vctrs_0.6.4      
-[33] R6_2.5.1          lifecycle_1.0.3   git2r_0.33.0      fs_1.6.3         
-[37] irlba_2.3.5.1     pkgconfig_2.0.3   gtable_0.3.4      pillar_1.9.0     
-[41] bslib_0.5.1       later_1.3.1       glue_1.6.2        Rcpp_1.0.11      
-[45] tidyselect_1.2.0  xfun_0.40         rstudioapi_0.15.0 knitr_1.44       
-[49] farver_2.1.1      htmltools_0.5.6.1 labeling_0.4.3    rmarkdown_2.25   
-[53] compiler_4.3.1   </code></pre>
+ [1] gtable_0.3.4      xfun_0.40         bslib_0.5.1       processx_3.8.2   
+ [5] lattice_0.21-8    callr_3.7.3       tzdb_0.4.0        vctrs_0.6.4      
+ [9] tools_4.3.1       ps_1.7.5          generics_0.1.3    fansi_1.0.5      
+[13] pkgconfig_2.0.3   lifecycle_1.0.3   farver_2.1.1      compiler_4.3.1   
+[17] git2r_0.33.0      munsell_0.5.0     getPass_0.2-4     httpuv_1.6.11    
+[21] htmltools_0.5.6.1 sass_0.4.7        yaml_2.3.7        later_1.3.1      
+[25] pillar_1.9.0      jquerylib_0.1.4   whisker_0.4.1     cachem_1.0.8     
+[29] tidyselect_1.2.0  digest_0.6.33     stringi_1.7.12    labeling_0.4.3   
+[33] rprojroot_2.0.3   fastmap_1.1.1     grid_4.3.1        colorspace_2.1-0 
+[37] cli_3.6.1         magrittr_2.0.3    utf8_1.2.3        withr_2.5.1      
+[41] scales_1.3.0      promises_1.2.1    timechange_0.2.0  rmarkdown_2.25   
+[45] httr_1.4.7        hms_1.1.3         evaluate_0.22     knitr_1.44       
+[49] irlba_2.3.5.1     rlang_1.1.1       Rcpp_1.0.11       glue_1.6.2       
+[53] rstudioapi_0.15.0 jsonlite_1.8.7    R6_2.5.1          plyr_1.8.9       
+[57] fs_1.6.3         </code></pre>
 </div>
 </div>
 
