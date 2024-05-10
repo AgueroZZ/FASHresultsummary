@@ -25,11 +25,11 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
     betaprec = betaprec,
     sigmaIWP = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2)))
   )
-  
+
   tmbparams <- list(
     W = c(rep(0, (ncol(X) + ncol(B))))
   )
-  
+
   ff <- TMB::MakeADFun(
     data = tmbdat,
     parameters = tmbparams,
@@ -46,11 +46,11 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
       # other known quantities
       betaprec = betaprec
     )
-    
+
     tmbparams <- list(
       W = c(rep(0, (ncol(X))))
     )
-    
+
     ff <- TMB::MakeADFun(
       data = tmbdat,
       parameters = tmbparams,
@@ -70,10 +70,7 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
   y <- dataset$y
   weekdays <- dataset$weekdays
   knots <- unique(c(0,seq(min(x), max(x), length=num_knots)))
-  # X1 <- BayesGP:::global_poly_helper(x, p = p)[,-1]
-  X2 <- model.matrix(~ weekdays, data = dataset, contrasts.arg = list(weekdays = "contr.sum"))[,-1]
-  # X <- cbind(X1, X2)
-  X <- X2
+  X <- model.matrix(~ weekdays, data = dataset, contrasts.arg = list(weekdays = "contr.sum"))[,-1]
   P <- BayesGP::compute_weights_precision_helper(knots)
   B <- BayesGP:::local_poly_helper(knots = knots, refined_x = x, p = p)
   if(psd_iwp != 0){
@@ -89,11 +86,11 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
     intercept = intercept,
     sigmaIWP = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2)))
   )
-  
+
   tmbparams <- list(
     W = c(rep(0, (ncol(X) + ncol(B))))
   )
-  
+
   ff2 <- TMB::MakeADFun(
     data = tmbdat,
     parameters = tmbparams,
@@ -101,10 +98,10 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
     silent = TRUE
   )
   ff2$he <- function(w) numDeriv::jacobian(ff2$gr, w)
-  
-  opt <- nlminb(start = ff2$par, objective = ff2$fn, gradient = ff2$gr, hessian = ff2$he, 
+
+  opt <- nlminb(start = ff2$par, objective = ff2$fn, gradient = ff2$gr, hessian = ff2$he,
                 control = list(eval.max = 20000, iter.max = 20000))
-  
+
   prec_matrix <- Matrix::forceSymmetric(ff2$he(opt$par))
   smallest_eigen <- min(eigen(prec_matrix)$values)
   if(smallest_eigen < 0){
@@ -112,12 +109,11 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
     ## Add a small value to the diagonal to make it positive definite
     prec_matrix <- prec_matrix + diag((abs(smallest_eigen) + 1e-5), nrow = ncol(prec_matrix))
   }
-  
+
   mod = list(mean = opt$par, prec = as.matrix(prec_matrix), opt = opt)
-  
+
   samps_coef <- LaplacesDemon::rmvnp(n = 8000, mu = mod$mean, Omega = as.matrix(mod$prec))
-  # samps_fitted <-as.matrix(B) %*% t(samps_coef[,1:ncol(B)]) + as.matrix(X1) %*% t(samps_coef[,(ncol(B) + 1):(ncol(B) + ncol(X1))])
-  samps_fitted <-as.matrix(B) %*% t(samps_coef[,1:ncol(B)])
+  samps_fitted <- as.matrix(B) %*% t(samps_coef[,1:ncol(B)])
   }
   else{
     tmbdat <- list(
@@ -128,11 +124,11 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
       betaprec = betaprec,
       intercept = intercept
     )
-    
+
     tmbparams <- list(
       W = c(rep(0, (ncol(X))))
     )
-    
+
     ff2 <- TMB::MakeADFun(
       data = tmbdat,
       parameters = tmbparams,
@@ -140,10 +136,10 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
       silent = TRUE
     )
     ff2$he <- function(w) numDeriv::jacobian(ff2$gr, w)
-    
-    opt <- nlminb(start = ff2$par, objective = ff2$fn, gradient = ff2$gr, hessian = ff2$he, 
+
+    opt <- nlminb(start = ff2$par, objective = ff2$fn, gradient = ff2$gr, hessian = ff2$he,
                   control = list(eval.max = 20000, iter.max = 20000))
-    
+
     prec_matrix <- Matrix::forceSymmetric(ff2$he(opt$par))
     smallest_eigen <- min(eigen(prec_matrix)$values)
     if(smallest_eigen < 0){
@@ -152,7 +148,7 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
       prec_matrix <- prec_matrix + diag((abs(smallest_eigen) + 0.0001), nrow = ncol(prec_matrix))
     }
     mod = list(mean = opt$par, prec = as.matrix(prec_matrix), opt = opt)
-    
+
     samps_coef <- LaplacesDemon::rmvnp(n = 8000, mu = mod$mean, Omega = as.matrix(mod$prec))
     # Ensure output is a matrix, especially when dimension is 1
     if (!is.matrix(samps_coef)) {
@@ -163,7 +159,8 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
   }
   log_likelihood <- -ff2$fn(opt$par) - 0.5 * determinant(as.matrix(ff2$he(opt$par)), logarithm = TRUE)$modulus + 0.5 * length(opt$par) * log(2 * pi)
   samps_fitted <- samps_fitted + intercept
-  list(samps_coef = samps_coef, samps_fitted = samps_fitted, mod = mod, log_likelihood = log_likelihood, condition_fitting = condition_fitting)
+  list(samps_coef = samps_coef, samps_fitted = samps_fitted, mod = mod, log_likelihood = log_likelihood, condition_fitting = condition_fitting,
+       knots = knots, p = p)
 }
 
 ### visualize the fitted result
@@ -225,7 +222,7 @@ compute_log_likelihood_ospline_seq <- function(dataset, p, num_knots, psd_iwp_ve
 compute_log_likelihood_ospline_seq2 <- function(dataset, p_vec, num_knots, psd_iwp_vector, pred_step, betaprec = 0.001) {
   # Initialize a list to store the results for each p
   all_log_likelihoods <- c()
-  
+
   # Loop over each value of p in p_vec
   for (p in p_vec) {
     # Compute log likelihoods for the current value of p
@@ -239,7 +236,7 @@ compute_log_likelihood_ospline_seq2 <- function(dataset, p_vec, num_knots, psd_i
     )
     all_log_likelihoods <- c(all_log_likelihoods, log_likelihoods)
   }
-  
+
   return(all_log_likelihoods)
 }
 
@@ -248,10 +245,10 @@ compute_log_likelihood_ospline_seq2 <- function(dataset, p_vec, num_knots, psd_i
 fit_ospline_with_prior <- function(dataset, p, num_knots, prior_weight, pred_step, betaprec = 0.001, num_cores = 1) {
   # Filter out rows where prior weight is zero
   active_prior <- prior_weight[prior_weight$prior_weight > 0, ]
-  
+
   # List to store results of fit_ospline for each active prior weight
   results_list <- vector("list", length = nrow(active_prior))
-  
+
   # Determine whether to use parallel processing
   if (num_cores > 1 && .Platform$OS.type != "windows") {
     # Use mclapply for parallel processing on Unix-like systems
@@ -267,25 +264,25 @@ fit_ospline_with_prior <- function(dataset, p, num_knots, prior_weight, pred_ste
       results_list[[i]] <- fit_ospline(dataset, p, num_knots, psd_iwp, pred_step, betaprec)
     }
   }
-  
+
   # Extract log likelihoods from results
   log_likelihoods <- sapply(results_list, function(result) result$log_likelihood)
-  
+
   # Extract the fitting condition from results
   condition_fitting <- sapply(results_list, function(result) result$condition_fitting)
-  
+
   # Stabilize computation of posterior weights by centering log likelihoods
   max_log_likelihood <- max(log_likelihoods)
   stable_exp <- exp(log_likelihoods - max_log_likelihood)
-  
+
   # Compute the posterior weights
   posterior_weights <- stable_exp * active_prior$prior_weight
   posterior_weights <- posterior_weights / sum(posterior_weights)
-  
+
   # Create a matrix of posterior weights corresponding to active priors
   posterior_weight_matrix <- cbind(active_prior$psd_iwp, posterior_weights)
   colnames(posterior_weight_matrix) <- c("psd_iwp", "posterior_weight")
-  
+
   # Return both the list of fitted results and the matrix of posterior weights
   list(fitted_results = results_list, posterior_weights = posterior_weight_matrix, condition_fitting = condition_fitting)
 }
@@ -294,7 +291,7 @@ fit_ospline_with_prior <- function(dataset, p, num_knots, prior_weight, pred_ste
 fit_ospline_with_prior2 <- function(dataset, num_knots, prior_weight, pred_step, betaprec = 0.001, num_cores = 1) {
   # Filter out rows where prior weight is zero
   active_prior <- prior_weight[prior_weight$prior_weight > 0, ]
-  
+
   # Initialize lists to store the fitting results and data for posterior weights calculation
   results_list <- vector("list", length = nrow(active_prior))
   all_log_likelihoods <- numeric(length = nrow(active_prior))
@@ -311,7 +308,7 @@ fit_ospline_with_prior2 <- function(dataset, num_knots, prior_weight, pred_step,
     all_log_likelihoods <- sapply(results_list, function(result) result$log_likelihood)
     # Extract the fitting condition from results
     condition_fitting <- sapply(results_list, function(result) result$condition_fitting)
-    
+
   } else {
     # Sequential processing
     for (i in seq_len(nrow(active_prior))) {
@@ -323,16 +320,16 @@ fit_ospline_with_prior2 <- function(dataset, num_knots, prior_weight, pred_step,
       condition_fitting[i] <- fit_result$condition_fitting
     }
   }
-  
+
   # Calculate and normalize posterior weights
   max_log_likelihood <- max(all_log_likelihoods)
   stable_exp <- exp(all_log_likelihoods - max_log_likelihood)
   posterior_weights <- stable_exp * active_prior$prior_weight
   posterior_weights <- posterior_weights / sum(posterior_weights)
-  
+
   # Create a data frame of posterior weights along with p and psd_iwp
   all_posterior_weights <- data.frame(p = active_prior$p, psd_iwp = active_prior$psd_iwp, posterior_weight = posterior_weights)
-  
+
   return(list(fitted_results = results_list, posterior_weights = all_posterior_weights, condition_fitting = condition_fitting))
 }
 
@@ -343,13 +340,13 @@ aggregate_fit_with_prior <- function(x, fit_results_with_prior, original = FALSE
   posterior_weights <- fit_results_with_prior$posterior_weights[["posterior_weight"]]
   # Sample indices of the fit results based on posterior weights
   sampled_indices <- sample(seq_along(fit_results), size = 8000, replace = TRUE, prob = posterior_weights)
-  
+
   # Tabulate the frequency of each index
   tabulated_indices <- table(sampled_indices)
-  
+
   # Initialize an empty list to collect samples
   sampled_fits_list <- vector("list", length = length(tabulated_indices))
-  
+
   # Retrieve and store the required number of columns from each sampled fit's samps_fitted
   names(tabulated_indices) <- as.integer(names(tabulated_indices))  # Ensure names are integer
   for (i in seq_along(tabulated_indices)) {
@@ -357,14 +354,14 @@ aggregate_fit_with_prior <- function(x, fit_results_with_prior, original = FALSE
     count <- tabulated_indices[[i]]
     sampled_fits_list[[i]] <- fit_results[[idx]]$samps_fitted[, 1:count]
   }
-  
+
   # Combine all samples into one matrix
   aggregated_samples <- do.call(cbind, sampled_fits_list)
-  
+
   if(original){
     aggregated_samples <- exp(aggregated_samples)
   }
-  
+
   # Calculate mean and standard deviation across the sampled fits
   fitted_median <- apply(aggregated_samples, 1, median)
   fitted_upper <- apply(aggregated_samples, 1, quantile, probs = 0.975)
@@ -380,13 +377,13 @@ visualize_fit_with_prior <- function(x, fit_results_with_prior, y = NULL, plot_s
   posterior_weights <- fit_results_with_prior$posterior_weights[["posterior_weight"]]
   # Sample indices of the fit results based on posterior weights
   sampled_indices <- sample(seq_along(fit_results), size = 8000, replace = TRUE, prob = posterior_weights)
-  
+
   # Tabulate the frequency of each index
   tabulated_indices <- table(sampled_indices)
-  
+
   # Initialize an empty list to collect samples
   sampled_fits_list <- vector("list", length = length(tabulated_indices))
-  
+
   # Retrieve and store the required number of columns from each sampled fit's samps_fitted
   names(tabulated_indices) <- as.integer(names(tabulated_indices))  # Ensure names are integer
   for (i in seq_along(tabulated_indices)) {
@@ -394,14 +391,14 @@ visualize_fit_with_prior <- function(x, fit_results_with_prior, y = NULL, plot_s
     count <- tabulated_indices[[i]]
     sampled_fits_list[[i]] <- fit_results[[idx]]$samps_fitted[, 1:count]
   }
-  
+
   # Combine all samples into one matrix
   aggregated_samples <- do.call(cbind, sampled_fits_list)
-  
+
   if(original){
     aggregated_samples <- exp(aggregated_samples)
   }
-  
+
   # Calculate mean and standard deviation across the sampled fits
   fitted_median <- apply(aggregated_samples, 1, median)
   fitted_upper <- apply(aggregated_samples, 1, quantile, probs = 0.975)
@@ -409,21 +406,21 @@ visualize_fit_with_prior <- function(x, fit_results_with_prior, y = NULL, plot_s
 
   # Create the plot
   plot_df <- data.frame(x = x, median = fitted_median, upper = fitted_upper, lower = fitted_lower)
-  
+
   gg <- ggplot(plot_df, aes(x = x)) +
     geom_line(aes(y = median), color = 'red') +
     geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2, fill = 'blue')
-  
+
   if (!is.null(y)) {
     gg <- gg + geom_point(aes(y = y), size = 0.1)
   }
-  
+
   if (plot_samps) {
     for (i in 1:ncol(aggregated_samples)) {
       gg <- gg + geom_line(aes(y = aggregated_samples[, i]), color = 'grey', linetype = "dotted") + theme_classic()
     }
   }
-  
+
   print(gg)
 }
 

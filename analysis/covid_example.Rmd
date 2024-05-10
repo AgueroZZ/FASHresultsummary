@@ -159,6 +159,7 @@ load(paste0(result_dir, "/posterior_weights_matrix.rda"))
 load(paste0(result_dir, "/fitted_datasets.rda"))
 ```
 
+
 First, take a look at the structure plot of the posterior weights:
 
 ```{r}
@@ -281,5 +282,159 @@ for (country in cluster4_countries[1:1]) {
 
 
 **Summary:** Overall, many countries (mostly western Europe) in cluster 1 were seriously affected by the initial wave. Whereas countries in cluster 2 and 3 (mostly eastern Europe) were significantly less affected during the first initial wave.
+
+
+**Follow-up Question:** What countries were more affected by the Delta wave than the initial wave? Select based on the false sign rate.
+
+Let's define the following time periods as initial wave and Delta wave:
+```{r}
+refined_time <- seq(as.Date("2020-01-01"), as.Date("2022-04-26"), by = 1)
+refined_x <- (as.numeric(refined_time)/31) - (as.numeric(as.Date("2020-01-01"))/31)
+
+## Initial time:
+initial_wave <- c(as.Date("2020-03-01"), as.Date("2020-11-01"))
+initial_index <- which(refined_time >= initial_wave[1] & refined_time <= initial_wave[2])
+
+## Delta time:
+delta_wave <- c(as.Date("2021-07-01"), as.Date("2022-01-01"))
+delta_index <- which(refined_time >= delta_wave[1] & refined_time <= delta_wave[2])
+
+extract_posterior <- function(fit_result, refined_x){
+  func <- function(path){
+    max(path[delta_index]) - max(path[initial_index])
+  }
+  intercept <- -3
+  coef_samples <- fit_result$samps_coef
+  B_new <- BayesGP:::local_poly_helper(knots = fit_result$knots, refined_x = refined_x, p = fit_result$p)
+  samps_fitted <- as.matrix(B_new) %*% t(coef_samples[,1:ncol(B_new)])
+  samples <- samps_fitted + intercept
+  apply(samples, 2, func)
+}
+
+aggregate_functional_with_prior <- function(x, fit_results_with_prior) {
+  fit_results <- fit_results_with_prior$fitted_results
+  samples_functional <- lapply(fit_results, extract_posterior, refined_x = x)
+  posterior_weights <- fit_results_with_prior$posterior_weights[["posterior_weight"]]
+  # Sample indices of the fit results based on posterior weights
+  sampled_indices <- sample(seq_along(fit_results), size = 8000, replace = TRUE, prob = posterior_weights)
+
+  # Tabulate the frequency of each index
+  tabulated_indices <- table(sampled_indices)
+
+  # Initialize an empty list to collect samples
+  sampled_fits_list <- vector("list", length = length(tabulated_indices))
+
+  # Retrieve and store the required number of columns from each sampled fit's samps_fitted
+  names(tabulated_indices) <- as.integer(names(tabulated_indices))  # Ensure names are integer
+  for (i in seq_along(tabulated_indices)) {
+    idx <- as.integer(names(tabulated_indices)[i])
+    count <- tabulated_indices[[i]]
+    sampled_fits_list[[i]] <- (samples_functional[[idx]])[1:count]
+  }
+
+  # Combine all samples into one vector
+  sampled_fits <- unlist(sampled_fits_list)
+}
+
+```
+
+We can compute the posterior samples of their maximum difference between the Delta wave and the initial wave:
+```{r eval=FALSE}
+functional_datasets <- list()
+for (i in seq_along(datasets)) {
+  fit_result_final <- 
+  posterior_weights_matrix[i, ] <- fit_result_final$posterior_weights[, "posterior_weight"]
+  functional_datasets[[i]] <- aggregate_functional_with_prior(x = refined_x, fit_results_with_prior = fit_result_final)
+}
+names(functional_datasets) <- selected_countries
+```
+
+```{r echo=FALSE}
+load(paste0(result_dir, "/functional_datasets.rda"))
+```
+
+Produce a histogram for country in cluster 1:
+```{r}
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))
+for (country in cluster1_countries[1:16]) {
+  samples <- functional_datasets[[country]]
+  hist(samples, main = paste0(country), xlab = "Delta - Initial", ylab = "Frequency", col = "blue", breaks = 50)
+}
+```
+
+Produce a histogram for country in cluster 2:
+```{r}
+par(mfrow = c(4, 3), mar = c(2, 2, 1, 1))
+for (country in cluster2_countries[1:11]) {
+  samples <- functional_datasets[[country]]
+  hist(samples, main = paste0(country), xlab = "Delta - Initial", ylab = "Frequency", col = "blue", breaks = 50)
+}
+```
+
+Produce a histogram for country in cluster 3:
+```{r}
+par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))
+for (country in cluster3_countries[1:6]) {
+  samples <- functional_datasets[[country]]
+  hist(samples, main = paste0(country), xlab = "Delta - Initial", ylab = "Frequency", col = "blue", breaks = 50)
+}
+```
+
+Produce a histogram for country in cluster 4:
+```{r}
+par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))
+for (country in cluster4_countries[1:1]) {
+  samples <- functional_datasets[[country]]
+  hist(samples, main = paste0(country), xlab = "Delta - Initial", ylab = "Frequency", col = "blue", breaks = 50)
+}
+```
+
+To decide the significance of the difference, we can compute the false sign rate:
+```{r}
+names(functional_datasets) <- c("AL", "AT", "BY", "BE", "BA", "BG", "HR", "CY", "CZ", "DK", "EE", "FR", "DE", "GR", "HU", "IT", "XK", "LV", "LT", "MD", "ME", "NL", "MK", "PL", "PT", "RO", "RU", "RS", "SK", "SI", "ES", "CH", "UA", "GB")
+names(clusters) <- names(functional_datasets)
+loca_false_sign_rate <- sapply(functional_datasets, function(samples) {
+  min((sum(samples < 0)/length(samples)), (sum(samples > 0)/length(samples)))
+})
+ordered_false_sign_rate <- sort(loca_false_sign_rate)
+cumulative_false_sign_rate <- cumsum(ordered_false_sign_rate)/seq_along(ordered_false_sign_rate)
+clusters_ordered <- clusters[match(names(ordered_false_sign_rate), names(clusters))]
+plot(cumulative_false_sign_rate, type = "o", xlab = "Ordered Countries", ylab = "Cumulative False Sign Rate", ylim = c(0,1))
+text(1:length(ordered_false_sign_rate), cumulative_false_sign_rate, labels = names(ordered_false_sign_rate), pos = 3, cex = 0.6, col = clusters_ordered)
+legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = c(1, 2, 3, 4))
+abline(h = 0.05, col = "purple", lty = "dashed")
+```
+
+To conclude how many countries were more affected by the Delta wave than the initial wave:
+```{r}
+loca_false_sign_rate_delta_more <- sapply(functional_datasets, function(samples) {
+  (sum(samples < 0)/length(samples))
+})
+ordered_false_sign_rate_delta_more <- sort(loca_false_sign_rate_delta_more)
+cumulative_false_sign_rate_delta_more <- cumsum(ordered_false_sign_rate_delta_more)/seq_along(ordered_false_sign_rate_delta_more)
+clusters_ordered <- clusters[match(names(ordered_false_sign_rate_delta_more), names(clusters))]
+plot(cumulative_false_sign_rate_delta_more, type = "o", xlab = "Ordered Countries", ylab = "Cumulative False Sign Rate", ylim = c(0,1))
+text(1:length(cumulative_false_sign_rate_delta_more), cumulative_false_sign_rate_delta_more, labels = names(cumulative_false_sign_rate_delta_more), pos = 3, cex = 0.6, col = clusters_ordered)
+legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = c(1, 2, 3, 4))
+abline(h = 0.05, col = "purple", lty = "dashed")
+```
+
+To conclude how many countries were more affected by the initial wave than the Delta wave:
+```{r}
+loca_false_sign_rate_initial_more <- sapply(functional_datasets, function(samples) {
+  (sum(samples > 0)/length(samples))
+})
+ordered_false_sign_rate_initial_more <- sort(loca_false_sign_rate_initial_more)
+cumulative_false_sign_rate_initial_more <- cumsum(ordered_false_sign_rate_initial_more)/seq_along(ordered_false_sign_rate_initial_more)
+cumulative_false_sign_rate_initial_more
+clusters_ordered <- clusters[match(names(ordered_false_sign_rate_initial_more), names(clusters))]
+plot(cumulative_false_sign_rate_initial_more, type = "o", xlab = "Ordered Countries", ylab = "Cumulative False Sign Rate", ylim = c(0,1))
+text(1:length(cumulative_false_sign_rate_initial_more), cumulative_false_sign_rate_initial_more, labels = names(cumulative_false_sign_rate_initial_more), pos = 3, cex = 0.6, col = clusters_ordered)
+legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = c(1, 2, 3, 4))
+abline(h = 0.05, col = "purple", lty = "dashed")
+```
+
+
+
 
 
