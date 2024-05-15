@@ -3,6 +3,7 @@
 #############################################################
 ### Compute the log-marginal likelihood of the IWP model with O-Spline
 compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betaprec = 0.001){
+  intercept <- -3 # assume this is the intercept
   x <- dataset$x
   y <- dataset$y
   weekdays <- dataset$weekdays
@@ -23,7 +24,8 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
     y = y,
     # other known quantities
     betaprec = betaprec,
-    sigmaIWP = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2)))
+    sigmaIWP = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2))),
+    intercept = intercept
   )
 
   tmbparams <- list(
@@ -44,7 +46,8 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
       # Response
       y = y,
       # other known quantities
-      betaprec = betaprec
+      betaprec = betaprec,
+      intercept = intercept
     )
 
     tmbparams <- list(

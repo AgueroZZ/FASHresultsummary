@@ -107,6 +107,7 @@ L_vecs <- mclapply(datasets, function(dataset) {
   )
 }, mc.cores = num_cores)
 L_matrix <- do.call(rbind, L_vecs)
+save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
 ```
 
 ```{r echo=FALSE}
@@ -152,6 +153,8 @@ for (i in seq_along(datasets)) {
 names(fitted_datasets) <- selected_countries
 colnames(posterior_weights_matrix) <- paste(as.character(fit_result_final$posterior_weights[, "p"]),
                                             as.character(fit_result_final$posterior_weights[, "psd_iwp"]), sep = "_")
+save(posterior_weights_matrix, file = paste0(result_dir, "/posterior_weights_matrix.rda"))
+save(fitted_datasets, file = paste0(result_dir, "/fitted_datasets.rda"))
 ```
 
 ```{r echo=FALSE}
@@ -218,7 +221,7 @@ cluster2_countries <- selected_countries[clusters == 2]
 cluster3_countries <- selected_countries[clusters == 3]
 cluster4_countries <- selected_countries[clusters == 4]
 par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
-for (country in cluster1_countries[1:16]) {
+for (country in cluster1_countries[1:13]) {
   agg_result <- fitted_datasets[[country]]
   plot(datasets[[country]]$Date, agg_result$median, type = 'l', 
        main = paste0(country), xlab = "", ylab = "", col = "blue",
@@ -234,8 +237,8 @@ for (country in cluster1_countries[1:16]) {
 
 For cluster 2:
 ```{r}
-par(mfrow = c(4, 3), mar = c(2, 2, 1, 1))  
-for (country in cluster2_countries[1:11]) {
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
+for (country in cluster2_countries[1:15]) {
   agg_result <- fitted_datasets[[country]]
   plot(datasets[[country]]$Date, agg_result$median, type = 'l',  
        main = paste0(country), xlab = "", ylab = "", col = "blue",
@@ -251,7 +254,7 @@ for (country in cluster2_countries[1:11]) {
 For cluster 3:
 ```{r}
 par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))  
-for (country in cluster3_countries[1:6]) {
+for (country in cluster3_countries[1:5]) {
   agg_result <- fitted_datasets[[country]]
   plot(datasets[[country]]$Date, agg_result$median, type = 'l',  
        main = paste0(country), xlab = "", ylab = "", col = "blue",
@@ -334,18 +337,26 @@ aggregate_functional_with_prior <- function(x, fit_results_with_prior) {
   # Combine all samples into one vector
   sampled_fits <- unlist(sampled_fits_list)
 }
-
 ```
 
 We can compute the posterior samples of the difference between the maximum mortality rate at the Delta wave and the maximum at the initial wave:
 ```{r eval=FALSE}
+posterior_weights_matrix <- matrix(nrow = num_datasets, ncol = num_weights)
 functional_datasets <- list()
 for (i in seq_along(datasets)) {
-  fit_result_final <- 
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = num_cores,
+    dataset = datasets[[i]],
+    num_knots = 50,
+    prior_weight = prior_weight,
+    betaprec = 0.0001,
+    pred_step = 1
+  )
   posterior_weights_matrix[i, ] <- fit_result_final$posterior_weights[, "posterior_weight"]
   functional_datasets[[i]] <- aggregate_functional_with_prior(x = refined_x, fit_results_with_prior = fit_result_final)
 }
 names(functional_datasets) <- selected_countries
+save(posterior_weights_matrix, functional_datasets, file = paste0(result_dir, "/functional_datasets.rda"))
 ```
 
 ```{r echo=FALSE}
@@ -355,7 +366,7 @@ load(paste0(result_dir, "/functional_datasets.rda"))
 Produce a histogram for country in cluster 1:
 ```{r}
 par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))
-for (country in cluster1_countries[1:16]) {
+for (country in cluster1_countries[1:13]) {
   samples <- functional_datasets[[country]]
   hist(samples, main = paste0(country), xlab = "Delta - Initial", ylab = "Frequency", col = "blue", breaks = 50)
 }
@@ -363,8 +374,8 @@ for (country in cluster1_countries[1:16]) {
 
 Produce a histogram for country in cluster 2:
 ```{r}
-par(mfrow = c(4, 3), mar = c(2, 2, 1, 1))
-for (country in cluster2_countries[1:11]) {
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))
+for (country in cluster2_countries[1:15]) {
   samples <- functional_datasets[[country]]
   hist(samples, main = paste0(country), xlab = "Delta - Initial", ylab = "Frequency", col = "blue", breaks = 50)
 }
@@ -373,7 +384,7 @@ for (country in cluster2_countries[1:11]) {
 Produce a histogram for country in cluster 3:
 ```{r}
 par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))
-for (country in cluster3_countries[1:6]) {
+for (country in cluster3_countries[1:5]) {
   samples <- functional_datasets[[country]]
   hist(samples, main = paste0(country), xlab = "Delta - Initial", ylab = "Frequency", col = "blue", breaks = 50)
 }
