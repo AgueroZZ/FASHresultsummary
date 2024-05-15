@@ -11,6 +11,8 @@ navbar:
     href: simulation.html
   - text: COVID-19 Example
     href: covid_example.html
+  - text: Gene Expression Example
+    href: expression.html
   - text: License
     href: license.html
   right:
