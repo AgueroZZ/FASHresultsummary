@@ -451,15 +451,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreef74ccddad08da304141e3062aff44661561b88aatargetblankf74ccdda">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree08cc7a7aebe5d38aa45f16a4164627dc04555198targetblank08cc7a7a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/f74ccddad08da304141e3062aff44661561b88aa" target="_blank">f74ccdd</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/08cc7a7aebe5d38aa45f16a4164627dc04555198" target="_blank">08cc7a7</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreef74ccddad08da304141e3062aff44661561b88aatargetblankf74ccdda"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree08cc7a7aebe5d38aa45f16a4164627dc04555198targetblank08cc7a7a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -469,7 +469,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/f74ccddad08da304141e3062aff44661561b88aa" target="_blank">f74ccdd</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/08cc7a7aebe5d38aa45f16a4164627dc04555198" target="_blank">08cc7a7</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -568,6 +568,41 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/08cc7a7aebe5d38aa45f16a4164627dc04555198/analysis/covid_example.Rmd" target="_blank">08cc7a7</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+<td>
+wflow_git_commit(c("analysis/expression.Rmd",
+"analysis/covid_example.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/covid_example.html" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+<td>
+update the covid example
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -725,13 +760,14 @@ denoted as <span class="math inline">\(y_{i}(x_j)\)</span>, where <span
 class="math inline">\(i\)</span> indexes the country and <span
 class="math inline">\(j\)</span> indexes the day.</p>
 <p>To model the true (log) mortality rate <span
-class="math inline">\(f_i(t_j)\)</span>, we assume that the death count
-<span class="math inline">\(y_{i}(x_j)\)</span> is Poisson distributed
-with mean <span class="math inline">\(f_i(t_j)\)</span>: <span
-class="math display">\[y_{i}(x_j) \sim
+class="math inline">\(f_i(x_j)\)</span>, we assume that the death count
+<span class="math inline">\(y_{i}(x_j)\)</span> is Poisson distributed:
+<span class="math display">\[y_{i}(x_j) \sim
 \text{Poisson}(\exp(v_{ij}^T\boldsymbol{\beta}_i + f_i(x_j))),\]</span>
 where <span class="math inline">\(v_{ij}\)</span> is the fixed effect
-that denotes the weekdays.</p>
+that denotes the weekdays, and the prior on <span
+class="math inline">\(f_i\)</span> is a finite mixture of IWP-3 with
+different levels of smoothness (PSD).</p>
 </div>
 <div id="data" class="section level2">
 <h2><strong>Data:</strong></h2>
@@ -891,6 +927,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-6-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-6-1.png" target="_blank">574c0a1</a>
 </td>
 <td>
@@ -974,6 +1021,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-9-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-9-1.png" target="_blank">574c0a1</a>
 </td>
 <td>
@@ -1039,6 +1097,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-10-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-10-1.png" target="_blank">574c0a1</a>
 </td>
 <td>
@@ -1097,6 +1166,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-11-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-11-1.png" target="_blank">574c0a1</a>
 </td>
 <td>
@@ -1146,6 +1226,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-12-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-12-1.png" target="_blank">574c0a1</a>
@@ -1199,6 +1290,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-13-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-13-1.png" target="_blank">574c0a1</a>
 </td>
 <td>
@@ -1248,6 +1350,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-14-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-14-1.png" target="_blank">574c0a1</a>
@@ -1370,6 +1483,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-18-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-18-1.png" target="_blank">8233390</a>
 </td>
 <td>
@@ -1412,6 +1536,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-19-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-19-1.png" target="_blank">8233390</a>
@@ -1458,6 +1593,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-20-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-20-1.png" target="_blank">8233390</a>
 </td>
 <td>
@@ -1500,6 +1646,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-21-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-21-1.png" target="_blank">8233390</a>
@@ -1554,6 +1711,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-22-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-22-1.png" target="_blank">8233390</a>
 </td>
 <td>
@@ -1602,6 +1770,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-23-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-23-1.png" target="_blank">8233390</a>
@@ -1665,6 +1844,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-24-1.png" target="_blank">c775384</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-24-1.png" target="_blank">8233390</a>

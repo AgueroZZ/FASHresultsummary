@@ -267,6 +267,9 @@ $(document).ready(function () {
   <a href="covid_example.html">COVID-19 Example</a>
 </li>
 <li>
+  <a href="expression.html">Gene Expression Example</a>
+</li>
+<li>
   <a href="license.html">License</a>
 </li>
       </ul>
@@ -447,15 +450,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreef571ee01ac5a385ecb0d9a7678a133062d970451targetblankf571ee0a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree08cc7a7aebe5d38aa45f16a4164627dc04555198targetblank08cc7a7a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/f571ee01ac5a385ecb0d9a7678a133062d970451" target="_blank">f571ee0</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/08cc7a7aebe5d38aa45f16a4164627dc04555198" target="_blank">08cc7a7</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreef571ee01ac5a385ecb0d9a7678a133062d970451targetblankf571ee0a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree08cc7a7aebe5d38aa45f16a4164627dc04555198targetblank08cc7a7a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -465,7 +468,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/f571ee01ac5a385ecb0d9a7678a133062d970451" target="_blank">f571ee0</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/08cc7a7aebe5d38aa45f16a4164627dc04555198" target="_blank">08cc7a7</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -496,15 +499,12 @@ Ignored files:
     Ignored:    output/simulation/figure/
 
 Untracked files:
-    Untracked:  code/cause-specific.Rmd
     Untracked:  code/cpp/Gaussian_just_fixed.o
     Untracked:  code/cpp/Gaussian_just_fixed.so
     Untracked:  code/cpp/Gaussian_theta_known.o
     Untracked:  code/cpp/Gaussian_theta_known.so
-    Untracked:  code/cpp/Poisson.cpp
     Untracked:  code/cpp/Poisson.o
     Untracked:  code/cpp/Poisson.so
-    Untracked:  code/cpp/Poisson_causes.cpp
     Untracked:  code/cpp/Poisson_causes.o
     Untracked:  code/cpp/Poisson_causes.so
     Untracked:  code/cpp/Poisson_covid.o
@@ -512,7 +512,6 @@ Untracked files:
     Untracked:  code/cpp/Poisson_just_fixed.cpp
     Untracked:  code/cpp/Poisson_just_fixed.o
     Untracked:  code/cpp/Poisson_just_fixed.so
-    Untracked:  code/cpp/Poisson_just_fixed_causes.cpp
     Untracked:  code/cpp/Poisson_just_fixed_causes.o
     Untracked:  code/cpp/Poisson_just_fixed_causes.so
     Untracked:  code/cpp/Poisson_just_fixed_covid.o
@@ -523,9 +522,6 @@ Untracked files:
     Untracked:  data/expression_data/
     Untracked:  output/causes/
     Untracked:  output/expression/
-
-Unstaged changes:
-    Deleted:    code/function/functions_fitting_Poisson.R
 
 </code></pre>
 <p>
@@ -576,6 +572,41 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/08cc7a7aebe5d38aa45f16a4164627dc04555198/analysis/expression.Rmd" target="_blank">08cc7a7</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+<td>
+wflow_git_commit(c("analysis/expression.Rmd",
+"analysis/covid_example.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/expression.html" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+<td>
+update the expression example
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/f571ee01ac5a385ecb0d9a7678a133062d970451/analysis/expression.Rmd" target="_blank">f571ee0</a>
 </td>
 <td>
@@ -595,6 +626,24 @@ wflow_git_commit(c("analysis/covid_example.Rmd",
 <hr>
 </div>
 </div>
+</div>
+<div id="setup" class="section level3">
+<h3><strong>Setup</strong></h3>
+<p>We consider the (raw) gene expression data measured over 16 days as
+studied in <a
+href="https://www.science.org/doi/10.1126/science.aaw0040">Strober et
+al, 2019</a>. For simplicity of the presentation, we consider only one
+cell-line in this example. The dataset contains the raw expression
+counts of 16319 genes.</p>
+<p>To model the true (log) expression level <span
+class="math inline">\(f_i(t_j)\)</span> of the <span
+class="math inline">\(i\)</span>th gene at day <span
+class="math inline">\(t_j\)</span>, we assume that the expression count
+<span class="math inline">\(y_{i}(t_j)\)</span> is Poisson distributed
+with mean <span class="math inline">\(\exp
+\left(f_i(t_j)\right)\)</span>, where the prior on <span
+class="math inline">\(f_i\)</span> is a finite mixture of IWP-2 with
+different levels of smoothness (PSD).</p>
 </div>
 <div id="processing-the-expression-data" class="section level3">
 <h3><strong>Processing the expression data</strong></h3>
@@ -678,6 +727,43 @@ plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
      pch = 20,lwd = 2,xlab = &quot;SQP iteration&quot;,
      ylab = &quot;objective&quot;,xaxp = c(1,numiter,numiter - 1))</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-7-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>prior_weight &lt;- data.frame(p = rep(p, each = length(psd_vec)), psd_iwp = psd_vec, prior_weight = fit.sqp$x)</code></pre>
 </div>
 <div id="obtaining-posteriors" class="section level3">
@@ -728,6 +814,43 @@ ggplot(melted_data, aes(x = id, y = value, fill = variable3)) +
     plot.background = element_rect(fill = &quot;white&quot;, colour = NA) 
   )</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-10-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Plot a sorted version of this, based on the mean PSD in each
 gene:</p>
 <pre class="r"><code>mean_psd &lt;- apply(posterior_weights_matrix, 1, function(x) {
@@ -755,6 +878,43 @@ ggplot(melted_data_sorted, aes(x = factor(id, levels = sorted_posterior_weights_
     plot.background = element_rect(fill = &quot;white&quot;, colour = NA) 
   )</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-11-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="clustering-based-on-posterior-weights" class="section level3">
 <h3><strong>Clustering based on posterior weights</strong></h3>
@@ -797,6 +957,43 @@ This warning is displayed once every 8 hours.
 Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
 generated.</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-12-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Then try to group just based on the quantiles of the mean PSD:</p>
 <pre class="r"><code>mean_psd_ordered &lt;- mean_psd[sorted_index]
 quantiles &lt;- quantile(mean_psd_ordered, probs = seq(0, 1, 1/6))
@@ -827,6 +1024,43 @@ ggplot(melted_data_quantiles, aes(x = factor(id), y = value, fill = variable3)) 
     strip.text = element_text(face = &quot;bold&quot;)
   )</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-13-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot_gene_expression &lt;- function(gene) {
   agg_result &lt;- fitted_datasets[[gene]]
   plot(datasets[[gene]]$Day, agg_result$median, type = &#39;l&#39;, 
@@ -900,31 +1134,253 @@ cluster</strong></h3>
 <h4>For cluster 1:</h4>
 <pre class="r"><code>plot_cluster_genes(genes_cluster1)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
+Past versions of unnamed-chunk-16-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-16-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="for-cluster-2" class="section level4">
 <h4>For cluster 2:</h4>
 <pre class="r"><code>plot_cluster_genes(genes_cluster2)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-17-1">
+Past versions of unnamed-chunk-17-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-17-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-17-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="for-cluster-3" class="section level4">
 <h4>For cluster 3:</h4>
 <pre class="r"><code>plot_cluster_genes(genes_cluster3)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
+Past versions of unnamed-chunk-18-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-18-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="for-cluster-4" class="section level4">
 <h4>For cluster 4:</h4>
 <pre class="r"><code>plot_cluster_genes(genes_cluster4)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-19-1">
+Past versions of unnamed-chunk-19-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-19-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="for-cluster-5" class="section level4">
 <h4>For cluster 5:</h4>
 <pre class="r"><code>plot_cluster_genes(genes_cluster5)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="for-cluster-6" class="section level4">
 <h4>For cluster 6:</h4>
 <pre class="r"><code>plot_cluster_genes(genes_cluster6)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
+Past versions of unnamed-chunk-21-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-21-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="smoothing-result-for-each-cluster-after-log"
@@ -935,31 +1391,253 @@ cluster (after Log)</strong></h3>
 <h4>For cluster 1:</h4>
 <pre class="r"><code>plot_cluster_genes_log(genes_cluster1)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
+Past versions of unnamed-chunk-22-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="for-cluster-2-1" class="section level4">
 <h4>For cluster 2:</h4>
 <pre class="r"><code>plot_cluster_genes_log(genes_cluster2)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
+Past versions of unnamed-chunk-23-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-23-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="for-cluster-3-1" class="section level4">
 <h4>For cluster 3:</h4>
 <pre class="r"><code>plot_cluster_genes_log(genes_cluster3)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="for-cluster-4-1" class="section level4">
 <h4>For cluster 4:</h4>
 <pre class="r"><code>plot_cluster_genes_log(genes_cluster4)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-25-1">
+Past versions of unnamed-chunk-25-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-25-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="for-cluster-5-1" class="section level4">
 <h4>For cluster 5:</h4>
 <pre class="r"><code>plot_cluster_genes_log(genes_cluster5)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-26-1">
+Past versions of unnamed-chunk-26-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-26-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-26-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="for-cluster-6-1" class="section level4">
 <h4>For cluster 6:</h4>
 <pre class="r"><code>plot_cluster_genes_log(genes_cluster6)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-27-1">
+Past versions of unnamed-chunk-27-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-27-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-27-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="question-what-genes-have-linear-trajectories"
@@ -983,6 +1661,43 @@ fda_df &lt;- merge(fda_df, gene_symbols, by = &quot;gene&quot;) %&gt;% arrange(c
 <pre class="r"><code>plot(fda_df$cumulative_fda, type = &quot;l&quot;, xlab = &quot;Ordered Genes&quot;, ylab = &quot;Cumulative FDA&quot;, ylim = c(0,1), cex = 0.1)
 abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-29-1">
+Past versions of unnamed-chunk-29-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-29-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-29-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>fda_df %&gt;% filter(cumulative_fda &lt; 0.05, !is.na(gene_name)) %&gt;% 
   arrange(cumulative_fda) %&gt;%
   head(16)</code></pre>
@@ -1009,6 +1724,43 @@ abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre
   head(16) %&gt;% pull(gene)
 plot_cluster_genes_log(top_genes)</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-31-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-31-1">
+Past versions of unnamed-chunk-31-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-31-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-31-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
