@@ -5,12 +5,8 @@
 compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betaprec = 0.001){
   x <- dataset$x
   y <- dataset$y
-  weekdays <- dataset$weekdays
   knots <- unique(c(0,seq(min(x), max(x), length=num_knots)))
-  # X1 <- BayesGP:::global_poly_helper(x, p = p)[,-1]
-  X2 <- model.matrix(~ weekdays, data = dataset, contrasts.arg = list(weekdays = "contr.sum"))[,-1]
-  # X <- cbind(X1, X2)
-  X <- X2
+  X <- BayesGP:::global_poly_helper(x, p = p)
   P <- BayesGP::compute_weights_precision_helper(knots)
   B <- BayesGP:::local_poly_helper(knots = knots, refined_x = x, p = p)
   if(psd_iwp != 0){
@@ -23,7 +19,7 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
     y = y,
     # other known quantities
     betaprec = betaprec,
-    sigmaIWP = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2)))
+    sigmaSmooth = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2)))
   )
 
   tmbparams <- list(
@@ -34,7 +30,7 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
     data = tmbdat,
     parameters = tmbparams,
     random = "W",
-    DLL = "Poisson_covid",
+    DLL = "Poisson",
     silent = TRUE
   )
   }
@@ -55,7 +51,7 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
       data = tmbdat,
       parameters = tmbparams,
       random = "W",
-      DLL = "Poisson_just_fixed_covid",
+      DLL = "Poisson_just_fixed",
       silent = TRUE
     )
   }
@@ -64,13 +60,11 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
 
 ### Fit the IWP model with O-Spline
 fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betaprec = 0.001){
-  intercept <- -3 # assume this is the intercept
   condition_fitting <- 0 # 1 means the fitting is good, 1 means the fitting requires numerical adjustment
   x <- dataset$x
   y <- dataset$y
-  weekdays <- dataset$weekdays
   knots <- unique(c(0,seq(min(x), max(x), length=num_knots)))
-  X <- model.matrix(~ weekdays, data = dataset, contrasts.arg = list(weekdays = "contr.sum"))[,-1]
+  X <- BayesGP:::global_poly_helper(x, p = p)
   P <- BayesGP::compute_weights_precision_helper(knots)
   B <- BayesGP:::local_poly_helper(knots = knots, refined_x = x, p = p)
   if(psd_iwp != 0){
@@ -83,8 +77,7 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
     y = y,
     # other known quantities
     betaprec = betaprec,
-    intercept = intercept,
-    sigmaIWP = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2)))
+    sigmaSmooth = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2)))
   )
 
   tmbparams <- list(
@@ -94,7 +87,7 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
   ff2 <- TMB::MakeADFun(
     data = tmbdat,
     parameters = tmbparams,
-    DLL = "Poisson_covid",
+    DLL = "Poisson",
     silent = TRUE
   )
   ff2$he <- function(w) numDeriv::jacobian(ff2$gr, w)
@@ -106,14 +99,13 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
   smallest_eigen <- min(eigen(prec_matrix)$values)
   if(smallest_eigen < 0){
     condition_fitting <- 1
-    ## Add a small value to the diagonal to make it positive definite
     prec_matrix <- prec_matrix + diag((abs(smallest_eigen) + 1e-5), nrow = ncol(prec_matrix))
   }
 
   mod = list(mean = opt$par, prec = as.matrix(prec_matrix), opt = opt)
 
   samps_coef <- LaplacesDemon::rmvnp(n = 8000, mu = mod$mean, Omega = as.matrix(mod$prec))
-  samps_fitted <- as.matrix(B) %*% t(samps_coef[,1:ncol(B)])
+  samps_fitted <- as.matrix(B) %*% t(samps_coef[,1:ncol(B)]) + as.matrix(X) %*% t(samps_coef[,(ncol(B)+1):ncol(samps_coef)])
   }
   else{
     tmbdat <- list(
@@ -121,8 +113,7 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
       # Response
       y = y,
       # other known quantities
-      betaprec = betaprec,
-      intercept = intercept
+      betaprec = betaprec
     )
 
     tmbparams <- list(
@@ -132,7 +123,7 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
     ff2 <- TMB::MakeADFun(
       data = tmbdat,
       parameters = tmbparams,
-      DLL = "Poisson_just_fixed_covid",
+      DLL = "Poisson_just_fixed",
       silent = TRUE
     )
     ff2$he <- function(w) numDeriv::jacobian(ff2$gr, w)
@@ -154,11 +145,10 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
     if (!is.matrix(samps_coef)) {
       samps_coef <- matrix(samps_coef, ncol = length(samps_coef), nrow = 1)
     }
-    # samps_fitted <- as.matrix(X1) %*% t(samps_coef)[1:ncol(X1),]
-    samps_fitted <- NULL
+    samps_fitted <- as.matrix(X) %*% t(samps_coef)[1:ncol(X),]
   }
   log_likelihood <- -ff2$fn(opt$par) - 0.5 * determinant(as.matrix(ff2$he(opt$par)), logarithm = TRUE)$modulus + 0.5 * length(opt$par) * log(2 * pi)
-  samps_fitted <- samps_fitted + intercept
+  samps_fitted <- samps_fitted
   list(samps_coef = samps_coef, samps_fitted = samps_fitted, mod = mod, log_likelihood = log_likelihood, condition_fitting = condition_fitting,
        knots = knots, p = p)
 }

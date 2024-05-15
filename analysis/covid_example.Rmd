@@ -284,9 +284,8 @@ for (country in cluster4_countries[1:1]) {
 **Summary:** Overall, many countries (mostly western Europe) in cluster 1 were seriously affected by the initial wave. Whereas countries in cluster 2 and 3 (mostly eastern Europe) were significantly less affected during the first initial wave.
 
 
-**Follow-up Question:** What countries were more affected by the Delta wave than the initial wave? Select based on the false sign rate.
-
-Let's define the following time periods as initial wave and Delta wave:
+## **Follow-up Question:** 
+What countries were more affected by the Delta wave than the initial wave? Let's define the following time periods as initial wave and Delta wave:
 ```{r}
 refined_time <- seq(as.Date("2020-01-01"), as.Date("2022-04-26"), by = 1)
 refined_x <- (as.numeric(refined_time)/31) - (as.numeric(as.Date("2020-01-01"))/31)
@@ -338,7 +337,7 @@ aggregate_functional_with_prior <- function(x, fit_results_with_prior) {
 
 ```
 
-We can compute the posterior samples of their maximum difference between the Delta wave and the initial wave:
+We can compute the posterior samples of the difference between the maximum mortality rate at the Delta wave and the maximum at the initial wave:
 ```{r eval=FALSE}
 functional_datasets <- list()
 for (i in seq_along(datasets)) {

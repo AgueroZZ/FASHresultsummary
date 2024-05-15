@@ -1,0 +1,440 @@
+---
+title: "Example: Expression Analysis"
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+```{r include=FALSE}
+library(BayesGP)
+library(TMB)
+library(Matrix)
+library(splines)
+library(parallel)
+library(ggplot2)
+library(reshape2)
+library(mixsqp)
+library(tidyverse)
+cpp_dir <- paste0(getwd(), "/code/cpp")
+fig_dir <- paste0(getwd(), "/output/expression")
+result_dir <- paste0(getwd(), "/output/expression")
+function_dir <- paste0(getwd(), "/code/function")
+data_dir <- paste0(getwd(), "/data/expression_data")
+source(paste0(function_dir, "/functions_fitting_Poisson_expression.R"))
+compile(paste0(cpp_dir, "/Poisson.cpp"))
+compile(paste0(cpp_dir, "/Poisson_just_fixed.cpp"))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson")))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_just_fixed")))
+num_cores <- 4
+```
+
+### **Processing the expression data**
+
+```{r}
+all_data_names <- list.files(data_dir)
+#### let's consider one cell-line for simplicity
+load(paste0(data_dir, "/", all_data_names[1]))
+str(expression_data_one_cell_line) 
+```
+
+Let's create one dataset for each gene:
+```{r eval=FALSE}
+num_knots <- 8
+p <- 2
+datasets <- list()
+all_gene <- unique(expression_data_one_cell_line$Gene_id)
+for (gene in all_gene) {
+  datasets[[gene]] <- expression_data_one_cell_line %>% filter(Gene_id == gene)
+  datasets[[gene]]$x <- as.numeric(datasets[[gene]]$Day)
+  datasets[[gene]]$y <- datasets[[gene]]$value
+}
+save(datasets, file = paste0(result_dir, "/datasets.rda"))
+```
+
+
+```{r echo=FALSE}
+num_knots <- 8
+p <- 2
+datasets <- list()
+all_gene <- unique(expression_data_one_cell_line$Gene_id)
+load(paste0(result_dir, "/datasets.rda"))
+```
+
+### **Applying empirical Bayes**
+
+```{r eval = FALSE}
+log_prec <- seq(0,5, length.out = 10)
+psd_vec <- sort(c(0,exp(-.5*log_prec)))
+
+## set up a progress bar
+L_vecs <- vector("list", length(datasets))
+pb <- txtProgressBar(min = 0, max = length(datasets), style = 3)
+for (i in 1:length(datasets)) {
+  setTxtProgressBar(pb, i)
+  dataset <- datasets[[i]]
+  L_vecs[[i]] <- compute_log_likelihood_ospline_seq2(
+    dataset = dataset,
+    p = p,
+    num_knots = num_knots,
+    psd_iwp_vector = psd_vec,
+    pred_step = 1,
+    betaprec = 0.0001
+  )
+}
+L_matrix <- do.call(rbind, L_vecs)
+save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
+```
+
+```{r echo=FALSE}
+log_prec <- seq(0,5, length.out = 10)
+psd_vec <- sort(c(0,exp(-.5*log_prec)))
+load(paste0(result_dir, "/L_matrix.rda"))
+```
+
+```{r}
+fit.sqp <- mixsqp(L = L_matrix, log = TRUE)
+numiter <- nrow(fit.sqp$progress)
+plot(1:numiter,fit.sqp$progress$objective,type = "b",
+     pch = 20,lwd = 2,xlab = "SQP iteration",
+     ylab = "objective",xaxp = c(1,numiter,numiter - 1))
+prior_weight <- data.frame(p = rep(p, each = length(psd_vec)), psd_iwp = psd_vec, prior_weight = fit.sqp$x)
+```
+
+### **Obtaining posteriors**
+
+
+```{r, eval=FALSE}
+num_datasets <- length(datasets)
+num_weights <- sum(prior_weight$prior_weight != 0)
+posterior_weights_matrix <- matrix(nrow = num_datasets, ncol = num_weights)
+
+# Loop through each dataset and perform fitting
+fitted_datasets <- list()
+# create a progress bar
+pb <- txtProgressBar(min = 0, max = num_datasets, style = 3)
+for (i in seq_along(datasets)) {
+  setTxtProgressBar(pb, i)
+  dataset <- datasets[[i]]
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = num_cores,
+    dataset = dataset,
+    num_knots = num_knots,
+    prior_weight = prior_weight,
+    betaprec = 0.0001,
+    pred_step = 1
+  )
+  posterior_weights_matrix[i, ] <- fit_result_final$posterior_weights[, "posterior_weight"]
+  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
+}
+names(fitted_datasets) <- all_gene
+colnames(posterior_weights_matrix) <- paste(as.character(fit_result_final$posterior_weights[, "p"]),
+                                            as.character(fit_result_final$posterior_weights[, "psd_iwp"]), sep = "_")
+save(fitted_datasets, posterior_weights_matrix, file = paste0(result_dir, "/fitted_pos_results.rda"))
+```
+
+```{r}
+load(paste0(result_dir, "/fitted_pos_results.rda"))
+```
+
+```{r}
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+ggplot(melted_data, aes(x = id, y = value, fill = variable3)) +
+  geom_bar(stat = "identity", width = 0.7) +  # Adjust bar width if necessary
+  labs(x = "Gene", y = "Weight", fill = "PSD") +
+  ggtitle("Structure Plot of Posterior Weights") +
+  scale_fill_gradient(low = "white", high = "blue") +
+  coord_flip() +  # Flips the coordinates to make 'Gene' on the y-axis
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),  
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA) 
+  )
+```
+
+
+Plot a sorted version of this, based on the mean PSD in each gene:
+```{r}
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+ggplot(melted_data_sorted, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD") +
+  ggtitle("Structure Plot of Posterior Weights") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),  
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA) 
+  )
+```
+
+### **Clustering based on posterior weights**
+
+Let's group them into 6 groups, first try hierarchical clustering
+```{r}
+set.seed(123)
+# Normalize the data
+wide_data <- scale(sorted_posterior_weights_matrix)
+# Perform hierarchical clustering
+d <- dist(wide_data, method = "euclidean")  # Distance matrix
+fit <- hclust(d, method = "ward.D2")  # Clustering
+clusters <- cutree(fit, k = 6)
+# recode cluster 1 - 1, 2 - 2, 3 - 3, 5 - 4, 6 - 5, 4 - 6
+clusters <- recode(clusters, `1` = 1, `2` = 2, `3` = 3, `4` = 5, `5` = 4, `6` = 6)
+
+sorted_posterior_weights_df$cluster <- clusters
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+melted_data_sorted <- melted_data_sorted %>% arrange(cluster)
+
+ggplot(melted_data_sorted, aes(x = factor(id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +  
+  labs(x = "Gene Index", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Cluster") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Use facet_wrap by cluster
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")  
+  )
+```
+
+Then try to group just based on the quantiles of the mean PSD:
+```{r}
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- quantile(mean_psd_ordered, probs = seq(0, 1, 1/6))
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Plotting
+ggplot(melted_data_quantiles, aes(x = factor(id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene Index", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+```{r}
+plot_gene_expression <- function(gene) {
+  agg_result <- fitted_datasets[[gene]]
+  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
+       main = paste0(gene), xlab = "Day", ylab = "Expression", col = "blue",
+       cex = 0.5, ylim = c(0, max(datasets[[gene]]$y) * 1.2),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+  points(datasets[[gene]]$Day, datasets[[gene]]$y, col = "black", cex = 0.5)
+  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+
+plot_gene_expression_log <- function(gene) {
+  agg_result <- fitted_datasets[[gene]]
+  data_points <- datasets[[gene]]$y
+  positive_points <- data_points[data_points > 0]  # Filter out non-positive values
+
+  if (length(positive_points) == 0) {
+    stop("No positive data points available for logarithmic plotting.")
+  }
+
+  min_y <- min(positive_points)
+  max_y <- max(agg_result$upper)  # Assuming this is positive and makes sense in your context
+
+  # Set the limits for the y-axis
+  log_min_y <- min_y / 2  # Just a simple heuristic, can adjust based on your data's distribution
+  log_max_y <- max_y * 1.2
+
+  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
+       main = paste0(gene), xlab = "Day", ylab = "Expression", col = "blue",
+       cex = 0.5, log = "y", ylim = c(log_min_y, log_max_y),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+  points(datasets[[gene]]$Day, data_points, col = "black", cex = 0.5)
+  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+
+# plot_gene_expression(gene)
+plot_cluster_genes <- function(genes) {
+  if(length(genes) < 16) stop("Not enough genes in the cluster")
+  par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
+  for (gene in genes[1:16]) {
+    plot_gene_expression(gene)
+  }
+  par(mfrow = c(1, 1))
+}
+plot_cluster_genes_log <- function(genes) {
+  if(length(genes) < 16) stop("Not enough genes in the cluster")
+  par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
+  for (gene in genes[1:16]) {
+    plot_gene_expression_log(gene)
+  }
+  par(mfrow = c(1, 1))
+}
+# plot_cluster_genes(genes_cluster1)
+```
+
+
+```{r}
+num_genes_per_cluster <- 16
+num_clusters <- 6
+genes_cluster1 <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 1][1:num_genes_per_cluster]
+genes_cluster2 <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 2][1:num_genes_per_cluster]
+genes_cluster3 <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 3][1:num_genes_per_cluster]
+genes_cluster4 <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 4][1:num_genes_per_cluster]
+genes_cluster5 <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 5][1:num_genes_per_cluster]
+genes_cluster6 <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 6][1:num_genes_per_cluster]
+```
+
+
+### **Smoothing result for each cluster** {.tabset .tabset-pills}
+
+#### For cluster 1:
+```{r}
+plot_cluster_genes(genes_cluster1)
+```
+
+#### For cluster 2:
+```{r}
+plot_cluster_genes(genes_cluster2)
+```
+
+#### For cluster 3:
+```{r}
+plot_cluster_genes(genes_cluster3)
+```
+
+#### For cluster 4:
+```{r}
+plot_cluster_genes(genes_cluster4)
+```
+
+#### For cluster 5:
+```{r}
+plot_cluster_genes(genes_cluster5)
+```
+
+#### For cluster 6:
+```{r}
+plot_cluster_genes(genes_cluster6)
+```
+
+
+### **Smoothing result for each cluster (after Log)** {.tabset .tabset-pills}
+
+#### For cluster 1:
+```{r}
+plot_cluster_genes_log(genes_cluster1)
+```
+
+#### For cluster 2:
+```{r}
+plot_cluster_genes_log(genes_cluster2)
+```
+
+#### For cluster 3:
+```{r}
+plot_cluster_genes_log(genes_cluster3)
+```
+
+#### For cluster 4:
+```{r}
+plot_cluster_genes_log(genes_cluster4)
+```
+
+#### For cluster 5:
+```{r}
+plot_cluster_genes_log(genes_cluster5)
+```
+
+#### For cluster 6:
+```{r}
+plot_cluster_genes_log(genes_cluster6)
+```
+
+
+### **Question: what genes have linear trajectories? **
+
+```{r}
+p0 <- posterior_weights_df$`2_0` # prob of PSD = 0 -> linear
+local_fda <- 1 - p0
+fda_df <- data.frame(gene = all_gene, fda = local_fda)
+fda_df <- fda_df[order(fda_df$fda), ] # ordering it
+fda_df$cumulative_fda <- cumsum(fda_df$fda)/seq_along(fda_df$fda)
+ensembl <- biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+# Assuming your data frame is 'gene_exp_ordered' and it has a column 'Gene_id'
+gene_symbols <- biomaRt::getBM(attributes = c('ensembl_gene_id', 'external_gene_name'), 
+                      filters = 'ensembl_gene_id', 
+                      values = fda_df$gene, 
+                      mart = ensembl)
+colnames(gene_symbols)[1] <- "gene"
+colnames(gene_symbols)[2] <- "gene_name"
+fda_df <- merge(fda_df, gene_symbols, by = "gene") %>% arrange(cumulative_fda)
+```
+
+```{r}
+plot(fda_df$cumulative_fda, type = "l", xlab = "Ordered Genes", ylab = "Cumulative FDA", ylim = c(0,1), cex = 0.1)
+abline(h = 0.05, col = "purple", lty = "dashed")
+```
+
+```{r}
+fda_df %>% filter(cumulative_fda < 0.05, !is.na(gene_name)) %>% 
+  arrange(cumulative_fda) %>%
+  head(16)
+```
+
+Plot the log expression of the top 16 genes:
+```{r}
+top_genes <- fda_df %>% filter(cumulative_fda < 0.05, !is.na(gene_name)) %>% 
+  arrange(cumulative_fda) %>%
+  head(16) %>% pull(gene)
+plot_cluster_genes_log(top_genes)
+```
+
+
+
+
+
