@@ -296,7 +296,7 @@ countries</h1>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -307,8 +307,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -317,13 +317,13 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-05-10
+<strong>Last updated:</strong> 2024-05-15
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>FASHresultsummary/</code> <span
@@ -346,18 +346,21 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
@@ -448,15 +451,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree0f67dfb6f4f54e9a7832c48d83b26a42dcae25edtargetblank0f67dfba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree8233390480729e7932b0826a931ba04a2a8cc265targetblank8233390a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/0f67dfb6f4f54e9a7832c48d83b26a42dcae25ed" target="_blank">0f67dfb</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/8233390480729e7932b0826a931ba04a2a8cc265" target="_blank">8233390</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree0f67dfb6f4f54e9a7832c48d83b26a42dcae25edtargetblank0f67dfba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree8233390480729e7932b0826a931ba04a2a8cc265targetblank8233390a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -466,7 +469,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/0f67dfb6f4f54e9a7832c48d83b26a42dcae25ed" target="_blank">0f67dfb</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/8233390480729e7932b0826a931ba04a2a8cc265" target="_blank">8233390</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -487,7 +490,9 @@ Ignored files:
     Ignored:    analysis/.DS_Store
     Ignored:    analysis/.Rhistory
     Ignored:    code/.DS_Store
+    Ignored:    code/cpp/.DS_Store
     Ignored:    code/function/.DS_Store
+    Ignored:    data/.DS_Store
     Ignored:    output/.DS_Store
     Ignored:    output/example/.DS_Store
     Ignored:    output/example/figure/
@@ -495,15 +500,41 @@ Ignored files:
     Ignored:    output/simulation/figure/
 
 Untracked files:
+    Untracked:  analysis/expression.Rmd
+    Untracked:  code/cause-specific.Rmd
     Untracked:  code/cpp/Gaussian_just_fixed.o
     Untracked:  code/cpp/Gaussian_just_fixed.so
     Untracked:  code/cpp/Gaussian_theta_known.o
     Untracked:  code/cpp/Gaussian_theta_known.so
+    Untracked:  code/cpp/Poisson.cpp
+    Untracked:  code/cpp/Poisson.o
+    Untracked:  code/cpp/Poisson.so
+    Untracked:  code/cpp/Poisson_causes.cpp
+    Untracked:  code/cpp/Poisson_causes.o
+    Untracked:  code/cpp/Poisson_causes.so
     Untracked:  code/cpp/Poisson_covid.o
     Untracked:  code/cpp/Poisson_covid.so
+    Untracked:  code/cpp/Poisson_just_fixed.cpp
+    Untracked:  code/cpp/Poisson_just_fixed.o
+    Untracked:  code/cpp/Poisson_just_fixed.so
+    Untracked:  code/cpp/Poisson_just_fixed_causes.cpp
+    Untracked:  code/cpp/Poisson_just_fixed_causes.o
+    Untracked:  code/cpp/Poisson_just_fixed_causes.so
     Untracked:  code/cpp/Poisson_just_fixed_covid.o
     Untracked:  code/cpp/Poisson_just_fixed_covid.so
-    Untracked:  output/example/mod_datasets.rda
+    Untracked:  code/function/functions_fitting_Poisson_causes.R
+    Untracked:  code/function/functions_fitting_Poisson_expression.R
+    Untracked:  data/13100810.csv
+    Untracked:  data/13100810_MetaData.csv
+    Untracked:  data/X13100810.eng.zip
+    Untracked:  data/expression_data/
+    Untracked:  output/causes/
+    Untracked:  output/expression/
+
+Unstaged changes:
+    Modified:   analysis/covid_example.Rmd
+    Deleted:    code/function/functions_fitting_Poisson.R
+    Modified:   code/function/functions_fitting_Poisson_covid.R
 
 </code></pre>
 <p>
@@ -549,6 +580,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/8233390480729e7932b0826a931ba04a2a8cc265/docs/covid_example.html" target="_blank">8233390</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-10
+</td>
+<td>
+update the covid-19 example
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -770,7 +818,7 @@ iter        objective max(rdual) nnz stepsize max.diff nqp nls
    4 +1.470402456e+00 +2.006e-03   8 1.00e+00 2.38e-01  20   1
    5 +1.470218700e+00 +2.595e-05   8 1.00e+00 1.41e-01   5   1
    6 +1.470218699e+00 -3.290e-08   8 1.00e+00 9.04e-05   2   1
-Optimization took 0.00 seconds.
+Optimization took 0.01 seconds.
 Convergence criteria met---optimal solution found.</code></pre>
 <pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
 plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
@@ -1175,10 +1223,11 @@ Ziang Zhang
 Europe) in cluster 1 were seriously affected by the initial wave.
 Whereas countries in cluster 2 and 3 (mostly eastern Europe) were
 significantly less affected during the first initial wave.</p>
-<p><strong>Follow-up Question:</strong> What countries were more
-affected by the Delta wave than the initial wave? Select based on the
-false sign rate.</p>
-<p>Let’s define the following time periods as initial wave and Delta
+</div>
+<div id="follow-up-question" class="section level2">
+<h2><strong>Follow-up Question:</strong></h2>
+<p>What countries were more affected by the Delta wave than the initial
+wave? Let’s define the following time periods as initial wave and Delta
 wave:</p>
 <pre class="r"><code>refined_time &lt;- seq(as.Date(&quot;2020-01-01&quot;), as.Date(&quot;2022-04-26&quot;), by = 1)
 refined_x &lt;- (as.numeric(refined_time)/31) - (as.numeric(as.Date(&quot;2020-01-01&quot;))/31)
@@ -1227,8 +1276,9 @@ aggregate_functional_with_prior &lt;- function(x, fit_results_with_prior) {
   # Combine all samples into one vector
   sampled_fits &lt;- unlist(sampled_fits_list)
 }</code></pre>
-<p>We can compute the posterior samples of their maximum difference
-between the Delta wave and the initial wave:</p>
+<p>We can compute the posterior samples of the difference between the
+maximum mortality rate at the Delta wave and the maximum at the initial
+wave:</p>
 <pre class="r"><code>functional_datasets &lt;- list()
 for (i in seq_along(datasets)) {
   fit_result_final &lt;- 
@@ -1243,6 +1293,43 @@ for (country in cluster1_countries[1:16]) {
   hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
 }</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
+Past versions of unnamed-chunk-18-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-18-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-18-1.png" target="_blank">8233390</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Produce a histogram for country in cluster 2:</p>
 <pre class="r"><code>par(mfrow = c(4, 3), mar = c(2, 2, 1, 1))
 for (country in cluster2_countries[1:11]) {
@@ -1250,6 +1337,43 @@ for (country in cluster2_countries[1:11]) {
   hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
 }</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-19-1">
+Past versions of unnamed-chunk-19-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-19-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-19-1.png" target="_blank">8233390</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Produce a histogram for country in cluster 3:</p>
 <pre class="r"><code>par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))
 for (country in cluster3_countries[1:6]) {
@@ -1257,6 +1381,43 @@ for (country in cluster3_countries[1:6]) {
   hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
 }</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-20-1.png" target="_blank">8233390</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Produce a histogram for country in cluster 4:</p>
 <pre class="r"><code>par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))
 for (country in cluster4_countries[1:1]) {
@@ -1264,6 +1425,43 @@ for (country in cluster4_countries[1:1]) {
   hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
 }</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
+Past versions of unnamed-chunk-21-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-21-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-21-1.png" target="_blank">8233390</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>To decide the significance of the difference, we can compute the
 false sign rate:</p>
 <pre class="r"><code>names(functional_datasets) &lt;- c(&quot;AL&quot;, &quot;AT&quot;, &quot;BY&quot;, &quot;BE&quot;, &quot;BA&quot;, &quot;BG&quot;, &quot;HR&quot;, &quot;CY&quot;, &quot;CZ&quot;, &quot;DK&quot;, &quot;EE&quot;, &quot;FR&quot;, &quot;DE&quot;, &quot;GR&quot;, &quot;HU&quot;, &quot;IT&quot;, &quot;XK&quot;, &quot;LV&quot;, &quot;LT&quot;, &quot;MD&quot;, &quot;ME&quot;, &quot;NL&quot;, &quot;MK&quot;, &quot;PL&quot;, &quot;PT&quot;, &quot;RO&quot;, &quot;RU&quot;, &quot;RS&quot;, &quot;SK&quot;, &quot;SI&quot;, &quot;ES&quot;, &quot;CH&quot;, &quot;UA&quot;, &quot;GB&quot;)
@@ -1279,6 +1477,43 @@ text(1:length(ordered_false_sign_rate), cumulative_false_sign_rate, labels = nam
 legend(&quot;topleft&quot;, legend = c(&quot;Cluster 1&quot;, &quot;Cluster 2&quot;, &quot;Cluster 3&quot;, &quot;Cluster 4&quot;), fill = c(1, 2, 3, 4))
 abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
+Past versions of unnamed-chunk-22-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-22-1.png" target="_blank">8233390</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>To conclude how many countries were more affected by the Delta wave
 than the initial wave:</p>
 <pre class="r"><code>loca_false_sign_rate_delta_more &lt;- sapply(functional_datasets, function(samples) {
@@ -1292,6 +1527,43 @@ text(1:length(cumulative_false_sign_rate_delta_more), cumulative_false_sign_rate
 legend(&quot;topleft&quot;, legend = c(&quot;Cluster 1&quot;, &quot;Cluster 2&quot;, &quot;Cluster 3&quot;, &quot;Cluster 4&quot;), fill = c(1, 2, 3, 4))
 abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
+Past versions of unnamed-chunk-23-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-23-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-23-1.png" target="_blank">8233390</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>To conclude how many countries were more affected by the initial wave
 than the Delta wave:</p>
 <pre class="r"><code>loca_false_sign_rate_initial_more &lt;- sapply(functional_datasets, function(samples) {
@@ -1318,6 +1590,43 @@ text(1:length(cumulative_false_sign_rate_initial_more), cumulative_false_sign_ra
 legend(&quot;topleft&quot;, legend = c(&quot;Cluster 1&quot;, &quot;Cluster 2&quot;, &quot;Cluster 3&quot;, &quot;Cluster 4&quot;), fill = c(1, 2, 3, 4))
 abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-24-1.png" target="_blank">8233390</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">

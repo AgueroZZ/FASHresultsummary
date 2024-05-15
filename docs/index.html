@@ -35,6 +35,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
 <!-- Add a small amount of space between sections. -->
@@ -341,11 +343,20 @@ div.tocify {
   <a href="covid_example.html">COVID-19 Example</a>
 </li>
 <li>
+  <a href="expression.html">Gene Expression Example</a>
+</li>
+<li>
   <a href="license.html">License</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/AgueroZZ/resultsummary">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -385,7 +396,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-05-08
+<strong>Last updated:</strong> 2024-05-15
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -394,7 +405,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2
 aria-hidden="true"></span> 0
 </p>
 <p>
-<strong>Knit directory:</strong> <code>resultsummary/</code> <span
+<strong>Knit directory:</strong> <code>FASHresultsummary/</code> <span
 class="glyphicon glyphicon-question-sign" aria-hidden="true"
 title="This is the local directory in which the code in this file was executed.">
 </span>
@@ -432,13 +443,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong77c1aae">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree7008eb18f03a8ac846ca451dd7efb3e54454cf34targetblank7008eb1a">
 <span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>Repository version:</strong> 77c1aae
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/7008eb18f03a8ac846ca451dd7efb3e54454cf34" target="_blank">7008eb1</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrong77c1aae"
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree7008eb18f03a8ac846ca451dd7efb3e54454cf34targetblank7008eb1a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -447,7 +460,8 @@ and connecting the code version to the results is critical for
 reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version 77c1aae.
+The results in this page were generated with repository version
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/7008eb18f03a8ac846ca451dd7efb3e54454cf34" target="_blank">7008eb1</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -468,7 +482,9 @@ Ignored files:
     Ignored:    analysis/.DS_Store
     Ignored:    analysis/.Rhistory
     Ignored:    code/.DS_Store
+    Ignored:    code/cpp/.DS_Store
     Ignored:    code/function/.DS_Store
+    Ignored:    data/.DS_Store
     Ignored:    output/.DS_Store
     Ignored:    output/example/.DS_Store
     Ignored:    output/example/figure/
@@ -476,14 +492,36 @@ Ignored files:
     Ignored:    output/simulation/figure/
 
 Untracked files:
+    Untracked:  code/cause-specific.Rmd
     Untracked:  code/cpp/Gaussian_just_fixed.o
     Untracked:  code/cpp/Gaussian_just_fixed.so
     Untracked:  code/cpp/Gaussian_theta_known.o
     Untracked:  code/cpp/Gaussian_theta_known.so
+    Untracked:  code/cpp/Poisson.cpp
+    Untracked:  code/cpp/Poisson.o
+    Untracked:  code/cpp/Poisson.so
+    Untracked:  code/cpp/Poisson_causes.cpp
+    Untracked:  code/cpp/Poisson_causes.o
+    Untracked:  code/cpp/Poisson_causes.so
     Untracked:  code/cpp/Poisson_covid.o
     Untracked:  code/cpp/Poisson_covid.so
+    Untracked:  code/cpp/Poisson_just_fixed.cpp
+    Untracked:  code/cpp/Poisson_just_fixed.o
+    Untracked:  code/cpp/Poisson_just_fixed.so
+    Untracked:  code/cpp/Poisson_just_fixed_causes.cpp
+    Untracked:  code/cpp/Poisson_just_fixed_causes.o
+    Untracked:  code/cpp/Poisson_just_fixed_causes.so
     Untracked:  code/cpp/Poisson_just_fixed_covid.o
     Untracked:  code/cpp/Poisson_just_fixed_covid.so
+    Untracked:  data/13100810.csv
+    Untracked:  data/13100810_MetaData.csv
+    Untracked:  data/X13100810.eng.zip
+    Untracked:  data/expression_data/
+    Untracked:  output/causes/
+    Untracked:  output/expression/
+
+Unstaged changes:
+    Deleted:    code/function/functions_fitting_Poisson.R
 
 </code></pre>
 <p>
@@ -530,10 +568,27 @@ Message
 <tbody>
 <tr>
 <td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/9e175029b94c48546ec6494fb28c05e434ebbcad/docs/index.html" target="_blank">9e17502</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-08
+</td>
+<td>
+initialize the website
+</td>
+</tr>
+<tr>
+<td>
 Rmd
 </td>
 <td>
-77c1aae
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/77c1aae2d30a7c6ec7229caccc4e615c394b1150/analysis/index.Rmd" target="_blank">77c1aae</a>
 </td>
 <td>
 Ziang Zhang
@@ -550,7 +605,7 @@ wflow_git_commit(c("analysis/covid_example.Rmd", "analysis/index.Rmd",
 html
 </td>
 <td>
-e48d4fd
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/e48d4fd876d56eed99e80787414fc0f3810433ef/docs/index.html" target="_blank">e48d4fd</a>
 </td>
 <td>
 Ziang Zhang
@@ -567,7 +622,7 @@ Build site.
 Rmd
 </td>
 <td>
-e7cf254
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/e7cf25415c54f8efda419c0d84c4f4c10da6e28f/analysis/index.Rmd" target="_blank">e7cf254</a>
 </td>
 <td>
 Ziang Zhang
@@ -584,7 +639,7 @@ wflow_publish(all = TRUE)
 html
 </td>
 <td>
-e7cf254
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/e7cf25415c54f8efda419c0d84c4f4c10da6e28f/docs/index.html" target="_blank">e7cf254</a>
 </td>
 <td>
 Ziang Zhang
@@ -601,7 +656,7 @@ wflow_publish(all = TRUE)
 Rmd
 </td>
 <td>
-330c239
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/330c239932d83c2f0c617fb6aae2c40963ccfe26/analysis/index.Rmd" target="_blank">330c239</a>
 </td>
 <td>
 Ziang Zhang
@@ -618,7 +673,7 @@ wflow_git_commit(c("analysis/simulation.Rmd", "analysis/index.Rmd"))
 html
 </td>
 <td>
-c1d7a7f
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/c1d7a7ffa36f994f86a4689c6536a5026241cb99/docs/index.html" target="_blank">c1d7a7f</a>
 </td>
 <td>
 Ziang Zhang
@@ -635,7 +690,7 @@ Build site.
 Rmd
 </td>
 <td>
-169c82b
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/169c82bdb7b3df1bd3efe7aaa223b28e04566889/analysis/index.Rmd" target="_blank">169c82b</a>
 </td>
 <td>
 Ziang Zhang
@@ -652,7 +707,7 @@ wflow_publish(all = TRUE)
 html
 </td>
 <td>
-169c82b
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/169c82bdb7b3df1bd3efe7aaa223b28e04566889/docs/index.html" target="_blank">169c82b</a>
 </td>
 <td>
 Ziang Zhang
@@ -669,7 +724,7 @@ wflow_publish(all = TRUE)
 html
 </td>
 <td>
-94cc9b4
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/94cc9b4c79ce691a89806ba7613753de840b715a/docs/index.html" target="_blank">94cc9b4</a>
 </td>
 <td>
 Ziang Zhang
@@ -686,7 +741,7 @@ Build site.
 Rmd
 </td>
 <td>
-f22828d
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/f22828daae8fedd0e4ec1c52961a4fe018b95c25/analysis/index.Rmd" target="_blank">f22828d</a>
 </td>
 <td>
 Ziang Zhang
@@ -703,7 +758,7 @@ wflow_publish(all = TRUE)
 Rmd
 </td>
 <td>
-68bf7d2
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/68bf7d21e47e9ec24379782e2b1d19caf07ebf07/analysis/index.Rmd" target="_blank">68bf7d2</a>
 </td>
 <td>
 Ziang Zhang
@@ -720,7 +775,7 @@ wflow_git_commit(all = TRUE)
 Rmd
 </td>
 <td>
-0e40618
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/0e4061842476b4a2403dee7499fad4820a94d2e1/analysis/index.Rmd" target="_blank">0e40618</a>
 </td>
 <td>
 Ziang Zhang
