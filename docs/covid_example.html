@@ -267,6 +267,9 @@ $(document).ready(function () {
   <a href="covid_example.html">COVID-19 Example</a>
 </li>
 <li>
+  <a href="expression.html">Gene Expression Example</a>
+</li>
+<li>
   <a href="license.html">License</a>
 </li>
       </ul>
@@ -296,7 +299,7 @@ countries</h1>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -307,8 +310,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -321,9 +324,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>FASHresultsummary/</code> <span
@@ -346,21 +349,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -451,15 +451,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree8233390480729e7932b0826a931ba04a2a8cc265targetblank8233390a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreef74ccddad08da304141e3062aff44661561b88aatargetblankf74ccdda">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/8233390480729e7932b0826a931ba04a2a8cc265" target="_blank">8233390</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/f74ccddad08da304141e3062aff44661561b88aa" target="_blank">f74ccdd</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree8233390480729e7932b0826a931ba04a2a8cc265targetblank8233390a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreef74ccddad08da304141e3062aff44661561b88aatargetblankf74ccdda"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -469,7 +469,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/8233390480729e7932b0826a931ba04a2a8cc265" target="_blank">8233390</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/f74ccddad08da304141e3062aff44661561b88aa" target="_blank">f74ccdd</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -500,16 +500,12 @@ Ignored files:
     Ignored:    output/simulation/figure/
 
 Untracked files:
-    Untracked:  analysis/expression.Rmd
-    Untracked:  code/cause-specific.Rmd
     Untracked:  code/cpp/Gaussian_just_fixed.o
     Untracked:  code/cpp/Gaussian_just_fixed.so
     Untracked:  code/cpp/Gaussian_theta_known.o
     Untracked:  code/cpp/Gaussian_theta_known.so
-    Untracked:  code/cpp/Poisson.cpp
     Untracked:  code/cpp/Poisson.o
     Untracked:  code/cpp/Poisson.so
-    Untracked:  code/cpp/Poisson_causes.cpp
     Untracked:  code/cpp/Poisson_causes.o
     Untracked:  code/cpp/Poisson_causes.so
     Untracked:  code/cpp/Poisson_covid.o
@@ -517,24 +513,16 @@ Untracked files:
     Untracked:  code/cpp/Poisson_just_fixed.cpp
     Untracked:  code/cpp/Poisson_just_fixed.o
     Untracked:  code/cpp/Poisson_just_fixed.so
-    Untracked:  code/cpp/Poisson_just_fixed_causes.cpp
     Untracked:  code/cpp/Poisson_just_fixed_causes.o
     Untracked:  code/cpp/Poisson_just_fixed_causes.so
     Untracked:  code/cpp/Poisson_just_fixed_covid.o
     Untracked:  code/cpp/Poisson_just_fixed_covid.so
-    Untracked:  code/function/functions_fitting_Poisson_causes.R
-    Untracked:  code/function/functions_fitting_Poisson_expression.R
     Untracked:  data/13100810.csv
     Untracked:  data/13100810_MetaData.csv
     Untracked:  data/X13100810.eng.zip
     Untracked:  data/expression_data/
     Untracked:  output/causes/
     Untracked:  output/expression/
-
-Unstaged changes:
-    Modified:   analysis/covid_example.Rmd
-    Deleted:    code/function/functions_fitting_Poisson.R
-    Modified:   code/function/functions_fitting_Poisson_covid.R
 
 </code></pre>
 <p>
@@ -580,6 +568,59 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/f74ccddad08da304141e3062aff44661561b88aa/analysis/covid_example.Rmd" target="_blank">f74ccdd</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+<td>
+wflow_git_commit(c("analysis/covid_example.Rmd",
+"code/function/functions_fitting_Poisson_covid.R",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/covid_example.html" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+<td>
+update the expression example
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/f571ee01ac5a385ecb0d9a7678a133062d970451/analysis/covid_example.Rmd" target="_blank">f571ee0</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+<td>
+wflow_git_commit(c("analysis/covid_example.Rmd",
+"code/function/functions_fitting_Poisson_covid.R",
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -786,7 +827,8 @@ L_vecs &lt;- mclapply(datasets, function(dataset) {
     betaprec = 0.0001
   )
 }, mc.cores = num_cores)
-L_matrix &lt;- do.call(rbind, L_vecs)</code></pre>
+L_matrix &lt;- do.call(rbind, L_vecs)
+save(L_matrix, file = paste0(result_dir, &quot;/L_matrix.rda&quot;))</code></pre>
 <pre class="r"><code>fit.sqp &lt;- mixsqp(L = L_matrix, log = TRUE)</code></pre>
 <pre><code>Running mix-SQP algorithm 0.3-54 on 34 x 61 matrix
 convergence tol. (SQP):     1.0e-08
@@ -802,23 +844,23 @@ number of EM iterations:    10
 Computing SVD of 34 x 61 matrix.
 Matrix is not low-rank; falling back to full matrix.
 iter        objective max(rdual) nnz stepsize max.diff nqp nls
-   1 +1.538397161e+00  -- EM --   58 1.00e+00 2.28e-02  --  --
-   2 +1.509279945e+00  -- EM --   58 1.00e+00 7.27e-03  --  --
-   3 +1.499756515e+00  -- EM --   57 1.00e+00 4.72e-03  --  --
-   4 +1.495089189e+00  -- EM --   57 1.00e+00 3.74e-03  --  --
-   5 +1.492096433e+00  -- EM --   57 1.00e+00 3.12e-03  --  --
-   6 +1.489901914e+00  -- EM --   57 1.00e+00 2.65e-03  --  --
-   7 +1.488195224e+00  -- EM --   57 1.00e+00 2.23e-03  --  --
-   8 +1.486832613e+00  -- EM --   57 1.00e+00 1.83e-03  --  --
-   9 +1.485729526e+00  -- EM --   57 1.00e+00 1.74e-03  --  --
-  10 +1.484827268e+00  -- EM --   56 1.00e+00 1.67e-03  --  --
-   1 +1.484081530e+00 +2.995e-02  56  ------   ------   --  --
-   2 +1.483090543e+00 +2.737e-02  36 1.00e+00 1.77e-02  20   1
-   3 +1.482635217e+00 +2.544e-02  16 1.00e+00 1.16e-01  20   1
-   4 +1.470402456e+00 +2.006e-03   8 1.00e+00 2.38e-01  20   1
-   5 +1.470218700e+00 +2.595e-05   8 1.00e+00 1.41e-01   5   1
-   6 +1.470218699e+00 -3.290e-08   8 1.00e+00 9.04e-05   2   1
-Optimization took 0.01 seconds.
+   1 +1.594533816e+00  -- EM --   55 1.00e+00 6.46e-02  --  --
+   2 +1.570667322e+00  -- EM --   54 1.00e+00 3.10e-02  --  --
+   3 +1.556757786e+00  -- EM --   54 1.00e+00 2.36e-02  --  --
+   4 +1.546971792e+00  -- EM --   53 1.00e+00 2.00e-02  --  --
+   5 +1.539722293e+00  -- EM --   53 1.00e+00 1.72e-02  --  --
+   6 +1.534135349e+00  -- EM --   53 1.00e+00 1.48e-02  --  --
+   7 +1.529701581e+00  -- EM --   53 1.00e+00 1.29e-02  --  --
+   8 +1.526106446e+00  -- EM --   53 1.00e+00 1.13e-02  --  --
+   9 +1.523143876e+00  -- EM --   52 1.00e+00 1.00e-02  --  --
+  10 +1.520671594e+00  -- EM --   52 1.00e+00 8.92e-03  --  --
+   1 +1.518587089e+00 +5.018e-02  52  ------   ------   --  --
+   2 +1.516402556e+00 +4.528e-02  32 1.00e+00 1.56e-02  20   1
+   3 +1.512553349e+00 +2.604e-02  12 1.00e+00 1.17e-01  20   1
+   4 +1.498219557e+00 +7.140e-04   8 1.00e+00 1.79e-01  20   1
+   5 +1.498214214e+00 +3.186e-06   8 1.00e+00 1.47e-02   2   1
+   6 +1.498214214e+00 -3.789e-08   8 1.00e+00 4.16e-05   2   1
+Optimization took 0.00 seconds.
 Convergence criteria met---optimal solution found.</code></pre>
 <pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
 plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
@@ -889,7 +931,9 @@ for (i in seq_along(datasets)) {
 }
 names(fitted_datasets) &lt;- selected_countries
 colnames(posterior_weights_matrix) &lt;- paste(as.character(fit_result_final$posterior_weights[, &quot;p&quot;]),
-                                            as.character(fit_result_final$posterior_weights[, &quot;psd_iwp&quot;]), sep = &quot;_&quot;)</code></pre>
+                                            as.character(fit_result_final$posterior_weights[, &quot;psd_iwp&quot;]), sep = &quot;_&quot;)
+save(posterior_weights_matrix, file = paste0(result_dir, &quot;/posterior_weights_matrix.rda&quot;))
+save(fitted_datasets, file = paste0(result_dir, &quot;/fitted_datasets.rda&quot;))</code></pre>
 <p>First, take a look at the structure plot of the posterior
 weights:</p>
 <pre class="r"><code>posterior_weights_df &lt;- as.data.frame(posterior_weights_matrix)
@@ -1017,7 +1061,7 @@ cluster2_countries &lt;- selected_countries[clusters == 2]
 cluster3_countries &lt;- selected_countries[clusters == 3]
 cluster4_countries &lt;- selected_countries[clusters == 4]
 par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
-for (country in cluster1_countries[1:16]) {
+for (country in cluster1_countries[1:13]) {
   agg_result &lt;- fitted_datasets[[country]]
   plot(datasets[[country]]$Date, agg_result$median, type = &#39;l&#39;, 
        main = paste0(country), xlab = &quot;&quot;, ylab = &quot;&quot;, col = &quot;blue&quot;,
@@ -1067,8 +1111,8 @@ Ziang Zhang
 </div>
 </div>
 <p>For cluster 2:</p>
-<pre class="r"><code>par(mfrow = c(4, 3), mar = c(2, 2, 1, 1))  
-for (country in cluster2_countries[1:11]) {
+<pre class="r"><code>par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
+for (country in cluster2_countries[1:15]) {
   agg_result &lt;- fitted_datasets[[country]]
   plot(datasets[[country]]$Date, agg_result$median, type = &#39;l&#39;,  
        main = paste0(country), xlab = &quot;&quot;, ylab = &quot;&quot;, col = &quot;blue&quot;,
@@ -1119,7 +1163,7 @@ Ziang Zhang
 </div>
 <p>For cluster 3:</p>
 <pre class="r"><code>par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))  
-for (country in cluster3_countries[1:6]) {
+for (country in cluster3_countries[1:5]) {
   agg_result &lt;- fitted_datasets[[country]]
   plot(datasets[[country]]$Date, agg_result$median, type = &#39;l&#39;,  
        main = paste0(country), xlab = &quot;&quot;, ylab = &quot;&quot;, col = &quot;blue&quot;,
@@ -1279,16 +1323,25 @@ aggregate_functional_with_prior &lt;- function(x, fit_results_with_prior) {
 <p>We can compute the posterior samples of the difference between the
 maximum mortality rate at the Delta wave and the maximum at the initial
 wave:</p>
-<pre class="r"><code>functional_datasets &lt;- list()
+<pre class="r"><code>posterior_weights_matrix &lt;- matrix(nrow = num_datasets, ncol = num_weights)
+functional_datasets &lt;- list()
 for (i in seq_along(datasets)) {
-  fit_result_final &lt;- 
+  fit_result_final &lt;- fit_ospline_with_prior2(
+    num_cores = num_cores,
+    dataset = datasets[[i]],
+    num_knots = 50,
+    prior_weight = prior_weight,
+    betaprec = 0.0001,
+    pred_step = 1
+  )
   posterior_weights_matrix[i, ] &lt;- fit_result_final$posterior_weights[, &quot;posterior_weight&quot;]
   functional_datasets[[i]] &lt;- aggregate_functional_with_prior(x = refined_x, fit_results_with_prior = fit_result_final)
 }
-names(functional_datasets) &lt;- selected_countries</code></pre>
+names(functional_datasets) &lt;- selected_countries
+save(posterior_weights_matrix, functional_datasets, file = paste0(result_dir, &quot;/functional_datasets.rda&quot;))</code></pre>
 <p>Produce a histogram for country in cluster 1:</p>
 <pre class="r"><code>par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))
-for (country in cluster1_countries[1:16]) {
+for (country in cluster1_countries[1:13]) {
   samples &lt;- functional_datasets[[country]]
   hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
 }</code></pre>
@@ -1331,8 +1384,8 @@ Ziang Zhang
 </div>
 </div>
 <p>Produce a histogram for country in cluster 2:</p>
-<pre class="r"><code>par(mfrow = c(4, 3), mar = c(2, 2, 1, 1))
-for (country in cluster2_countries[1:11]) {
+<pre class="r"><code>par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))
+for (country in cluster2_countries[1:15]) {
   samples &lt;- functional_datasets[[country]]
   hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
 }</code></pre>
@@ -1376,7 +1429,7 @@ Ziang Zhang
 </div>
 <p>Produce a histogram for country in cluster 3:</p>
 <pre class="r"><code>par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))
-for (country in cluster3_countries[1:6]) {
+for (country in cluster3_countries[1:5]) {
   samples &lt;- functional_datasets[[country]]
   hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
 }</code></pre>
@@ -1575,15 +1628,15 @@ cumulative_false_sign_rate_initial_more</code></pre>
 <pre><code>         BE          CZ          FR          IT          PT          ES 
 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
          GB          NL          CH          GR          DK          SI 
-0.000000000 0.000062500 0.001291667 0.018125000 0.044795455 0.076645833 
-         AL          CY          AT          SK          BA          ME 
-0.135163462 0.188839286 0.236683333 0.280281250 0.321676471 0.358645833 
-         DE          EE          BY          LT          HU          HR 
-0.391769737 0.421900000 0.449380952 0.474369318 0.497211957 0.518156250 
-         BG          XK          LV          MD          MK          PL 
-0.537430000 0.555221154 0.571694444 0.586991071 0.601232759 0.614525000 
+0.000000000 0.000046875 0.001888889 0.018562500 0.045352273 0.078541667 
+         AL          AT          CY          SK          DE          BA 
+0.136230769 0.187187500 0.233783333 0.277484375 0.319066176 0.356180556 
+         ME          EE          BY          LT          HR          BG 
+0.389421053 0.419637500 0.447208333 0.472306818 0.495228261 0.516260417 
+         HU          XK          LV          MD          MK          PL 
+0.535610000 0.553471154 0.570009259 0.585366071 0.599663793 0.613008333 
          RO          RU          RS          UA 
-0.626959677 0.638617187 0.649568182 0.659875000 </code></pre>
+0.625491935 0.637195313 0.648189394 0.658536765 </code></pre>
 <pre class="r"><code>clusters_ordered &lt;- clusters[match(names(ordered_false_sign_rate_initial_more), names(clusters))]
 plot(cumulative_false_sign_rate_initial_more, type = &quot;o&quot;, xlab = &quot;Ordered Countries&quot;, ylab = &quot;Cumulative False Sign Rate&quot;, ylim = c(0,1))
 text(1:length(cumulative_false_sign_rate_initial_more), cumulative_false_sign_rate_initial_more, labels = names(cumulative_false_sign_rate_initial_more), pos = 3, cex = 0.6, col = clusters_ordered)
