@@ -37,9 +37,9 @@ We consider the daily COVID-19 death count in different (European) countries. Th
 
 The number of COVID-19 deaths (per million) in each country is denoted as $y_{i}(x_j)$, where $i$ indexes the country and $j$ indexes the day. 
 
-To model the true (log) mortality rate $f_i(t_j)$, we assume that the death count $y_{i}(x_j)$ is Poisson distributed with mean $f_i(t_j)$:
+To model the true (log) mortality rate $f_i(x_j)$, we assume that the death count $y_{i}(x_j)$ is Poisson distributed:
 $$y_{i}(x_j) \sim \text{Poisson}(\exp(v_{ij}^T\boldsymbol{\beta}_i + f_i(x_j))),$$
-where $v_{ij}$ is the fixed effect that denotes the weekdays.
+where $v_{ij}$ is the fixed effect that denotes the weekdays, and the prior on $f_i$ is a finite mixture of IWP-3 with different levels of smoothness (PSD).
 
 
 ## **Data:**

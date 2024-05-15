@@ -7,6 +7,15 @@ editor_options:
   chunk_output_type: console
 ---
 
+### **Setup**
+
+We consider the (raw) gene expression data measured over 16 days as studied in [Strober et al, 2019](https://www.science.org/doi/10.1126/science.aaw0040). 
+For simplicity of the presentation, we consider only one cell-line in this example. 
+The dataset contains the raw expression counts of 16319 genes.
+
+To model the true (log) expression level $f_i(t_j)$ of the $i$th gene at day $t_j$, we assume that the expression count $y_{i}(t_j)$ is Poisson distributed with mean $\exp \left(f_i(t_j)\right)$, where the prior on $f_i$ is a finite mixture of IWP-2 with different levels of smoothness (PSD).
+
+
 ```{r include=FALSE}
 library(BayesGP)
 library(TMB)
