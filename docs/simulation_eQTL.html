@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ziang Zhang" />
+
+<meta name="date" content="2024-05-19" />
+
+<title>simulation_eQTL</title>
+
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">resultsummary</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="simulation.html">Simulation</a>
+</li>
+<li>
+  <a href="covid_example.html">COVID-19 Example</a>
+</li>
+<li>
+  <a href="expression.html">Gene Expression Example</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/AgueroZZ/resultsummary">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">simulation_eQTL</h1>
+<h4 class="author">Ziang Zhang</h4>
+<h4 class="date">2024-05-19</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2024-05-20
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>FASHresultsummary/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240507code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240507)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240507code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240507)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree821ac76c20f7cea217b9a6fde744651bddd9ee89targetblank821ac76a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/821ac76c20f7cea217b9a6fde744651bddd9ee89" target="_blank">821ac76</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree821ac76c20f7cea217b9a6fde744651bddd9ee89targetblank821ac76a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/821ac76c20f7cea217b9a6fde744651bddd9ee89" target="_blank">821ac76</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.Rhistory
+    Ignored:    code/.DS_Store
+    Ignored:    code/cpp/.DS_Store
+    Ignored:    code/function/.DS_Store
+    Ignored:    data/.DS_Store
+    Ignored:    output/.DS_Store
+    Ignored:    output/example/.DS_Store
+    Ignored:    output/example/figure/
+    Ignored:    output/simulation/.DS_Store
+    Ignored:    output/simulation/figure/
+
+Untracked files:
+    Untracked:  code/cpp/Gaussian_just_fixed.o
+    Untracked:  code/cpp/Gaussian_just_fixed.so
+    Untracked:  code/cpp/Gaussian_theta_known.o
+    Untracked:  code/cpp/Gaussian_theta_known.so
+    Untracked:  code/cpp/Poisson.o
+    Untracked:  code/cpp/Poisson.so
+    Untracked:  code/cpp/Poisson_causes.o
+    Untracked:  code/cpp/Poisson_causes.so
+    Untracked:  code/cpp/Poisson_covid.o
+    Untracked:  code/cpp/Poisson_covid.so
+    Untracked:  code/cpp/Poisson_just_fixed.cpp
+    Untracked:  code/cpp/Poisson_just_fixed.o
+    Untracked:  code/cpp/Poisson_just_fixed.so
+    Untracked:  code/cpp/Poisson_just_fixed_causes.o
+    Untracked:  code/cpp/Poisson_just_fixed_causes.so
+    Untracked:  code/cpp/Poisson_just_fixed_covid.o
+    Untracked:  code/cpp/Poisson_just_fixed_covid.so
+    Untracked:  data/13100810.csv
+    Untracked:  data/13100810_MetaData.csv
+    Untracked:  data/X13100810.eng.zip
+    Untracked:  data/expression_data/
+    Untracked:  output/causes/
+    Untracked:  output/expression/
+    Untracked:  output/simulation_eQTL/
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/simulation_eQTL.Rmd</code>) and
+HTML (<code>docs/simulation_eQTL.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/821ac76c20f7cea217b9a6fde744651bddd9ee89/analysis/simulation_eQTL.Rmd" target="_blank">821ac76</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-20
+</td>
+<td>
+wflow_git_commit(c("analysis/simulation_eQTL.Rmd",
+"code/function/functions_fitting_Gaussian_eQTL.R",
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="context" class="section level2">
+<h2><strong>Context</strong></h2>
+<p>We consider the effect size estimate of eQTLs measured in day <span
+class="math inline">\(t = 1\)</span> to day <span
+class="math inline">\(t = 16\)</span>. Among these <span
+class="math inline">\(M = 4000\)</span> eQTLs, we assume <span
+class="math inline">\(1000\)</span> eQTLs are non-dynamic with the same
+true effect size <span class="math inline">\(\beta(t) \neq 0\)</span>
+that is constant overtime. Among the remaining <span
+class="math inline">\(2000\)</span> dynamic eQTLs, we assume <span
+class="math inline">\(1000\)</span> eQTLs have linear dynamic and the
+other <span class="math inline">\(1000\)</span> eQTLs have non-linear
+dynamic. Among the <span class="math inline">\(2000\)</span> eQTLs with
+non-linear dynamic, we assume <span class="math inline">\(1000\)</span>
+of them have strong non-linearity and the other <span
+class="math inline">\(1000\)</span> have weak non-linearity.</p>
+<p>For simplicity, let’s assume the effect size estimate of eQTL <span
+class="math inline">\(i\)</span> at time <span
+class="math inline">\(j\)</span> is constant: <span
+class="math inline">\(\text{SE}(\hat{\beta}_{i}(t_j)) = \sigma, \forall
+i,j\)</span> and hence <span class="math inline">\(\hat{\beta}_i(t_j)
+\sim N(\beta_i(t_j),\sigma^2)\)</span>.</p>
+<pre class="r"><code>library(BayesGP)
+library(TMB)
+library(Matrix)
+library(splines)
+library(parallel)
+library(ggplot2)
+library(reshape2)
+library(mixsqp)
+library(tidyverse)</code></pre>
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.3     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.0
+✔ lubridate 1.9.3     ✔ tibble    3.2.1
+✔ purrr     1.0.2     ✔ tidyr     1.3.0
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ tidyr::expand() masks Matrix::expand()
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+✖ tidyr::pack()   masks Matrix::pack()
+✖ tidyr::unpack() masks Matrix::unpack()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code>library(mashr)</code></pre>
+<pre><code>Loading required package: ashr</code></pre>
+<pre class="r"><code>cpp_dir &lt;- paste0(getwd(), &quot;/code/cpp&quot;)
+fig_dir &lt;- paste0(getwd(), &quot;/output/simulation_eQTL&quot;)
+result_dir &lt;- paste0(getwd(), &quot;/output/simulation_eQTL&quot;)
+function_dir &lt;- paste0(getwd(), &quot;/code/function&quot;)
+source(paste0(function_dir, &quot;/functions_fitting_Gaussian_eQTL.R&quot;))
+source(paste0(function_dir, &quot;/functions_simulation_eQTL.R&quot;))
+compile(paste0(cpp_dir, &quot;/Gaussian_theta_known.cpp&quot;))</code></pre>
+<pre><code>Warning in readLines(file): incomplete final line found on
+&#39;/Users/ziangzhang/Desktop/FASH/FASHresultsummary/code/cpp/Gaussian_theta_known.cpp&#39;</code></pre>
+<pre><code>Note: Using Makevars in /Users/ziangzhang/.R/Makevars </code></pre>
+<pre><code>using C++ compiler: &#39;Apple clang version 13.1.6 (clang-1316.0.21.2.5)&#39;
+using SDK: &#39;MacOSX12.3.sdk&#39;</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code>compile(paste0(cpp_dir, &quot;/Gaussian_just_fixed.cpp&quot;))</code></pre>
+<pre><code>Warning in readLines(file): incomplete final line found on
+&#39;/Users/ziangzhang/Desktop/FASH/FASHresultsummary/code/cpp/Gaussian_just_fixed.cpp&#39;</code></pre>
+<pre><code>Note: Using Makevars in /Users/ziangzhang/.R/Makevars </code></pre>
+<pre><code>using C++ compiler: &#39;Apple clang version 13.1.6 (clang-1316.0.21.2.5)&#39;
+using SDK: &#39;MacOSX12.3.sdk&#39;</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code>dyn.load(TMB::dynlib(paste0(cpp_dir, &quot;/Gaussian_theta_known&quot;)))
+dyn.load(TMB::dynlib(paste0(cpp_dir, &quot;/Gaussian_just_fixed&quot;)))
+num_cores &lt;- detectCores() - 1
+
+sigma &lt;- 0.1</code></pre>
+<p>First, simulate the data for the non-dynamic eQTLs.</p>
+<pre class="r"><code>set.seed(1)
+data_sim &lt;- simulate_process(sd = sigma, sd_fun = 0.5, type = &quot;nondynamic&quot;)
+plot(data_sim$x, data_sim$y, 
+     ylim = c(-3,3),
+     type = &quot;o&quot;, col = &quot;blue&quot;, 
+     lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
+lines(data_sim$x, data_sim$truef, col = &quot;red&quot;, lwd = 2)</code></pre>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Repeat for 1000 times
+n_sim &lt;- 1000
+data_sim_list_A &lt;- lapply(1:n_sim, function(i) simulate_process(sd = sigma, sd_fun = 1, type = &quot;nondynamic&quot;))</code></pre>
+<p>Next, simulate the data for the linear dynamic eQTLs.</p>
+<pre class="r"><code>set.seed(1)
+data_sim &lt;- simulate_process(sd = sigma, sd_fun = 0.1, type = &quot;linear&quot;)
+plot(data_sim$x, data_sim$y, 
+     ylim = c(-3,3),
+     type = &quot;o&quot;, col = &quot;blue&quot;, 
+     lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
+lines(data_sim$x, data_sim$truef, col = &quot;red&quot;, lwd = 2)</code></pre>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Repeat for 1000 times
+n_sim &lt;- 1000
+data_sim_list_B &lt;- lapply(1:n_sim, function(i) simulate_process(sd = sigma, sd_fun = 0.1, type = &quot;linear&quot;))</code></pre>
+<p>Finally, simulate the data for the non-linear dynamic eQTLs.</p>
+<pre class="r"><code>set.seed(1)
+data_sim &lt;- simulate_process(n_basis = 5, sd = sigma, sd_fun = 0.5, type = &quot;nonlinear&quot;)
+plot(data_sim$x, data_sim$y,
+     ylim = c(-3,3),
+     type = &quot;o&quot;, col = &quot;blue&quot;, 
+     lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
+lines(data_sim$x, data_sim$truef, col = &quot;red&quot;, lwd = 2)</code></pre>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Repeat for 1000 times with weak non-linearity
+n_sim &lt;- 1000
+data_sim_list_C &lt;- lapply(1:n_sim, function(i) simulate_process(n_basis = 5, sd = sigma, sd_fun = 0.5, type = &quot;nonlinear&quot;))
+
+# Repeat for 1000 times with strong non-linearity
+n_sim &lt;- 1000
+data_sim_list_D &lt;- lapply(1:n_sim, function(i) simulate_process(n_basis = 10, sd = sigma, sd_fun = 0.5, type = &quot;nonlinear&quot;))</code></pre>
+<p>For each group of eQTLs, let’s visualize four examples</p>
+<pre class="r"><code>par(mfrow=c(2,2))
+for (i in 1:4) {
+  plot(data_sim_list_A[[i]]$x, data_sim_list_A[[i]]$y, 
+       ylim = c(-3,3),
+       type = &quot;o&quot;, col = &quot;blue&quot;, 
+       lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
+  lines(data_sim_list_A[[i]]$x, data_sim_list_A[[i]]$truef, col = &quot;red&quot;, lwd = 2)
+  title(paste0(&quot;Non-dynamic eQTL &quot;, i))
+}</code></pre>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(2,2))
+for (i in 1:4) {
+  plot(data_sim_list_B[[i]]$x, data_sim_list_B[[i]]$y, 
+       ylim = c(-3,3),
+       type = &quot;o&quot;, col = &quot;blue&quot;, 
+       lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
+  lines(data_sim_list_B[[i]]$x, data_sim_list_B[[i]]$truef, col = &quot;red&quot;, lwd = 2)
+  title(paste0(&quot;Linear dynamic eQTL &quot;, i))
+}</code></pre>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(2,2))
+for (i in 1:4) {
+  plot(data_sim_list_C[[i]]$x, data_sim_list_C[[i]]$y, 
+       ylim = c(-3,3),
+       type = &quot;o&quot;, col = &quot;blue&quot;, 
+       lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
+  lines(data_sim_list_C[[i]]$x, data_sim_list_C[[i]]$truef, col = &quot;red&quot;, lwd = 2)
+  title(paste0(&quot;Weakly non-linear dynamic eQTL &quot;, i))
+}</code></pre>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(2,2))
+for (i in 1:4) {
+  plot(data_sim_list_D[[i]]$x, data_sim_list_D[[i]]$y, 
+       ylim = c(-3,3),
+       type = &quot;o&quot;, col = &quot;blue&quot;, 
+       lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
+  lines(data_sim_list_D[[i]]$x, data_sim_list_D[[i]]$truef, col = &quot;red&quot;, lwd = 2)
+  title(paste0(&quot;Highly non-linear dynamic eQTL &quot;, i))
+}</code></pre>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(1,1))</code></pre>
+</div>
+<div id="model-fitting-with-fash" class="section level2">
+<h2><strong>Model Fitting with FASH</strong></h2>
+<div id="empirical-bayes" class="section level3">
+<h3><strong>Empirical Bayes</strong></h3>
+<p>Combine all the data list into a single list of length 4000</p>
+<pre class="r"><code>datasets &lt;- c(data_sim_list_A, data_sim_list_B, data_sim_list_C, data_sim_list_D)</code></pre>
+<pre class="r"><code>set.seed(123)
+p_vec &lt;- 2
+log_prec &lt;- unique(sort(c(Inf, seq(-1,1, by = 0.1), seq(1,5, by = 0.5), seq(5,10, by = 1)), decreasing = T))
+psd_iwp_vec &lt;- 1/exp(.5*log_prec)
+L_vecs &lt;- list()
+# create a progress bar
+pb &lt;- txtProgressBar(min = 0, max = length(datasets), style = 3)
+for (i in 1:length(datasets)) {
+  setTxtProgressBar(pb, i)
+  L_vecs[[i]] &lt;- compute_log_likelihood_ospline_seq2(
+    x = datasets[[i]]$x,
+    y = datasets[[i]]$y,
+    p = p_vec,
+    num_knots = 16,
+    psd_iwp_vector = psd_iwp_vec,
+    pred_step = 1,
+    betaprec = 0.001,
+    sd_gaussian = sigma
+  )
+}
+L_matrix &lt;- do.call(rbind, L_vecs)
+save(L_matrix, file = paste0(result_dir, &quot;/L_matrix.rda&quot;))</code></pre>
+<p>Then, we make use of <span
+class="math inline">\(\texttt{mixsqp}\)</span> to estimate the prior
+weights:</p>
+<pre class="r"><code>fit.sqp &lt;- mixsqp(L = L_matrix, log = TRUE)</code></pre>
+<pre><code>Running mix-SQP algorithm 0.3-54 on 4000 x 35 matrix
+convergence tol. (SQP):     1.0e-08
+conv. tol. (active-set):    1.0e-10
+zero threshold (solution):  1.0e-08
+zero thresh. (search dir.): 1.0e-14
+l.s. sufficient decrease:   1.0e-02
+step size reduction factor: 7.5e-01
+minimum step size:          1.0e-08
+max. iter (SQP):            1000
+max. iter (active-set):     20
+number of EM iterations:    10
+Computing SVD of 4000 x 35 matrix.
+Matrix is not low-rank; falling back to full matrix.
+iter        objective max(rdual) nnz stepsize max.diff nqp nls
+   1 +9.595042485e-01  -- EM --   35 1.00e+00 6.31e-01  --  --
+   2 +9.347834764e-01  -- EM --   22 1.00e+00 3.61e-02  --  --
+   3 +9.289824853e-01  -- EM --   17 1.00e+00 5.81e-03  --  --
+   4 +9.260661578e-01  -- EM --   14 1.00e+00 4.30e-03  --  --
+   5 +9.241053336e-01  -- EM --   13 1.00e+00 4.35e-03  --  --
+   6 +9.226411515e-01  -- EM --   13 1.00e+00 4.04e-03  --  --
+   7 +9.215143679e-01  -- EM --   13 1.00e+00 3.59e-03  --  --
+   8 +9.206422276e-01  -- EM --   12 1.00e+00 3.10e-03  --  --
+   9 +9.199675539e-01  -- EM --   12 1.00e+00 2.64e-03  --  --
+  10 +9.194460752e-01  -- EM --   11 1.00e+00 2.23e-03  --  --
+   1 +9.190426938e-01 +2.215e-02  11  ------   ------   --  --
+   2 +9.172026155e-01 +9.102e-03   7 1.00e+00 3.27e-02   6   1
+   3 +9.171883994e-01 +1.690e-04   7 1.00e+00 3.12e-03   2   1
+   4 +9.171883944e-01 -1.699e-08   7 1.00e+00 6.98e-05   2   1
+Optimization took 0.02 seconds.
+Convergence criteria met---optimal solution found.</code></pre>
+<pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
+plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
+     pch = 20,lwd = 2,xlab = &quot;SQP iteration&quot;,
+     ylab = &quot;objective&quot;,xaxp = c(1,numiter,numiter - 1))</code></pre>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>prior_weight &lt;- data.frame(p = rep(p_vec, each = length(psd_iwp_vec)), psd_iwp = psd_iwp_vec, prior_weight = fit.sqp$x)</code></pre>
+<p>We can take a look at the estimated prior:</p>
+<pre class="r"><code>head(prior_weight)</code></pre>
+<pre><code>  p     psd_iwp prior_weight
+1 2 0.000000000  0.697481943
+2 2 0.006737947  0.000000000
+3 2 0.011108997  0.000000000
+4 2 0.018315639  0.000000000
+5 2 0.030197383  0.086432790
+6 2 0.049787068  0.009299053</code></pre>
+</div>
+<div id="posterior-inference" class="section level3">
+<h3><strong>Posterior Inference</strong></h3>
+<p>With the estimated prior, we can now perform the posterior inference
+for each dataset:</p>
+<pre class="r"><code>num_datasets &lt;- length(datasets)
+num_weights &lt;- sum(prior_weight$prior_weight != 0)
+posterior_weights_matrix &lt;- matrix(nrow = num_datasets, ncol = num_weights)
+
+# Loop through each dataset and perform fitting
+fitted_datasets &lt;- list()
+# start a progress bar
+pb &lt;- txtProgressBar(min = 0, max = num_datasets, style = 3)
+for (i in seq_along(datasets)) {
+  setTxtProgressBar(pb, i)
+  dataset &lt;- datasets[[i]]
+  fit_result_final &lt;- fit_ospline_with_prior2(
+    num_cores = num_cores,
+    x = dataset$x,
+    y = dataset$y,
+    num_knots = 16,
+    prior_weight = prior_weight,
+    betaprec = 0.001,
+    sd_gaussian = sigma,
+    pred_step = 1
+  )
+  fitted_datasets[[i]] &lt;- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final)$summary_df
+  posterior_weights_matrix[i, ] &lt;- fit_result_final$posterior_weights[, &quot;posterior_weight&quot;]
+}
+colnames(posterior_weights_matrix) &lt;- paste(as.character(fit_result_final$posterior_weights[, &quot;p&quot;]),
+                                            as.character(fit_result_final$posterior_weights[, &quot;psd_iwp&quot;]), sep = &quot;_&quot;)
+save(posterior_weights_matrix, file = paste0(result_dir, &quot;/posterior_weights_matrix.rda&quot;))
+save(fitted_datasets, file = paste0(result_dir, &quot;/fitted_datasets.rda&quot;))</code></pre>
+<p>We can visualize the posterior weights for each dataset:</p>
+<pre class="r"><code>posterior_weights_df &lt;- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id &lt;- 1:nrow(posterior_weights_df)
+melted_data &lt;- melt(posterior_weights_df, id.vars = &quot;id&quot;)
+melted_data$variable2 &lt;- sub(&quot;_.*&quot;, &quot;&quot;, melted_data$variable)
+melted_data$variable3 &lt;- (round(as.numeric(sub(&quot;*._&quot;, &quot;&quot;, melted_data$variable)), 3))
+
+ggplot(melted_data, aes(x = id, y = value, fill = variable3)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  labs(x = &quot;Observation ID&quot;, y = &quot;Weight&quot;, fill = &quot;PSD&quot;) +
+  theme_minimal() +
+  scale_fill_gradient(low = &quot;white&quot;, high = &quot;blue&quot;) +
+  ggtitle(&quot;Structure Plot of Posterior Weights&quot;) +
+  coord_flip() </code></pre>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="effect-estimation" class="section level2">
+<h2><strong>Effect Estimation</strong></h2>
+<p>Compare the posterior mean of the effect with single smoothing based
+on maximizing L-matrix; with MASH; with single smoothing using smoothing
+spline.</p>
+<div id="comparison-in-terms-of-rmse" class="section level3">
+<h3><strong>Comparison in terms of RMSE</strong></h3>
+<pre class="r"><code>fitted_datasets_ss &lt;- list()
+for (i in seq_along(datasets)) {
+  dataset &lt;- datasets[[i]]
+  ss_fit &lt;- smooth.spline(x = dataset$x, y = dataset$y)
+  fitted_datasets_ss[[i]] &lt;- data.frame(x = dataset$x, mean = predict(ss_fit, dataset$x)$y)
+}</code></pre>
+<pre class="r"><code>fitted_datasets_ml &lt;- list()
+for (i in seq_along(datasets)) {
+  dataset &lt;- datasets[[i]]
+  L_vec_selected &lt;- L_matrix[i, ]
+  which_sigma_max &lt;- psd_iwp_vec[which.max(L_vec_selected)]
+  fit_ospline_single &lt;- fit_ospline(
+    x = dataset$x,
+    y = dataset$y,
+    p = 2,
+    num_knots = 16,
+    psd_iwp = which_sigma_max,
+    betaprec = 0.001,
+    sd_gaussian = sigma,
+    pred_step = 1
+  )
+  fitted_datasets_ml[[i]] &lt;- data.frame(x = dataset$x, mean = apply(fit_ospline_single$samps_fitted, 1, mean))
+}
+save(fitted_datasets_ml, file = paste0(result_dir, &quot;/fitted_datasets_ml.rda&quot;))</code></pre>
+<pre class="r"><code>fitted_datasets_mash &lt;- list()
+
+# Produce a huge data-matrix, the i-th row being dataset[[i]]$y
+all_data_matrix &lt;- do.call(rbind, lapply(datasets, function(x) x$y))
+SE_matrix &lt;- matrix(nrow = nrow(all_data_matrix), ncol = ncol(all_data_matrix), sigma)
+
+# now use mashr:
+mash_data &lt;-  mashr::mash_set_data(all_data_matrix, SE_matrix)
+m.1by1 = mashr::mash_1by1(mash_data)
+strong = mashr::get_significant_results(m.1by1,0.05)
+U.pca = mashr::cov_pca(mash_data, 5, subset = strong)
+U.ed = cov_ed(mash_data, U.pca, subset=strong)
+U.c = cov_canonical(mash_data)  
+m   = mash(mash_data, c(U.c,U.ed))</code></pre>
+<pre><code> - Computing 4000 x 568 likelihood matrix.
+ - Likelihood calculations took 0.85 seconds.
+ - Fitting model with 568 mixture components.
+ - Model fitting took 8.80 seconds.
+ - Computing posterior matrices.
+ - Computation allocated took 0.07 seconds.</code></pre>
+<pre class="r"><code>mash.pm &lt;- get_pm(m)
+
+# each row of mash.pm is the posterior mean of the effect size
+for (i in 1:nrow(mash.pm)) {
+  fitted_datasets_mash[[i]] &lt;- data.frame(x = datasets[[i]]$x, mean = mash.pm[i, ])
+}</code></pre>
+<pre class="r"><code>rmse_df &lt;- data.frame(FASH = numeric(length = num_datasets), 
+                      MASH = numeric(length = num_datasets), 
+                      SS = numeric(length = num_datasets), 
+                      ML = numeric(length = num_datasets),
+                      RAW = numeric(length = num_datasets))
+
+for (i in 1:nrow(rmse_df)) {
+  rmse_df$FASH[i] &lt;- sqrt(mean((fitted_datasets[[i]]$mean - datasets[[i]]$truef)^2))
+  rmse_df$MASH[i] &lt;- sqrt(mean((fitted_datasets_mash[[i]]$mean - datasets[[i]]$truef)^2))
+  rmse_df$ML[i] &lt;- sqrt(mean((fitted_datasets_ml[[i]]$mean - datasets[[i]]$truef)^2))
+  rmse_df$RAW[i] &lt;- sqrt(mean((datasets[[i]]$y - datasets[[i]]$truef)^2))
+  rmse_df$SS[i] &lt;- sqrt(mean((fitted_datasets_ss[[i]]$mean - datasets[[i]]$truef)^2))
+}
+
+ggplot(melt(log(rmse_df)), aes(x = variable, y = value, fill = variable)) +
+  geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
+  labs(x = &quot;Method&quot;, y = &quot;rMSE&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;Comparison of log rMSE between FASH, MASH, SS and ML&quot;)</code></pre>
+<pre><code>No id variables; using all as measure variables</code></pre>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(melt((rmse_df)), aes(x = variable, y = value, fill = variable)) +
+  geom_boxplot() +
+  labs(x = &quot;Method&quot;, y = &quot;rMSE&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;Comparison of rMSE between FASH, MASH, SS and ML&quot;)</code></pre>
+<pre><code>No id variables; using all as measure variables</code></pre>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-21-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>FASH does not perform much better than ML, which is not surprise
+since each dataset has the same number of measurement and same level of
+SE, so pooling information does not help too much.</p>
+<p>What if each observation series has missing observations at random
+and with different level of SE?</p>
+</div>
+</div>
+<div id="hypothesis-testing" class="section level2">
+<h2><strong>Hypothesis Testing</strong></h2>
+<p>Do hypothesis testing using lfdr/lfsr control.</p>
+<div id="which-eqtls-are-non-dynamic" class="section level3">
+<h3><strong>Which eQTLs are non-dynamic?</strong></h3>
+<p>The eQTLs with non-dynamic effect should have a smoothing parameter
+<span class="math inline">\(\sigma = 0\)</span> and slope of zero: <span
+class="math inline">\(\beta(t) = \beta(t-1)\)</span> for any <span
+class="math inline">\(t\)</span>.</p>
+<p>So, first compute <span class="math inline">\(P(\sigma =
+0|Data)\)</span> and then compute <span class="math inline">\(P(fs\text{
+of }slope|\sigma=0,Data)\)</span> and multiply to get <span
+class="math inline">\(P(\sigma=0,fs\text{ of }slope|Data)\)</span>.</p>
+</div>
+<div id="which-eqtls-have-non-linear-effect" class="section level3">
+<h3><strong>Which eQTLs have non-linear effect?</strong></h3>
+<p>Just compute <span class="math inline">\(lfdr = P(\sigma =
+0|Data)\)</span>.</p>
+</div>
+<div id="classification-of-dynamic-eqtls-into-early-late-and-switch"
+class="section level3">
+<h3><strong>Classification of dynamic eQTLs into early, late and
+switch</strong></h3>
+<p>Need to compute the posterior distribution of each required
+quantity.</p>
+<div id="early-eqtls" class="section level4">
+<h4><em>Early eQTLs</em></h4>
+</div>
+<div id="late-eqtls" class="section level4">
+<h4><em>Late eQTLs</em></h4>
+</div>
+<div id="switch-eqtls" class="section level4">
+<h4><em>Switch eQTLs</em></h4>
+</div>
+<div id="comparison-with-mash" class="section level4">
+<h4><em>Comparison with MASH</em></h4>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS Monterey 12.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Toronto
+tzcode source: internal
+
+attached base packages:
+[1] parallel  splines   stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] mashr_0.2.79    ashr_2.2-63     lubridate_1.9.3 forcats_1.0.0  
+ [5] stringr_1.5.0   dplyr_1.1.3     purrr_1.0.2     readr_2.1.4    
+ [9] tidyr_1.3.0     tibble_3.2.1    tidyverse_2.0.0 mixsqp_0.3-54  
+[13] reshape2_1.4.4  ggplot2_3.5.1   Matrix_1.6-3    TMB_1.9.7      
+[17] BayesGP_0.1.1   workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.4      xfun_0.40         bslib_0.5.1       processx_3.8.2   
+ [5] lattice_0.21-8    callr_3.7.3       tzdb_0.4.0        vctrs_0.6.4      
+ [9] tools_4.3.1       ps_1.7.5          generics_0.1.3    fansi_1.0.5      
+[13] pkgconfig_2.0.3   SQUAREM_2021.1    assertthat_0.2.1  truncnorm_1.0-9  
+[17] lifecycle_1.0.3   farver_2.1.1      compiler_4.3.1    git2r_0.33.0     
+[21] munsell_0.5.0     getPass_0.2-4     httpuv_1.6.11     htmltools_0.5.6.1
+[25] sass_0.4.7        yaml_2.3.7        later_1.3.1       pillar_1.9.0     
+[29] jquerylib_0.1.4   whisker_0.4.1     rmeta_3.0         cachem_1.0.8     
+[33] abind_1.4-5       tidyselect_1.2.0  digest_0.6.33     mvtnorm_1.2-3    
+[37] stringi_1.7.12    labeling_0.4.3    rprojroot_2.0.3   fastmap_1.1.1    
+[41] grid_4.3.1        invgamma_1.1      colorspace_2.1-0  cli_3.6.1        
+[45] magrittr_2.0.3    utf8_1.2.3        withr_2.5.1       scales_1.3.0     
+[49] promises_1.2.1    timechange_0.2.0  rmarkdown_2.25    httr_1.4.7       
+[53] hms_1.1.3         evaluate_0.22     knitr_1.44        irlba_2.3.5.1    
+[57] rlang_1.1.1       Rcpp_1.0.11       glue_1.6.2        rstudioapi_0.15.0
+[61] jsonlite_1.8.7    R6_2.5.1          plyr_1.8.9        fs_1.6.3         </code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
