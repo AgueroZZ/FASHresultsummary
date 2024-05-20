@@ -39,7 +39,7 @@ dyn.load(TMB::dynlib(paste0(cpp_dir, "/Gaussian_theta_known")))
 dyn.load(TMB::dynlib(paste0(cpp_dir, "/Gaussian_just_fixed")))
 num_cores <- detectCores() - 1
 
-sigma <- 0.1
+sigma <- 0.05
 ```
 
 First, simulate the data for the non-dynamic eQTLs.
