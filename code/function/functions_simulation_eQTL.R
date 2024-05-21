@@ -1,8 +1,13 @@
 ### Write a function, to simulate a dataset with size n, given a function g
-simulate_data <- function(g, sd=0.1){
+simulate_data <- function(g, sd=0.1, snr = NULL){
   x <- 1:16
+  if(!is.null(snr)){
+    signal_var <- var(g(x))
+    noise_var <- signal_var/snr
+    sd <- sqrt(noise_var)
+  }
   y <- g(x) + rnorm(n = length(x), sd = sd)
-  return(data.frame(x=x, y=y,truef = g(x)))
+  return(data.frame(x=x, y=y,truef = g(x), sd = sd))
 }
 
 ### Write a function, to simulate a random function as g using cubic B-spline basis representation with random basis weights:
@@ -49,7 +54,7 @@ simulate_nondynamic_function <- function(sd_linear = 1){
 }
 
 ### simulate process: first draw a random function g, then draw a dataset from g
-simulate_process <- function(n_basis = 5, sd_fun = 1, sd = 0.1, sd_linear = 0.1, type = "nonlinear"){
+simulate_process <- function(n_basis = 5, sd_fun = 1, sd = 0.1, snr = NULL, sd_linear = 0.1, type = "nonlinear"){
   if(type == "linear"){
     g <- simulate_linear_function(sd_linear = sd_linear)
 
@@ -63,7 +68,7 @@ simulate_process <- function(n_basis = 5, sd_fun = 1, sd = 0.1, sd_linear = 0.1,
   else {
     stop("type must be one of 'linear', 'nonlinear', 'nondynamic'")
   }
-  return(simulate_data(g = g, sd = sd))
+  return(simulate_data(g = g, sd = sd, snr = snr))
 }
 
 

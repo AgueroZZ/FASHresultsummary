@@ -39,7 +39,8 @@ dyn.load(TMB::dynlib(paste0(cpp_dir, "/Gaussian_just_fixed")))
 num_cores <- 4
 set.seed(123)
 each_size <- 500
-sigma <- sample(c(0.05, 0.1, 0.3), size = (3*each_size), replace = TRUE, prob = c(1/3,1/3,1/3))
+# sigma <- sample(c(0.05, 0.1, 0.3), size = (3*each_size), replace = TRUE, prob = c(1/3,1/3,1/3))
+SNR_vec <- sample(c(10, 50, 100), size = (3*each_size), replace = TRUE, prob = c(1/3,1/3,1/3))
 ```
 
 Simulate the data for the linear dynamic eQTLs.
@@ -55,7 +56,7 @@ Simulate the data for the linear dynamic eQTLs.
 
 # Repeat for each_size times
 n_sim <- each_size
-data_sim_list_A <- lapply(1:n_sim, function(i) simulate_process(sd = sigma[i], sd_linear = 0.1, type = "linear"))
+data_sim_list_A <- lapply(1:n_sim, function(i) simulate_process(snr = SNR_vec[i], sd_linear = 0.1, type = "linear"))
 ```
 
 
@@ -64,11 +65,11 @@ Simulate the data for the non-linear dynamic eQTLs.
 ```{r}
 # Repeat for each_size times with weak non-linearity
 n_sim <- each_size
-data_sim_list_B <- lapply(1:n_sim, function(i) simulate_process(n_basis = 3, sd = sigma[i + (each_size)], sd_fun = 1, sd_linear = 0.1, type = "nonlinear"))
+data_sim_list_B <- lapply(1:n_sim, function(i) simulate_process(n_basis = 3, snr = SNR_vec[i + (each_size)], sd_fun = 1, sd_linear = 0.1, type = "nonlinear"))
 
 # Repeat for each_size times with medium non-linearity
 n_sim <- each_size
-data_sim_list_C <- lapply(1:n_sim, function(i) simulate_process(n_basis = 8, sd = sigma[i + (2*each_size)], sd_fun = 1, sd_linear = 0.1, type = "nonlinear"))
+data_sim_list_C <- lapply(1:n_sim, function(i) simulate_process(n_basis = 8, snr = SNR_vec[i + (2*each_size)], sd_fun = 1, sd_linear = 0.1, type = "nonlinear"))
 ```
 
 
@@ -107,15 +108,21 @@ for (i in 1:4) {
 par(mfrow=c(1,1))
 ```
 
-
 ## **Model Fitting with FASH**
-
-### **Empirical Bayes**
 
 Combine all the data list into a single list of length 
 ```{r}
 datasets <- c(data_sim_list_A, data_sim_list_B, data_sim_list_C)
 ```
+
+To compute the SE in each dataset:
+```{r}
+## extract each datasets[[i]]$sd
+sigma <- unlist(lapply(datasets, function(x) unique(x$sd)))
+```
+
+
+### **Empirical Bayes**
 
 ```{r, eval=FALSE}
 set.seed(123)
@@ -185,7 +192,7 @@ for (i in seq_along(datasets)) {
   setTxtProgressBar(pb, i)
   dataset <- datasets[[i]]
   fit_result_final <- fit_ospline_with_prior2(
-    num_cores = 6,
+    num_cores = 1,
     x = dataset$x,
     y = dataset$y,
     num_knots = 16,
@@ -213,8 +220,11 @@ load(paste0(result_dir, "/fitted_datasets.rda"))
 
 We can visualize the posterior weights for each dataset:
 ```{r}
+load(paste0(result_dir, "/posterior_weights_matrix.rda"))
+# posterior_weights_matrix <- posterior_weights_matrix[SNR_vec == 10, ]
 posterior_weights_df <- as.data.frame(posterior_weights_matrix)
-posterior_weights_df$id <- 1:nrow(posterior_weights_df)
+# posterior_weights_df$id <- c(1:length(SNR_vec))[SNR_vec == 10]
+posterior_weights_df$id <- c(1:length(SNR_vec))
 melted_data <- melt(posterior_weights_df, id.vars = "id")
 melted_data$variable2 <- sub("_.*", "", melted_data$variable)
 # melted_data$variable3 <- as.factor(round(as.numeric(sub("*._", "", melted_data$variable)), 3))
@@ -332,14 +342,14 @@ rmse_df_compare <- rmse_df
 # convert rmse to relative to RAW
 rmse_df_compare <- rmse_df_compare / rmse_df$RAW
 
-rmse_df_compare$sigma <- as.factor(sigma)
-# ggplot of boxplot colored by method, facet by sigma, make ylim flexible
+rmse_df_compare$SNR <- as.factor(SNR_vec)
+# ggplot of boxplot colored by method, facet by SNR, make ylim flexible
 ggplot(melt((rmse_df_compare)), aes(x = variable, y = value, fill = variable)) +
   geom_boxplot() +
   coord_cartesian(ylim = c(0,1)) +
   labs(x = "Method", y = "rMSE") +
   theme_minimal() +
-  facet_wrap(~sigma) +
+  facet_wrap(~SNR) +
   ggtitle("Comparison of rMSE between FASH, MASH, SS and ML")
 
 rmse_df_compare <- rmse_df/ rmse_df$RAW
