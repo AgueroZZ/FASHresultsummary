@@ -10,11 +10,10 @@ editor_options:
 ## **Context**
 
 We consider the effect size estimate of eQTLs measured in day $t = 1$ to day $t = 16$.
-Among these $M = 4000$ eQTLs, we assume $1000$ eQTLs are non-dynamic with the same true effect size $\beta(t) \neq 0$ that is constant overtime.
-Among the remaining $2000$ dynamic eQTLs, we assume $1000$ eQTLs have linear dynamic and the other $1000$ eQTLs have non-linear dynamic.
-Among the $2000$ eQTLs with non-linear dynamic, we assume $1000$ of them have strong non-linearity and the other $1000$ have weak non-linearity.
+Among the $x$ dynamic eQTLs, we assume $x$ eQTLs have linear dynamic and the other $x$ eQTLs have non-linear dynamic.
+Among the $x$ eQTLs with non-linear dynamic, we assume $x$ of them have strong non-linearity and the other $x$ have weak non-linearity.
 
-For simplicity, let's assume the effect size estimate of eQTL $i$ at time $j$ is constant: $\text{SE}(\hat{\beta}_{i}(t_j)) = \sigma, \forall i,j$ and hence $\hat{\beta}_i(t_j) \sim N(\beta_i(t_j),\sigma^2)$.
+For simplicity, let's assume the effect size estimate of eQTL $i$ at time $j$ is constant: $\text{SE}(\hat{\beta}_{i}(t_j)) = \sigma_i, \forall j$ and hence $\hat{\beta}_i(t_j) \sim N(\beta_i(t_j),\sigma^2)$.
 
 ```{r}
 library(BayesGP)
@@ -37,63 +36,39 @@ compile(paste0(cpp_dir, "/Gaussian_theta_known.cpp"))
 compile(paste0(cpp_dir, "/Gaussian_just_fixed.cpp"))
 dyn.load(TMB::dynlib(paste0(cpp_dir, "/Gaussian_theta_known")))
 dyn.load(TMB::dynlib(paste0(cpp_dir, "/Gaussian_just_fixed")))
-num_cores <- detectCores() - 1
-
-sigma <- 0.05
+num_cores <- 4
+set.seed(123)
+each_size <- 500
+sigma <- sample(c(0.05, 0.1, 0.3), size = (3*each_size), replace = TRUE, prob = c(1/3,1/3,1/3))
 ```
 
-First, simulate the data for the non-dynamic eQTLs.
+Simulate the data for the linear dynamic eQTLs.
 
 ```{r}
-set.seed(1)
-data_sim <- simulate_process(sd = sigma, sd_fun = 0.5, type = "nondynamic")
-plot(data_sim$x, data_sim$y, 
-     ylim = c(-3,3),
-     type = "o", col = "blue", 
-     lwd = 2, xlab = "Time", ylab = "estimated effect")
-lines(data_sim$x, data_sim$truef, col = "red", lwd = 2)
+# set.seed(1)
+# data_sim <- simulate_process(sd = sigma[1], sd_fun = 0.1, type = "linear")
+# plot(data_sim$x, data_sim$y, 
+#      ylim = c(-3,3),
+#      type = "o", col = "blue", 
+#      lwd = 2, xlab = "Time", ylab = "estimated effect")
+# lines(data_sim$x, data_sim$truef, col = "red", lwd = 2)
 
-# Repeat for 1000 times
-n_sim <- 1000
-data_sim_list_A <- lapply(1:n_sim, function(i) simulate_process(sd = sigma, sd_fun = 1, type = "nondynamic"))
-```
-
-
-Next, simulate the data for the linear dynamic eQTLs.
-
-```{r}
-set.seed(1)
-data_sim <- simulate_process(sd = sigma, sd_fun = 0.1, type = "linear")
-plot(data_sim$x, data_sim$y, 
-     ylim = c(-3,3),
-     type = "o", col = "blue", 
-     lwd = 2, xlab = "Time", ylab = "estimated effect")
-lines(data_sim$x, data_sim$truef, col = "red", lwd = 2)
-
-# Repeat for 1000 times
-n_sim <- 1000
-data_sim_list_B <- lapply(1:n_sim, function(i) simulate_process(sd = sigma, sd_fun = 0.1, type = "linear"))
+# Repeat for each_size times
+n_sim <- each_size
+data_sim_list_A <- lapply(1:n_sim, function(i) simulate_process(sd = sigma[i], sd_linear = 0.1, type = "linear"))
 ```
 
 
-Finally, simulate the data for the non-linear dynamic eQTLs.
+Simulate the data for the non-linear dynamic eQTLs.
 
 ```{r}
-set.seed(1)
-data_sim <- simulate_process(n_basis = 5, sd = sigma, sd_fun = 0.5, type = "nonlinear")
-plot(data_sim$x, data_sim$y,
-     ylim = c(-3,3),
-     type = "o", col = "blue", 
-     lwd = 2, xlab = "Time", ylab = "estimated effect")
-lines(data_sim$x, data_sim$truef, col = "red", lwd = 2)
+# Repeat for each_size times with weak non-linearity
+n_sim <- each_size
+data_sim_list_B <- lapply(1:n_sim, function(i) simulate_process(n_basis = 3, sd = sigma[i + (each_size)], sd_fun = 1, sd_linear = 0.1, type = "nonlinear"))
 
-# Repeat for 1000 times with weak non-linearity
-n_sim <- 1000
-data_sim_list_C <- lapply(1:n_sim, function(i) simulate_process(n_basis = 5, sd = sigma, sd_fun = 0.5, type = "nonlinear"))
-
-# Repeat for 1000 times with strong non-linearity
-n_sim <- 1000
-data_sim_list_D <- lapply(1:n_sim, function(i) simulate_process(n_basis = 10, sd = sigma, sd_fun = 0.5, type = "nonlinear"))
+# Repeat for each_size times with medium non-linearity
+n_sim <- each_size
+data_sim_list_C <- lapply(1:n_sim, function(i) simulate_process(n_basis = 8, sd = sigma[i + (2*each_size)], sd_fun = 1, sd_linear = 0.1, type = "nonlinear"))
 ```
 
 
@@ -102,11 +77,10 @@ For each group of eQTLs, let's visualize four examples
 par(mfrow=c(2,2))
 for (i in 1:4) {
   plot(data_sim_list_A[[i]]$x, data_sim_list_A[[i]]$y, 
-       ylim = c(-3,3),
        type = "o", col = "blue", 
        lwd = 2, xlab = "Time", ylab = "estimated effect")
   lines(data_sim_list_A[[i]]$x, data_sim_list_A[[i]]$truef, col = "red", lwd = 2)
-  title(paste0("Non-dynamic eQTL ", i))
+  title(paste0("Type A: Linear Dynamic eQTL ", i))
 }
 ```
 
@@ -114,11 +88,10 @@ for (i in 1:4) {
 par(mfrow=c(2,2))
 for (i in 1:4) {
   plot(data_sim_list_B[[i]]$x, data_sim_list_B[[i]]$y, 
-       ylim = c(-3,3),
        type = "o", col = "blue", 
        lwd = 2, xlab = "Time", ylab = "estimated effect")
   lines(data_sim_list_B[[i]]$x, data_sim_list_B[[i]]$truef, col = "red", lwd = 2)
-  title(paste0("Linear dynamic eQTL ", i))
+  title(paste0("Type B: Non-linear Dynamic eQTL ", i))
 }
 ```
 
@@ -126,23 +99,10 @@ for (i in 1:4) {
 par(mfrow=c(2,2))
 for (i in 1:4) {
   plot(data_sim_list_C[[i]]$x, data_sim_list_C[[i]]$y, 
-       ylim = c(-3,3),
        type = "o", col = "blue", 
        lwd = 2, xlab = "Time", ylab = "estimated effect")
   lines(data_sim_list_C[[i]]$x, data_sim_list_C[[i]]$truef, col = "red", lwd = 2)
-  title(paste0("Weakly non-linear dynamic eQTL ", i))
-}
-```
-
-```{r}
-par(mfrow=c(2,2))
-for (i in 1:4) {
-  plot(data_sim_list_D[[i]]$x, data_sim_list_D[[i]]$y, 
-       ylim = c(-3,3),
-       type = "o", col = "blue", 
-       lwd = 2, xlab = "Time", ylab = "estimated effect")
-  lines(data_sim_list_D[[i]]$x, data_sim_list_D[[i]]$truef, col = "red", lwd = 2)
-  title(paste0("Highly non-linear dynamic eQTL ", i))
+  title(paste0("Type C: Non-Linear dynamic eQTL ", i))
 }
 par(mfrow=c(1,1))
 ```
@@ -152,16 +112,17 @@ par(mfrow=c(1,1))
 
 ### **Empirical Bayes**
 
-Combine all the data list into a single list of length 4000 
+Combine all the data list into a single list of length 
 ```{r}
-datasets <- c(data_sim_list_A, data_sim_list_B, data_sim_list_C, data_sim_list_D)
+datasets <- c(data_sim_list_A, data_sim_list_B, data_sim_list_C)
 ```
 
 ```{r, eval=FALSE}
 set.seed(123)
 p_vec <- 2
-log_prec <- unique(sort(c(Inf, seq(-1,1, by = 0.1), seq(1,5, by = 0.5), seq(5,10, by = 1)), decreasing = T))
-psd_iwp_vec <- 1/exp(.5*log_prec)
+# log_prec <- unique(sort(c(Inf, seq(-1,1, by = 0.1), seq(1,5, by = 0.5), seq(5,10, by = 1)), decreasing = T))
+# psd_iwp_vec <- 1/exp(.5*log_prec)
+psd_iwp_vec <- sort(unique(c(0,seq(0,1, by = 0.05))))
 L_vecs <- list()
 # create a progress bar
 pb <- txtProgressBar(min = 0, max = length(datasets), style = 3)
@@ -175,7 +136,7 @@ for (i in 1:length(datasets)) {
     psd_iwp_vector = psd_iwp_vec,
     pred_step = 1,
     betaprec = 0.001,
-    sd_gaussian = sigma
+    sd_gaussian = sigma[i]
   )
 }
 L_matrix <- do.call(rbind, L_vecs)
@@ -185,8 +146,9 @@ save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
 ```{r, echo=FALSE}
 set.seed(123)
 p_vec <- 2
-log_prec <- unique(sort(c(Inf, seq(-1,1, by = 0.1), seq(1,5, by = 0.5), seq(5,10, by = 1)), decreasing = T))
-psd_iwp_vec <- 1/exp(.5*log_prec)
+# log_prec <- unique(sort(c(Inf, seq(-1,1, by = 0.1), seq(1,5, by = 0.5), seq(5,10, by = 1)), decreasing = T))
+# psd_iwp_vec <- 1/exp(.5*log_prec)
+psd_iwp_vec <- sort(unique(c(0,seq(0,1, by = 0.05))))
 load(paste0(result_dir, "/L_matrix.rda"))
 ```
 
@@ -223,13 +185,13 @@ for (i in seq_along(datasets)) {
   setTxtProgressBar(pb, i)
   dataset <- datasets[[i]]
   fit_result_final <- fit_ospline_with_prior2(
-    num_cores = num_cores,
+    num_cores = 6,
     x = dataset$x,
     y = dataset$y,
     num_knots = 16,
     prior_weight = prior_weight,
     betaprec = 0.001,
-    sd_gaussian = sigma,
+    sd_gaussian = sigma[i],
     pred_step = 1
   )
   fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final)$summary_df
@@ -255,6 +217,7 @@ posterior_weights_df <- as.data.frame(posterior_weights_matrix)
 posterior_weights_df$id <- 1:nrow(posterior_weights_df)
 melted_data <- melt(posterior_weights_df, id.vars = "id")
 melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+# melted_data$variable3 <- as.factor(round(as.numeric(sub("*._", "", melted_data$variable)), 3))
 melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
 
 ggplot(melted_data, aes(x = id, y = value, fill = variable3)) +
@@ -294,7 +257,7 @@ for (i in seq_along(datasets)) {
     num_knots = 16,
     psd_iwp = which_sigma_max,
     betaprec = 0.001,
-    sd_gaussian = sigma,
+    sd_gaussian = sigma[i],
     pred_step = 1
   )
   fitted_datasets_ml[[i]] <- data.frame(x = dataset$x, mean = apply(fit_ospline_single$samps_fitted, 1, mean))
@@ -316,7 +279,7 @@ SE_matrix <- matrix(nrow = nrow(all_data_matrix), ncol = ncol(all_data_matrix), 
 # now use mashr:
 mash_data <-  mashr::mash_set_data(all_data_matrix, SE_matrix)
 m.1by1 = mashr::mash_1by1(mash_data)
-strong = mashr::get_significant_results(m.1by1,0.05)
+strong = mashr::get_significant_results(m.1by1,1)[1:each_size]
 U.pca = mashr::cov_pca(mash_data, 5, subset = strong)
 U.ed = cov_ed(mash_data, U.pca, subset=strong)
 U.c = cov_canonical(mash_data)  
@@ -344,13 +307,15 @@ for (i in 1:nrow(rmse_df)) {
   rmse_df$SS[i] <- sqrt(mean((fitted_datasets_ss[[i]]$mean - datasets[[i]]$truef)^2))
 }
 
-ggplot(melt(log(rmse_df)), aes(x = variable, y = value, fill = variable)) +
+rmse_df_relative <- rmse_df/rmse_df$RAW
+
+ggplot(melt(log(rmse_df_relative)), aes(x = variable, y = value, fill = variable)) +
   geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
   labs(x = "Method", y = "rMSE") +
   theme_minimal() +
   ggtitle("Comparison of log rMSE between FASH, MASH, SS and ML")
 
-ggplot(melt((rmse_df)), aes(x = variable, y = value, fill = variable)) +
+ggplot(melt((rmse_df_relative)), aes(x = variable, y = value, fill = variable)) +
   geom_boxplot() +
   labs(x = "Method", y = "rMSE") +
   theme_minimal() +
@@ -361,6 +326,36 @@ ggplot(melt((rmse_df)), aes(x = variable, y = value, fill = variable)) +
 FASH does not perform much better than ML, which is not surprise since each dataset has the same number of measurement and same level of SE, so pooling information does not help too much.
 
 What if each observation series has missing observations at random and with different level of SE?
+
+```{r}
+rmse_df_compare <- rmse_df
+# convert rmse to relative to RAW
+rmse_df_compare <- rmse_df_compare / rmse_df$RAW
+
+rmse_df_compare$sigma <- as.factor(sigma)
+# ggplot of boxplot colored by method, facet by sigma, make ylim flexible
+ggplot(melt((rmse_df_compare)), aes(x = variable, y = value, fill = variable)) +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0,1)) +
+  labs(x = "Method", y = "rMSE") +
+  theme_minimal() +
+  facet_wrap(~sigma) +
+  ggtitle("Comparison of rMSE between FASH, MASH, SS and ML")
+
+rmse_df_compare <- rmse_df/ rmse_df$RAW
+rmse_df_compare$type <- as.factor(rep(c("A", "B", "C"), each = each_size))
+# ggplot of boxplot colored by method, facet by sigma
+ggplot(melt(rmse_df_compare), aes(x = variable, y = value, fill = variable)) +
+  geom_boxplot() +
+  labs(x = "Method", y = "rMSE") +
+  theme_minimal() +
+  coord_cartesian(ylim = c(0,1)) + 
+  facet_wrap(~type) +
+  ggtitle("Comparison of rMSE between FASH, MASH, SS and ML")
+```
+
+
+
 
 
 ## **Hypothesis Testing**
