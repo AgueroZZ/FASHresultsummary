@@ -319,19 +319,22 @@ for (i in 1:nrow(rmse_df)) {
 
 rmse_df_relative <- rmse_df/rmse_df$RAW
 
-ggplot(melt(log(rmse_df_relative)), aes(x = variable, y = value, fill = variable)) +
-  geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
-  labs(x = "Method", y = "rMSE") +
-  theme_minimal() +
-  ggtitle("Comparison of log rMSE between FASH, MASH, SS and ML")
-
 ggplot(melt((rmse_df_relative)), aes(x = variable, y = value, fill = variable)) +
   geom_boxplot() +
   labs(x = "Method", y = "rMSE") +
   theme_minimal() +
-  ggtitle("Comparison of rMSE between FASH, MASH, SS and ML")
-
+  ggtitle("Comparison of relative rMSE between FASH, MASH, SS and ML")
 ```
+
+```{r}
+ggplot(melt((rmse_df)), aes(x = variable, y = value, fill = variable)) +
+  geom_boxplot() +
+  labs(x = "Method", y = "rMSE") +
+  theme_minimal() +
+  coord_cartesian(ylim = c(0,0.2)) + 
+  ggtitle("Comparison of relative rMSE between FASH, MASH, SS and ML")
+```
+
 
 FASH does not perform much better than ML, which is not surprise since each dataset has the same number of measurement and same level of SE, so pooling information does not help too much.
 
@@ -364,6 +367,15 @@ ggplot(melt(rmse_df_compare), aes(x = variable, y = value, fill = variable)) +
   ggtitle("Comparison of rMSE between FASH, MASH, SS and ML")
 ```
 
+```{r}
+# summarize into a table
+rmse_df_compare <- rmse_df
+# convert rmse to relative to RAW
+rmse_df_compare <- rmse_df_compare / rmse_df$RAW
+
+rmse_df_compare %>% 
+  summarise(mean(FASH), mean(MASH), mean(SS), mean(ML))
+```
 
 
 
