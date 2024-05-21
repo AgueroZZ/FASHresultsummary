@@ -399,7 +399,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-05-20
+<strong>Last updated:</strong> 2024-05-21
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -530,15 +530,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree47017bf8580bf2d23a44d6e4d1f1854c0e3d2eactargetblank47017bfa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree5e078b04c9ae970e42cc2e0fe6a136016d99c4e0targetblank5e078b0a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/47017bf8580bf2d23a44d6e4d1f1854c0e3d2eac" target="_blank">47017bf</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/5e078b04c9ae970e42cc2e0fe6a136016d99c4e0" target="_blank">5e078b0</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree47017bf8580bf2d23a44d6e4d1f1854c0e3d2eactargetblank47017bfa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree5e078b04c9ae970e42cc2e0fe6a136016d99c4e0targetblank5e078b0a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -548,7 +548,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/47017bf8580bf2d23a44d6e4d1f1854c0e3d2eac" target="_blank">47017bf</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/5e078b04c9ae970e42cc2e0fe6a136016d99c4e0" target="_blank">5e078b0</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -604,6 +604,9 @@ Untracked files:
     Untracked:  output/expression/
     Untracked:  output/simulation_eQTL/
 
+Unstaged changes:
+    Modified:   code/function/functions_simulation_eQTL.R
+
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not
@@ -648,6 +651,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5e078b04c9ae970e42cc2e0fe6a136016d99c4e0/analysis/simulation_eQTL.Rmd" target="_blank">5e078b0</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-21
+</td>
+<td>
+consider different SE for different series
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/0e2a01b6c1fffeab2609fde49fd76796818979b1/docs/simulation_eQTL.html" target="_blank">0e2a01b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -711,24 +748,21 @@ wflow_git_commit(c("analysis/simulation_eQTL.Rmd",
 <h2><strong>Context</strong></h2>
 <p>We consider the effect size estimate of eQTLs measured in day <span
 class="math inline">\(t = 1\)</span> to day <span
-class="math inline">\(t = 16\)</span>. Among these <span
-class="math inline">\(M = 4000\)</span> eQTLs, we assume <span
-class="math inline">\(1000\)</span> eQTLs are non-dynamic with the same
-true effect size <span class="math inline">\(\beta(t) \neq 0\)</span>
-that is constant overtime. Among the remaining <span
-class="math inline">\(2000\)</span> dynamic eQTLs, we assume <span
-class="math inline">\(1000\)</span> eQTLs have linear dynamic and the
-other <span class="math inline">\(1000\)</span> eQTLs have non-linear
-dynamic. Among the <span class="math inline">\(2000\)</span> eQTLs with
-non-linear dynamic, we assume <span class="math inline">\(1000\)</span>
-of them have strong non-linearity and the other <span
-class="math inline">\(1000\)</span> have weak non-linearity.</p>
+class="math inline">\(t = 16\)</span>. Among the <span
+class="math inline">\(x\)</span> dynamic eQTLs, we assume <span
+class="math inline">\(x\)</span> eQTLs have linear dynamic and the other
+<span class="math inline">\(x\)</span> eQTLs have non-linear dynamic.
+Among the <span class="math inline">\(x\)</span> eQTLs with non-linear
+dynamic, we assume <span class="math inline">\(x\)</span> of them have
+strong non-linearity and the other <span
+class="math inline">\(x\)</span> have weak non-linearity.</p>
 <p>For simplicity, let’s assume the effect size estimate of eQTL <span
 class="math inline">\(i\)</span> at time <span
 class="math inline">\(j\)</span> is constant: <span
-class="math inline">\(\text{SE}(\hat{\beta}_{i}(t_j)) = \sigma, \forall
-i,j\)</span> and hence <span class="math inline">\(\hat{\beta}_i(t_j)
-\sim N(\beta_i(t_j),\sigma^2)\)</span>.</p>
+class="math inline">\(\text{SE}(\hat{\beta}_{i}(t_j)) = \sigma_i,
+\forall j\)</span> and hence <span
+class="math inline">\(\hat{\beta}_i(t_j) \sim
+N(\beta_i(t_j),\sigma^2)\)</span>.</p>
 <pre class="r"><code>library(BayesGP)
 library(TMB)
 library(Matrix)
@@ -774,115 +808,39 @@ using SDK: &#39;MacOSX12.3.sdk&#39;</code></pre>
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>dyn.load(TMB::dynlib(paste0(cpp_dir, &quot;/Gaussian_theta_known&quot;)))
 dyn.load(TMB::dynlib(paste0(cpp_dir, &quot;/Gaussian_just_fixed&quot;)))
-num_cores &lt;- detectCores() - 1
+num_cores &lt;- 4
+set.seed(123)
+each_size &lt;- 500
+sigma &lt;- sample(c(0.05, 0.1, 0.3), size = (3*each_size), replace = TRUE, prob = c(1/3,1/3,1/3))</code></pre>
+<p>Simulate the data for the linear dynamic eQTLs.</p>
+<pre class="r"><code># set.seed(1)
+# data_sim &lt;- simulate_process(sd = sigma[1], sd_fun = 0.1, type = &quot;linear&quot;)
+# plot(data_sim$x, data_sim$y, 
+#      ylim = c(-3,3),
+#      type = &quot;o&quot;, col = &quot;blue&quot;, 
+#      lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
+# lines(data_sim$x, data_sim$truef, col = &quot;red&quot;, lwd = 2)
 
-sigma &lt;- 0.05</code></pre>
-<p>First, simulate the data for the non-dynamic eQTLs.</p>
-<pre class="r"><code>set.seed(1)
-data_sim &lt;- simulate_process(sd = sigma, sd_fun = 0.5, type = &quot;nondynamic&quot;)
-plot(data_sim$x, data_sim$y, 
-     ylim = c(-3,3),
-     type = &quot;o&quot;, col = &quot;blue&quot;, 
-     lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
-lines(data_sim$x, data_sim$truef, col = &quot;red&quot;, lwd = 2)</code></pre>
-<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
-Past versions of unnamed-chunk-2-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-2-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/59f5f5e0c67b66e649b55ccc69659f20d420c10c/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-2-1.png" target="_blank">59f5f5e</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code># Repeat for 1000 times
-n_sim &lt;- 1000
-data_sim_list_A &lt;- lapply(1:n_sim, function(i) simulate_process(sd = sigma, sd_fun = 1, type = &quot;nondynamic&quot;))</code></pre>
-<p>Next, simulate the data for the linear dynamic eQTLs.</p>
-<pre class="r"><code>set.seed(1)
-data_sim &lt;- simulate_process(sd = sigma, sd_fun = 0.1, type = &quot;linear&quot;)
-plot(data_sim$x, data_sim$y, 
-     ylim = c(-3,3),
-     type = &quot;o&quot;, col = &quot;blue&quot;, 
-     lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
-lines(data_sim$x, data_sim$truef, col = &quot;red&quot;, lwd = 2)</code></pre>
-<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
-Past versions of unnamed-chunk-3-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-3-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/59f5f5e0c67b66e649b55ccc69659f20d420c10c/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-3-1.png" target="_blank">59f5f5e</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code># Repeat for 1000 times
-n_sim &lt;- 1000
-data_sim_list_B &lt;- lapply(1:n_sim, function(i) simulate_process(sd = sigma, sd_fun = 0.1, type = &quot;linear&quot;))</code></pre>
-<p>Finally, simulate the data for the non-linear dynamic eQTLs.</p>
-<pre class="r"><code>set.seed(1)
-data_sim &lt;- simulate_process(n_basis = 5, sd = sigma, sd_fun = 0.5, type = &quot;nonlinear&quot;)
-plot(data_sim$x, data_sim$y,
-     ylim = c(-3,3),
-     type = &quot;o&quot;, col = &quot;blue&quot;, 
-     lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
-lines(data_sim$x, data_sim$truef, col = &quot;red&quot;, lwd = 2)</code></pre>
+# Repeat for each_size times
+n_sim &lt;- each_size
+data_sim_list_A &lt;- lapply(1:n_sim, function(i) simulate_process(sd = sigma[i], sd_linear = 0.1, type = &quot;linear&quot;))</code></pre>
+<p>Simulate the data for the non-linear dynamic eQTLs.</p>
+<pre class="r"><code># Repeat for each_size times with weak non-linearity
+n_sim &lt;- each_size
+data_sim_list_B &lt;- lapply(1:n_sim, function(i) simulate_process(n_basis = 3, sd = sigma[i + (each_size)], sd_fun = 1, sd_linear = 0.1, type = &quot;nonlinear&quot;))
+
+# Repeat for each_size times with medium non-linearity
+n_sim &lt;- each_size
+data_sim_list_C &lt;- lapply(1:n_sim, function(i) simulate_process(n_basis = 8, sd = sigma[i + (2*each_size)], sd_fun = 1, sd_linear = 0.1, type = &quot;nonlinear&quot;))</code></pre>
+<p>For each group of eQTLs, let’s visualize four examples</p>
+<pre class="r"><code>par(mfrow=c(2,2))
+for (i in 1:4) {
+  plot(data_sim_list_A[[i]]$x, data_sim_list_A[[i]]$y, 
+       type = &quot;o&quot;, col = &quot;blue&quot;, 
+       lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
+  lines(data_sim_list_A[[i]]$x, data_sim_list_A[[i]]$truef, col = &quot;red&quot;, lwd = 2)
+  title(paste0(&quot;Type A: Linear Dynamic eQTL &quot;, i))
+}</code></pre>
 <p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-1">
@@ -908,6 +866,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/0e2a01b6c1fffeab2609fde49fd76796818979b1/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-4-1.png" target="_blank">0e2a01b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-20
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/59f5f5e0c67b66e649b55ccc69659f20d420c10c/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-4-1.png" target="_blank">59f5f5e</a>
 </td>
 <td>
@@ -921,22 +890,13 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<pre class="r"><code># Repeat for 1000 times with weak non-linearity
-n_sim &lt;- 1000
-data_sim_list_C &lt;- lapply(1:n_sim, function(i) simulate_process(n_basis = 5, sd = sigma, sd_fun = 0.5, type = &quot;nonlinear&quot;))
-
-# Repeat for 1000 times with strong non-linearity
-n_sim &lt;- 1000
-data_sim_list_D &lt;- lapply(1:n_sim, function(i) simulate_process(n_basis = 10, sd = sigma, sd_fun = 0.5, type = &quot;nonlinear&quot;))</code></pre>
-<p>For each group of eQTLs, let’s visualize four examples</p>
 <pre class="r"><code>par(mfrow=c(2,2))
 for (i in 1:4) {
-  plot(data_sim_list_A[[i]]$x, data_sim_list_A[[i]]$y, 
-       ylim = c(-3,3),
+  plot(data_sim_list_B[[i]]$x, data_sim_list_B[[i]]$y, 
        type = &quot;o&quot;, col = &quot;blue&quot;, 
        lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
-  lines(data_sim_list_A[[i]]$x, data_sim_list_A[[i]]$truef, col = &quot;red&quot;, lwd = 2)
-  title(paste0(&quot;Non-dynamic eQTL &quot;, i))
+  lines(data_sim_list_B[[i]]$x, data_sim_list_B[[i]]$truef, col = &quot;red&quot;, lwd = 2)
+  title(paste0(&quot;Type B: Non-linear Dynamic eQTL &quot;, i))
 }</code></pre>
 <p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -963,6 +923,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/0e2a01b6c1fffeab2609fde49fd76796818979b1/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-5-1.png" target="_blank">0e2a01b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-20
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/59f5f5e0c67b66e649b55ccc69659f20d420c10c/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-5-1.png" target="_blank">59f5f5e</a>
 </td>
 <td>
@@ -978,12 +949,11 @@ Ziang Zhang
 </div>
 <pre class="r"><code>par(mfrow=c(2,2))
 for (i in 1:4) {
-  plot(data_sim_list_B[[i]]$x, data_sim_list_B[[i]]$y, 
-       ylim = c(-3,3),
+  plot(data_sim_list_C[[i]]$x, data_sim_list_C[[i]]$y, 
        type = &quot;o&quot;, col = &quot;blue&quot;, 
        lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
-  lines(data_sim_list_B[[i]]$x, data_sim_list_B[[i]]$truef, col = &quot;red&quot;, lwd = 2)
-  title(paste0(&quot;Linear dynamic eQTL &quot;, i))
+  lines(data_sim_list_C[[i]]$x, data_sim_list_C[[i]]$truef, col = &quot;red&quot;, lwd = 2)
+  title(paste0(&quot;Type C: Non-Linear dynamic eQTL &quot;, i))
 }</code></pre>
 <p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1010,101 +980,18 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/0e2a01b6c1fffeab2609fde49fd76796818979b1/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-6-1.png" target="_blank">0e2a01b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-20
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/59f5f5e0c67b66e649b55ccc69659f20d420c10c/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-6-1.png" target="_blank">59f5f5e</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>par(mfrow=c(2,2))
-for (i in 1:4) {
-  plot(data_sim_list_C[[i]]$x, data_sim_list_C[[i]]$y, 
-       ylim = c(-3,3),
-       type = &quot;o&quot;, col = &quot;blue&quot;, 
-       lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
-  lines(data_sim_list_C[[i]]$x, data_sim_list_C[[i]]$truef, col = &quot;red&quot;, lwd = 2)
-  title(paste0(&quot;Weakly non-linear dynamic eQTL &quot;, i))
-}</code></pre>
-<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
-Past versions of unnamed-chunk-7-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-7-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/59f5f5e0c67b66e649b55ccc69659f20d420c10c/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-7-1.png" target="_blank">59f5f5e</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>par(mfrow=c(2,2))
-for (i in 1:4) {
-  plot(data_sim_list_D[[i]]$x, data_sim_list_D[[i]]$y, 
-       ylim = c(-3,3),
-       type = &quot;o&quot;, col = &quot;blue&quot;, 
-       lwd = 2, xlab = &quot;Time&quot;, ylab = &quot;estimated effect&quot;)
-  lines(data_sim_list_D[[i]]$x, data_sim_list_D[[i]]$truef, col = &quot;red&quot;, lwd = 2)
-  title(paste0(&quot;Highly non-linear dynamic eQTL &quot;, i))
-}</code></pre>
-<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
-Past versions of unnamed-chunk-8-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-8-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/59f5f5e0c67b66e649b55ccc69659f20d420c10c/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-8-1.png" target="_blank">59f5f5e</a>
 </td>
 <td>
 Ziang Zhang
@@ -1123,12 +1010,13 @@ Ziang Zhang
 <h2><strong>Model Fitting with FASH</strong></h2>
 <div id="empirical-bayes" class="section level3">
 <h3><strong>Empirical Bayes</strong></h3>
-<p>Combine all the data list into a single list of length 4000</p>
-<pre class="r"><code>datasets &lt;- c(data_sim_list_A, data_sim_list_B, data_sim_list_C, data_sim_list_D)</code></pre>
+<p>Combine all the data list into a single list of length</p>
+<pre class="r"><code>datasets &lt;- c(data_sim_list_A, data_sim_list_B, data_sim_list_C)</code></pre>
 <pre class="r"><code>set.seed(123)
 p_vec &lt;- 2
-log_prec &lt;- unique(sort(c(Inf, seq(-1,1, by = 0.1), seq(1,5, by = 0.5), seq(5,10, by = 1)), decreasing = T))
-psd_iwp_vec &lt;- 1/exp(.5*log_prec)
+# log_prec &lt;- unique(sort(c(Inf, seq(-1,1, by = 0.1), seq(1,5, by = 0.5), seq(5,10, by = 1)), decreasing = T))
+# psd_iwp_vec &lt;- 1/exp(.5*log_prec)
+psd_iwp_vec &lt;- sort(unique(c(0,seq(0,1, by = 0.05))))
 L_vecs &lt;- list()
 # create a progress bar
 pb &lt;- txtProgressBar(min = 0, max = length(datasets), style = 3)
@@ -1142,7 +1030,7 @@ for (i in 1:length(datasets)) {
     psd_iwp_vector = psd_iwp_vec,
     pred_step = 1,
     betaprec = 0.001,
-    sd_gaussian = sigma
+    sd_gaussian = sigma[i]
   )
 }
 L_matrix &lt;- do.call(rbind, L_vecs)
@@ -1151,7 +1039,7 @@ save(L_matrix, file = paste0(result_dir, &quot;/L_matrix.rda&quot;))</code></pre
 class="math inline">\(\texttt{mixsqp}\)</span> to estimate the prior
 weights:</p>
 <pre class="r"><code>fit.sqp &lt;- mixsqp(L = L_matrix, log = TRUE)</code></pre>
-<pre><code>Running mix-SQP algorithm 0.3-54 on 4000 x 35 matrix
+<pre><code>Running mix-SQP algorithm 0.3-54 on 1500 x 21 matrix
 convergence tol. (SQP):     1.0e-08
 conv. tol. (active-set):    1.0e-10
 zero threshold (solution):  1.0e-08
@@ -1162,77 +1050,40 @@ minimum step size:          1.0e-08
 max. iter (SQP):            1000
 max. iter (active-set):     20
 number of EM iterations:    10
-Computing SVD of 4000 x 35 matrix.
+Computing SVD of 1500 x 21 matrix.
 Matrix is not low-rank; falling back to full matrix.
 iter        objective max(rdual) nnz stepsize max.diff nqp nls
-   1 +1.259373082e+00  -- EM --   32 1.00e+00 5.32e-01  --  --
-   2 +1.233846798e+00  -- EM --   20 1.00e+00 1.60e-02  --  --
-   3 +1.224351127e+00  -- EM --   15 1.00e+00 9.57e-03  --  --
-   4 +1.219480142e+00  -- EM --   14 1.00e+00 7.19e-03  --  --
-   5 +1.216657028e+00  -- EM --   14 1.00e+00 5.27e-03  --  --
-   6 +1.214923901e+00  -- EM --   14 1.00e+00 3.85e-03  --  --
-   7 +1.213825842e+00  -- EM --   13 1.00e+00 2.80e-03  --  --
-   8 +1.213114593e+00  -- EM --   13 1.00e+00 2.03e-03  --  --
-   9 +1.212644522e+00  -- EM --   13 1.00e+00 1.45e-03  --  --
-  10 +1.212327064e+00  -- EM --   12 1.00e+00 1.03e-03  --  --
-   1 +1.212107371e+00 +9.148e-03  12  ------   ------   --  --
-   2 +1.211164114e+00 +1.097e-03   8 1.00e+00 3.64e-02   6   1
-   3 +1.211163366e+00 +1.946e-06   8 1.00e+00 1.46e-03   2   1
-   4 +1.211163366e+00 -1.832e-08   8 1.00e+00 1.56e-06   2   1
-Optimization took 0.02 seconds.
+   1 +1.173091352e+00  -- EM --   21 1.00e+00 4.71e-01  --  --
+   2 +1.151433559e+00  -- EM --   21 1.00e+00 1.57e-02  --  --
+   3 +1.146781165e+00  -- EM --   19 1.00e+00 8.11e-03  --  --
+   4 +1.144720413e+00  -- EM --   16 1.00e+00 6.04e-03  --  --
+   5 +1.143574299e+00  -- EM --   14 1.00e+00 5.21e-03  --  --
+   6 +1.142864612e+00  -- EM --   13 1.00e+00 4.44e-03  --  --
+   7 +1.142396147e+00  -- EM --   12 1.00e+00 3.75e-03  --  --
+   8 +1.142072635e+00  -- EM --   12 1.00e+00 3.17e-03  --  --
+   9 +1.141841030e+00  -- EM --   11 1.00e+00 2.70e-03  --  --
+  10 +1.141669987e+00  -- EM --   11 1.00e+00 2.31e-03  --  --
+   1 +1.141540082e+00 +1.484e-02  11  ------   ------   --  --
+   2 +1.140427530e+00 +3.660e-03   6 1.00e+00 5.51e-02   7   1
+   3 +1.140425580e+00 +1.841e-05   6 1.00e+00 1.25e-03   2   1
+   4 +1.140425579e+00 -1.954e-08   6 1.00e+00 7.04e-06   2   1
+Optimization took 0.00 seconds.
 Convergence criteria met---optimal solution found.</code></pre>
 <pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
 plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
      pch = 20,lwd = 2,xlab = &quot;SQP iteration&quot;,
      ylab = &quot;objective&quot;,xaxp = c(1,numiter,numiter - 1))</code></pre>
-<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
-Past versions of unnamed-chunk-12-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-12-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/59f5f5e0c67b66e649b55ccc69659f20d420c10c/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-12-1.png" target="_blank">59f5f5e</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>prior_weight &lt;- data.frame(p = rep(p_vec, each = length(psd_iwp_vec)), psd_iwp = psd_iwp_vec, prior_weight = fit.sqp$x)</code></pre>
 <p>We can take a look at the estimated prior:</p>
 <pre class="r"><code>head(prior_weight)</code></pre>
-<pre><code>  p     psd_iwp prior_weight
-1 2 0.000000000   0.57735865
-2 2 0.006737947   0.00000000
-3 2 0.011108997   0.00000000
-4 2 0.018315639   0.10606969
-5 2 0.030197383   0.07558974
-6 2 0.049787068   0.00000000</code></pre>
+<pre><code>  p psd_iwp prior_weight
+1 2    0.00   0.53359855
+2 2    0.05   0.20091263
+3 2    0.10   0.01805474
+4 2    0.15   0.17066241
+5 2    0.20   0.02571867
+6 2    0.25   0.05105300</code></pre>
 </div>
 <div id="posterior-inference" class="section level3">
 <h3><strong>Posterior Inference</strong></h3>
@@ -1250,13 +1101,13 @@ for (i in seq_along(datasets)) {
   setTxtProgressBar(pb, i)
   dataset &lt;- datasets[[i]]
   fit_result_final &lt;- fit_ospline_with_prior2(
-    num_cores = num_cores,
+    num_cores = 6,
     x = dataset$x,
     y = dataset$y,
     num_knots = 16,
     prior_weight = prior_weight,
     betaprec = 0.001,
-    sd_gaussian = sigma,
+    sd_gaussian = sigma[i],
     pred_step = 1
   )
   fitted_datasets[[i]] &lt;- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final)$summary_df
@@ -1271,6 +1122,7 @@ save(fitted_datasets, file = paste0(result_dir, &quot;/fitted_datasets.rda&quot;
 posterior_weights_df$id &lt;- 1:nrow(posterior_weights_df)
 melted_data &lt;- melt(posterior_weights_df, id.vars = &quot;id&quot;)
 melted_data$variable2 &lt;- sub(&quot;_.*&quot;, &quot;&quot;, melted_data$variable)
+# melted_data$variable3 &lt;- as.factor(round(as.numeric(sub(&quot;*._&quot;, &quot;&quot;, melted_data$variable)), 3))
 melted_data$variable3 &lt;- (round(as.numeric(sub(&quot;*._&quot;, &quot;&quot;, melted_data$variable)), 3))
 
 ggplot(melted_data, aes(x = id, y = value, fill = variable3)) +
@@ -1280,44 +1132,7 @@ ggplot(melted_data, aes(x = id, y = value, fill = variable3)) +
   scale_fill_gradient(low = &quot;white&quot;, high = &quot;blue&quot;) +
   ggtitle(&quot;Structure Plot of Posterior Weights&quot;) +
   coord_flip() </code></pre>
-<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
-Past versions of unnamed-chunk-16-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-16-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/59f5f5e0c67b66e649b55ccc69659f20d420c10c/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-16-1.png" target="_blank">59f5f5e</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="effect-estimation" class="section level2">
@@ -1345,7 +1160,7 @@ for (i in seq_along(datasets)) {
     num_knots = 16,
     psd_iwp = which_sigma_max,
     betaprec = 0.001,
-    sd_gaussian = sigma,
+    sd_gaussian = sigma[i],
     pred_step = 1
   )
   fitted_datasets_ml[[i]] &lt;- data.frame(x = dataset$x, mean = apply(fit_ospline_single$samps_fitted, 1, mean))
@@ -1360,17 +1175,17 @@ SE_matrix &lt;- matrix(nrow = nrow(all_data_matrix), ncol = ncol(all_data_matrix
 # now use mashr:
 mash_data &lt;-  mashr::mash_set_data(all_data_matrix, SE_matrix)
 m.1by1 = mashr::mash_1by1(mash_data)
-strong = mashr::get_significant_results(m.1by1,0.05)
+strong = mashr::get_significant_results(m.1by1,1)[1:each_size]
 U.pca = mashr::cov_pca(mash_data, 5, subset = strong)
 U.ed = cov_ed(mash_data, U.pca, subset=strong)
 U.c = cov_canonical(mash_data)  
 m   = mash(mash_data, c(U.c,U.ed))</code></pre>
-<pre><code> - Computing 4000 x 622 likelihood matrix.
- - Likelihood calculations took 0.92 seconds.
- - Fitting model with 622 mixture components.
- - Model fitting took 5.78 seconds.
+<pre><code> - Computing 1500 x 649 likelihood matrix.
+ - Likelihood calculations took 1.84 seconds.
+ - Fitting model with 649 mixture components.
+ - Model fitting took 3.70 seconds.
  - Computing posterior matrices.
- - Computation allocated took 0.07 seconds.</code></pre>
+ - Computation allocated took 0.26 seconds.</code></pre>
 <pre class="r"><code>mash.pm &lt;- get_pm(m)
 
 # each row of mash.pm is the posterior mean of the effect size
@@ -1391,99 +1206,54 @@ for (i in 1:nrow(rmse_df)) {
   rmse_df$SS[i] &lt;- sqrt(mean((fitted_datasets_ss[[i]]$mean - datasets[[i]]$truef)^2))
 }
 
-ggplot(melt(log(rmse_df)), aes(x = variable, y = value, fill = variable)) +
+rmse_df_relative &lt;- rmse_df/rmse_df$RAW
+
+ggplot(melt(log(rmse_df_relative)), aes(x = variable, y = value, fill = variable)) +
   geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
   labs(x = &quot;Method&quot;, y = &quot;rMSE&quot;) +
   theme_minimal() +
   ggtitle(&quot;Comparison of log rMSE between FASH, MASH, SS and ML&quot;)</code></pre>
 <pre><code>No id variables; using all as measure variables</code></pre>
-<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
-Past versions of unnamed-chunk-21-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-21-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/59f5f5e0c67b66e649b55ccc69659f20d420c10c/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-21-1.png" target="_blank">59f5f5e</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>ggplot(melt((rmse_df)), aes(x = variable, y = value, fill = variable)) +
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(melt((rmse_df_relative)), aes(x = variable, y = value, fill = variable)) +
   geom_boxplot() +
   labs(x = &quot;Method&quot;, y = &quot;rMSE&quot;) +
   theme_minimal() +
   ggtitle(&quot;Comparison of rMSE between FASH, MASH, SS and ML&quot;)</code></pre>
 <pre><code>No id variables; using all as measure variables</code></pre>
-<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-21-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-2">
-Past versions of unnamed-chunk-21-2.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-21-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/59f5f5e0c67b66e649b55ccc69659f20d420c10c/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-21-2.png" target="_blank">59f5f5e</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-19-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>FASH does not perform much better than ML, which is not surprise
 since each dataset has the same number of measurement and same level of
 SE, so pooling information does not help too much.</p>
 <p>What if each observation series has missing observations at random
 and with different level of SE?</p>
+<pre class="r"><code>rmse_df_compare &lt;- rmse_df
+# convert rmse to relative to RAW
+rmse_df_compare &lt;- rmse_df_compare / rmse_df$RAW
+
+rmse_df_compare$sigma &lt;- as.factor(sigma)
+# ggplot of boxplot colored by method, facet by sigma, make ylim flexible
+ggplot(melt((rmse_df_compare)), aes(x = variable, y = value, fill = variable)) +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0,1)) +
+  labs(x = &quot;Method&quot;, y = &quot;rMSE&quot;) +
+  theme_minimal() +
+  facet_wrap(~sigma) +
+  ggtitle(&quot;Comparison of rMSE between FASH, MASH, SS and ML&quot;)</code></pre>
+<pre><code>Using sigma as id variables</code></pre>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>rmse_df_compare &lt;- rmse_df/ rmse_df$RAW
+rmse_df_compare$type &lt;- as.factor(rep(c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;), each = each_size))
+# ggplot of boxplot colored by method, facet by sigma
+ggplot(melt(rmse_df_compare), aes(x = variable, y = value, fill = variable)) +
+  geom_boxplot() +
+  labs(x = &quot;Method&quot;, y = &quot;rMSE&quot;) +
+  theme_minimal() +
+  coord_cartesian(ylim = c(0,1)) + 
+  facet_wrap(~type) +
+  ggtitle(&quot;Comparison of rMSE between FASH, MASH, SS and ML&quot;)</code></pre>
+<pre><code>Using type as id variables</code></pre>
+<p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-20-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="hypothesis-testing" class="section level2">
