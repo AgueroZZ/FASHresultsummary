@@ -381,7 +381,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -392,8 +392,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -406,9 +406,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>FASHresultsummary/</code> <span
@@ -431,21 +431,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -536,15 +533,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree05097f60836565744640544f2fcf8b47bc7c9f37targetblank05097f6a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea53277262c0b48ae3703879a49f9f3a5c5fd6e4ftargetblanka532772a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/05097f60836565744640544f2fcf8b47bc7c9f37" target="_blank">05097f6</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a53277262c0b48ae3703879a49f9f3a5c5fd6e4f" target="_blank">a532772</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree05097f60836565744640544f2fcf8b47bc7c9f37targetblank05097f6a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea53277262c0b48ae3703879a49f9f3a5c5fd6e4ftargetblanka532772a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -554,7 +551,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/05097f60836565744640544f2fcf8b47bc7c9f37" target="_blank">05097f6</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a53277262c0b48ae3703879a49f9f3a5c5fd6e4f" target="_blank">a532772</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -614,9 +611,6 @@ Untracked files:
     Untracked:  output/simulation_eQTL/
     Untracked:  output/simulation_eQTL_test/
 
-Unstaged changes:
-    Modified:   analysis/simulation_eQTL_identification.Rmd
-
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not
@@ -662,6 +656,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a53277262c0b48ae3703879a49f9f3a5c5fd6e4f/analysis/simulation_eQTL_identification.Rmd" target="_blank">a532772</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+<td>
+update eqtl sim
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/a53277262c0b48ae3703879a49f9f3a5c5fd6e4f/docs/simulation_eQTL_identification.html" target="_blank">a532772</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+<td>
+update eqtl sim
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1189,6 +1217,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a53277262c0b48ae3703879a49f9f3a5c5fd6e4f/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-15-1.png" target="_blank">a532772</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/9e1131d55208c45512bc391146047aa3a355c8f8/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-15-1.png" target="_blank">9e1131d</a>
 </td>
 <td>
@@ -1259,6 +1298,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a53277262c0b48ae3703879a49f9f3a5c5fd6e4f/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-17-1.png" target="_blank">a532772</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/9e1131d55208c45512bc391146047aa3a355c8f8/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-17-1.png" target="_blank">9e1131d</a>
 </td>
 <td>
@@ -1316,6 +1366,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a53277262c0b48ae3703879a49f9f3a5c5fd6e4f/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-18-1.png" target="_blank">a532772</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/9e1131d55208c45512bc391146047aa3a355c8f8/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-18-1.png" target="_blank">9e1131d</a>
 </td>
 <td>
@@ -1353,7 +1414,7 @@ m   = mash(mash_data, c(U.c,U.ed))</code></pre>
 <pre><code> - Computing 1000 x 595 likelihood matrix.
  - Likelihood calculations took 1.12 seconds.
  - Fitting model with 595 mixture components.
- - Model fitting took 8.22 seconds.
+ - Model fitting took 8.13 seconds.
  - Computing posterior matrices.
  - Computation allocated took 0.09 seconds.</code></pre>
 <pre class="r"><code>mash_post &lt;- m$posterior_weights
@@ -1467,6 +1528,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a53277262c0b48ae3703879a49f9f3a5c5fd6e4f/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-23-1.png" target="_blank">a532772</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/9e1131d55208c45512bc391146047aa3a355c8f8/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-23-1.png" target="_blank">9e1131d</a>
 </td>
 <td>
@@ -1521,6 +1593,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a53277262c0b48ae3703879a49f9f3a5c5fd6e4f/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-24-1.png" target="_blank">a532772</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/9e1131d55208c45512bc391146047aa3a355c8f8/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-24-1.png" target="_blank">9e1131d</a>
@@ -1600,6 +1683,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a53277262c0b48ae3703879a49f9f3a5c5fd6e4f/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-25-1.png" target="_blank">a532772</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/9e1131d55208c45512bc391146047aa3a355c8f8/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-25-1.png" target="_blank">9e1131d</a>
 </td>
 <td>
@@ -1668,6 +1762,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a53277262c0b48ae3703879a49f9f3a5c5fd6e4f/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-26-1.png" target="_blank">a532772</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/9e1131d55208c45512bc391146047aa3a355c8f8/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-26-1.png" target="_blank">9e1131d</a>
 </td>
 <td>
@@ -1693,6 +1798,43 @@ ggplot(fda_df_merge, aes(x = type, y = rank, color = type)) +
   ggtitle(&quot;Rank Distribution: FASH vs MASH&quot;) +
   facet_wrap(~method)</code></pre>
 <p><img src="figure/simulation_eQTL_identification.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-27-1">
+Past versions of unnamed-chunk-27-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-27-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a53277262c0b48ae3703879a49f9f3a5c5fd6e4f/docs/figure/simulation_eQTL_identification.Rmd/unnamed-chunk-27-1.png" target="_blank">a532772</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><strong>Summary:</strong> Overall, FASH tends to make more
 conservative decision than MASH in terms of the discovery of non-dynamic
 eQTLs. The actual false discovery rate of FASH tends to be lower than
@@ -1737,24 +1879,25 @@ other attached packages:
  [5] stringr_1.5.0   dplyr_1.1.3     purrr_1.0.2     readr_2.1.4    
  [9] tidyr_1.3.0     tibble_3.2.1    tidyverse_2.0.0 mixsqp_0.3-54  
 [13] reshape2_1.4.4  ggplot2_3.5.1   Matrix_1.6-3    TMB_1.9.7      
-[17] BayesGP_0.1.1  
+[17] BayesGP_0.1.1   workflowr_1.7.1
 
 loaded via a namespace (and not attached):
- [1] gtable_0.3.4      xfun_0.40         bslib_0.5.1       lattice_0.21-8   
- [5] tzdb_0.4.0        vctrs_0.6.4       tools_4.3.1       generics_0.1.3   
- [9] fansi_1.0.5       pkgconfig_2.0.3   SQUAREM_2021.1    assertthat_0.2.1 
-[13] lifecycle_1.0.3   truncnorm_1.0-9   farver_2.1.1      compiler_4.3.1   
-[17] git2r_0.33.0      munsell_0.5.0     httpuv_1.6.11     htmltools_0.5.6.1
-[21] sass_0.4.7        yaml_2.3.7        later_1.3.1       pillar_1.9.0     
-[25] jquerylib_0.1.4   whisker_0.4.1     rmeta_3.0         cachem_1.0.8     
-[29] abind_1.4-5       tidyselect_1.2.0  digest_0.6.33     mvtnorm_1.2-3    
-[33] stringi_1.7.12    labeling_0.4.3    rprojroot_2.0.3   fastmap_1.1.1    
-[37] grid_4.3.1        colorspace_2.1-0  cli_3.6.1         invgamma_1.1     
-[41] magrittr_2.0.3    utf8_1.2.3        withr_2.5.1       scales_1.3.0     
-[45] promises_1.2.1    timechange_0.2.0  rmarkdown_2.25    workflowr_1.7.1  
-[49] hms_1.1.3         evaluate_0.22     knitr_1.44        irlba_2.3.5.1    
-[53] rlang_1.1.1       Rcpp_1.0.11       glue_1.6.2        rstudioapi_0.15.0
-[57] jsonlite_1.8.7    R6_2.5.1          plyr_1.8.9        fs_1.6.3         </code></pre>
+ [1] gtable_0.3.4      xfun_0.40         bslib_0.5.1       processx_3.8.2   
+ [5] lattice_0.21-8    callr_3.7.3       tzdb_0.4.0        vctrs_0.6.4      
+ [9] tools_4.3.1       ps_1.7.5          generics_0.1.3    fansi_1.0.5      
+[13] pkgconfig_2.0.3   SQUAREM_2021.1    assertthat_0.2.1  truncnorm_1.0-9  
+[17] lifecycle_1.0.3   farver_2.1.1      compiler_4.3.1    git2r_0.33.0     
+[21] munsell_0.5.0     getPass_0.2-4     httpuv_1.6.11     htmltools_0.5.6.1
+[25] sass_0.4.7        yaml_2.3.7        later_1.3.1       pillar_1.9.0     
+[29] jquerylib_0.1.4   whisker_0.4.1     rmeta_3.0         cachem_1.0.8     
+[33] abind_1.4-5       tidyselect_1.2.0  digest_0.6.33     mvtnorm_1.2-3    
+[37] stringi_1.7.12    labeling_0.4.3    rprojroot_2.0.3   fastmap_1.1.1    
+[41] grid_4.3.1        invgamma_1.1      colorspace_2.1-0  cli_3.6.1        
+[45] magrittr_2.0.3    utf8_1.2.3        withr_2.5.1       scales_1.3.0     
+[49] promises_1.2.1    timechange_0.2.0  rmarkdown_2.25    httr_1.4.7       
+[53] hms_1.1.3         evaluate_0.22     knitr_1.44        irlba_2.3.5.1    
+[57] rlang_1.1.1       Rcpp_1.0.11       glue_1.6.2        rstudioapi_0.15.0
+[61] jsonlite_1.8.7    R6_2.5.1          plyr_1.8.9        fs_1.6.3         </code></pre>
 </div>
 </div>
 </div>
