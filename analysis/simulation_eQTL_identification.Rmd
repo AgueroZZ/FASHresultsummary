@@ -246,7 +246,7 @@ fda_df$rank <- 1:length(lfda)
 
 ```{r}
 ggplot(fda_df, aes(x = 1:length(lfda), y = cumulative_fda, col = type)) +
-  geom_line() +
+  geom_point() +
   geom_hline(yintercept = 0.05, linetype = "dashed", color = "purple") +
   labs(x = "Ordered eQTLs", y = "Cumulative FDA", col = "Type") +
   theme_minimal() +
@@ -263,7 +263,7 @@ true_false_discovery_rate <- num_false_discoveries/num_discoveries
 true_false_discovery_rate
 ```
 
-Plot the curve of nominal false discovery rate (threshold) against the actual true false discovery rate:
+Plot the curve of nominal false discovery rate (threshold) against the actual false discovery rate:
 ```{r}
 # Calculate true FDR for FASH
 threshold_vec <- seq(0.01, 0.99, by = 0.01)
@@ -283,10 +283,11 @@ ggplot(fdr_df_fash, aes(x = threshold, y = true_fdr)) +
   geom_line() +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
-  labs(x = "Nominal False Discovery Rate", y = "True False Discovery Rate") +
+  labs(x = "(Nominal) False Discovery Rate", y = "(Actual) False Discovery Rate") +
   theme_minimal() +
+  geom_hline(yintercept = sizeA/N, linetype = "dashed", color = "red") +
   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
-  ggtitle("Nominal FDR vs True FDR Curve for FASH")
+  ggtitle("Nominal FDR vs Actual FDR Curve for FASH")
 ```
 
 Also compare the number of false discoveries with the number of discoveries at different level of threshold, where number of discoveries is plotted against number of false discoveries:
@@ -300,14 +301,14 @@ for (i in 1:length(threshold_vec)) {
   num_false_discoveries_vec[i] <- sum(fda_df$cumulative_fda <= threshold_vec[i] & fda_df$type == "A")
 }
 num_discoveries_df <- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec, num_false_discoveries = num_false_discoveries_vec)
-ggplot(num_discoveries_df, aes(x = (num_discoveries), y = num_false_discoveries)) +
+ggplot(num_discoveries_df, aes(x = (num_discoveries), y = (num_false_discoveries))) +
   geom_line() +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
   labs(x = "Number of Discoveries", y = "Number of False Discoveries") +
   theme_minimal() +
   ggtitle("FASH: Number of False Discoveries vs Number of Discoveries") +
-  coord_cartesian(xlim = c(0, 1000), ylim = c(0, 1000))
+  coord_cartesian(xlim = c(0, 300), ylim = c(0, 300))
 
 ```
 
@@ -388,10 +389,10 @@ ggplot(fdr_df_mash, aes(x = threshold, y = true_fdr)) +
   geom_line() +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
-  labs(x = "Nominal False Discovery Rate", y = "True False Discovery Rate") +
+  labs(x = "(Nominal) False Discovery Rate", y = "(Actual) False Discovery Rate") +
   theme_minimal() +
   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
-  ggtitle("Nominal FDR vs True FDR Curve for MASH")
+  ggtitle("Nominal FDR vs Actual FDR Curve for MASH")
 ```
 
 Plot the number of false discoveries against the number of total discoveries for MASH:
@@ -405,14 +406,14 @@ for (i in 1:length(threshold_vec)) {
   num_false_discoveries_vec[i] <- sum(fda_df_mash$cumulative_fda <= threshold_vec[i] & fda_df_mash$type == "A")
 }
 num_discoveries_df_mash <- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec, num_false_discoveries = num_false_discoveries_vec)
-ggplot(num_discoveries_df_mash, aes(x = num_discoveries, y = num_false_discoveries)) +
+ggplot(num_discoveries_df_mash, aes(x = num_discoveries, y = (num_false_discoveries))) +
   geom_line() +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
   labs(x = "Number of Discoveries", y = "Number of False Discoveries") +
   theme_minimal() +
   ggtitle("MASH: Number of False Discoveries vs Number of Discoveries") +
-  coord_cartesian(xlim = c(0, 1000), ylim = c(0, 1000))
+  coord_cartesian(xlim = c(0, 300), ylim = c(0, 300))
 ```
 
 
@@ -452,16 +453,17 @@ ggplot(fdr_df_combined, aes(x = threshold, y = true_fdr, color = method)) +
   geom_line() +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
-  labs(x = "Nominal False Discovery Rate", y = "True False Discovery Rate") +
+  labs(x = "Nominal False Discovery Rate", y = "Actual False Discovery Rate") +
   theme_minimal() +
   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
-  ggtitle("Nominal FDR vs True FDR Curves for MASH and FASH")
+  geom_hline(yintercept = sizeA/N, linetype = "dashed", color = "red") +
+  ggtitle("Nominal FDR vs Actual FDR Curves for MASH and FASH")
 ```
 
 Compare the number of false discoveries against the number of total discoveries for both methods:
 
 ```{r}
-threshold_vec <- c(0.001,seq(0.01, 0.99, by = 0.01), 0.999)
+threshold_vec <- seq(0.01, 0.99, by = 0.01)
 num_discoveries_vec_fash <- numeric(length(threshold_vec))
 num_false_discoveries_vec_fash <- numeric(length(threshold_vec))
 for (i in 1:length(threshold_vec)) {
@@ -488,7 +490,28 @@ ggplot(num_discoveries_df_combined, aes(x = num_discoveries, y = num_false_disco
   labs(x = "Number of Discoveries", y = "Number of False Discoveries") +
   theme_minimal() +
   ggtitle("Number of False Discoveries vs Number of Discoveries for MASH and FASH") +
-  coord_cartesian(xlim = c(0, 1000), ylim = c(0, 1000))
+  coord_cartesian(xlim = c(0, 300), ylim = c(0, 300))
+```
+
+To compare their rankings of eQTLs based on the cumulative FDA, we can compare the rank distribution of each type of eQTLs (A,B,C) based on the two methods:
+
+```{r}
+fda_df_merge <- rbind(fda_df %>% mutate(method = "FASH"), fda_df_mash %>% mutate(method = "MASH"))
+
+ggplot(fda_df_merge, aes(x = type, y = rank, color = type)) +
+  geom_boxplot() +
+  labs(x = "Type", y = "Rank") +
+  theme_minimal() +
+  ggtitle("Rank Distribution: FASH vs MASH") +
+  facet_wrap(~method)
 
 ```
+
+**Summary:** Overall, FASH tends to make more conservative decision than MASH in terms of the discovery of non-dynamic eQTLs. 
+The actual false discovery rate of FASH tends to be lower than the nominal false discovery rate, while MASH tends to have a higher actual false discovery rate than the nominal false discovery rate.
+This kind of behavior is expected, as each mixture component of FASH is a L-GP prior that shrinks toward the constant base model. In contrast, the mixture components in MASH have different type of shrinkage tendencies. which gains more modeling flexibility at the cost of less informative shrinkage.
+Overall, MASH does better job at controlling an actual FDA closer to the nominal level, but FASH does better job at keeping the actual FDA lower than the nominal level.
+
+
+
 
