@@ -424,7 +424,7 @@ ordered_false_sign_rate_delta_more <- sort(loca_false_sign_rate_delta_more)
 cumulative_false_sign_rate_delta_more <- cumsum(ordered_false_sign_rate_delta_more)/seq_along(ordered_false_sign_rate_delta_more)
 clusters_ordered <- clusters[match(names(ordered_false_sign_rate_delta_more), names(clusters))]
 plot(cumulative_false_sign_rate_delta_more, type = "o", xlab = "Ordered Countries", ylab = "Cumulative False Sign Rate", ylim = c(0,1))
-text(1:length(cumulative_false_sign_rate_delta_more), cumulative_false_sign_rate_delta_more, labels = names(cumulative_false_sign_rate_delta_more), pos = 3, cex = 1, col = clusters_ordered)
+text(1:length(cumulative_false_sign_rate_delta_more), cumulative_false_sign_rate_delta_more, labels = names(cumulative_false_sign_rate_delta_more), pos = 3, cex = 0.6, col = clusters_ordered)
 legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = c(1, 2, 3, 4))
 abline(h = 0.05, col = "purple", lty = "dashed")
 ```
@@ -439,7 +439,7 @@ cumulative_false_sign_rate_initial_more <- cumsum(ordered_false_sign_rate_initia
 cumulative_false_sign_rate_initial_more
 clusters_ordered <- clusters[match(names(ordered_false_sign_rate_initial_more), names(clusters))]
 plot(cumulative_false_sign_rate_initial_more, type = "o", xlab = "Ordered Countries", ylab = "Cumulative False Sign Rate", ylim = c(0,1))
-text(1:length(cumulative_false_sign_rate_initial_more), cumulative_false_sign_rate_initial_more, labels = names(cumulative_false_sign_rate_initial_more), pos = 3, cex = 1, col = clusters_ordered)
+text(1:length(cumulative_false_sign_rate_initial_more), cumulative_false_sign_rate_initial_more, labels = names(cumulative_false_sign_rate_initial_more), pos = 3, cex = 0.6, col = clusters_ordered)
 legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = c(1, 2, 3, 4))
 abline(h = 0.05, col = "purple", lty = "dashed")
 ```
