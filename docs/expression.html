@@ -261,7 +261,10 @@ $(document).ready(function () {
   <a href="about.html">About</a>
 </li>
 <li>
-  <a href="simulation.html">Simulation</a>
+  <a href="simulation.html">Simulation 1</a>
+</li>
+<li>
+  <a href="simulation_eQTL_identification.html">Simulation 2</a>
 </li>
 <li>
   <a href="covid_example.html">COVID-19 Example</a>
@@ -319,7 +322,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-05-15
+<strong>Last updated:</strong> 2024-05-27
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -450,15 +453,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree08cc7a7aebe5d38aa45f16a4164627dc04555198targetblank08cc7a7a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree2aadd9258476fc0b8b8398684ed6c962a840c5e0targetblank2aadd92a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/08cc7a7aebe5d38aa45f16a4164627dc04555198" target="_blank">08cc7a7</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/2aadd9258476fc0b8b8398684ed6c962a840c5e0" target="_blank">2aadd92</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree08cc7a7aebe5d38aa45f16a4164627dc04555198targetblank08cc7a7a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree2aadd9258476fc0b8b8398684ed6c962a840c5e0targetblank2aadd92a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -468,7 +471,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/08cc7a7aebe5d38aa45f16a4164627dc04555198" target="_blank">08cc7a7</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/2aadd9258476fc0b8b8398684ed6c962a840c5e0" target="_blank">2aadd92</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -491,6 +494,7 @@ Ignored files:
     Ignored:    code/.DS_Store
     Ignored:    code/cpp/.DS_Store
     Ignored:    code/function/.DS_Store
+    Ignored:    code/function/.Rhistory
     Ignored:    data/.DS_Store
     Ignored:    output/.DS_Store
     Ignored:    output/example/.DS_Store
@@ -516,12 +520,22 @@ Untracked files:
     Untracked:  code/cpp/Poisson_just_fixed_causes.so
     Untracked:  code/cpp/Poisson_just_fixed_covid.o
     Untracked:  code/cpp/Poisson_just_fixed_covid.so
+    Untracked:  code/function/functions_fitting_Gaussian_eQTL_irregular.R
+    Untracked:  code/function/functions_simulation_eQTL_irregular.R
     Untracked:  data/13100810.csv
     Untracked:  data/13100810_MetaData.csv
-    Untracked:  data/X13100810.eng.zip
     Untracked:  data/expression_data/
+    Untracked:  exp.R
     Untracked:  output/causes/
     Untracked:  output/expression/
+    Untracked:  output/simulation_eQTL/
+    Untracked:  output/simulation_eQTL_test/
+
+Unstaged changes:
+    Modified:   output/example/L_matrix.rda
+    Modified:   output/example/fitted_datasets.rda
+    Modified:   output/example/functional_datasets.rda
+    Modified:   output/example/posterior_weights_matrix.rda
 
 </code></pre>
 <p>
@@ -567,6 +581,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ab342cbde768b4282e6db6a241018b33444b998a/analysis/expression.Rmd" target="_blank">ab342cb</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-27
+</td>
+<td>
+wflow_git_commit(c("analysis/simulation_eQTL_identification.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/3b37c543448424223e37bef6f636d8c9dce217ec/docs/expression.html" target="_blank">3b37c54</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+<td>
+update html
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -641,9 +689,23 @@ class="math inline">\(i\)</span>th gene at day <span
 class="math inline">\(t_j\)</span>, we assume that the expression count
 <span class="math inline">\(y_{i}(t_j)\)</span> is Poisson distributed
 with mean <span class="math inline">\(\exp
-\left(f_i(t_j)\right)\)</span>, where the prior on <span
-class="math inline">\(f_i\)</span> is a finite mixture of IWP-2 with
-different levels of smoothness (PSD).</p>
+\left(f_i(t_j)\right)\)</span>.</p>
+</div>
+<div id="model" class="section level3">
+<h3><strong>Model</strong></h3>
+<p>Assume most of the gene expression trajectories are expected to be
+linear, we therefore consider the following finite mixture prior for
+each gene expression level <span
+class="math inline">\(f_i(t_j)\)</span>: <span
+class="math display">\[f_i(t) = \sum_{k=1}^K \pi_k g_k(t).\]</span> Each
+mixture component <span class="math inline">\(g_k\)</span> has the
+prior: <span class="math display">\[Lg_k(t) = \sigma_k W(t), \]</span>
+with <span class="math inline">\(W(t)\)</span> being a Gaussian white
+noise process and <span class="math inline">\(\sigma_k\)</span> being
+the smoothness. The base model that each <span
+class="math inline">\(f_i\)</span> being shrunk to is therefore <span
+class="math inline">\(\text{Null}\{L\} =
+\text{span}\{1,t\}\)</span>.</p>
 </div>
 <div id="processing-the-expression-data" class="section level3">
 <h3><strong>Processing the expression data</strong></h3>
