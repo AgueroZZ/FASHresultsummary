@@ -342,6 +342,7 @@ save(m, file = paste0(result_dir, "/mash_result.rda"))
 ```
 
 ```{r}
+load(paste0(result_dir, "/mash_result.rda"))
 mash_post <- m$posterior_weights
 ## extract the colnames start with "equal_effects"
 lfdr_mash <- mash_post[, c(1, grep("equal_effects", colnames(mash_post)))]
