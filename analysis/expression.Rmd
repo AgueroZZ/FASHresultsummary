@@ -13,7 +13,7 @@ We consider the (raw) gene expression data measured over 16 days as studied in [
 For simplicity of the presentation, we consider only one cell-line in this example. 
 The dataset contains the raw expression counts of 16319 genes.
 
-To model the true (log) expression level $f_i(t_j)$ of the $i$th gene at day $t_j$, we assume that the expression count $y_{i}(t_j)$ is Poisson distributed with mean $\exp \left(f_i(t_j)\right)$, where the prior on $f_i$ is a finite mixture of IWP-2 with different levels of smoothness (PSD).
+To model the true (log) expression level $f_i(t_j)$ of the $i$th gene at day $t_j$, we assume that the expression count $y_{i}(t_j)$ is Poisson distributed with mean $\exp \left(f_i(t_j)\right)$.
 
 
 ```{r include=FALSE}
@@ -38,6 +38,13 @@ dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson")))
 dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_just_fixed")))
 num_cores <- 4
 ```
+
+### **Model**
+
+Assume most of the gene expression trajectories are expected to be linear, we therefore consider the following finite mixture prior for each gene expression level $f_i(t_j)$:
+$$f_i(t) = \sum_{k=1}^K \pi_k g_k(t).$$
+Each mixture component $g_k$ has the prior: $$Lg_k(t) = \sigma_k W(t), $$ with $W(t)$ being a Gaussian white noise process and $\sigma_k$ being the smoothness. 
+The base model that each $f_i$ being shrunk to is therefore $\text{Null}\{L\} = \text{span}\{1,t\}$.
 
 ### **Processing the expression data**
 
