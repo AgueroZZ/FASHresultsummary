@@ -120,7 +120,6 @@ prior_weight <- data.frame(p = rep(p, each = length(psd_vec)), psd_iwp = psd_vec
 
 ### **Obtaining posteriors**
 
-
 ```{r, eval=FALSE}
 num_datasets <- length(datasets)
 num_weights <- sum(prior_weight$prior_weight != 0)
@@ -412,11 +411,11 @@ plot_cluster_genes_log(genes_cluster6)
 ```
 
 
-### **Question: what genes have linear trajectories? **
+### **Question: what genes have non-linear trajectories? **
 
 ```{r}
 p0 <- posterior_weights_df$`2_0` # prob of PSD = 0 -> linear
-local_fda <- 1 - p0
+local_fda <- p0
 fda_df <- data.frame(gene = all_gene, fda = local_fda)
 fda_df <- fda_df[order(fda_df$fda), ] # ordering it
 fda_df$cumulative_fda <- cumsum(fda_df$fda)/seq_along(fda_df$fda)
@@ -435,6 +434,12 @@ fda_df <- merge(fda_df, gene_symbols, by = "gene") %>% arrange(cumulative_fda)
 plot(fda_df$cumulative_fda, type = "l", xlab = "Ordered Genes", ylab = "Cumulative FDA", ylim = c(0,1), cex = 0.1)
 abline(h = 0.05, col = "purple", lty = "dashed")
 ```
+
+What proportion of the genes are likely having non-linear trajectories?
+```{r}
+fda_df %>% filter(cumulative_fda < 0.05) %>% nrow() / nrow(fda_df)
+```
+
 
 ```{r}
 fda_df %>% filter(cumulative_fda < 0.05, !is.na(gene_name)) %>% 
