@@ -454,15 +454,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree54e206198b570f05de111062f55b3303eac17d45targetblank54e2061a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree84d9fd83fa4ba2bcbc7fa2fac18539dd4e6da15btargetblank84d9fd8a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/54e206198b570f05de111062f55b3303eac17d45" target="_blank">54e2061</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/84d9fd83fa4ba2bcbc7fa2fac18539dd4e6da15b" target="_blank">84d9fd8</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree54e206198b570f05de111062f55b3303eac17d45targetblank54e2061a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree84d9fd83fa4ba2bcbc7fa2fac18539dd4e6da15btargetblank84d9fd8a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -472,7 +472,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/54e206198b570f05de111062f55b3303eac17d45" target="_blank">54e2061</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/84d9fd83fa4ba2bcbc7fa2fac18539dd4e6da15b" target="_blank">84d9fd8</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -582,6 +582,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/84d9fd83fa4ba2bcbc7fa2fac18539dd4e6da15b/analysis/covid_example.Rmd" target="_blank">84d9fd8</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-27
+</td>
+<td>
+wflow_publish(files = "analysis/covid_example.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/dc690e8c8e3824d64db96803aa85ebc18d63e96e/docs/covid_example.html" target="_blank">dc690e8</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-27
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -925,11 +959,11 @@ the following finite mixture: <span class="math display">\[f_i(x) =
 \sum_{k=1}^{K} \pi_{k} g_{k}(x),\]</span> where each mixture component
 has a IWP-3 prior: <span class="math display">\[Lg_{k}(x) = \sigma_k
 W(x),\]</span> where <span class="math inline">\(W(x)\)</span> is the
-Gaussian white noise process, <span class="math inline">\(L =
-\frac{\partial^3}{\partial x^3}\)</span> and <span
+Gaussian white noise process and <span
 class="math inline">\(\sigma_k\)</span> is the smoothness parameter that
-inversely controls the shrinkage strength. In this case, the “center”
-that each mixture component shrinks to is the base model <span
+inversely controls the shrinkage strength. In this case, <span
+class="math inline">\(L = \frac{\partial^3}{\partial x^3}\)</span>,
+which implies that the target of shrinkage is the base model <span
 class="math inline">\(\text{Null}\{L\} = \text{span}\{1, x,
 x^2\}\)</span>. The prior weights <span
 class="math inline">\(\pi_k\)</span> are optimized using empirical
