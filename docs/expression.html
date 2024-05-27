@@ -453,15 +453,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree16264cf81cf5ebdf91b997f83c280d55d9222490targetblank16264cfa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeade221629635a11d5d73a18ffd7c78db00571d31targetblankade2216a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/16264cf81cf5ebdf91b997f83c280d55d9222490" target="_blank">16264cf</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/ade221629635a11d5d73a18ffd7c78db00571d31" target="_blank">ade2216</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree16264cf81cf5ebdf91b997f83c280d55d9222490targetblank16264cfa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeade221629635a11d5d73a18ffd7c78db00571d31targetblankade2216a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -471,7 +471,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/16264cf81cf5ebdf91b997f83c280d55d9222490" target="_blank">16264cf</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/ade221629635a11d5d73a18ffd7c78db00571d31" target="_blank">ade2216</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -581,6 +581,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ade221629635a11d5d73a18ffd7c78db00571d31/analysis/expression.Rmd" target="_blank">ade2216</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-27
+</td>
+<td>
+wflow_publish(files = "analysis/expression.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/cfe24a9e633b867d989d93e3874b3d7a6c9d4f94/docs/expression.html" target="_blank">cfe24a9</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-27
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1737,12 +1771,12 @@ Ziang Zhang
 </div>
 </div>
 </div>
-<div id="question-what-genes-have-linear-trajectories"
+<div id="question-what-genes-have-non-linear-trajectories"
 class="section level3">
-<h3><strong>Question: what genes have linear trajectories?
+<h3><strong>Question: what genes have non-linear trajectories?
 </strong></h3>
 <pre class="r"><code>p0 &lt;- posterior_weights_df$`2_0` # prob of PSD = 0 -&gt; linear
-local_fda &lt;- 1 - p0
+local_fda &lt;- p0
 fda_df &lt;- data.frame(gene = all_gene, fda = local_fda)
 fda_df &lt;- fda_df[order(fda_df$fda), ] # ordering it
 fda_df$cumulative_fda &lt;- cumsum(fda_df$fda)/seq_along(fda_df$fda)
@@ -1795,69 +1829,36 @@ Ziang Zhang
 </table>
 </div>
 </div>
+<p>What proportion of the genes are likely having non-linear
+trajectories?</p>
+<pre class="r"><code>fda_df %&gt;% filter(cumulative_fda &lt; 0.05) %&gt;% nrow() / nrow(fda_df)</code></pre>
+<pre><code>[1] 0.8777722</code></pre>
 <pre class="r"><code>fda_df %&gt;% filter(cumulative_fda &lt; 0.05, !is.na(gene_name)) %&gt;% 
   arrange(cumulative_fda) %&gt;%
   head(16)</code></pre>
-<pre><code>              gene          fda cumulative_fda gene_name
-1  ENSG00000156958 5.272845e-08   5.272845e-08     GALK2
-2  ENSG00000121542 9.561169e-08   7.417007e-08    SEC22A
-3  ENSG00000009780 1.478928e-07   9.874430e-08    FAM76A
-4  ENSG00000235109 1.484049e-07   1.111594e-07   ZSCAN31
-5  ENSG00000196436 1.658680e-07   1.221012e-07   NPIPB15
-6  ENSG00000172594 2.180770e-07   1.380971e-07   SMPDL3A
-7  ENSG00000122696 2.337421e-07   1.517607e-07  SLC25A51
-8  ENSG00000228696 2.339847e-07   1.620387e-07    ARL17B
-9  ENSG00000240053 2.535231e-07   1.722036e-07    LY6G5B
-10 ENSG00000169087 4.362178e-07   1.986051e-07   HSPBAP1
-11 ENSG00000148950 6.979862e-07   2.440033e-07    IMMP1L
-12 ENSG00000139537 7.395559e-07   2.852994e-07    CCDC65
-13 ENSG00000186010 8.556404e-07   3.291718e-07   NDUFA13
-14 ENSG00000171984 8.579557e-07   3.669421e-07     SHLD1
-15 ENSG00000111215 8.684411e-07   4.003753e-07      PRR4
-16 ENSG00000176623 8.815372e-07   4.304479e-07     RMDN1</code></pre>
+<pre><code>              gene fda cumulative_fda gene_name
+1  ENSG00000001617   0              0    SEMA3F
+2  ENSG00000002834   0              0     LASP1
+3  ENSG00000003249   0              0    DBNDD1
+4  ENSG00000003436   0              0      TFPI
+5  ENSG00000003756   0              0      RBM5
+6  ENSG00000003989   0              0    SLC7A2
+7  ENSG00000004399   0              0    PLXND1
+8  ENSG00000004478   0              0     FKBP4
+9  ENSG00000004487   0              0     KDM1A
+10 ENSG00000004864   0              0  SLC25A13
+11 ENSG00000004866   0              0       ST7
+12 ENSG00000005100   0              0     DHX33
+13 ENSG00000005108   0              0    THSD7A
+14 ENSG00000005249   0              0   PRKAR2B
+15 ENSG00000005339   0              0    CREBBP
+16 ENSG00000005884   0              0     ITGA3</code></pre>
 <p>Plot the log expression of the top 16 genes:</p>
 <pre class="r"><code>top_genes &lt;- fda_df %&gt;% filter(cumulative_fda &lt; 0.05, !is.na(gene_name)) %&gt;% 
   arrange(cumulative_fda) %&gt;%
   head(16) %&gt;% pull(gene)
 plot_cluster_genes_log(top_genes)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-31-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-31-1">
-Past versions of unnamed-chunk-31-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-31-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-31-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/expression.Rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
