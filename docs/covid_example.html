@@ -261,7 +261,10 @@ $(document).ready(function () {
   <a href="about.html">About</a>
 </li>
 <li>
-  <a href="simulation.html">Simulation</a>
+  <a href="simulation.html">Simulation 1</a>
+</li>
+<li>
+  <a href="simulation_eQTL_identification.html">Simulation 2</a>
 </li>
 <li>
   <a href="covid_example.html">COVID-19 Example</a>
@@ -320,7 +323,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-05-15
+<strong>Last updated:</strong> 2024-05-27
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -451,15 +454,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree08cc7a7aebe5d38aa45f16a4164627dc04555198targetblank08cc7a7a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeffc60c02d4c5692278285d2216b9181e670b7966targetblankffc60c0a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/08cc7a7aebe5d38aa45f16a4164627dc04555198" target="_blank">08cc7a7</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/ffc60c02d4c5692278285d2216b9181e670b7966" target="_blank">ffc60c0</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree08cc7a7aebe5d38aa45f16a4164627dc04555198targetblank08cc7a7a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeffc60c02d4c5692278285d2216b9181e670b7966targetblankffc60c0a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -469,7 +472,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/08cc7a7aebe5d38aa45f16a4164627dc04555198" target="_blank">08cc7a7</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/ffc60c02d4c5692278285d2216b9181e670b7966" target="_blank">ffc60c0</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -492,6 +495,7 @@ Ignored files:
     Ignored:    code/.DS_Store
     Ignored:    code/cpp/.DS_Store
     Ignored:    code/function/.DS_Store
+    Ignored:    code/function/.Rhistory
     Ignored:    data/.DS_Store
     Ignored:    output/.DS_Store
     Ignored:    output/example/.DS_Store
@@ -517,12 +521,22 @@ Untracked files:
     Untracked:  code/cpp/Poisson_just_fixed_causes.so
     Untracked:  code/cpp/Poisson_just_fixed_covid.o
     Untracked:  code/cpp/Poisson_just_fixed_covid.so
+    Untracked:  code/function/functions_fitting_Gaussian_eQTL_irregular.R
+    Untracked:  code/function/functions_simulation_eQTL_irregular.R
     Untracked:  data/13100810.csv
     Untracked:  data/13100810_MetaData.csv
-    Untracked:  data/X13100810.eng.zip
     Untracked:  data/expression_data/
+    Untracked:  exp.R
     Untracked:  output/causes/
     Untracked:  output/expression/
+    Untracked:  output/simulation_eQTL/
+    Untracked:  output/simulation_eQTL_test/
+
+Unstaged changes:
+    Modified:   output/example/L_matrix.rda
+    Modified:   output/example/fitted_datasets.rda
+    Modified:   output/example/functional_datasets.rda
+    Modified:   output/example/posterior_weights_matrix.rda
 
 </code></pre>
 <p>
@@ -568,6 +582,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ffc60c02d4c5692278285d2216b9181e670b7966/analysis/covid_example.Rmd" target="_blank">ffc60c0</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-27
+</td>
+<td>
+wflow_publish(files = "analysis/covid_example.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/3b37c543448424223e37bef6f636d8c9dce217ec/docs/covid_example.html" target="_blank">3b37c54</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+<td>
+update html
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -765,9 +813,24 @@ class="math inline">\(f_i(x_j)\)</span>, we assume that the death count
 <span class="math display">\[y_{i}(x_j) \sim
 \text{Poisson}(\exp(v_{ij}^T\boldsymbol{\beta}_i + f_i(x_j))),\]</span>
 where <span class="math inline">\(v_{ij}\)</span> is the fixed effect
-that denotes the weekdays, and the prior on <span
-class="math inline">\(f_i\)</span> is a finite mixture of IWP-3 with
-different levels of smoothness (PSD).</p>
+that denotes the weekdays.</p>
+</div>
+<div id="model" class="section level2">
+<h2><strong>Model:</strong></h2>
+<p>The prior for the <span class="math inline">\(i\)</span>th (log)
+mortality rate over time <span class="math inline">\(f_i(x)\)</span> is
+the following finite mixture: <span class="math display">\[f_i(x) =
+\sum_{k=1}^{K} \pi_{k} g_{k}(x),\]</span> where each mixture component
+has a IWP-3 prior: <span class="math display">\[Lg_{k}(x) = \sigma_k
+W(x),\]</span> where <span class="math inline">\(W(x)\)</span> is the
+Gaussian white noise process, and <span
+class="math inline">\(\sigma_k\)</span> is the smoothness parameter that
+inversely controls the shrinkage strength. In this case, the “center”
+that each mixture component shrinks to is the base model <span
+class="math inline">\(\text{Null}\{L\} = \text{span}\{1, x,
+x^2\}\)</span>. The prior weights <span
+class="math inline">\(\pi_k\)</span> are optimized using empirical
+Bayes.</p>
 </div>
 <div id="data" class="section level2">
 <h2><strong>Data:</strong></h2>
@@ -775,7 +838,8 @@ different levels of smoothness (PSD).</p>
 <pre class="r"><code>full_data_covid &lt;- read.csv(file = paste0(data_dir, &quot;/owid-covid-data.csv&quot;), header = T)
 full_data_covid &lt;- full_data_covid %&gt;% filter(date &gt; &quot;2020-01-01&quot;)
 full_data_covid$y &lt;- round(full_data_covid$new_deaths_per_million)
-full_data_covid$quality &lt;- abs((full_data_covid$y-full_data_covid$new_deaths_smoothed_per_million)/(full_data_covid$new_deaths_smoothed_per_million + 1))
+full_data_covid$quality &lt;- abs((full_data_covid$y-full_data_covid$new_deaths_smoothed_per_million)/(full_data_covid$new_deaths_smoothed_per_million))
+full_data_covid$quality &lt;- ifelse(is.nan(full_data_covid$quality), 0, full_data_covid$quality)
 full_data_covid$Date &lt;- as.Date(full_data_covid$date)
 full_data_covid$x &lt;- (as.Date(full_data_covid$date) %&gt;% as.numeric())/31
 ## Assume COVID death rate is approximately 0 at time 2020-01-01, so set intercept being -3. Also, assume the derivatives are all zero at this point.
@@ -784,15 +848,15 @@ full_data_covid$weekdays &lt;- weekdays(as.Date(full_data_covid$date))
 full_data_covid$weekdays &lt;- factor(full_data_covid$weekdays,
                                     levels = c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;, &quot;Saturday&quot;, &quot;Sunday&quot;),
                                     ordered = F)
-full_data_covid_EU &lt;- full_data_covid %&gt;% filter(continent == &quot;Europe&quot;) %&gt;% select(Date, x, y, weekdays, location, iso_code, quality)</code></pre>
+full_data_covid_EU &lt;- full_data_covid %&gt;% filter(continent == &quot;Europe&quot;) %&gt;% select(Date, x, y, weekdays, location, iso_code, quality, new_deaths_smoothed_per_million)</code></pre>
 <p>The final selected countries/data are:</p>
 <pre class="r"><code>datasets &lt;- list()
 available_countries &lt;- unique(full_data_covid_EU$location)
 selected_countries &lt;- c()
 for (country in available_countries) {
-  full_data &lt;- full_data_covid_EU %&gt;% filter(location == country, !is.na(y), !is.na(quality))
-  full_data &lt;- full_data %&gt;% filter(quality &lt;= 1.0, y != 0)
-  if(sum(full_data$y != 0) &lt; 300) {
+  full_data &lt;- full_data_covid_EU %&gt;% filter(location == country, !is.na(y))
+  full_data &lt;- full_data %&gt;% filter(quality &lt;= 1.0)
+  if((sum(full_data$y != 0) &lt; 200) | (length(unique(full_data$weekdays)) &lt; 7) ) {
     next
   }
   else{
@@ -800,8 +864,8 @@ for (country in available_countries) {
     datasets[[country]] &lt;- full_data %&gt;% arrange(Date)
   }
 }
-par(mfrow = c(6, 6), mar = c(2, 2, 1, 1))  # Adjust margins as needed
-for (i in 1:34) {
+par(mfrow = c(6, 7), mar = c(2, 2, 1, 1))  # Adjust margins as needed
+for (i in 1:37) {
   plot(datasets[[i]]$x, (datasets[[i]]$y), type = &#39;p&#39;,  # Change to &#39;p&#39; for points
        main = paste0(selected_countries[i]), xlab = &quot;x&quot;, ylab = &quot;y&quot;,
        cex = 0.1,
@@ -851,8 +915,9 @@ Ziang Zhang
 <h2><strong>Empirical Bayes:</strong></h2>
 <p>We compute the L-matrix and use EB to optimize the prior weights:</p>
 <pre class="r"><code>p_vec &lt;- 3
-log_prec_vec &lt;- sort(unique(c(seq(0, 5, by = 0.1), seq(5, 10, by = 1), seq(-5,0, by = 1))))
-psd_iwp_vec &lt;- exp(-.5*log_prec_vec)
+# log_prec_vec &lt;- sort(unique(c(seq(0, 5, by = 0.1), seq(5, 10, by = 1), seq(-5,0, by = 1))))
+# psd_iwp_vec &lt;- exp(-.5*log_prec_vec)
+psd_iwp_vec &lt;- seq(0,2, by = 0.05)
 L_vecs &lt;- mclapply(datasets, function(dataset) {
   compute_log_likelihood_ospline_seq2(
     dataset = dataset,
@@ -866,7 +931,7 @@ L_vecs &lt;- mclapply(datasets, function(dataset) {
 L_matrix &lt;- do.call(rbind, L_vecs)
 save(L_matrix, file = paste0(result_dir, &quot;/L_matrix.rda&quot;))</code></pre>
 <pre class="r"><code>fit.sqp &lt;- mixsqp(L = L_matrix, log = TRUE)</code></pre>
-<pre><code>Running mix-SQP algorithm 0.3-54 on 34 x 61 matrix
+<pre><code>Running mix-SQP algorithm 0.3-54 on 37 x 41 matrix
 convergence tol. (SQP):     1.0e-08
 conv. tol. (active-set):    1.0e-10
 zero threshold (solution):  1.0e-08
@@ -877,25 +942,24 @@ minimum step size:          1.0e-08
 max. iter (SQP):            1000
 max. iter (active-set):     20
 number of EM iterations:    10
-Computing SVD of 34 x 61 matrix.
+Computing SVD of 37 x 41 matrix.
 Matrix is not low-rank; falling back to full matrix.
 iter        objective max(rdual) nnz stepsize max.diff nqp nls
-   1 +1.594533816e+00  -- EM --   55 1.00e+00 6.46e-02  --  --
-   2 +1.570667322e+00  -- EM --   54 1.00e+00 3.10e-02  --  --
-   3 +1.556757786e+00  -- EM --   54 1.00e+00 2.36e-02  --  --
-   4 +1.546971792e+00  -- EM --   53 1.00e+00 2.00e-02  --  --
-   5 +1.539722293e+00  -- EM --   53 1.00e+00 1.72e-02  --  --
-   6 +1.534135349e+00  -- EM --   53 1.00e+00 1.48e-02  --  --
-   7 +1.529701581e+00  -- EM --   53 1.00e+00 1.29e-02  --  --
-   8 +1.526106446e+00  -- EM --   53 1.00e+00 1.13e-02  --  --
-   9 +1.523143876e+00  -- EM --   52 1.00e+00 1.00e-02  --  --
-  10 +1.520671594e+00  -- EM --   52 1.00e+00 8.92e-03  --  --
-   1 +1.518587089e+00 +5.018e-02  52  ------   ------   --  --
-   2 +1.516402556e+00 +4.528e-02  32 1.00e+00 1.56e-02  20   1
-   3 +1.512553349e+00 +2.604e-02  12 1.00e+00 1.17e-01  20   1
-   4 +1.498219557e+00 +7.140e-04   8 1.00e+00 1.79e-01  20   1
-   5 +1.498214214e+00 +3.186e-06   8 1.00e+00 1.47e-02   2   1
-   6 +1.498214214e+00 -3.789e-08   8 1.00e+00 4.16e-05   2   1
+   1 +1.395412498e+00  -- EM --   40 1.00e+00 2.44e-02  --  --
+   2 +1.345801382e+00  -- EM --   40 1.00e+00 1.26e-02  --  --
+   3 +1.324658085e+00  -- EM --   40 1.00e+00 6.63e-03  --  --
+   4 +1.313179436e+00  -- EM --   40 1.00e+00 5.30e-03  --  --
+   5 +1.305893817e+00  -- EM --   40 1.00e+00 4.95e-03  --  --
+   6 +1.300807061e+00  -- EM --   39 1.00e+00 4.58e-03  --  --
+   7 +1.297040757e+00  -- EM --   39 1.00e+00 4.21e-03  --  --
+   8 +1.294141658e+00  -- EM --   39 1.00e+00 3.86e-03  --  --
+   9 +1.291847129e+00  -- EM --   38 1.00e+00 3.53e-03  --  --
+  10 +1.289992110e+00  -- EM --   38 1.00e+00 3.24e-03  --  --
+   1 +1.288466678e+00 +3.170e-02  37  ------   ------   --  --
+   2 +1.287202525e+00 +2.833e-02  17 1.00e+00 1.54e-01  20   1
+   3 +1.272127648e+00 +3.917e-03   7 1.00e+00 4.48e-01  20   1
+   4 +1.271543090e+00 +5.037e-05   6 1.00e+00 1.78e-01   6   1
+   5 +1.271543089e+00 -3.019e-08   6 1.00e+00 6.88e-05   2   1
 Optimization took 0.00 seconds.
 Convergence criteria met---optimal solution found.</code></pre>
 <pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
@@ -1046,16 +1110,35 @@ Ziang Zhang
 </div>
 </div>
 <p>There are many suggested structures for the posterior weights. Let’s
-group them into <span class="math inline">\(4\)</span> clusters using
+group them into <span class="math inline">\(3\)</span> clusters using
 the hierarchical clustering method:</p>
-<pre class="r"><code># Normalize the data
-wide_data &lt;- scale(posterior_weights_matrix)
-# Perform hierarchical clustering
-d &lt;- dist(wide_data, method = &quot;euclidean&quot;)  # Distance matrix
-fit &lt;- hclust(d, method = &quot;ward.D2&quot;)  # Clustering
-clusters &lt;- cutree(fit, k = 4)
-## Recode the factor so cluster 2 be 1, 1 be 2, 4 be 3, 3 be 4
-clusters &lt;- as.numeric(factor(clusters, levels = c(2, 1, 4, 3), labels = c(1, 2, 3, 4)))
+<pre class="r"><code>kl_divergence &lt;- function(p, q) {
+  sum(p * log(p / q), na.rm = TRUE)
+}
+
+# Symmetric KL divergence
+symmetric_kl &lt;- function(p, q) {
+  (kl_divergence(p, q) + kl_divergence(q, p)) / 2
+}
+
+# Initialize the distance matrix
+n &lt;- nrow(posterior_weights_matrix)
+kl_dist_matrix &lt;- matrix(0, n, n)
+
+# Compute the symmetric KL divergence for each pair of observations
+for (i in 1:n) {
+  for (j in 1:n) {
+    kl_dist_matrix[i, j] &lt;- symmetric_kl(posterior_weights_matrix[i, ], posterior_weights_matrix[j, ])
+  }
+}
+
+# Perform hierarchical clustering using the KL divergence distance matrix
+d_kl &lt;- as.dist(kl_dist_matrix)
+fit &lt;- hclust(d_kl, method = &quot;complete&quot;)
+
+clusters &lt;- cutree(fit, k = 3)
+## Recode the factor:
+clusters &lt;- as.numeric(factor(clusters, labels = c(1, 2, 3), levels = c(2, 1, 3)))
 melted_data$cluster &lt;- clusters
 posterior_weights_df$id &lt;- 1:nrow(posterior_weights_df)
 posterior_weights_df$cluster &lt;- clusters
@@ -1121,16 +1204,16 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<p>Note that group 1 mostly consists of countries in western Europe,
-group 2 and group 3 mostly consists of countries in eastern Europe.</p>
+<p>Note that most western European countries were grouped into cluster
+1, while almost all of the eastern European countries were grouped into
+cluster 2 and 3.</p>
 <p>Let’s visualize the smoothing result for each cluster. For cluster
 1:</p>
 <pre class="r"><code>cluster1_countries &lt;- selected_countries[clusters == 1]
 cluster2_countries &lt;- selected_countries[clusters == 2]
 cluster3_countries &lt;- selected_countries[clusters == 3]
-cluster4_countries &lt;- selected_countries[clusters == 4]
 par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
-for (country in cluster1_countries[1:13]) {
+for (country in cluster1_countries[1:16]) {
   agg_result &lt;- fitted_datasets[[country]]
   plot(datasets[[country]]$Date, agg_result$median, type = &#39;l&#39;, 
        main = paste0(country), xlab = &quot;&quot;, ylab = &quot;&quot;, col = &quot;blue&quot;,
@@ -1192,7 +1275,7 @@ Ziang Zhang
 </div>
 <p>For cluster 2:</p>
 <pre class="r"><code>par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
-for (country in cluster2_countries[1:15]) {
+for (country in cluster2_countries[1:14]) {
   agg_result &lt;- fitted_datasets[[country]]
   plot(datasets[[country]]$Date, agg_result$median, type = &#39;l&#39;,  
        main = paste0(country), xlab = &quot;&quot;, ylab = &quot;&quot;, col = &quot;blue&quot;,
@@ -1253,8 +1336,8 @@ Ziang Zhang
 </div>
 </div>
 <p>For cluster 3:</p>
-<pre class="r"><code>par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))  
-for (country in cluster3_countries[1:5]) {
+<pre class="r"><code>par(mfrow = c(1, 2), mar = c(2, 2, 1, 1))  
+for (country in cluster3_countries[1:2]) {
   agg_result &lt;- fitted_datasets[[country]]
   plot(datasets[[country]]$Date, agg_result$median, type = &#39;l&#39;,  
        main = paste0(country), xlab = &quot;&quot;, ylab = &quot;&quot;, col = &quot;blue&quot;,
@@ -1314,83 +1397,27 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<p>For cluster 4:</p>
-<pre class="r"><code>par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))  
-for (country in cluster4_countries[1:1]) {
-  agg_result &lt;- fitted_datasets[[country]]
-  plot(datasets[[country]]$Date, agg_result$median, type = &#39;l&#39;,  
-       main = paste0(country), xlab = &quot;&quot;, ylab = &quot;&quot;, col = &quot;blue&quot;,
-       cex = 0.5, ylim = c(0,max(datasets[[country]]$y)*1.2),
-       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7) 
-  points(datasets[[country]]$Date, datasets[[country]]$y, col = &quot;black&quot;, cex = 0.1)
-  polygon(c(datasets[[country]]$Date, rev(datasets[[country]]$Date)),
-          c(agg_result$lower, rev(agg_result$upper)),
-          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
-}</code></pre>
-<p><img src="figure/covid_example.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
-Past versions of unnamed-chunk-14-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-14-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-14-1.png" target="_blank">c775384</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/574c0a1d89e247cb316d9ac322374ddc8209c5f8/docs/figure/covid_example.Rmd/unnamed-chunk-14-1.png" target="_blank">574c0a1</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <p><strong>Summary:</strong> Overall, many countries (mostly western
-Europe) in cluster 1 were seriously affected by the initial wave.
-Whereas countries in cluster 2 and 3 (mostly eastern Europe) were
-significantly less affected during the first initial wave.</p>
+Europe) in cluster 1 were seriously affected by multiple waves
+(especially the initial wave). Whereas countries in cluster 2 and 3
+(mostly eastern Europe) were overall affected by a smaller number of
+waves.</p>
 </div>
 <div id="follow-up-question" class="section level2">
 <h2><strong>Follow-up Question:</strong></h2>
 <p>What countries were more affected by the Delta wave than the initial
 wave? Let’s define the following time periods as initial wave and Delta
 wave:</p>
+<ul>
+<li>Initial wave: March 1, 2020 to September 1, 2020</li>
+<li>Delta wave: July 1, 2021 to January 1, 2022</li>
+</ul>
 <pre class="r"><code>refined_time &lt;- seq(as.Date(&quot;2020-01-01&quot;), as.Date(&quot;2022-04-26&quot;), by = 1)
+# refined_time &lt;- datasets[[i]]$Date
 refined_x &lt;- (as.numeric(refined_time)/31) - (as.numeric(as.Date(&quot;2020-01-01&quot;))/31)
 
 ## Initial time:
-initial_wave &lt;- c(as.Date(&quot;2020-03-01&quot;), as.Date(&quot;2020-11-01&quot;))
+initial_wave &lt;- c(as.Date(&quot;2020-03-01&quot;), as.Date(&quot;2020-09-01&quot;))
 initial_index &lt;- which(refined_time &gt;= initial_wave[1] &amp; refined_time &lt;= initial_wave[2])
 
 ## Delta time:
@@ -1454,7 +1481,14 @@ names(functional_datasets) &lt;- selected_countries
 save(posterior_weights_matrix, functional_datasets, file = paste0(result_dir, &quot;/functional_datasets.rda&quot;))</code></pre>
 <p>Produce a histogram for country in cluster 1:</p>
 <pre class="r"><code>par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))
-for (country in cluster1_countries[1:13]) {
+for (country in cluster1_countries[1:16]) {
+  samples &lt;- functional_datasets[[country]]
+  hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
+}</code></pre>
+<p><img src="figure/covid_example.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Produce a histogram for country in cluster 2:</p>
+<pre class="r"><code>par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))
+for (country in cluster2_countries[1:14]) {
   samples &lt;- functional_datasets[[country]]
   hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
 }</code></pre>
@@ -1507,9 +1541,9 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<p>Produce a histogram for country in cluster 2:</p>
-<pre class="r"><code>par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))
-for (country in cluster2_countries[1:15]) {
+<p>Produce a histogram for country in cluster 3:</p>
+<pre class="r"><code>par(mfrow = c(1, 2), mar = c(2, 2, 1, 1))
+for (country in cluster3_countries[1:2]) {
   samples &lt;- functional_datasets[[country]]
   hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
 }</code></pre>
@@ -1562,12 +1596,22 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<p>Produce a histogram for country in cluster 3:</p>
-<pre class="r"><code>par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))
-for (country in cluster3_countries[1:5]) {
-  samples &lt;- functional_datasets[[country]]
-  hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
-}</code></pre>
+<pre class="r"><code>par(mfrow = c(1, 1), mar = c(5, 4, 4, 2) + 0.1)</code></pre>
+<p>To conclude how many countries were more affected by the Delta wave
+than the initial wave:</p>
+<pre class="r"><code>iso2_codes &lt;- c(&quot;AL&quot;, &quot;AT&quot;, &quot;BY&quot;, &quot;BE&quot;, &quot;BA&quot;, &quot;BG&quot;, &quot;HR&quot;, &quot;CY&quot;, &quot;CZ&quot;, &quot;DK&quot;, &quot;EE&quot;, &quot;FI&quot;, &quot;FR&quot;, &quot;DE&quot;, &quot;GR&quot;, &quot;HU&quot;, &quot;IE&quot;, &quot;IT&quot;, &quot;XK&quot;, &quot;LV&quot;, &quot;LT&quot;, &quot;MT&quot;, &quot;MD&quot;, &quot;ME&quot;, &quot;NL&quot;, &quot;MK&quot;, &quot;PL&quot;, &quot;PT&quot;, &quot;RO&quot;, &quot;RU&quot;, &quot;RS&quot;, &quot;SK&quot;, &quot;SI&quot;, &quot;ES&quot;, &quot;CH&quot;, &quot;UA&quot;, &quot;GB&quot;)
+names(functional_datasets) &lt;- iso2_codes
+names(clusters) &lt;- names(functional_datasets)
+loca_false_sign_rate_delta_more &lt;- sapply(functional_datasets, function(samples) {
+  (sum(samples &lt; 0)/length(samples))
+})
+ordered_false_sign_rate_delta_more &lt;- sort(loca_false_sign_rate_delta_more)
+cumulative_false_sign_rate_delta_more &lt;- cumsum(ordered_false_sign_rate_delta_more)/seq_along(ordered_false_sign_rate_delta_more)
+clusters_ordered &lt;- clusters[match(names(ordered_false_sign_rate_delta_more), names(clusters))]
+plot(cumulative_false_sign_rate_delta_more, type = &quot;o&quot;, xlab = &quot;Ordered Countries&quot;, ylab = &quot;Cumulative False Sign Rate&quot;, ylim = c(0,1))
+text(1:length(cumulative_false_sign_rate_delta_more), cumulative_false_sign_rate_delta_more, labels = names(cumulative_false_sign_rate_delta_more), pos = 3, cex = 1, col = clusters_ordered)
+legend(&quot;topleft&quot;, legend = c(&quot;Cluster 1&quot;, &quot;Cluster 2&quot;, &quot;Cluster 3&quot;, &quot;Cluster 4&quot;), fill = c(1, 2, 3, 4))
+abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
@@ -1617,12 +1661,33 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<p>Produce a histogram for country in cluster 4:</p>
-<pre class="r"><code>par(mfrow = c(1, 1), mar = c(2, 2, 1, 1))
-for (country in cluster4_countries[1:1]) {
-  samples &lt;- functional_datasets[[country]]
-  hist(samples, main = paste0(country), xlab = &quot;Delta - Initial&quot;, ylab = &quot;Frequency&quot;, col = &quot;blue&quot;, breaks = 50)
-}</code></pre>
+<p>To conclude how many countries were more affected by the initial wave
+than the Delta wave:</p>
+<pre class="r"><code>loca_false_sign_rate_initial_more &lt;- sapply(functional_datasets, function(samples) {
+  (sum(samples &gt; 0)/length(samples))
+})
+ordered_false_sign_rate_initial_more &lt;- sort(loca_false_sign_rate_initial_more)
+cumulative_false_sign_rate_initial_more &lt;- cumsum(ordered_false_sign_rate_initial_more)/seq_along(ordered_false_sign_rate_initial_more)
+cumulative_false_sign_rate_initial_more</code></pre>
+<pre><code>         BE          FR          IT          NL          ES          CH 
+0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
+         GB          PT          IE          DK          FI          MT 
+0.000000000 0.000093750 0.001263889 0.014825000 0.076193182 0.151718750 
+         CY          SK          DE          AT          AL          BY 
+0.216798077 0.272633929 0.321108333 0.363531250 0.400970588 0.434250000 
+         BA          BG          HR          CZ          EE          GR 
+0.464026316 0.490825000 0.515071429 0.537113636 0.557239130 0.575687500 
+         HU          XK          LV          LT          MD          ME 
+0.592660000 0.608326923 0.622833333 0.636303571 0.648844828 0.660550000 
+         MK          PL          RO          RU          RS          SI 
+0.671500000 0.681765625 0.691409091 0.700485294 0.709042857 0.717125000 
+         UA 
+0.724770270 </code></pre>
+<pre class="r"><code>clusters_ordered &lt;- clusters[match(names(ordered_false_sign_rate_initial_more), names(clusters))]
+plot(cumulative_false_sign_rate_initial_more, type = &quot;o&quot;, xlab = &quot;Ordered Countries&quot;, ylab = &quot;Cumulative False Sign Rate&quot;, ylim = c(0,1))
+text(1:length(cumulative_false_sign_rate_initial_more), cumulative_false_sign_rate_initial_more, labels = names(cumulative_false_sign_rate_initial_more), pos = 3, cex = 1, col = clusters_ordered)
+legend(&quot;topleft&quot;, legend = c(&quot;Cluster 1&quot;, &quot;Cluster 2&quot;, &quot;Cluster 3&quot;, &quot;Cluster 4&quot;), fill = c(1, 2, 3, 4))
+abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre>
 <p><img src="figure/covid_example.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
@@ -1660,204 +1725,6 @@ Ziang Zhang
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-21-1.png" target="_blank">8233390</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-10
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>To decide the significance of the difference, we can compute the
-false sign rate:</p>
-<pre class="r"><code>names(functional_datasets) &lt;- c(&quot;AL&quot;, &quot;AT&quot;, &quot;BY&quot;, &quot;BE&quot;, &quot;BA&quot;, &quot;BG&quot;, &quot;HR&quot;, &quot;CY&quot;, &quot;CZ&quot;, &quot;DK&quot;, &quot;EE&quot;, &quot;FR&quot;, &quot;DE&quot;, &quot;GR&quot;, &quot;HU&quot;, &quot;IT&quot;, &quot;XK&quot;, &quot;LV&quot;, &quot;LT&quot;, &quot;MD&quot;, &quot;ME&quot;, &quot;NL&quot;, &quot;MK&quot;, &quot;PL&quot;, &quot;PT&quot;, &quot;RO&quot;, &quot;RU&quot;, &quot;RS&quot;, &quot;SK&quot;, &quot;SI&quot;, &quot;ES&quot;, &quot;CH&quot;, &quot;UA&quot;, &quot;GB&quot;)
-names(clusters) &lt;- names(functional_datasets)
-loca_false_sign_rate &lt;- sapply(functional_datasets, function(samples) {
-  min((sum(samples &lt; 0)/length(samples)), (sum(samples &gt; 0)/length(samples)))
-})
-ordered_false_sign_rate &lt;- sort(loca_false_sign_rate)
-cumulative_false_sign_rate &lt;- cumsum(ordered_false_sign_rate)/seq_along(ordered_false_sign_rate)
-clusters_ordered &lt;- clusters[match(names(ordered_false_sign_rate), names(clusters))]
-plot(cumulative_false_sign_rate, type = &quot;o&quot;, xlab = &quot;Ordered Countries&quot;, ylab = &quot;Cumulative False Sign Rate&quot;, ylim = c(0,1))
-text(1:length(ordered_false_sign_rate), cumulative_false_sign_rate, labels = names(ordered_false_sign_rate), pos = 3, cex = 0.6, col = clusters_ordered)
-legend(&quot;topleft&quot;, legend = c(&quot;Cluster 1&quot;, &quot;Cluster 2&quot;, &quot;Cluster 3&quot;, &quot;Cluster 4&quot;), fill = c(1, 2, 3, 4))
-abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre>
-<p><img src="figure/covid_example.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
-Past versions of unnamed-chunk-22-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-22-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-22-1.png" target="_blank">c775384</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-22-1.png" target="_blank">8233390</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-10
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>To conclude how many countries were more affected by the Delta wave
-than the initial wave:</p>
-<pre class="r"><code>loca_false_sign_rate_delta_more &lt;- sapply(functional_datasets, function(samples) {
-  (sum(samples &lt; 0)/length(samples))
-})
-ordered_false_sign_rate_delta_more &lt;- sort(loca_false_sign_rate_delta_more)
-cumulative_false_sign_rate_delta_more &lt;- cumsum(ordered_false_sign_rate_delta_more)/seq_along(ordered_false_sign_rate_delta_more)
-clusters_ordered &lt;- clusters[match(names(ordered_false_sign_rate_delta_more), names(clusters))]
-plot(cumulative_false_sign_rate_delta_more, type = &quot;o&quot;, xlab = &quot;Ordered Countries&quot;, ylab = &quot;Cumulative False Sign Rate&quot;, ylim = c(0,1))
-text(1:length(cumulative_false_sign_rate_delta_more), cumulative_false_sign_rate_delta_more, labels = names(cumulative_false_sign_rate_delta_more), pos = 3, cex = 0.6, col = clusters_ordered)
-legend(&quot;topleft&quot;, legend = c(&quot;Cluster 1&quot;, &quot;Cluster 2&quot;, &quot;Cluster 3&quot;, &quot;Cluster 4&quot;), fill = c(1, 2, 3, 4))
-abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre>
-<p><img src="figure/covid_example.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
-Past versions of unnamed-chunk-23-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-23-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-23-1.png" target="_blank">c775384</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-23-1.png" target="_blank">8233390</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-10
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>To conclude how many countries were more affected by the initial wave
-than the Delta wave:</p>
-<pre class="r"><code>loca_false_sign_rate_initial_more &lt;- sapply(functional_datasets, function(samples) {
-  (sum(samples &gt; 0)/length(samples))
-})
-ordered_false_sign_rate_initial_more &lt;- sort(loca_false_sign_rate_initial_more)
-cumulative_false_sign_rate_initial_more &lt;- cumsum(ordered_false_sign_rate_initial_more)/seq_along(ordered_false_sign_rate_initial_more)
-cumulative_false_sign_rate_initial_more</code></pre>
-<pre><code>         BE          CZ          FR          IT          PT          ES 
-0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 
-         GB          NL          CH          GR          DK          SI 
-0.000000000 0.000046875 0.001888889 0.018562500 0.045352273 0.078541667 
-         AL          AT          CY          SK          DE          BA 
-0.136230769 0.187187500 0.233783333 0.277484375 0.319066176 0.356180556 
-         ME          EE          BY          LT          HR          BG 
-0.389421053 0.419637500 0.447208333 0.472306818 0.495228261 0.516260417 
-         HU          XK          LV          MD          MK          PL 
-0.535610000 0.553471154 0.570009259 0.585366071 0.599663793 0.613008333 
-         RO          RU          RS          UA 
-0.625491935 0.637195313 0.648189394 0.658536765 </code></pre>
-<pre class="r"><code>clusters_ordered &lt;- clusters[match(names(ordered_false_sign_rate_initial_more), names(clusters))]
-plot(cumulative_false_sign_rate_initial_more, type = &quot;o&quot;, xlab = &quot;Ordered Countries&quot;, ylab = &quot;Cumulative False Sign Rate&quot;, ylim = c(0,1))
-text(1:length(cumulative_false_sign_rate_initial_more), cumulative_false_sign_rate_initial_more, labels = names(cumulative_false_sign_rate_initial_more), pos = 3, cex = 0.6, col = clusters_ordered)
-legend(&quot;topleft&quot;, legend = c(&quot;Cluster 1&quot;, &quot;Cluster 2&quot;, &quot;Cluster 3&quot;, &quot;Cluster 4&quot;), fill = c(1, 2, 3, 4))
-abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre>
-<p><img src="figure/covid_example.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
-Past versions of unnamed-chunk-24-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-24-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/c77538439dcf55a178a6cba7728062bbf0c58d5f/docs/figure/covid_example.Rmd/unnamed-chunk-24-1.png" target="_blank">c775384</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8233390480729e7932b0826a931ba04a2a8cc265/docs/figure/covid_example.Rmd/unnamed-chunk-24-1.png" target="_blank">8233390</a>
 </td>
 <td>
 Ziang Zhang
