@@ -8,7 +8,7 @@ navbar:
   - text: About
     href: about.html
   - text: Simulation 1
-    href: simulation.html
+    href: simulation_pollution.html
   - text: Simulation 2
     href: simulation_eQTL_identification.html
   - text: COVID-19 Example
