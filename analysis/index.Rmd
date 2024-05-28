@@ -43,7 +43,7 @@ $$Lf(t) = \sigma_k W(t),$$
 where $W(t)$ is a Gaussian white noise process and $L$ is a known $p$th order linear differential operator. 
 Given the $L$ operator, the covariance function $C_k$ is completely specified by the single standard deviation parameter $\sigma_k$. 
 
-This prior ***shrinks** the function $g$ toward the **base model** $\text{Null}\{L\}$, which is the set of functions that satisfy $Lf = 0$.
+This prior **shrinks** the function $g$ toward the **base model** $\text{Null}\{L\}$, which is the set of functions that satisfy $Lf = 0$.
 The smaller $\sigma_k$ is, the stronger the shrinkage is.
 By choosing different $L$ operator, this one-parameter GP family can produce prior that encodes different kinds of shapes. Some examples are discussed in [Zhang et.al 2023](https://www.tandfonline.com/doi/full/10.1080/10618600.2023.2289532) and [Zhang et.al 2024](https://arxiv.org/abs/2305.09914).
 
