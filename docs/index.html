@@ -446,15 +446,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree533519db4953bc97916f12cc24e4ab240e561888targetblank533519da">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree6cd986c4c4e6c5e2ce39f6c3a3cf36d3d2f6c16ctargetblank6cd986ca">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/533519db4953bc97916f12cc24e4ab240e561888" target="_blank">533519d</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/6cd986c4c4e6c5e2ce39f6c3a3cf36d3d2f6c16c" target="_blank">6cd986c</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree533519db4953bc97916f12cc24e4ab240e561888targetblank533519da"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree6cd986c4c4e6c5e2ce39f6c3a3cf36d3d2f6c16ctargetblank6cd986ca"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -464,7 +464,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/533519db4953bc97916f12cc24e4ab240e561888" target="_blank">533519d</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/6cd986c4c4e6c5e2ce39f6c3a3cf36d3d2f6c16c" target="_blank">6cd986c</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -572,6 +572,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/6cd986c4c4e6c5e2ce39f6c3a3cf36d3d2f6c16c/analysis/index.Rmd" target="_blank">6cd986c</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+<td>
+wflow_publish(files = "analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/065144f5c254e9afe68dbae95200db02585eeda3/docs/index.html" target="_blank">065144f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -938,11 +972,12 @@ Given the <span class="math inline">\(L\)</span> operator, the
 covariance function <span class="math inline">\(C_k\)</span> is
 completely specified by the single standard deviation parameter <span
 class="math inline">\(\sigma_k\)</span>.</p>
-<p>This prior the function <span class="math inline">\(g\)</span> toward
-the <span class="math inline">\(\text{Null}\{L\}\)</span>, which is the
-set of functions that satisfy <span class="math inline">\(Lf =
-0\)</span>. The smaller <span class="math inline">\(\sigma_k\)</span>
-is, the stronger the shrinkage is. By choosing different <span
+<p>This prior <strong>shrinks</strong> the function <span
+class="math inline">\(g\)</span> toward the <strong>base model</strong>
+<span class="math inline">\(\text{Null}\{L\}\)</span>, which is the set
+of functions that satisfy <span class="math inline">\(Lf = 0\)</span>.
+The smaller <span class="math inline">\(\sigma_k\)</span> is, the
+stronger the shrinkage is. By choosing different <span
 class="math inline">\(L\)</span> operator, this one-parameter GP family
 can produce prior that encodes different kinds of shapes. Some examples
 are discussed in <a
@@ -952,7 +987,8 @@ et.al 2024</a>.</p>
 <p>The above one-parameter family of GP priors is flexible and
 interpretable. By choosing the <span class="math inline">\(L\)</span>
 operator, we can choose different types of base model to shrink the
-function toward. Therefore, in <a
+function toward. Therefore, <strong>the base model can be interpreted as
+an analogy to the unimodal assumption (UA)</strong> in <a
 href="https://academic.oup.com/biostatistics/article/18/2/275/2557030?login=true">Stephens,
 2017</a>, which specifies the center of the shrinkage (like the null
 hypothesis).</p>
