@@ -12,11 +12,24 @@ editor_options:
 
 The **F**unction **A**daptive **SH**rinkage (FASH) project considers the following scenarios:
 
-- There are $N$ sets of series data: $\boldsymbol{y} = \{y_i(t_j): j\in[n_j]\}_{i=1}^{N}$, where $n_j$ is the length of the $j$-th series.
+- There are $N$ sets of series data: $\boldsymbol{y} = \{y_i(t_j): j\in[n_i]\}_{i=1}^{N}$, where $n_i$ is the length of the $i$-th series.
 - For each series $y_i(t)$, we assume it relates to a smooth function $f_i(t)$.
 - For example, $y_i(t) = f_i(t) + \epsilon_i(t)$, where $\epsilon_i(t)$ is the noise term.
 
 The goal of FASH is to infer the smooth function $f_i(t)$ for each series $y_i(t)$, by providing its posterior distribution $p(f_i(t)|\boldsymbol{y})$.
+
+Some examples of this setting are described below.
+
+#### *Example: Gene Expression Level*
+
+In gene expression data, each series $y_i(t_j)$ represents the mRNA count transcripted by a gene $i$ at different time points $t_j$.
+The goal is to infer the smooth function $f_i(t)$ that represents the gene expression level over time.
+
+#### *Example: Dynamic eQTL Analysis*
+
+In dynamic eQTL analysis, each series $y_i(t_j)$ represents the effect size estimate of a genetic variant $i$ on the gene expression level, at different levels of the continuous condition $t_j$. 
+The goal is to infer the smooth function $f_i(t)$ that represents the effect size over the continuous condition.
+
 
 ### **Finite Mixture of GP**
 
@@ -30,9 +43,13 @@ $$Lf(t) = \sigma_k W(t),$$
 where $W(t)$ is a Gaussian white noise process and $L$ is a known $p$th order linear differential operator. 
 Given the $L$ operator, the covariance function $C_k$ is completely specified by the single standard deviation parameter $\sigma_k$. 
 
-This prior shrinks the function $g$ toward the base model $\text{Null}\{L\}$, which is the set of functions that satisfy $Lf = 0$.
+This prior \textbf{shrinks} the function $g$ toward the \textbf{base model} $\text{Null}\{L\}$, which is the set of functions that satisfy $Lf = 0$.
 The smaller $\sigma_k$ is, the stronger the shrinkage is.
 By choosing different $L$ operator, this one-parameter GP family can produce prior that encodes different kinds of shapes. Some examples are discussed in [Zhang et.al 2023](https://www.tandfonline.com/doi/full/10.1080/10618600.2023.2289532) and [Zhang et.al 2024](https://arxiv.org/abs/2305.09914).
+
+The above one-parameter family of GP priors is flexible and interpretable. 
+By choosing the $L$ operator, we can choose different types of base model to shrink the function toward. 
+Therefore, \textbf{the base model can be interpreted as an analogy to the unimodal assumption (UA)} in [Stephens, 2017](https://academic.oup.com/biostatistics/article/18/2/275/2557030?login=true), which specifies the center of the shrinkage (like the null hypothesis).
 
 #### *Example: Integrated Wiener Process*
 
@@ -49,15 +66,15 @@ This prior can be used to model quasi-periodic function, which has mostly period
 ### **Empirical Bayes**
 
 For now, assume that the $L$ operator is fixed to be the $p$th order IWP, and only the standard deviation parameter $\sigma_k$ is varying across different GP components.
-Following the practice of [Stehpens, 2017](https://academic.oup.com/biostatistics/article/18/2/275/2557030?login=true) and [Urbut et al, 2018](https://www.nature.com/articles/s41588-018-0268-8), we use a dense grid of $\{\sigma_k:k\in[K]\}$, and use empirical Bayes to estimate the prior mixture weights $\boldsymbol{\pi} = \{\pi_1,...,\pi_K\}$.
+Following the practice of [Stehpens, 2017](https://academic.oup.com/biostatistics/article/18/2/275/2557030?login=true) and [Urbut et al, 2018](https://www.nature.com/articles/s41588-018-0268-8), we use a dense grid of $\{\sigma_k:k\in[K]\}$, and use empirical Bayes to estimate the prior mixture weights $\boldsymbol{\pi} = \{\pi_0,...,\pi_K\}$. The weight $\pi_0$ corresponds to the standard deviation parameter $\sigma_0 = 0$, which is the null model that assumes the function is in $\text{Null}\{L\}$.
 
 Let $\mathbf{L}_{ik}$ denotes the marginal likelihood of the $i$-th series data under the $k$-th GP component, the empirical Bayes estimate of $\boldsymbol{\pi}$ is obtained by maximizing the following objective function:
-$$\hat{\boldsymbol{\pi}} = \arg\max_{\boldsymbol{\pi}} \sum_{i=1}^{N} \log\left(\sum_{k=1}^{K} \pi_k \mathbf{L}_{ik}\right).$$
+$$\hat{\boldsymbol{\pi}} = \arg\max_{\boldsymbol{\pi}} \sum_{i=1}^{N} \log\left(\sum_{k=0}^{K} \pi_k \mathbf{L}_{ik}\right).$$
 This can be solved using interior point method or Sequential Quadratic Programming ($\texttt{mixqp}$) in [Kim et al, 2020](https://www.tandfonline.com/doi/full/10.1080/10618600.2019.1689985).
 
 With the estimated weights $\hat{\boldsymbol{\pi}}$, we can then obtain the posterior distribution of each $f_i(t)$ as the following mixture:
-$$p(f_i(t)|\boldsymbol{y}, \hat{\boldsymbol{\pi}}) = \sum_{k=1}^{K} \tilde{\pi}_k p(f_i(t)|\boldsymbol{y}_i,\sigma_k),$$
-where the posterior mixture weights $\tilde{\pi}_k$ is defined as $\tilde{\pi}_k = \frac{\hat{\pi}_k \mathbf{L}_{ik}}{\sum_{k=1}^{K} \hat{\pi}_k \mathbf{L}_{ik}}$.
+$$p(f_i(t)|\boldsymbol{y}, \hat{\boldsymbol{\pi}}) = \sum_{k=0}^{K} \tilde{\pi}_k p(f_i(t)|\boldsymbol{y}_i,\sigma_k),$$
+where the posterior mixture weights $\tilde{\pi}_k$ is defined as $\tilde{\pi}_k = \frac{\hat{\pi}_k \mathbf{L}_{ik}}{\sum_{k=0}^{K} \hat{\pi}_k \mathbf{L}_{ik}}$.
 
 In certain application, the posterior mixture weights can be visualized through a structure plot as discussed in [Dey et al, 2017](https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006599), and observations can be grouped into similar clusters based on the structure plot. 
 
@@ -80,8 +97,6 @@ This approach of adaptive shrinkage method becomes useful when we are dealing wi
 
 - **Gene Expression Data**: FASH can be used to identify and group dynamic eQTLs that react differently to different (continuous) conditions, such as differentiation time ([Strober et.al, 2019](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6623972/)) or oxygen level ([Ward et.al, 2021](https://elifesciences.org/articles/57345)).
 - **COVID Mortality Data**: FASH can be used to infer and group the COVID mortality rate at different countries (or states), and identify the countries (states) with similar mortality trends. See *[this](covid_example.html)* for an example.
-- **Cause-specific Mortality Data**: FASH can be used to model different cause-specific mortality series over time (for example, in Canada), and identify the causes with similar mortality pattern.
-- **Financial Data**: FASH can be used to smooth and group the stock price trends at different companies.
 - **Environmental Data**: FASH can be used to model the concentration of different pollutants overtime, and identify type of pollutants that have similar behavior. See *[this simulation](simulation.html)* for an example.
 
 
