@@ -45,9 +45,9 @@ where $v_{ij}$ is the fixed effect that denotes the weekdays.
 ## **Model:**
 
 The prior for the $i$th (log) mortality rate over time $f_i(x)$ is the following finite mixture:
-$$f_i(x) = \sum_{k=1}^{K} \pi_{k} g_{k}(x),$$
-where each mixture component has a IWP-3 prior: $$Lg_{k}(x) = \sigma_k W(x),$$
-where $W(x)$ is the Gaussian white noise process and $\sigma_k$ is the smoothness parameter that inversely controls the shrinkage strength. 
+$$f_i(x) = \sum_{k=0}^{K} \pi_{k} \text{GP}_{k}(x),$$
+where for each $k$ the $k$th mixture component has a IWP-3 prior: $$Lf(x) = \sigma_k W(x).$$
+Here $W(x)$ is the Gaussian white noise process and $\sigma_k$ is the smoothness parameter that inversely controls the shrinkage strength. 
 In this case, $L = \frac{\partial^3}{\partial x^3}$, which implies that the target of shrinkage is the base model $\text{Null}\{L\} = \text{span}\{1, x, x^2\}$.
 The prior weights $\pi_k$ are optimized using empirical Bayes.
 
