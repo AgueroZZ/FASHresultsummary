@@ -42,8 +42,8 @@ num_cores <- 4
 ### **Model**
 
 Assume most of the gene expression trajectories are expected to be linear, we therefore consider the following finite mixture prior for each gene expression level $f_i(t_j)$:
-$$f_i(t) = \sum_{k=1}^K \pi_k g_k(t).$$
-Each mixture component $g_k$ has the prior: $$Lg_k(t) = \sigma_k W(t), $$ with $W(t)$ being a Gaussian white noise process and $\sigma_k$ being the smoothness. 
+$$f_i(t) = \sum_{k=0}^K \pi_k \text{GP}_k(t).$$
+For each $k$, the mixture component has the prior: $$Lf(t) = \sigma_k W(t), $$ with $W(t)$ being a Gaussian white noise process and $\sigma_k$ being the smoothness. 
 Choosing $L = \frac{\partial^2}{\partial t^2}$, the base model that each $f_i$ being shrunk to is therefore $\text{Null}\{L\} = \text{span}\{1,t\}$.
 
 ### **Processing the expression data**
