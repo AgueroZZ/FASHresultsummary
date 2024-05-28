@@ -21,7 +21,7 @@ For simplicity, let's assume the SE of effect estimate is constant over time: $\
 ## **Data**
 
 Load the required libraries and set the seed.
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, include = FALSE, echo=FALSE, message=FALSE, warning=FALSE}
 library(BayesGP)
 library(TMB)
 library(Matrix)
