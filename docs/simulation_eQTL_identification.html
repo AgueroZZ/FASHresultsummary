@@ -534,15 +534,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree34658287cc25adee82dc54232c30540a9ae5c776targetblank3465828a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree148a86b819225e9796319d69e3a551ab7a720094targetblank148a86ba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/34658287cc25adee82dc54232c30540a9ae5c776" target="_blank">3465828</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/148a86b819225e9796319d69e3a551ab7a720094" target="_blank">148a86b</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree34658287cc25adee82dc54232c30540a9ae5c776targetblank3465828a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree148a86b819225e9796319d69e3a551ab7a720094targetblank148a86ba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -552,7 +552,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/34658287cc25adee82dc54232c30540a9ae5c776" target="_blank">3465828</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/148a86b819225e9796319d69e3a551ab7a720094" target="_blank">148a86b</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -666,6 +666,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/148a86b819225e9796319d69e3a551ab7a720094/analysis/simulation_eQTL_identification.Rmd" target="_blank">148a86b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+<td>
+wflow_publish(files = "analysis/simulation_eQTL_identification.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/dd06cb04b842799393d033302dc6bd4e23148ba7/docs/simulation_eQTL_identification.html" target="_blank">dd06cb0</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -948,7 +982,7 @@ time.</li>
 over time: <span class="math inline">\(\text{SE}(\hat{\beta}_{i}(t_j)) =
 \sigma_i, \forall j\)</span> and hence: <span
 class="math display">\[\hat{\beta}_i(t_j) \sim
-N(\beta_i(t_j),\sigma^2).\]</span></p>
+N(\beta_i(t_j),\sigma_i^2).\]</span></p>
 </div>
 <div id="data" class="section level2">
 <h2><strong>Data</strong></h2>
@@ -2224,7 +2258,7 @@ iter        objective max(rdual) nnz stepsize max.diff nqp nls
   10 +1.118554214e-01  -- EM --    3 1.00e+00 2.42e-06  --  --
    1 +1.118548447e-01 +1.967e-05   3  ------   ------   --  --
    2 +1.118544118e-01 -1.106e-08   2 1.00e+00 1.81e-06   3   1
-Optimization took 0.01 seconds.
+Optimization took 0.02 seconds.
 Convergence criteria met---optimal solution found.</code></pre>
 <pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
 plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
