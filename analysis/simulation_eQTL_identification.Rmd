@@ -21,7 +21,7 @@ For simplicity, let's assume the SE of effect estimate is constant over time: $\
 ## **Data**
 
 Load the required libraries and set the seed.
-```{r echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(BayesGP)
 library(TMB)
 library(Matrix)
@@ -106,11 +106,11 @@ sigma <- unlist(lapply(datasets, function(x) unique(x$sd)))
 ## **Hypothesis Testing**
 
 We consider the following prior:
-$$\beta_i(t) = \sum_{j=0}^K \pi_j g_j(t),$$
-where each $g_j(t)$ is a GP defined by:
-$$Lg_j(t) = \sigma_j W(t).$$
+$$\beta_i(t) = \sum_{k=0}^K \pi_j \text{GP}_k(t),$$
+where each mixture component is a GP defined by:
+$$L\beta_k(t) = \sigma_k W(t).$$
 
-The choice of $L$ specifies the base model (i.e. $\text{Null}\{L\}$) for which the effect function $\beta_i(t)$ is shrunk towards, and the size of $\sigma_j$ (inversely) controls the strength of the shrinkage.
+The choice of $L$ specifies the base model (i.e. $\text{Null}\{L\}$) for which the effect function $\beta_i(t)$ is shrunk towards, and the size of $\sigma_k$ (inversely) controls the strength of the shrinkage.
 The first mixture component has $\sigma_0 = 0$ to represent the exact base model.
 
 ### **Which eQTLs are non-dynamic?**
