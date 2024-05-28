@@ -42,7 +42,7 @@ The time points $\boldsymbol{x}$ for each pollutant are generated from a uniform
 
 We are interested in inferring the true concentration of each pollutant as well as grouping them into similar categories.
 
-We assign each true concentration function an independent prior, which is a finite mixture of second order IWP with different $\sigma_k$. So \[f_i |\pi_0,..,\pi_K \overset{d}{=} \sum_{k=0}^K \pi_kg_k,\] where each mixture component $g_k$ is defined as \[\frac{\partial^2}{\partial x^2}g(x) = \sigma_k W(x).\]
+We assign each true concentration function an independent prior, which is a finite mixture of second order IWP with different $\sigma_k$. So \[f_i |\pi_0,..,\pi_K \overset{d}{=} \sum_{k=0}^K \pi_k \text{GP}_k,\] where each mixture component $\text{GP}_k$ is defined as \[\frac{\partial^2}{\partial x^2}f(x) = \sigma_k W(x).\]
 
 ### **Data**
 
