@@ -1,5 +1,5 @@
 ---
-title: "Identifying dynamic eQTLs using FASH"
+title: "Simulation: Identifying dynamic eQTLs using FASH"
 author: "Ziang Zhang"
 date: "2024-05-19"
 output: workflowr::wflow_html
