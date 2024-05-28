@@ -15,7 +15,7 @@ We consider the effect size estimate of $10,000$ eQTLs measured in day $t = 1$ t
 - there are $2000$ eQTLs that are linear dynamic, i.e., the effect size is changing linearly over time.
 - there are $1000$ eQTLs that are non-linear dynamic, i.e., the effect size is changing non-linearly over time.
 
-For simplicity, let's assume the SE of effect estimate is constant over time: $\text{SE}(\hat{\beta}_{i}(t_j)) = \sigma_i, \forall j$ and hence: $$\hat{\beta}_i(t_j) \sim N(\beta_i(t_j),\sigma^2).$$
+For simplicity, let's assume the SE of effect estimate is constant over time: $\text{SE}(\hat{\beta}_{i}(t_j)) = \sigma_i, \forall j$ and hence: $$\hat{\beta}_i(t_j) \sim N(\beta_i(t_j),\sigma_i^2).$$
 
 
 ## **Data**
