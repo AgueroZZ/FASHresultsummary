@@ -261,7 +261,7 @@ $(document).ready(function () {
   <a href="about.html">About</a>
 </li>
 <li>
-  <a href="simulation.html">Simulation 1</a>
+  <a href="simulation_pollution.html">Simulation 1</a>
 </li>
 <li>
   <a href="simulation_eQTL_identification.html">Simulation 2</a>
@@ -453,15 +453,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreed24fc30fe35a695ed101efcadb51ddbf32b2f99ctargetblankd24fc30a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeaa79b74e85d316d7c1491ad055dd44e4226127e0targetblankaa79b74a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/d24fc30fe35a695ed101efcadb51ddbf32b2f99c" target="_blank">d24fc30</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/aa79b74e85d316d7c1491ad055dd44e4226127e0" target="_blank">aa79b74</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreed24fc30fe35a695ed101efcadb51ddbf32b2f99ctargetblankd24fc30a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeaa79b74e85d316d7c1491ad055dd44e4226127e0targetblankaa79b74a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -471,7 +471,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/d24fc30fe35a695ed101efcadb51ddbf32b2f99c" target="_blank">d24fc30</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/aa79b74e85d316d7c1491ad055dd44e4226127e0" target="_blank">aa79b74</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -588,6 +588,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/aa79b74e85d316d7c1491ad055dd44e4226127e0/analysis/simulation_pollution.Rmd" target="_blank">aa79b74</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+<td>
+wflow_publish(files = "analysis/simulation_pollution.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/49dbb1251a432a05925eb234d78092703335c669/docs/simulation_pollution.html" target="_blank">49dbb12</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d24fc30fe35a695ed101efcadb51ddbf32b2f99c/analysis/simulation_pollution.Rmd" target="_blank">d24fc30</a>
 </td>
 <td>
@@ -629,9 +663,9 @@ pollutant as well as grouping them into similar categories.</p>
 which is a finite mixture of second order IWP with different <span
 class="math inline">\(\sigma_k\)</span>. So <span
 class="math display">\[f_i |\pi_0,..,\pi_K \overset{d}{=} \sum_{k=0}^K
-\pi_kg_k,\]</span> where each mixture component <span
-class="math inline">\(g_k\)</span> is defined as <span
-class="math display">\[\frac{\partial^2}{\partial x^2}g(x) = \sigma_k
+\pi_k \text{GP}_k,\]</span> where each mixture component <span
+class="math inline">\(\text{GP}_k\)</span> is defined as <span
+class="math display">\[\frac{\partial^2}{\partial x^2}f(x) = \sigma_k
 W(x).\]</span></p>
 </div>
 <div id="data" class="section level3">
@@ -677,6 +711,43 @@ for (i in 1:16) {
   lines(datasets[[i]]$x, datasets[[i]]$truef, col = &quot;red&quot;)
 }</code></pre>
 <p><img src="figure/simulation_pollution.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
+Past versions of unnamed-chunk-3-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49dbb1251a432a05925eb234d78092703335c669/docs/figure/simulation_pollution.Rmd/unnamed-chunk-3-1.png" target="_blank">49dbb12</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Category B:</p>
 <pre class="r"><code>par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
 for (i in 17:32) {
@@ -687,6 +758,43 @@ for (i in 17:32) {
   lines(datasets[[i]]$x, datasets[[i]]$truef, col = &quot;red&quot;)
 }</code></pre>
 <p><img src="figure/simulation_pollution.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-1">
+Past versions of unnamed-chunk-4-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49dbb1251a432a05925eb234d78092703335c669/docs/figure/simulation_pollution.Rmd/unnamed-chunk-4-1.png" target="_blank">49dbb12</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Category C:</p>
 <pre class="r"><code>par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
 for (i in 33:48) {
@@ -697,6 +805,43 @@ for (i in 33:48) {
   lines(datasets[[i]]$x, datasets[[i]]$truef, col = &quot;red&quot;)
 }</code></pre>
 <p><img src="figure/simulation_pollution.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
+Past versions of unnamed-chunk-5-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49dbb1251a432a05925eb234d78092703335c669/docs/figure/simulation_pollution.Rmd/unnamed-chunk-5-1.png" target="_blank">49dbb12</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="empirical-bayes" class="section level3">
 <h3><strong>Empirical Bayes</strong></h3>
@@ -760,6 +905,43 @@ plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
      pch = 20,lwd = 2,xlab = &quot;SQP iteration&quot;,
      ylab = &quot;objective&quot;,xaxp = c(1,numiter,numiter - 1))</code></pre>
 <p><img src="figure/simulation_pollution.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49dbb1251a432a05925eb234d78092703335c669/docs/figure/simulation_pollution.Rmd/unnamed-chunk-8-1.png" target="_blank">49dbb12</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>prior_weight &lt;- data.frame(p = rep(p_vec, each = length(psd_iwp_vec)), psd_iwp = psd_iwp_vec, prior_weight = fit.sqp$x)</code></pre>
 <p>We can take a look at the estimated prior:</p>
 <pre class="r"><code>head(prior_weight)</code></pre>
@@ -812,6 +994,43 @@ ggplot(melted_data, aes(x = as.factor(id), y = value, fill = variable3)) +
   ggtitle(&quot;Structure Plot of Posterior Weights&quot;) +
   coord_flip() </code></pre>
 <p><img src="figure/simulation_pollution.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49dbb1251a432a05925eb234d78092703335c669/docs/figure/simulation_pollution.Rmd/unnamed-chunk-12-1.png" target="_blank">49dbb12</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>The fitted curves for pollutants in category A:</p>
 <pre class="r"><code>par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
 for (i in 1:16) {
@@ -823,6 +1042,43 @@ for (i in 1:16) {
   lines(fitted_datasets[[i]]$x, fitted_datasets[[i]]$mean, col = &quot;blue&quot;, lwd = 1.2)
 }</code></pre>
 <p><img src="figure/simulation_pollution.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49dbb1251a432a05925eb234d78092703335c669/docs/figure/simulation_pollution.Rmd/unnamed-chunk-13-1.png" target="_blank">49dbb12</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>The fitted curves for pollutants in category B:</p>
 <pre class="r"><code>par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
 for (i in 17:32) {
@@ -834,6 +1090,43 @@ for (i in 17:32) {
   lines(fitted_datasets[[i]]$x, fitted_datasets[[i]]$mean, col = &quot;blue&quot;, lwd = 1.2)
 }</code></pre>
 <p><img src="figure/simulation_pollution.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49dbb1251a432a05925eb234d78092703335c669/docs/figure/simulation_pollution.Rmd/unnamed-chunk-14-1.png" target="_blank">49dbb12</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>The fitted curves for pollutants in category C:</p>
 <pre class="r"><code>par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
 for (i in 33:48) {
@@ -845,6 +1138,43 @@ for (i in 33:48) {
   lines(fitted_datasets[[i]]$x, fitted_datasets[[i]]$mean, col = &quot;blue&quot;, lwd = 1.2)
 }</code></pre>
 <p><img src="figure/simulation_pollution.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
+Past versions of unnamed-chunk-15-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49dbb1251a432a05925eb234d78092703335c669/docs/figure/simulation_pollution.Rmd/unnamed-chunk-15-1.png" target="_blank">49dbb12</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-28
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
