@@ -35,7 +35,7 @@ The goal is to infer the smooth function $f_i(t)$ that represents the effect siz
 
 To make inference of each $f_i(t)$, we consider a finite mixture of $K$ Gaussian processes (GP) prior, as motivated in [Urbut et al, 2018](https://www.nature.com/articles/s41588-018-0268-8).
 The prior is defined as follows:
-$$f_i|\pi_1,...,\pi_K \overset{iid}{\sim} \sum_{k=1}^{K} \pi_k\text{GP}(m_k,C_k),$$
+$$f_i|\pi_0,...,\pi_K \overset{iid}{\sim} \sum_{k=0}^{K} \pi_k\text{GP}(m_k,C_k),$$
 where $\pi_k$ is the prior mixing weight, $m_k$ is the mean function, and $C_k$ is the covariance function of the $k$-th GP. 
 
 For now, let's assume the mean function $m_k$ is zero, and each GP component is defined through the following ordinary differential equation (ODE):
