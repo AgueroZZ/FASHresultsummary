@@ -496,7 +496,7 @@ Plot the log expression of the top 16 genes:
 top_genes <- fda_df %>% filter(cumulative_fda < 0.05, !is.na(gene_name)) %>% 
   arrange(cumulative_fda) %>%
   head(16) %>% pull(gene)
-plot_cluster_genes_log(top_genes)
+plot_cluster_genes_log_just_f(top_genes, log_size_vec)
 ```
 
 
