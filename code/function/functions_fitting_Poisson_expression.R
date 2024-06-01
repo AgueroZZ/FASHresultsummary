@@ -2,13 +2,16 @@
 #############################################################
 #############################################################
 ### Compute the log-marginal likelihood of the IWP model with O-Spline
-compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betaprec = 0.001){
+compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betaprec = 0.001, log_lib_size){
   x <- dataset$x
   y <- dataset$y
   knots <- unique(c(0,seq(min(x), max(x), length=num_knots)))
   X <- BayesGP:::global_poly_helper(x, p = p)
   P <- BayesGP::compute_weights_precision_helper(knots)
   B <- BayesGP:::local_poly_helper(knots = knots, refined_x = x, p = p)
+  if(is.null(log_lib_size)){
+    log_lib_size <- numeric(16)
+  }
   if(psd_iwp != 0){
   tmbdat <- list(
     X = as(X,'dgTMatrix'),
@@ -17,6 +20,7 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
     logPdet = as.numeric(determinant(P,logarithm = T)$modulus),
     # Response
     y = y,
+    log_offset = log_lib_size,
     # other known quantities
     betaprec = betaprec,
     sigmaSmooth = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2)))
@@ -30,7 +34,7 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
     data = tmbdat,
     parameters = tmbparams,
     random = "W",
-    DLL = "Poisson",
+    DLL = "Poisson_expression",
     silent = TRUE
   )
   }
@@ -40,6 +44,7 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
       # Response
       y = y,
       # other known quantities
+      log_offset = log_lib_size,
       betaprec = betaprec
     )
 
@@ -51,7 +56,7 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
       data = tmbdat,
       parameters = tmbparams,
       random = "W",
-      DLL = "Poisson_just_fixed",
+      DLL = "Poisson_just_fixed_expression",
       silent = TRUE
     )
   }
@@ -59,8 +64,11 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
 }
 
 ### Fit the IWP model with O-Spline
-fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betaprec = 0.001){
+fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betaprec = 0.001, log_lib_size = NULL){
   condition_fitting <- 0 # 1 means the fitting is good, 1 means the fitting requires numerical adjustment
+  if(is.null(log_lib_size)){
+    log_lib_size <- numeric(16)
+  }
   x <- dataset$x
   y <- dataset$y
   knots <- unique(c(0,seq(min(x), max(x), length=num_knots)))
@@ -77,6 +85,7 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
     y = y,
     # other known quantities
     betaprec = betaprec,
+    log_offset = log_lib_size,
     sigmaSmooth = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2)))
   )
 
@@ -87,7 +96,7 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
   ff2 <- TMB::MakeADFun(
     data = tmbdat,
     parameters = tmbparams,
-    DLL = "Poisson",
+    DLL = "Poisson_expression",
     silent = TRUE
   )
   ff2$he <- function(w) numDeriv::jacobian(ff2$gr, w)
@@ -113,7 +122,8 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
       # Response
       y = y,
       # other known quantities
-      betaprec = betaprec
+      betaprec = betaprec,
+      log_offset = log_lib_size
     )
 
     tmbparams <- list(
@@ -123,7 +133,7 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
     ff2 <- TMB::MakeADFun(
       data = tmbdat,
       parameters = tmbparams,
-      DLL = "Poisson_just_fixed",
+      DLL = "Poisson_just_fixed_expression",
       silent = TRUE
     )
     ff2$he <- function(w) numDeriv::jacobian(ff2$gr, w)
@@ -148,7 +158,7 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
     samps_fitted <- as.matrix(X) %*% t(samps_coef)[1:ncol(X),]
   }
   log_likelihood <- -ff2$fn(opt$par) - 0.5 * determinant(as.matrix(ff2$he(opt$par)), logarithm = TRUE)$modulus + 0.5 * length(opt$par) * log(2 * pi)
-  samps_fitted <- samps_fitted
+  samps_fitted <- log_lib_size + samps_fitted
   list(samps_coef = samps_coef, samps_fitted = samps_fitted, mod = mod, log_likelihood = log_likelihood, condition_fitting = condition_fitting,
        knots = knots, p = p)
 }
@@ -194,7 +204,7 @@ visualize_fit <- function(x, fit_result, y = NULL, plot_samps = FALSE, original 
 #################################################################
 #################################################################
 ### Fit a sequence of k models with ospline using different psd_iwp and record the k marginal likelihoods
-compute_log_likelihood_ospline_seq <- function(dataset, p, num_knots, psd_iwp_vector, pred_step, betaprec = 0.001) {
+compute_log_likelihood_ospline_seq <- function(dataset, p, num_knots, psd_iwp_vector, pred_step, betaprec = 0.001, log_lib_size = NULL) {
   log_likelihoods <- sapply(psd_iwp_vector, function(psd_iwp) {
     compute_log_likelihood_ospline(
       dataset = dataset,
@@ -202,14 +212,15 @@ compute_log_likelihood_ospline_seq <- function(dataset, p, num_knots, psd_iwp_ve
       num_knots = num_knots,
       psd_iwp = psd_iwp,
       pred_step = pred_step,
-      betaprec = betaprec
+      betaprec = betaprec,
+      log_lib_size = log_lib_size
     )
   })
   return(log_likelihoods)
 }
 
 ### Fit a sequence of k models with ospline using different psd_iwp and different p and record the k marginal likelihoods
-compute_log_likelihood_ospline_seq2 <- function(dataset, p_vec, num_knots, psd_iwp_vector, pred_step, betaprec = 0.001) {
+compute_log_likelihood_ospline_seq2 <- function(dataset, p_vec, num_knots, psd_iwp_vector, pred_step, betaprec = 0.001, log_lib_size = NULL) {
   # Initialize a list to store the results for each p
   all_log_likelihoods <- c()
 
@@ -222,7 +233,8 @@ compute_log_likelihood_ospline_seq2 <- function(dataset, p_vec, num_knots, psd_i
       num_knots = num_knots,
       psd_iwp_vector = psd_iwp_vector,
       pred_step = pred_step,
-      betaprec = betaprec
+      betaprec = betaprec,
+      log_lib_size = log_lib_size
     )
     all_log_likelihoods <- c(all_log_likelihoods, log_likelihoods)
   }
@@ -244,14 +256,14 @@ fit_ospline_with_prior <- function(dataset, p, num_knots, prior_weight, pred_ste
     # Use mclapply for parallel processing on Unix-like systems
     results_list <- mclapply(seq_len(nrow(active_prior)), function(i) {
       psd_iwp <- active_prior$psd_iwp[i]
-      fit_ospline(dataset, p, num_knots, psd_iwp, pred_step, betaprec)
+      fit_ospline(dataset, p, num_knots, psd_iwp, pred_step, betaprec, log_lib_size)
     }, mc.cores = num_cores)
   }
   else {
     # Process sequentially
     for (i in seq_len(nrow(active_prior))) {
       psd_iwp <- active_prior$psd_iwp[i]
-      results_list[[i]] <- fit_ospline(dataset, p, num_knots, psd_iwp, pred_step, betaprec)
+      results_list[[i]] <- fit_ospline(dataset, p, num_knots, psd_iwp, pred_step, betaprec, log_lib_size)
     }
   }
 
@@ -278,7 +290,7 @@ fit_ospline_with_prior <- function(dataset, p, num_knots, prior_weight, pred_ste
 }
 
 ### Fit a sequence of k models based on a prior matrix: (when both psd_iwp and p are varying)
-fit_ospline_with_prior2 <- function(dataset, num_knots, prior_weight, pred_step, betaprec = 0.001, num_cores = 1) {
+fit_ospline_with_prior2 <- function(dataset, num_knots, prior_weight, pred_step, betaprec = 0.001, num_cores = 1, log_lib_size) {
   # Filter out rows where prior weight is zero
   active_prior <- prior_weight[prior_weight$prior_weight > 0, ]
 
@@ -291,7 +303,7 @@ fit_ospline_with_prior2 <- function(dataset, num_knots, prior_weight, pred_step,
     # Parallel processing for non-Windows platforms
     results_list <- mclapply(seq_len(nrow(active_prior)), function(i) {
       row <- active_prior[i, ]
-      fit_result <- fit_ospline(dataset, row$p, num_knots, row$psd_iwp, pred_step, betaprec)
+      fit_result <- fit_ospline(dataset, row$p, num_knots, row$psd_iwp, pred_step, betaprec, log_lib_size)
       fit_result
     }, mc.cores = num_cores)
     # Extract log likelihoods from results
@@ -304,7 +316,7 @@ fit_ospline_with_prior2 <- function(dataset, num_knots, prior_weight, pred_step,
     for (i in seq_len(nrow(active_prior))) {
       print(rownames(active_prior)[i])
       row <- active_prior[i, ]
-      fit_result <- fit_ospline(dataset, row$p, num_knots, row$psd_iwp, pred_step, betaprec)
+      fit_result <- fit_ospline(dataset, row$p, num_knots, row$psd_iwp, pred_step, betaprec, log_lib_size)
       results_list[[i]] <- fit_result
       all_log_likelihoods[i] <- fit_result$log_likelihood
       condition_fitting[i] <- fit_result$condition_fitting
