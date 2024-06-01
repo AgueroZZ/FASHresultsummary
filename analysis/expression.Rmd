@@ -32,10 +32,10 @@ result_dir <- paste0(getwd(), "/output/expression")
 function_dir <- paste0(getwd(), "/code/function")
 data_dir <- paste0(getwd(), "/data/expression_data")
 source(paste0(function_dir, "/functions_fitting_Poisson_expression.R"))
-compile(paste0(cpp_dir, "/Poisson.cpp"))
-compile(paste0(cpp_dir, "/Poisson_just_fixed.cpp"))
-dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson")))
-dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_just_fixed")))
+compile(paste0(cpp_dir, "/Poisson_expression.cpp"))
+compile(paste0(cpp_dir, "/Poisson_just_fixed_expression.cpp"))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_expression")))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_just_fixed_expression")))
 num_cores <- 4
 ```
 
@@ -78,6 +78,20 @@ all_gene <- unique(expression_data_one_cell_line$Gene_id)
 load(paste0(result_dir, "/datasets.rda"))
 ```
 
+
+Compute the library sizes:
+```{r}
+size_vec <- numeric(length = nrow(datasets[[1]]))
+for (i in 1:length(size_vec)) {
+  all_counts <- unlist(lapply(datasets, function(x) {x$y[x$Day == (i-1)]}))
+  size_vec[i] <- sum(all_counts)
+}
+log_size_vec <- log(size_vec)
+```
+
+
+
+
 ### **Applying empirical Bayes**
 
 ```{r eval = FALSE}
@@ -96,7 +110,8 @@ for (i in 1:length(datasets)) {
     num_knots = num_knots,
     psd_iwp_vector = psd_vec,
     pred_step = 1,
-    betaprec = 0.0001
+    betaprec = 0.0001,
+    log_lib_size = log_size_vec
   )
 }
 L_matrix <- do.call(rbind, L_vecs)
@@ -138,7 +153,8 @@ for (i in seq_along(datasets)) {
     num_knots = num_knots,
     prior_weight = prior_weight,
     betaprec = 0.0001,
-    pred_step = 1
+    pred_step = 1,
+    log_lib_size = log_size_vec
   )
   posterior_weights_matrix[i, ] <- fit_result_final$posterior_weights[, "posterior_weight"]
   fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
@@ -215,7 +231,7 @@ d <- dist(wide_data, method = "euclidean")  # Distance matrix
 fit <- hclust(d, method = "ward.D2")  # Clustering
 clusters <- cutree(fit, k = 6)
 # recode cluster 1 - 1, 2 - 2, 3 - 3, 5 - 4, 6 - 5, 4 - 6
-clusters <- recode(clusters, `1` = 1, `2` = 2, `3` = 3, `4` = 5, `5` = 4, `6` = 6)
+clusters <- recode(clusters, `1` = 1, `2` = 2, `3` = 3, `4` = 4, `5` = 5, `6` = 6)
 
 sorted_posterior_weights_df$cluster <- clusters
 melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
@@ -312,6 +328,26 @@ plot_gene_expression_log <- function(gene) {
           col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
 }
 
+plot_gene_expression_log_just_f <- function(gene, log_size_vec) {
+  agg_result <- fitted_datasets[[gene]]
+  agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
+  min_y <- min(agg_result$lower)
+  max_y <- max(agg_result$upper)  # Assuming this is positive and makes sense in your context
+
+  # Set the limits for the y-axis
+  log_min_y <- min_y / 2  # Just a simple heuristic, can adjust based on your data's distribution
+  log_max_y <- max_y * 1.2
+
+  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
+       main = paste0(gene), xlab = "Day", ylab = "Expression", col = "blue",
+       cex = 0.5, log = "y", ylim = c(log_min_y, log_max_y),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+
+
 # plot_gene_expression(gene)
 plot_cluster_genes <- function(genes) {
   if(length(genes) < 16) stop("Not enough genes in the cluster")
@@ -326,6 +362,14 @@ plot_cluster_genes_log <- function(genes) {
   par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
   for (gene in genes[1:16]) {
     plot_gene_expression_log(gene)
+  }
+  par(mfrow = c(1, 1))
+}
+plot_cluster_genes_log_just_f <- function(genes, log_size_vec){
+  if(length(genes) < 16) stop("Not enough genes in the cluster")
+  par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
+  for (gene in genes[1:16]) {
+    plot_gene_expression_log_just_f(gene, log_size_vec)
   }
   par(mfrow = c(1, 1))
 }
@@ -378,36 +422,36 @@ plot_cluster_genes(genes_cluster6)
 ```
 
 
-### **Smoothing result for each cluster (after Log)** {.tabset .tabset-pills}
+### **Smoothing result for each cluster (Just the function $f$ after Log)** {.tabset .tabset-pills}
 
 #### For cluster 1:
 ```{r}
-plot_cluster_genes_log(genes_cluster1)
+plot_cluster_genes_log_just_f(genes_cluster1, log_size_vec)
 ```
 
 #### For cluster 2:
 ```{r}
-plot_cluster_genes_log(genes_cluster2)
+plot_cluster_genes_log_just_f(genes_cluster2, log_size_vec)
 ```
 
 #### For cluster 3:
 ```{r}
-plot_cluster_genes_log(genes_cluster3)
+plot_cluster_genes_log_just_f(genes_cluster3, log_size_vec)
 ```
 
 #### For cluster 4:
 ```{r}
-plot_cluster_genes_log(genes_cluster4)
+plot_cluster_genes_log_just_f(genes_cluster4, log_size_vec)
 ```
 
 #### For cluster 5:
 ```{r}
-plot_cluster_genes_log(genes_cluster5)
+plot_cluster_genes_log_just_f(genes_cluster5, log_size_vec)
 ```
 
 #### For cluster 6:
 ```{r}
-plot_cluster_genes_log(genes_cluster6)
+plot_cluster_genes_log_just_f(genes_cluster6, log_size_vec)
 ```
 
 
