@@ -13,7 +13,7 @@ We consider the (raw) gene expression data measured over 16 days as studied in [
 For simplicity of the presentation, we consider only one cell-line in this example. 
 The dataset contains the raw expression counts of 16319 genes.
 
-To model the true (log) expression level $f_i(t_j)$ of the $i$th gene at day $t_j$, we assume that the expression count $y_{i}(t_j)$ is Poisson distributed with mean $\exp \left(f_i(t_j)\right)$.
+To model the true (log) expression level $f_i(t_j)$ of the $i$th gene at day $t_j$, we assume that the expression count $y_{i}(t_j)$ is Poisson distributed with mean $o_j\exp \left(f_i\left(t_j\right)\right)$, where $o_j$ is the library size at day $t_j$.
 
 
 ```{r include=FALSE}
@@ -221,43 +221,7 @@ ggplot(melted_data_sorted, aes(x = factor(id, levels = sorted_posterior_weights_
 
 ### **Clustering based on posterior weights**
 
-Let's group them into 6 groups, first try hierarchical clustering
-```{r}
-set.seed(123)
-# Normalize the data
-wide_data <- scale(sorted_posterior_weights_matrix)
-# Perform hierarchical clustering
-d <- dist(wide_data, method = "euclidean")  # Distance matrix
-fit <- hclust(d, method = "ward.D2")  # Clustering
-clusters <- cutree(fit, k = 6)
-# recode cluster 1 - 1, 2 - 2, 3 - 3, 5 - 4, 6 - 5, 4 - 6
-clusters <- recode(clusters, `1` = 1, `2` = 2, `3` = 3, `4` = 4, `5` = 5, `6` = 6)
-
-sorted_posterior_weights_df$cluster <- clusters
-melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
-melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
-melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
-melted_data_sorted <- melted_data_sorted %>% arrange(cluster)
-
-ggplot(melted_data_sorted, aes(x = factor(id), y = value, fill = variable3)) +
-  geom_bar(stat = "identity") +  
-  labs(x = "Gene Index", y = "Weight", fill = "PSD Level") +
-  ggtitle("Structure Plot of Posterior Weights by Cluster") +
-  coord_flip() +
-  scale_fill_gradient(low = "white", high = "blue") +
-  facet_wrap(~cluster, scales = "free_y") +  # Use facet_wrap by cluster
-  theme_minimal() +
-  theme(
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    panel.background = element_rect(fill = "white", colour = "grey"),
-    plot.background = element_rect(fill = "white", colour = NA),
-    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
-    strip.text = element_text(face = "bold")  
-  )
-```
-
-Then try to group just based on the quantiles of the mean PSD:
+Let's group them into 4 groups, based on the quantiles of the mean PSD:
 ```{r}
 mean_psd_ordered <- mean_psd[sorted_index]
 quantiles <- quantile(mean_psd_ordered, probs = seq(0, 1, 1/6))
@@ -389,7 +353,7 @@ genes_cluster6 <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$clu
 ```
 
 
-### **Smoothing result for each cluster** {.tabset .tabset-pills}
+### **Smoothing result for each cluster (Overall expression level $o_j\exp(f_i(t_j))$** {.tabset .tabset-pills}
 
 #### For cluster 1:
 ```{r}
@@ -422,7 +386,7 @@ plot_cluster_genes(genes_cluster6)
 ```
 
 
-### **Smoothing result for each cluster (Just the function $f$ after Log)** {.tabset .tabset-pills}
+### **Smoothing result for each cluster (Just the function $f_i$ after Log)** {.tabset .tabset-pills}
 
 #### For cluster 1:
 ```{r}
