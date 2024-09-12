@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ziang Zhang" />
+
+<meta name="date" content="2024-09-09" />
+
+<title>eQTL Simulation</title>
+
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">resultsummary</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="simulation_pollution.html">Simulation 1</a>
+</li>
+<li>
+  <a href="eQTL_sim.html">Simulation 2</a>
+</li>
+<li>
+  <a href="covid_example.html">COVID-19 Example</a>
+</li>
+<li>
+  <a href="expression.html">Gene Expression Example</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/AgueroZZ/resultsummary">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">eQTL Simulation</h1>
+<h4 class="author">Ziang Zhang</h4>
+<h4 class="date">2024-09-09</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2024-09-12
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>FASHresultsummary/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240507code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240507)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240507code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240507)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree8299ac0e6d8fd0111e48ab6a9cbbaf0c913b4342targetblank8299ac0a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/8299ac0e6d8fd0111e48ab6a9cbbaf0c913b4342" target="_blank">8299ac0</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree8299ac0e6d8fd0111e48ab6a9cbbaf0c913b4342targetblank8299ac0a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/8299ac0e6d8fd0111e48ab6a9cbbaf0c913b4342" target="_blank">8299ac0</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.Rhistory
+    Ignored:    code/.DS_Store
+    Ignored:    code/cpp/.DS_Store
+    Ignored:    code/function/.DS_Store
+    Ignored:    code/function/.Rhistory
+    Ignored:    data/.DS_Store
+    Ignored:    output/.DS_Store
+    Ignored:    output/example/.DS_Store
+    Ignored:    output/example/figure/
+
+Untracked files:
+    Untracked:  analysis/circadian_expression.Rmd
+    Untracked:  code/cpp/Gaussian_just_fixed.o
+    Untracked:  code/cpp/Gaussian_just_fixed.so
+    Untracked:  code/cpp/Gaussian_theta_known.o
+    Untracked:  code/cpp/Gaussian_theta_known.so
+    Untracked:  code/cpp/Poisson.o
+    Untracked:  code/cpp/Poisson.so
+    Untracked:  code/cpp/Poisson_causes.o
+    Untracked:  code/cpp/Poisson_causes.so
+    Untracked:  code/cpp/Poisson_covid.o
+    Untracked:  code/cpp/Poisson_covid.so
+    Untracked:  code/cpp/Poisson_expression.o
+    Untracked:  code/cpp/Poisson_expression.so
+    Untracked:  code/cpp/Poisson_just_fixed.cpp
+    Untracked:  code/cpp/Poisson_just_fixed.o
+    Untracked:  code/cpp/Poisson_just_fixed.so
+    Untracked:  code/cpp/Poisson_just_fixed_causes.o
+    Untracked:  code/cpp/Poisson_just_fixed_causes.so
+    Untracked:  code/cpp/Poisson_just_fixed_covid.o
+    Untracked:  code/cpp/Poisson_just_fixed_covid.so
+    Untracked:  code/cpp/Poisson_just_fixed_expression.o
+    Untracked:  code/cpp/Poisson_just_fixed_expression.so
+    Untracked:  code/function/functions_Gaussian_fitting_eQTLsim.R
+    Untracked:  code/function/functions_fitting_Gaussian_eQTL_irregular.R
+    Untracked:  code/function/functions_fitting_Poisson_circadian_expression.R
+    Untracked:  code/function/functions_simulating.R
+    Untracked:  code/function/functions_simulation_eQTL_irregular.R
+    Untracked:  data/13100810.csv
+    Untracked:  data/13100810_MetaData.csv
+    Untracked:  data/circadian_expression/
+    Untracked:  data/expression_data/
+    Untracked:  output/causes/
+    Untracked:  output/circadian_expression/
+    Untracked:  output/eQTL_sim/
+    Untracked:  output/expression/
+    Untracked:  output/simulation_eQTL/
+    Untracked:  output/simulation_eQTL_test/
+    Untracked:  output/simulation_pollution/
+    Untracked:  thought_process
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
+    Deleted:    analysis/simulation.Rmd
+    Modified:   analysis/simulation_eQTL.Rmd
+    Modified:   analysis/simulation_eQTL_identification.Rmd
+    Modified:   analysis/simulation_pollution.Rmd
+    Modified:   code/cpp/Gaussian_just_fixed.cpp
+    Modified:   code/function/functions_fitting_Gaussian.R
+    Modified:   code/function/functions_fitting_Gaussian_eQTL.R
+    Modified:   code/function/functions_fitting_Gaussian_eQTL_test.R
+    Modified:   code/function/functions_simulation.R
+    Modified:   output/example/L_matrix.rda
+    Modified:   output/example/fitted_datasets.rda
+    Modified:   output/example/functional_datasets.rda
+    Modified:   output/example/posterior_weights_matrix.rda
+    Deleted:    output/simulation/L_matrix.rda
+    Deleted:    output/simulation/fitted_datasets.rda
+    Deleted:    output/simulation/posterior_weights_matrix.rda
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/eQTL_sim.rmd</code>) and HTML
+(<code>docs/eQTL_sim.html</code>) files. If you’ve configured a remote
+Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8299ac0e6d8fd0111e48ab6a9cbbaf0c913b4342/analysis/eQTL_sim.rmd" target="_blank">8299ac0</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+<td>
+wflow_publish(files = "analysis/eQTL_sim.rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level2">
+<h2><strong>Introduction</strong></h2>
+<p>We consider the effect size estimate of <span
+class="math inline">\(10,000\)</span> eQTLs measured in day <span
+class="math inline">\(t = 1\)</span> to day <span
+class="math inline">\(t = 16\)</span>:</p>
+<ul>
+<li>there are <span class="math inline">\(6000\)</span> eQTLs that are
+not dynamic, i.e., the effect size is constant over time.</li>
+<li>there are <span class="math inline">\(3000\)</span> eQTLs that are
+dynamic, i.e., the effect size is changing over time.</li>
+</ul>
+<p>Among the <span class="math inline">\(3000\)</span> dynamic eQTLs, we
+simulate their effect sizes from the oracle model.</p>
+<p>For simplicity, let’s assume the SE of effect estimate is constant
+over time: <span class="math inline">\(\text{SE}(\hat{\beta}_{i}(t_j)) =
+\sigma_i, \forall j\)</span> and hence: <span
+class="math display">\[\hat{\beta}_i(t_j) \sim
+N(\beta_i(t_j),\sigma_i^2).\]</span></p>
+</div>
+<div id="data" class="section level2">
+<h2><strong>Data</strong></h2>
+<p>Load the required libraries and set the seed.</p>
+<p>Let’s simulate N independent datasets, each with different true
+effect curve:</p>
+<pre class="r"><code>prop_vec &lt;- c(0.6, 0.1, 0.1, 0.075, 0.075, 0.05)
+psd_vec &lt;- c(0.0, 0.1, 0.2, 0.3, 0.4, 0.5)
+size_each &lt;- c(N * prop_vec)
+psd_sampled &lt;- rep(psd_vec, size_each)
+
+data_sim_list &lt;- lapply(1:N, function(i) simulate_process(sd_poly = 1, type = &quot;nonlinear&quot;, sd = sigma[i], psd_function = psd_sampled[i]))
+par(mfrow = c(3, 3))
+for (i in 1:9) {
+  index &lt;- sample(1:N, 1)
+  plot(data_sim_list[[index]]$x, data_sim_list[[index]]$truef, 
+       type = &quot;l&quot;, col = &quot;red&quot;, xlab = &quot;Time&quot;,
+       ylim = range(data_sim_list[[index]]$truef, data_sim_list[[index]]$y),
+       ylab = &quot;Effect size&quot;, main = paste0(&quot;eQTL &quot;, index))
+  points(data_sim_list[[index]]$x, data_sim_list[[index]]$y, col = &quot;blue&quot;)
+}</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow = c(1, 1))
+
+sigma &lt;- unlist(lapply(data_sim_list, function(x) unique(x$sd)))</code></pre>
+</div>
+<div id="implementing-fash" class="section level2">
+<h2><strong>Implementing FASH </strong></h2>
+<p>First, we compute the L matrix:</p>
+<pre class="r"><code>beta_prec &lt;- 0.00001
+set.seed(123)
+p_vec &lt;- 1
+psd_iwp_vec &lt;- sort(unique(c(0,seq(0, 1, by = 0.1))))
+L_vecs &lt;- list()
+# create a progress bar
+pb &lt;- txtProgressBar(min = 0, max = length(data_sim_list), style = 3)
+for (i in 1:length(data_sim_list)) {
+  setTxtProgressBar(pb, i)
+  L_vecs[[i]] &lt;- compute_log_likelihood_ospline_seq2(
+    x = data_sim_list[[i]]$x,
+    y = data_sim_list[[i]]$y,
+    p = p_vec,
+    num_knots = 50,
+    psd_iwp_vector = psd_iwp_vec,
+    pred_step = 1,
+    betaprec = beta_prec,
+    sd_gaussian = sigma[i]
+  )
+}
+L_matrix &lt;- do.call(rbind, L_vecs)
+save(L_matrix, file = paste0(result_dir, &quot;/L_matrix.rda&quot;))</code></pre>
+<pre class="r"><code>beta_prec &lt;- 0.00001
+set.seed(123)
+p_vec &lt;- 1
+psd_iwp_vec &lt;- sort(unique(c(0,seq(0, 1, by = 0.1))))
+load(paste0(result_dir, &quot;/L_matrix.rda&quot;))</code></pre>
+<p>Based on the L-matrix, we optimize the prior weights through EB:</p>
+<pre class="r"><code>fit.sqp &lt;- mixsqp(L = L_matrix, log = TRUE)</code></pre>
+<pre><code>Running mix-SQP algorithm 0.3-54 on 3000 x 11 matrix
+convergence tol. (SQP):     1.0e-08
+conv. tol. (active-set):    1.0e-10
+zero threshold (solution):  1.0e-08
+zero thresh. (search dir.): 1.0e-14
+l.s. sufficient decrease:   1.0e-02
+step size reduction factor: 7.5e-01
+minimum step size:          1.0e-08
+max. iter (SQP):            1000
+max. iter (active-set):     12
+number of EM iterations:    10
+Computing SVD of 3000 x 11 matrix.
+Matrix is not low-rank; falling back to full matrix.
+iter        objective max(rdual) nnz stepsize max.diff nqp nls
+   1 +8.335809161e-01  -- EM --   11 1.00e+00 2.64e-01  --  --
+   2 +7.447075715e-01  -- EM --   11 1.00e+00 1.36e-01  --  --
+   3 +7.273998013e-01  -- EM --   11 1.00e+00 5.73e-02  --  --
+   4 +7.224281065e-01  -- EM --   11 1.00e+00 2.58e-02  --  --
+   5 +7.204349925e-01  -- EM --   11 1.00e+00 1.25e-02  --  --
+   6 +7.194684812e-01  -- EM --   11 1.00e+00 6.50e-03  --  --
+   7 +7.189493771e-01  -- EM --   11 1.00e+00 3.92e-03  --  --
+   8 +7.186499724e-01  -- EM --   11 1.00e+00 2.63e-03  --  --
+   9 +7.184659425e-01  -- EM --   11 1.00e+00 1.77e-03  --  --
+  10 +7.183457160e-01  -- EM --   11 1.00e+00 1.19e-03  --  --
+   1 +7.182625605e-01 +1.026e-02  11  ------   ------   --  --
+   2 +7.178245145e-01 +1.657e-03   6 1.00e+00 6.53e-03   7   1
+   3 +7.178242053e-01 +7.722e-06   6 1.00e+00 4.98e-04   2   1
+   4 +7.178242053e-01 -2.211e-08   6 1.00e+00 2.80e-06   2   1
+Optimization took 0.00 seconds.
+Convergence criteria met---optimal solution found.</code></pre>
+<pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
+plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
+     pch = 20,lwd = 2,xlab = &quot;SQP iteration&quot;,
+     ylab = &quot;objective&quot;,xaxp = c(1,numiter,numiter - 1))</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>prior_weight &lt;- data.frame(p = rep(p_vec, each = length(psd_iwp_vec)), psd_iwp = psd_iwp_vec, prior_weight = fit.sqp$x)</code></pre>
+<pre class="r"><code>head(prior_weight)</code></pre>
+<pre><code>  p psd_iwp prior_weight
+1 1     0.0   0.60224937
+2 1     0.1   0.09841733
+3 1     0.2   0.09607136
+4 1     0.3   0.09180981
+5 1     0.4   0.07616369
+6 1     0.5   0.03528843</code></pre>
+<div id="how-does-pooling-help-the-estimation-of-sigma"
+class="section level3">
+<h3><em>How does pooling help the estimation of <span
+class="math inline">\(\sigma\)</span>?</em></h3>
+<p>First, take out the ML estimate of the PSD <span
+class="math inline">\((\sigma)\)</span> for each dataset:</p>
+<pre class="r"><code>MLE_psd &lt;- L_matrix %&gt;% apply(MARGIN = 1, function(x) psd_iwp_vec[which.max(x)]) %&gt;% unlist()
+PSD_data &lt;- data.frame(truth = psd_sampled, MLE = MLE_psd)</code></pre>
+<p>How much is the MSE?</p>
+<pre class="r"><code>PSD_data$sd &lt;- sigma
+mean((MLE_psd - psd_sampled)^2)</code></pre>
+<pre><code>[1] 0.02504</code></pre>
+<p>Now compute the posterior mean using FASH:</p>
+<pre class="r"><code>num_datasets &lt;- length(data_sim_list)
+num_weights &lt;- sum(prior_weight$prior_weight != 0)
+posterior_weights_matrix &lt;- matrix(nrow = num_datasets, ncol = num_weights)
+
+# Loop through each dataset and perform fitting
+fitted_datasets &lt;- list()
+
+pb &lt;- txtProgressBar(min = 0, max = N, style = 3)
+for (i in seq_along(data_sim_list)) {
+  setTxtProgressBar(pb, i)
+  dataset &lt;- data_sim_list[[i]]
+  fit_result_final &lt;- fit_ospline_with_prior2(
+    num_cores = 1,
+    x = dataset$x,
+    y = dataset$y,
+    num_knots = 50,
+    prior_weight = prior_weight,
+    betaprec = beta_prec,
+    sd_gaussian = sigma[i],
+    pred_step = 1
+  )
+  fitted_datasets[[i]] &lt;- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final)$summary_df
+  posterior_weights_matrix[i, ] &lt;- fit_result_final$posterior_weights[, &quot;posterior_weight&quot;]
+}
+colnames(posterior_weights_matrix) &lt;- paste(as.character(fit_result_final$posterior_weights[, &quot;p&quot;]),
+                                            as.character(fit_result_final$posterior_weights[, &quot;psd_iwp&quot;]), sep = &quot;_&quot;)
+save(posterior_weights_matrix, file = paste0(result_dir, &quot;/posterior_weights_matrix.rda&quot;))</code></pre>
+<pre class="r"><code>num_datasets &lt;- length(data_sim_list)
+num_weights &lt;- sum(prior_weight$prior_weight != 0)
+load(paste0(result_dir, &quot;/posterior_weights_matrix.rda&quot;))</code></pre>
+<pre class="r"><code># compute the posterior mean
+psd_iwp_vec_effective &lt;- psd_iwp_vec[prior_weight$prior_weight != 0]
+posterior_mean &lt;- rowSums(posterior_weights_matrix * matrix(psd_iwp_vec_effective, nrow = num_datasets, ncol = length(psd_iwp_vec_effective), byrow = T))
+PSD_data$EB &lt;- posterior_mean</code></pre>
+<p>Compute its MSE:</p>
+<pre class="r"><code>mean((posterior_mean - psd_sampled)^2)</code></pre>
+<pre><code>[1] 0.01038053</code></pre>
+<p>Compare the two plots for MLE and EB (FASH):</p>
+<pre class="r"><code># Combine MLE and EB data into a single dataframe
+PSD_data_long &lt;- PSD_data %&gt;%
+  pivot_longer(cols = c(&quot;MLE&quot;, &quot;EB&quot;), names_to = &quot;Method&quot;, values_to = &quot;Estimate&quot;)
+
+# Calculate the Mean Squared Error (MSE) for each method and SD
+plot_combined &lt;- PSD_data_long %&gt;%
+  group_by(truth, sd, Method) %&gt;%
+  summarize(MSE = mean((Estimate - truth)^2)) %&gt;%
+  ggplot(aes(x = truth, y = MSE, color = Method)) + 
+  geom_point() + 
+  geom_line() +
+  facet_wrap(~ sd, scales = &quot;free_y&quot;) +  # Facet by SD
+  ggtitle(&quot;Comparison of MLE and EB MSE across SD values&quot;) + 
+  labs(x = &quot;Truth&quot;, y = &quot;MSE&quot;, color = &quot;Method&quot;) +
+  ylim(0, 0.15) +
+  theme_minimal()</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;truth&#39;, &#39;sd&#39;. You can override using the
+`.groups` argument.</code></pre>
+<pre class="r"><code># Print the combined plot
+print(plot_combined)</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Also compare the boxplot of the squared error for MLE and EB:</p>
+<pre class="r"><code>PSD_data$error_EB &lt;- (PSD_data$EB - PSD_data$truth)^2
+PSD_data$error_MLE &lt;- (PSD_data$MLE - PSD_data$truth)^2
+
+# Reshape the data for ggplot
+PSD_data_melted &lt;- melt(PSD_data, id.vars = &quot;sd&quot;, measure.vars = c(&quot;error_EB&quot;, &quot;error_MLE&quot;), variable.name = &quot;Method&quot;, value.name = &quot;Error&quot;)
+
+# Calculate mean and standard deviation for each group
+summary_data &lt;- PSD_data_melted %&gt;%
+  group_by(sd, Method) %&gt;%
+  summarise(
+    mean_error = mean(Error),
+    sd_error = sd(Error),
+    .groups = &#39;drop&#39;
+  )
+
+# Create the error bar plot with mean as a dot, ensuring ymin is at least 0
+ggplot(summary_data, aes(x = as.factor(sd), y = mean_error, color = Method)) +
+  geom_point(position = position_dodge(width = 0.5), size = 3) +
+  geom_errorbar(aes(ymin = pmax(mean_error - 2 * sd_error, 0), ymax = mean_error + 2 * sd_error), 
+                position = position_dodge(width = 0.5), width = 0.2) +
+  labs(title = &quot;Comparison of Errors in EB and MLE Methods with Error Bars (±2 SD)&quot;, 
+       x = &quot;SD&quot;, y = &quot;Mean Error&quot;) +
+  theme_minimal() +
+  scale_color_discrete(name = &quot;Method&quot;)</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>This illustrates that by pooling the information through EB, the
+posterior mean from FASH improves the estimate of <span
+class="math inline">\(\sigma\)</span> compared to the original MLE.</p>
+</div>
+<div id="implementing-fdr-control-through-fash" class="section level3">
+<h3><em>Implementing FDR control through FASH</em></h3>
+<p>Here we utilize the false discovery rate provided by FASH to test the
+dynamic eQTLs.</p>
+<p>Compute the local false discovery rate (lfdr):</p>
+<pre class="r"><code>set.seed(123)
+lfdr &lt;- posterior_weights_matrix[,1]
+fdr_df &lt;- data.frame(eQTL = 1:length(lfdr), fdr = lfdr, type = rep(c(&quot;ND&quot;,&quot;D&quot;), times = c(size_each[1],N-size_each[1])))
+fdr_df &lt;- fdr_df[order(fdr_df$fdr), ] # ordering it
+fdr_df$cumulative_fdr &lt;- cumsum(fdr_df$fdr)/seq_along(fdr_df$fdr)
+fdr_df$rank &lt;- 1:length(lfdr)</code></pre>
+<p>Plot the FDR curve:</p>
+<pre class="r"><code>ggplot(fdr_df, aes(x = 1:length(lfdr), y = cumulative_fdr, col = type)) +
+  geom_point() +
+  geom_hline(yintercept = 0.05, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;Ordered eQTLs&quot;, y = &quot;Cumulative FDR&quot;, col = &quot;Type&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;FASH:Cumulative FDR Plot&quot;) +
+  scale_color_manual(values = c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;))</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>How many false discoveries are there?</p>
+<pre class="r"><code>alpha &lt;- 0.05
+num_discoveries &lt;- sum(fdr_df$cumulative_fdr &lt;= alpha)
+num_false_discoveries &lt;- sum(fdr_df$cumulative_fdr &lt;= alpha &amp; fdr_df$type == &quot;ND&quot;)
+true_false_discovery_rate &lt;- num_false_discoveries/num_discoveries
+true_false_discovery_rate</code></pre>
+<pre><code>[1] 0.04878049</code></pre>
+<pre class="r"><code># 0.04878049</code></pre>
+<p>Plot the curve of nominal false discovery rate (threshold) against
+the actual false discovery rate:</p>
+<pre class="r"><code># Calculate true FDR for FASH
+threshold_vec &lt;- seq(0, 1, by = 0.01)
+fdr_vec &lt;- numeric(length(threshold_vec))
+
+for (i in 1:length(threshold_vec)) {
+  num_discoveries &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df$type == &quot;ND&quot;)
+  fdr_vec[i] &lt;- num_false_discoveries / num_discoveries
+}
+
+# Create a data frame for plotting
+fdr_df_fash_for_plotting &lt;- data.frame(threshold = threshold_vec, true_fdr = fdr_vec)
+
+# Plot the nominal FDR vs true FDR for FASH
+ggplot(fdr_df_fash_for_plotting, aes(x = threshold, y = true_fdr)) +
+  geom_line() +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;(Nominal) False Discovery Rate&quot;, y = &quot;(Actual) False Discovery Rate&quot;) +
+  theme_minimal() +
+  geom_hline(yintercept = size_each[1]/N, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
+  ggtitle(&quot;Nominal FDR vs Actual FDR Curve for FASH&quot;)</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Also compare the number of false discoveries with the number of
+discoveries at different level of threshold, where number of discoveries
+is plotted against number of false discoveries:</p>
+<pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.01)
+num_discoveries_vec &lt;- numeric(length(threshold_vec))
+num_false_discoveries_vec &lt;- numeric(length(threshold_vec))
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_vec[i] &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries_vec[i] &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df$type == &quot;ND&quot;)
+}
+num_discoveries_df &lt;- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec, num_false_discoveries = num_false_discoveries_vec)
+ggplot(num_discoveries_df, aes(x = (num_discoveries), y = (num_false_discoveries))) +
+  geom_line() +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;Number of Discoveries&quot;, y = &quot;Number of False Discoveries&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;FASH: Number of False Discoveries vs Number of Discoveries&quot;) +
+  coord_cartesian(xlim = c(0, size_each[1]), ylim = c(0, size_each[1]))</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="comparison-with-mash" class="section level2">
+<h2><strong>Comparison with MASH</strong></h2>
+<p>Now, we compare the performance of FASH and MASH, in testing dynamic
+eQTLs. Let’s do the comparison with the default implementation of
+MASH:</p>
+<pre class="r"><code>fitted_datasets_mash &lt;- list()
+
+# Produce a huge data-matrix, the i-th row being dataset[[i]]$y
+all_data_matrix &lt;- do.call(rbind, lapply(data_sim_list, function(x) x$y))
+SE_matrix &lt;- matrix(nrow = nrow(all_data_matrix), ncol = ncol(all_data_matrix), sigma)
+
+# now use mashr:
+mash_data &lt;-  mashr::mash_set_data(all_data_matrix, SE_matrix)
+m.1by1 = mashr::mash_1by1(mash_data)
+strong = mashr::get_significant_results(m.1by1, 0.05)
+# keep the top 10%
+strong &lt;- strong[1:round(0.1*length(strong))]
+U.pca = mashr::cov_pca(mash_data, 5, subset = strong)
+U.ed = cov_ed(mash_data, U.pca, subset=strong)
+U.c = cov_canonical(mash_data)  
+m   = mash(mash_data, c(U.c,U.ed))
+save(m, file = paste0(result_dir, &quot;/mash_result.rda&quot;))</code></pre>
+<pre class="r"><code>load(paste0(result_dir, &quot;/mash_result.rda&quot;))
+mash_post &lt;- m$posterior_weights
+## extract the colnames start with &quot;equal_effects&quot;
+lfdr_mash &lt;- mash_post[, c(1, grep(&quot;equal_effects&quot;, colnames(mash_post)))]
+# sum each row
+lfdr_mash &lt;- rowSums(lfdr_mash)
+
+fdr_df_mash &lt;- data.frame(eQTL = 1:length(lfdr), fdr = lfdr_mash, type = rep(c(&quot;ND&quot;, &quot;D&quot;), times = c(size_each[1], N - size_each[1])))
+fdr_df_mash &lt;- fdr_df_mash[order(fdr_df_mash$fdr), ] # ordering it
+fdr_df_mash$cumulative_fdr &lt;- cumsum(fdr_df_mash$fdr)/seq_along(fdr_df_mash$fdr)
+fdr_df_mash$rank &lt;- 1:length(lfdr_mash)</code></pre>
+<p>How many false discoveries are there?</p>
+<pre class="r"><code>alpha &lt;- 0.05
+num_discoveries &lt;- sum(fdr_df_mash$cumulative_fdr &lt;= alpha)
+num_false_discoveries &lt;- sum(fdr_df_mash$cumulative_fdr &lt;= alpha &amp; fdr_df_mash$type == &quot;ND&quot;)
+true_false_discovery_rate &lt;- num_false_discoveries/num_discoveries
+true_false_discovery_rate</code></pre>
+<pre><code>[1] 0.03873745</code></pre>
+<p>Plot the FDR curve for MASH:</p>
+<pre class="r"><code>ggplot(fdr_df_mash, aes(x = rank, y = cumulative_fdr, col = type)) +
+  geom_point() +
+  geom_hline(yintercept = 0.05, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;Ordered eQTLs&quot;, y = &quot;Cumulative FDR&quot;, col = &quot;Type&quot;) +
+  theme_minimal() +
+  coord_cartesian(ylim = c(0, 1)) +
+  ggtitle(&quot;Cumulative FDR Plot&quot;) +
+  scale_color_manual(values = c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;))</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Check the calibration of FDR for MASH:</p>
+<pre class="r"><code># Calculate true FDR for MASH
+threshold_vec &lt;- seq(0, 1, by = 0.01)
+fdr_vec_mash &lt;- numeric(length(threshold_vec))
+
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_mash &lt;- sum(fdr_df_mash$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries_mash &lt;- sum(fdr_df_mash$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df_mash$type == &quot;ND&quot;)
+  fdr_vec_mash[i] &lt;- num_false_discoveries_mash / num_discoveries_mash
+}
+
+# Create a data frame for plotting
+fdr_df_mash_for_plotting &lt;- data.frame(threshold = threshold_vec, true_fdr = fdr_vec_mash)
+
+# Plot the nominal FDR vs true FDR for MASH
+ggplot(fdr_df_mash_for_plotting, aes(x = threshold, y = true_fdr)) +
+  geom_line() +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;(Nominal) False Discovery Rate&quot;, y = &quot;(Actual) False Discovery Rate&quot;) +
+  theme_minimal() +
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
+  ggtitle(&quot;Nominal FDR vs Actual FDR Curve for MASH&quot;)</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Plot the number of false discoveries against the number of total
+discoveries for MASH:</p>
+<pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.01)
+num_discoveries_vec &lt;- numeric(length(threshold_vec))
+num_false_discoveries_vec &lt;- numeric(length(threshold_vec))
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_vec[i] &lt;- sum(fdr_df_mash$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries_vec[i] &lt;- sum(fdr_df_mash$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df_mash$type == &quot;ND&quot;)
+}
+num_discoveries_df_mash &lt;- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec, num_false_discoveries = num_false_discoveries_vec)
+ggplot(num_discoveries_df_mash, aes(x = num_discoveries, y = (num_false_discoveries))) +
+  geom_line() +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;Number of Discoveries&quot;, y = &quot;Number of False Discoveries&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;MASH: Number of False Discoveries vs Number of Discoveries&quot;) +
+  coord_cartesian(xlim = c(0, size_each[1]), ylim = c(0, size_each[1]))</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Compare MASH (fdr_df_mash) and FASH (fdr_df)</p>
+<pre class="r"><code># Calculate true FDR for FASH
+threshold_vec &lt;- seq(0, 1, by = 0.01)
+fdr_vec_fash &lt;- numeric(length(threshold_vec))
+
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_fash &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries_fash &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df$type == &quot;ND&quot;)
+  fdr_vec_fash[i] &lt;- num_false_discoveries_fash / num_discoveries_fash
+}
+
+# Create a data frame for plotting
+fdr_df_fash &lt;- data.frame(threshold = threshold_vec, true_fdr = fdr_vec_fash, method = &quot;FASH&quot;)
+
+# Calculate true FDR for MASH
+fdr_vec_mash &lt;- numeric(length(threshold_vec))
+
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_mash &lt;- sum(fdr_df_mash$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries_mash &lt;- sum(fdr_df_mash$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df_mash$type == &quot;ND&quot;)
+  fdr_vec_mash[i] &lt;- num_false_discoveries_mash / num_discoveries_mash
+}
+
+# Create a data frame for plotting
+fdr_df_mash_for_plotting &lt;- data.frame(threshold = threshold_vec, true_fdr = fdr_vec_mash, method = &quot;MASH&quot;)
+fdr_df_fash_for_plotting$method &lt;- &quot;FASH&quot;
+
+# Combine data for plotting
+fdr_df_combined &lt;- rbind(fdr_df_fash_for_plotting, fdr_df_mash_for_plotting)
+
+# Plot the nominal FDR vs true FDR for both methods
+ggplot(fdr_df_combined, aes(x = threshold, y = true_fdr, color = method)) +
+  geom_line() +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;Nominal False Discovery Rate&quot;, y = &quot;Actual False Discovery Rate&quot;) +
+  theme_minimal() +
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
+  geom_hline(yintercept = size_each[1]/N, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
+  ggtitle(&quot;Nominal FDR vs Actual FDR Curves for MASH and FASH&quot;)</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Compare the number of false discoveries against the number of total
+discoveries for both methods:</p>
+<pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.0001)
+num_discoveries_vec_fash &lt;- numeric(length(threshold_vec))
+num_false_discoveries_vec_fash &lt;- numeric(length(threshold_vec))
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_vec_fash[i] &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries_vec_fash[i] &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df$type == &quot;ND&quot;)
+}
+num_discoveries_df_fash &lt;- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec_fash, num_false_discoveries = num_false_discoveries_vec_fash, method = &quot;FASH&quot;)
+
+num_discoveries_vec_mash &lt;- numeric(length(threshold_vec))
+num_false_discoveries_vec_mash &lt;- numeric(length(threshold_vec))
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_vec_mash[i] &lt;- sum(fdr_df_mash$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries_vec_mash[i] &lt;- sum(fdr_df_mash$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df_mash$type == &quot;ND&quot;)
+}
+
+num_discoveries_df_mash &lt;- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec_mash, num_false_discoveries = num_false_discoveries_vec_mash, method = &quot;MASH&quot;)
+
+num_discoveries_df_combined &lt;- rbind(num_discoveries_df_fash, num_discoveries_df_mash)
+
+ggplot(num_discoveries_df_combined, aes(x = num_discoveries, y = num_false_discoveries, color = method)) +
+  geom_line(aes(linetype = method)) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;Number of Discoveries&quot;, y = &quot;Number of False Discoveries&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;Number of False Discoveries vs Number of Discoveries for MASH and FASH&quot;) +
+  coord_cartesian(xlim = c(0, size_each[1]), ylim = c(0, size_each[1]))</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Compare the FDR vs Power for both methods:</p>
+<pre class="r"><code># Calculate the power for FASH
+num_discoveries_df_fash$power &lt;- (num_discoveries_df_fash$num_discoveries-num_discoveries_df_fash$num_false_discoveries)/(N - size_each[1])
+
+# Calculate the power for MASH
+num_discoveries_df_mash$power &lt;- (num_discoveries_df_mash$num_discoveries - num_discoveries_df_mash$num_false_discoveries)/(N - size_each[1])
+
+# Combine the data for plotting
+num_discoveries_df_combined &lt;- rbind(num_discoveries_df_fash, num_discoveries_df_mash)
+
+# Plot the FDR vs Power for both methods
+ggplot(num_discoveries_df_combined, aes(x = threshold, y = power, color = method)) +
+  geom_line(aes(linetype = method)) +
+  # geom_point() +
+  labs(x = &quot;FDR&quot;, y = &quot;Power&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;FDR vs Power for MASH and FASH&quot;) +
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="comparison-with-oracle-bayes" class="section level2">
+<h2><strong>Comparison with Oracle Bayes</strong></h2>
+<p>Finally, we also compare the performance of FASH with the oracle
+Bayes method that uses the true prior to produce inference.</p>
+<pre class="r"><code>true_prior_weight &lt;- prior_weight[,1:2]
+true_prior_weight$prior_weight &lt;- c(0.6, 0.1, 0.1, 0.075, 0.075, 0.05, 0, 0, 0, 0, 0)
+num_datasets &lt;- length(data_sim_list)
+num_weights &lt;- sum(true_prior_weight$prior_weight != 0)
+true_posterior_weights_matrix &lt;- matrix(nrow = num_datasets, ncol = num_weights)
+
+# Loop through each dataset and perform fitting
+fitted_datasets &lt;- list()
+
+pb &lt;- txtProgressBar(min = 0, max = N, style = 3)
+for (i in seq_along(data_sim_list)) {
+  setTxtProgressBar(pb, i)
+  dataset &lt;- data_sim_list[[i]]
+  fit_result_final &lt;- fit_ospline_with_prior2(
+    num_cores = 1,
+    x = dataset$x,
+    y = dataset$y,
+    num_knots = 50,
+    prior_weight = true_prior_weight,
+    betaprec = 1,
+    sd_gaussian = sigma[i],
+    pred_step = 1
+  )
+  fitted_datasets[[i]] &lt;- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final)$summary_df
+  true_posterior_weights_matrix[i, ] &lt;- fit_result_final$posterior_weights[, &quot;posterior_weight&quot;]
+}
+colnames(true_posterior_weights_matrix) &lt;- paste(as.character(fit_result_final$posterior_weights[, &quot;p&quot;]),
+                                            as.character(fit_result_final$posterior_weights[, &quot;psd_iwp&quot;]), sep = &quot;_&quot;)
+save(true_posterior_weights_matrix, file = paste0(result_dir, &quot;/true_posterior_weights_matrix.rda&quot;))</code></pre>
+<pre class="r"><code>true_prior_weight &lt;- prior_weight[,1:2]
+true_prior_weight$prior_weight &lt;- c(0.6, 0.1, 0.1, 0.075, 0.075, 0.05, 0, 0, 0, 0, 0)
+num_datasets &lt;- length(data_sim_list)
+num_weights &lt;- sum(true_prior_weight$prior_weight != 0)
+load(paste0(result_dir, &quot;/true_posterior_weights_matrix.rda&quot;))</code></pre>
+<pre class="r"><code># compute the posterior mean
+psd_iwp_vec_effective &lt;- true_prior_weight$psd_iwp[true_prior_weight$prior_weight != 0]
+posterior_mean &lt;- rowSums(true_posterior_weights_matrix * matrix(psd_iwp_vec_effective, nrow = num_datasets, ncol = length(psd_iwp_vec_effective), byrow = T))
+PSD_data$OB &lt;- posterior_mean</code></pre>
+<p>First, compare the estimation accuracy of the PSD <span
+class="math inline">\(\sigma\)</span>:</p>
+<pre class="r"><code># Combine MLE and EB data into a single dataframe
+PSD_data_long &lt;- PSD_data %&gt;%
+  pivot_longer(cols = c(&quot;MLE&quot;, &quot;EB&quot;, &quot;OB&quot;), names_to = &quot;Method&quot;, values_to = &quot;Estimate&quot;)
+
+# Calculate the Mean Squared Error (MSE) for each method and SD
+plot_combined &lt;- PSD_data_long %&gt;%
+  group_by(truth, sd, Method) %&gt;%
+  summarize(MSE = mean((Estimate - truth)^2)) %&gt;%
+  ggplot(aes(x = truth, y = MSE, color = Method)) + 
+  geom_point() + 
+  geom_line() +
+  facet_wrap(~ sd, scales = &quot;free_y&quot;) +  # Facet by SD
+  ggtitle(&quot;Comparison of MSE across SD values&quot;) + 
+  labs(x = &quot;Truth&quot;, y = &quot;MSE&quot;, color = &quot;Method&quot;) +
+  ylim(0, 0.15) +
+  theme_minimal()</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;truth&#39;, &#39;sd&#39;. You can override using the
+`.groups` argument.</code></pre>
+<pre class="r"><code># Print the combined plot
+print(plot_combined)</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Then, let’s check the calibration of FDR and its corresponding
+power.</p>
+<p>Compute the local false discovery rate (lfdr):</p>
+<pre class="r"><code>set.seed(123)
+lfdr_ob &lt;- true_posterior_weights_matrix[,1]
+fdr_df_ob &lt;- data.frame(eQTL = 1:length(lfdr_ob), fdr = lfdr_ob, type = rep(c(&quot;ND&quot;,&quot;D&quot;), times = c(size_each[1],N-size_each[1])))
+fdr_df_ob &lt;- fdr_df_ob[order(fdr_df_ob$fdr), ] # ordering it
+fdr_df_ob$cumulative_fdr &lt;- cumsum(fdr_df_ob$fdr)/seq_along(fdr_df_ob$fdr)
+fdr_df_ob$rank &lt;- 1:length(lfdr_ob)</code></pre>
+<p>Compare the number of false discoveries with the number of
+discoveries at different level of threshold, where number of discoveries
+is plotted against number of false discoveries:</p>
+<pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.01)
+num_discoveries_vec &lt;- numeric(length(threshold_vec))
+num_false_discoveries_vec &lt;- numeric(length(threshold_vec))
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_vec[i] &lt;- sum(fdr_df_ob$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries_vec[i] &lt;- sum(fdr_df_ob$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df_ob$type == &quot;ND&quot;)
+}
+num_discoveries_df &lt;- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec, num_false_discoveries = num_false_discoveries_vec)
+ggplot(num_discoveries_df, aes(x = (num_discoveries), y = (num_false_discoveries))) +
+  geom_line() +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;Number of Discoveries&quot;, y = &quot;Number of False Discoveries&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;OB: Number of False Discoveries vs Number of Discoveries&quot;) +
+  coord_cartesian(xlim = c(0, size_each[1]), ylim = c(0, size_each[1]))</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-34-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Compare FASH, OB and MASH in terms of FDR calibration:</p>
+<pre class="r"><code># Create a data frame for plotting
+fdr_vec_ob &lt;- numeric(length(threshold_vec))
+
+for (i in 1:length(threshold_vec)) {
+  fdr_vec_ob[i] &lt;- num_false_discoveries_vec[i] / num_discoveries_vec[i]
+}
+
+# Create a data frame for plotting
+fdr_df_ob_for_plotting &lt;- data.frame(threshold = threshold_vec, true_fdr = fdr_vec_ob, method = &quot;OB&quot;)
+
+# Combine data for plotting
+fdr_df_combined &lt;- rbind(fdr_df_fash_for_plotting, fdr_df_mash_for_plotting, fdr_df_ob_for_plotting)
+
+# Plot the nominal FDR vs true FDR for both methods
+ggplot(fdr_df_combined, aes(x = threshold, y = true_fdr, color = method)) +
+  geom_line() +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;Nominal False Discovery Rate&quot;, y = &quot;Actual False Discovery Rate&quot;) +
+  theme_minimal() +
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
+  geom_hline(yintercept = size_each[1]/N, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
+  ggtitle(&quot;Nominal FDR vs Actual FDR Curves for All Methods&quot;)</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-35-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Compare FASH, OB and MASH in terms of number of discoveries:</p>
+<pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.0001)
+num_discoveries_vec_ob &lt;- numeric(length(threshold_vec))
+num_false_discoveries_vec_ob &lt;- numeric(length(threshold_vec))
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_vec_ob[i] &lt;- sum(fdr_df_ob$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries_vec_ob[i] &lt;- sum(fdr_df_ob$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df_ob$type == &quot;ND&quot;)
+}
+
+num_discoveries_vec_ob &lt;- numeric(length(threshold_vec))
+num_false_discoveries_vec_ob &lt;- numeric(length(threshold_vec))
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_vec_ob[i] &lt;- sum(fdr_df_ob$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries_vec_ob[i] &lt;- sum(fdr_df_ob$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df_ob$type == &quot;ND&quot;)
+}
+
+num_discoveries_df_ob &lt;- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec_ob, num_false_discoveries = num_false_discoveries_vec_ob, method = &quot;OB&quot;)
+
+# Calculate the power for OB
+num_discoveries_df_ob$power &lt;- (num_discoveries_df_ob$num_discoveries-num_discoveries_df_ob$num_false_discoveries)/(N - size_each[1])
+
+num_discoveries_df_combined &lt;- rbind(num_discoveries_df_fash, num_discoveries_df_mash, num_discoveries_df_ob)
+
+ggplot(num_discoveries_df_combined, aes(x = num_discoveries, y = num_false_discoveries, color = method)) +
+  geom_line(aes(linetype = method)) +
+  # geom_point(size = 0.01) + 
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;Number of Discoveries&quot;, y = &quot;Number of False Discoveries&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;Number of False Discoveries vs Number of Discoveries for All Methods&quot;) +
+  coord_cartesian(xlim = c(0, size_each[1]), ylim = c(0, size_each[1]))</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-36-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Compare FASH, OB and MASH in terms of power:</p>
+<pre class="r"><code># Plot the FDR vs Power for both methods
+ggplot(num_discoveries_df_combined, aes(x = threshold, y = power, color = method)) +
+  geom_line(aes(linetype = method)) +
+  # geom_point() +
+  labs(x = &quot;FDR&quot;, y = &quot;Power&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;FDR vs Power for All Methods&quot;) +
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))</code></pre>
+<p><img src="figure/eQTL_sim.rmd/unnamed-chunk-37-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Overall, FASH seems to perform quite close to the oracle Bayes (OB)
+approach that utilizes the true prior.</p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS Monterey 12.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] parallel  splines   stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] mashr_0.2.79    ashr_2.2-63     lubridate_1.9.3 forcats_1.0.0  
+ [5] stringr_1.5.0   dplyr_1.1.3     purrr_1.0.2     readr_2.1.4    
+ [9] tidyr_1.3.0     tibble_3.2.1    tidyverse_2.0.0 mixsqp_0.3-54  
+[13] reshape2_1.4.4  ggplot2_3.5.1   Matrix_1.6-3    TMB_1.9.7      
+[17] BayesGP_0.1.1   workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.4         xfun_0.40            bslib_0.5.1         
+ [4] processx_3.8.2       lattice_0.21-8       callr_3.7.3         
+ [7] tzdb_0.4.0           vctrs_0.6.4          tools_4.3.1         
+[10] ps_1.7.5             generics_0.1.3       fansi_1.0.5         
+[13] pkgconfig_2.0.3      SQUAREM_2021.1       assertthat_0.2.1    
+[16] truncnorm_1.0-9      lifecycle_1.0.3      farver_2.1.1        
+[19] compiler_4.3.1       git2r_0.33.0         munsell_0.5.0       
+[22] getPass_0.2-4        httpuv_1.6.11        htmltools_0.5.6.1   
+[25] sass_0.4.7           yaml_2.3.7           later_1.3.1         
+[28] pillar_1.9.0         jquerylib_0.1.4      whisker_0.4.1       
+[31] rmeta_3.0            cachem_1.0.8         abind_1.4-5         
+[34] tidyselect_1.2.0     digest_0.6.33        mvtnorm_1.2-3       
+[37] stringi_1.7.12       LaplacesDemon_16.1.6 labeling_0.4.3      
+[40] rprojroot_2.0.3      fastmap_1.1.1        grid_4.3.1          
+[43] invgamma_1.1         colorspace_2.1-0     cli_3.6.1           
+[46] magrittr_2.0.3       utf8_1.2.3           withr_2.5.1         
+[49] scales_1.3.0         promises_1.2.1       timechange_0.2.0    
+[52] rmarkdown_2.25       httr_1.4.7           hms_1.1.3           
+[55] evaluate_0.22        knitr_1.44           irlba_2.3.5.1       
+[58] rlang_1.1.1          Rcpp_1.0.11          glue_1.6.2          
+[61] rstudioapi_0.15.0    jsonlite_1.8.7       R6_2.5.1            
+[64] plyr_1.8.9           fs_1.6.3            </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
