@@ -1,0 +1,217 @@
+---
+title: "Circadian Expression Detection"
+author: "Ziang Zhang"
+date: "2024-06-14"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r}
+library(BayesGP)
+library(TMB)
+library(Matrix)
+library(splines)
+library(parallel)
+library(ggplot2)
+library(reshape2)
+library(mixsqp)
+library(tidyverse)
+cpp_dir <- paste0(getwd(), "/code/cpp")
+fig_dir <- paste0(getwd(), "/output/circadian_expression")
+result_dir <- paste0(getwd(), "/output/circadian_expression")
+function_dir <- paste0(getwd(), "/code/function")
+data_dir <- paste0(getwd(), "/data/circadian_expression")
+source(paste0(function_dir, "/functions_fitting_Poisson_circadian_expression.R"))
+compile(paste0(cpp_dir, "/Poisson_expression.cpp"))
+compile(paste0(cpp_dir, "/Poisson_just_fixed_expression.cpp"))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_expression")))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_just_fixed_expression")))
+num_cores <- 4
+```
+
+
+
+```{r}
+# Load data
+load(file = paste0(data_dir, "/circ_data.rda"))
+```
+
+## Focus on Group C first:
+
+```{r}
+datasets <- list()
+all_gene <- unique(gene_exp_data_c$gene_id)
+for (gene in all_gene) {
+  selected_row <- gene_exp_data_c %>% filter(gene_id == gene)
+  datasets[[gene]] <- data.frame(x = seq(0, 44, by = 4))/24
+  datasets[[gene]]$y <- as.numeric(selected_row[-c(1,2)])
+}
+save(datasets, file = paste0(result_dir, "/datasets.rda"))
+```
+
+```{r}
+datasets <- list()
+all_gene <- unique(gene_exp_data_c$gene_id)
+load(paste0(result_dir, "/datasets.rda"))
+```
+
+
+Compute the library size:
+
+```{r}
+size_vec <- numeric(length = nrow(datasets[[1]]))
+for (i in 1:length(size_vec)) {
+  all_counts <- unlist(lapply(datasets, function(x) {x$y[i]}))
+  size_vec[i] <- sum(all_counts)
+}
+log_size_vec <- log(size_vec)
+```
+
+
+Visualize 16 of the datasets:
+
+```{r}
+par(mfrow = c(4, 4))
+for (i in 1:16) {
+  gene <- all_gene[i]
+  plot(datasets[[gene]]$x, datasets[[gene]]$y, type = "o", 
+       col = "blue", lwd = 2, xlab = "Time", ylab = "Expression")
+  abline(v = 1, lty = 2)
+}
+par(mfrow = c(1, 1))
+```
+
+
+```{r}
+m <- 1 # 1 harmonics
+k <- 30
+indx <- 18
+
+psd_sgp_vector <- seq(0, 1, by = 0.1)
+
+# ## Estimate the dominant frequency of datasets[[indx]]$y
+# est_periodgram <- TSA::periodogram(datasets[[indx]]$y, main = "Periodogram of the gene expression")
+# period_vec <- 1/(est_periodgram$freq*6)
+# period_vec_in_region <- period_vec[period_vec > 20/24 & period_vec < 28/24]
+# if(length(period_vec_in_region) == 0) {
+#   period <- 24/24
+# } else {
+#   period <- period_vec_in_region[which.max(est_periodgram$spec[period_vec > 20/24 & period_vec < 28/24])]
+# }
+# period
+
+period <- 1
+betaprec <- 1/1000
+
+plot(datasets[[indx]]$x, datasets[[indx]]$y, type = "o", log = "y",
+     col = "blue", lwd = 2, xlab = "Time", ylab = "Expression")
+# add abline for each period
+abline(v = seq(0, 2, by = period), lty = 2)
+
+
+like_vec <- compute_log_likelihood_sBspline_seq(dataset = datasets[[indx]], 
+                                    period = period, num_knots = k, 
+                                    psd_sgp_vector = psd_sgp_vector, pred_step = period,
+                                    betaprec = betaprec, 
+                                    log_lib_size = log_size_vec, 
+                                    m = m)
+
+
+
+the_psd <- psd_sgp_vector[like_vec == max(like_vec)]
+the_psd
+
+mod_try <- fit_sBspline(dataset = datasets[[indx]], 
+             period = period, num_knots = k, 
+             psd_sgp = the_psd, 
+             pred_step = period,
+             betaprec = betaprec, 
+             log_lib_size = log_size_vec, 
+             m = m)
+
+par(mfrow = c(1, 2))
+visualize_fit(x = datasets[[indx]]$x, 
+              y = datasets[[indx]]$y,
+              fit_result = mod_try, 
+              original = T,
+              refined_result = F,
+              m = m, a = 2*pi/period, k = k)
+visualize_fit(x = datasets[[indx]]$x, 
+              y = NULL,
+              fit_result = mod_try, 
+              original = T,
+              refined_result = T,
+              m = m, a = 2*pi/period, k = k)
+par(mfrow = c(1, 1))
+
+abline(v = seq(0, 2, by = period), lty = 2)
+
+```
+
+```{r}
+## set up a progress bar
+L_vecs <- vector("list", length(datasets))
+pb <- txtProgressBar(min = 0, max = 100, style = 3)
+for (i in 1:100) {
+  setTxtProgressBar(pb, i)
+  dataset <- datasets[[i]]
+  est_periodgram <- TSA::periodogram(datasets[[i]]$y)
+  period <- est_periodgram$freq[which.max(est_periodgram$spec)]*6
+  L_vecs[[i]] <- compute_log_likelihood_sBspline_seq(dataset = datasets[[i]], 
+                                    period = period, num_knots = k, 
+                                    psd_sgp_vector = seq(0,1, by = 0.1), pred_step = period,
+                                    betaprec = 1/10000, 
+                                    log_lib_size = NULL, 
+                                    m = m)
+}
+L_matrix <- do.call(rbind, L_vecs)
+save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
+```
+
+
+```{r}
+fit.sqp <- mixsqp(L = L_matrix, log = TRUE)
+numiter <- nrow(fit.sqp$progress)
+plot(1:numiter,fit.sqp$progress$objective,type = "b",
+     pch = 20,lwd = 2,xlab = "SQP iteration",
+     ylab = "objective",xaxp = c(1,numiter,numiter - 1))
+prior_weight <- data.frame(psd_sgp = seq(0,1, by = 0.1), prior_weight = fit.sqp$x)
+```
+
+
+```{r}
+num_datasets <- nrow(L_matrix)
+num_weights <- sum(prior_weight$prior_weight != 0)
+posterior_weights_matrix <- matrix(nrow = num_datasets, ncol = num_weights)
+
+# Loop through each dataset and perform fitting
+fitted_datasets <- list()
+# create a progress bar
+pb <- txtProgressBar(min = 0, max = num_datasets, style = 3)
+for (i in c(1:100)) {
+  setTxtProgressBar(pb, i)
+  dataset <- datasets[[i]]
+  est_periodgram <- TSA::periodogram(dataset$y)
+  period <- est_periodgram$freq[which.max(est_periodgram$spec)]*6
+  fit_result_final <- fit_sBspline_with_prior(dataset = dataset, 
+                                              period = period, 
+                                              num_knots = k, 
+                                              prior_weight = prior_weight, 
+                                              pred_step = period,
+                                              betaprec = 1/10000, 
+                                              log_lib_size = NULL, 
+                                              m = m)
+  posterior_weights_matrix[i, ] <- fit_result_final$posterior_weights[, "posterior_weight"]
+  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
+}
+names(fitted_datasets) <- all_gene
+colnames(posterior_weights_matrix) <- paste(as.character(fit_result_final$posterior_weights[, "p"]),
+                                            as.character(fit_result_final$posterior_weights[, "psd_iwp"]), sep = "_")
+```
+
+
+
+
+
+

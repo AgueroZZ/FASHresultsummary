@@ -15,7 +15,7 @@ Among the $x$ eQTLs with non-linear dynamic, we assume $x$ of them have strong n
 
 For simplicity, let's assume the effect size estimate of eQTL $i$ at time $j$ is constant: $\text{SE}(\hat{\beta}_{i}(t_j)) = \sigma_i, \forall j$ and hence $\hat{\beta}_i(t_j) \sim N(\beta_i(t_j),\sigma^2)$.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(BayesGP)
 library(TMB)
 library(Matrix)
@@ -135,16 +135,29 @@ L_vecs <- list()
 pb <- txtProgressBar(min = 0, max = length(datasets), style = 3)
 for (i in 1:length(datasets)) {
   setTxtProgressBar(pb, i)
-  L_vecs[[i]] <- compute_log_likelihood_ospline_seq2(
+  # # using ospline
+  # L_vecs[[i]] <- compute_log_likelihood_ospline_seq2(
+  #   x = datasets[[i]]$x,
+  #   y = datasets[[i]]$y,
+  #   p = p_vec,
+  #   num_knots = 16,
+  #   psd_iwp_vector = psd_iwp_vec,
+  #   pred_step = 1,
+  #   betaprec = 0.001,
+  #   sd_gaussian = sigma[i]
+  # )
+  
+  # using exact method
+  L_vecs[[i]] <- compute_log_likelihood_exact_aug_seq(
     x = datasets[[i]]$x,
     y = datasets[[i]]$y,
     p = p_vec,
-    num_knots = 16,
     psd_iwp_vector = psd_iwp_vec,
     pred_step = 1,
     betaprec = 0.001,
     sd_gaussian = sigma[i]
   )
+  
 }
 L_matrix <- do.call(rbind, L_vecs)
 save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
@@ -191,16 +204,29 @@ pb <- txtProgressBar(min = 0, max = num_datasets, style = 3)
 for (i in seq_along(datasets)) {
   setTxtProgressBar(pb, i)
   dataset <- datasets[[i]]
-  fit_result_final <- fit_ospline_with_prior2(
-    num_cores = 1,
+  
+  # ## using ospline
+  # fit_result_final <- fit_ospline_with_prior2(
+  #   num_cores = 1,
+  #   x = dataset$x,
+  #   y = dataset$y,
+  #   num_knots = 16,
+  #   prior_weight = prior_weight,
+  #   betaprec = 0.001,
+  #   sd_gaussian = sigma[i],
+  #   pred_step = 1
+  # )
+  
+  ## using exact method
+  fit_result_final <- fit_exact_aug_with_prior2(
     x = dataset$x,
     y = dataset$y,
-    num_knots = 16,
     prior_weight = prior_weight,
     betaprec = 0.001,
     sd_gaussian = sigma[i],
     pred_step = 1
   )
+  
   fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final)$summary_df
   posterior_weights_matrix[i, ] <- fit_result_final$posterior_weights[, "posterior_weight"]
 }
@@ -260,17 +286,31 @@ for (i in seq_along(datasets)) {
   dataset <- datasets[[i]]
   L_vec_selected <- L_matrix[i, ]
   which_sigma_max <- psd_iwp_vec[which.max(L_vec_selected)]
-  fit_ospline_single <- fit_ospline(
+  # Using FEM:
+  # fit_ospline_single <- fit_ospline(
+  #   x = dataset$x,
+  #   y = dataset$y,
+  #   p = 2,
+  #   num_knots = 16,
+  #   psd_iwp = which_sigma_max,
+  #   betaprec = 0.001,
+  #   sd_gaussian = sigma[i],
+  #   pred_step = 1
+  # )
+  # fitted_datasets_ml[[i]] <- data.frame(x = dataset$x, mean = apply(fit_ospline_single$samps_fitted, 1, mean))
+  
+  # Using exact method
+  fit_exact_aug_single <- fit_exact_aug(
     x = dataset$x,
     y = dataset$y,
     p = 2,
-    num_knots = 16,
     psd_iwp = which_sigma_max,
     betaprec = 0.001,
     sd_gaussian = sigma[i],
     pred_step = 1
   )
-  fitted_datasets_ml[[i]] <- data.frame(x = dataset$x, mean = apply(fit_ospline_single$samps_fitted, 1, mean))
+  fitted_datasets_ml[[i]] <- data.frame(x = dataset$x, mean = apply(fit_exact_aug_single$samps_fitted, 1, mean))
+  
 }
 save(fitted_datasets_ml, file = paste0(result_dir, "/fitted_datasets_ml.rda"))
 ```

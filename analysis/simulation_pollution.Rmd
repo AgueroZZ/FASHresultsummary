@@ -125,6 +125,8 @@ set.seed(123)
 p_vec <- 2
 log_prec <- unique(sort(c(Inf, seq(-1,1, by = 0.1), seq(-5,-1, by = 0.5), seq(1,5, by = 0.5), seq(-10,-5, by = 1), seq(5,10, by = 1)), decreasing = T))
 psd_iwp_vec <- 1/exp(.5*log_prec)
+
+# Using the FEM:
 L_vecs <- mclapply(datasets, function(dataset) {
   compute_log_likelihood_ospline_seq2(
     x = dataset$x,
@@ -138,7 +140,25 @@ L_vecs <- mclapply(datasets, function(dataset) {
   )
 }, mc.cores = num_cores)
 L_matrix <- do.call(rbind, L_vecs)
+
+
+# ## Using the exact method:
+# L_vecs <- mclapply(datasets, function(dataset) {
+#   compute_log_likelihood_exact_aug_seq(
+#     x = dataset$x,
+#     y = dataset$y,
+#     p = p_vec,
+#     psd_iwp_vector = psd_iwp_vec,
+#     pred_step = 1,
+#     betaprec = 0.001,
+#     sd_gaussian = 0.1
+#   )
+# }, mc.cores = num_cores)
+# L_matrix <- do.call(rbind, L_vecs)
+
+save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
 ```
+
 ```{r echo=FALSE}
 set.seed(123)
 p_vec <- 2
@@ -149,6 +169,14 @@ load(paste0(result_dir, "/L_matrix.rda"))
 
 Then, we make use of $\texttt{mixsqp}$ to estimate the prior weights:  
 ```{r}
+# which row of L has nan
+nan_rows <- which(apply(L_matrix, 1, function(x) any(is.nan(x))))
+if(length(nan_rows) > 0) {
+  ## warn how many rows being removed
+  warning(paste("Removing", length(nan_rows), "rows with NaN"))
+  L_matrix <- L_matrix[-nan_rows,]
+}
+
 fit.sqp <- mixsqp(L = L_matrix, log = TRUE)
 numiter <- nrow(fit.sqp$progress)
 plot(1:numiter,fit.sqp$progress$objective,type = "b",
@@ -174,6 +202,8 @@ posterior_weights_matrix <- matrix(nrow = num_datasets, ncol = num_weights)
 
 # Loop through each dataset and perform fitting
 fitted_datasets <- list()
+
+# Using FEM:
 for (i in seq_along(datasets)) {
   dataset <- datasets[[i]]
   fit_result_final <- fit_ospline_with_prior2(
@@ -189,8 +219,29 @@ for (i in seq_along(datasets)) {
   fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final)$summary_df
   posterior_weights_matrix[i, ] <- fit_result_final$posterior_weights[, "posterior_weight"]
 }
+
+# # Using the exact method:
+# for (i in seq_along(datasets)) {
+#   dataset <- datasets[[i]]
+#   fit_result_final <- fit_exact_aug_with_prior2(
+#     num_cores = num_cores,
+#     x = dataset$x,
+#     y = dataset$y,
+#     prior_weight = prior_weight,
+#     betaprec = 0.001,
+#     sd_gaussian = 0.1,
+#     pred_step = 1
+#   )
+#   fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final)$summary_df
+#   posterior_weights_matrix[i, ] <- fit_result_final$posterior_weights[, "posterior_weight"]
+# }
+
 colnames(posterior_weights_matrix) <- paste(as.character(fit_result_final$posterior_weights[, "p"]),
                                             as.character(fit_result_final$posterior_weights[, "psd_iwp"]), sep = "_")
+
+save(posterior_weights_matrix, file = paste0(result_dir, "/posterior_weights_matrix.rda"))
+
+save(fitted_datasets, file = paste0(result_dir, "/fitted_datasets.rda"))
 ```
 
 ```{r echo=FALSE}

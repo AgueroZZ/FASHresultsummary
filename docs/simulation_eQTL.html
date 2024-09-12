@@ -339,7 +339,7 @@ div.tocify {
   <a href="about.html">About</a>
 </li>
 <li>
-  <a href="simulation.html">Simulation 1</a>
+  <a href="simulation_pollution.html">Simulation 1</a>
 </li>
 <li>
   <a href="simulation_eQTL_identification.html">Simulation 2</a>
@@ -381,7 +381,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -392,8 +392,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -402,13 +402,13 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-05-24
+<strong>Last updated:</strong> 2024-06-10
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>FASHresultsummary/</code> <span
@@ -431,18 +431,21 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
@@ -533,15 +536,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreee7d336ec4fee7d25b7ccf45aa872350faa6390eetargetblanke7d336ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree62566ff29f2e98ea1b83dcba8b8ad3a569e58d41targetblank62566ffa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/e7d336ec4fee7d25b7ccf45aa872350faa6390ee" target="_blank">e7d336e</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/62566ff29f2e98ea1b83dcba8b8ad3a569e58d41" target="_blank">62566ff</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreee7d336ec4fee7d25b7ccf45aa872350faa6390eetargetblanke7d336ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree62566ff29f2e98ea1b83dcba8b8ad3a569e58d41targetblank62566ffa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -551,7 +554,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/e7d336ec4fee7d25b7ccf45aa872350faa6390ee" target="_blank">e7d336e</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/62566ff29f2e98ea1b83dcba8b8ad3a569e58d41" target="_blank">62566ff</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -579,8 +582,6 @@ Ignored files:
     Ignored:    output/.DS_Store
     Ignored:    output/example/.DS_Store
     Ignored:    output/example/figure/
-    Ignored:    output/simulation/.DS_Store
-    Ignored:    output/simulation/figure/
 
 Untracked files:
     Untracked:  code/cpp/Gaussian_just_fixed.o
@@ -593,6 +594,8 @@ Untracked files:
     Untracked:  code/cpp/Poisson_causes.so
     Untracked:  code/cpp/Poisson_covid.o
     Untracked:  code/cpp/Poisson_covid.so
+    Untracked:  code/cpp/Poisson_expression.o
+    Untracked:  code/cpp/Poisson_expression.so
     Untracked:  code/cpp/Poisson_just_fixed.cpp
     Untracked:  code/cpp/Poisson_just_fixed.o
     Untracked:  code/cpp/Poisson_just_fixed.so
@@ -600,16 +603,29 @@ Untracked files:
     Untracked:  code/cpp/Poisson_just_fixed_causes.so
     Untracked:  code/cpp/Poisson_just_fixed_covid.o
     Untracked:  code/cpp/Poisson_just_fixed_covid.so
+    Untracked:  code/cpp/Poisson_just_fixed_expression.o
+    Untracked:  code/cpp/Poisson_just_fixed_expression.so
     Untracked:  code/function/functions_fitting_Gaussian_eQTL_irregular.R
     Untracked:  code/function/functions_simulation_eQTL_irregular.R
     Untracked:  data/13100810.csv
     Untracked:  data/13100810_MetaData.csv
-    Untracked:  data/X13100810.eng.zip
     Untracked:  data/expression_data/
     Untracked:  output/causes/
     Untracked:  output/expression/
     Untracked:  output/simulation_eQTL/
     Untracked:  output/simulation_eQTL_test/
+    Untracked:  output/simulation_pollution/
+
+Unstaged changes:
+    Deleted:    analysis/simulation.Rmd
+    Modified:   analysis/simulation_eQTL.Rmd
+    Modified:   output/example/L_matrix.rda
+    Modified:   output/example/fitted_datasets.rda
+    Modified:   output/example/functional_datasets.rda
+    Modified:   output/example/posterior_weights_matrix.rda
+    Deleted:    output/simulation/L_matrix.rda
+    Deleted:    output/simulation/fitted_datasets.rda
+    Deleted:    output/simulation/posterior_weights_matrix.rda
 
 </code></pre>
 <p>
@@ -655,6 +671,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/a53277262c0b48ae3703879a49f9f3a5c5fd6e4f/docs/simulation_eQTL.html" target="_blank">a532772</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+<td>
+update eqtl sim
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -843,40 +876,19 @@ library(parallel)
 library(ggplot2)
 library(reshape2)
 library(mixsqp)
-library(tidyverse)</code></pre>
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.3     ✔ readr     2.1.4
-✔ forcats   1.0.0     ✔ stringr   1.5.0
-✔ lubridate 1.9.3     ✔ tibble    3.2.1
-✔ purrr     1.0.2     ✔ tidyr     1.3.0
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ tidyr::expand() masks Matrix::expand()
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-✖ tidyr::pack()   masks Matrix::pack()
-✖ tidyr::unpack() masks Matrix::unpack()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>library(mashr)</code></pre>
-<pre><code>Loading required package: ashr</code></pre>
-<pre class="r"><code>cpp_dir &lt;- paste0(getwd(), &quot;/code/cpp&quot;)
+library(tidyverse)
+library(mashr)
+cpp_dir &lt;- paste0(getwd(), &quot;/code/cpp&quot;)
 fig_dir &lt;- paste0(getwd(), &quot;/output/simulation_eQTL&quot;)
 result_dir &lt;- paste0(getwd(), &quot;/output/simulation_eQTL&quot;)
 function_dir &lt;- paste0(getwd(), &quot;/code/function&quot;)
 source(paste0(function_dir, &quot;/functions_fitting_Gaussian_eQTL.R&quot;))
 source(paste0(function_dir, &quot;/functions_simulation_eQTL.R&quot;))
 compile(paste0(cpp_dir, &quot;/Gaussian_theta_known.cpp&quot;))</code></pre>
-<pre><code>Warning in readLines(file): incomplete final line found on
-&#39;/Users/ziangzhang/Desktop/FASH/FASHresultsummary/code/cpp/Gaussian_theta_known.cpp&#39;</code></pre>
 <pre><code>Note: Using Makevars in /Users/ziangzhang/.R/Makevars </code></pre>
-<pre><code>using C++ compiler: &#39;Apple clang version 13.1.6 (clang-1316.0.21.2.5)&#39;
-using SDK: &#39;MacOSX12.3.sdk&#39;</code></pre>
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>compile(paste0(cpp_dir, &quot;/Gaussian_just_fixed.cpp&quot;))</code></pre>
-<pre><code>Warning in readLines(file): incomplete final line found on
-&#39;/Users/ziangzhang/Desktop/FASH/FASHresultsummary/code/cpp/Gaussian_just_fixed.cpp&#39;</code></pre>
 <pre><code>Note: Using Makevars in /Users/ziangzhang/.R/Makevars </code></pre>
-<pre><code>using C++ compiler: &#39;Apple clang version 13.1.6 (clang-1316.0.21.2.5)&#39;
-using SDK: &#39;MacOSX12.3.sdk&#39;</code></pre>
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>dyn.load(TMB::dynlib(paste0(cpp_dir, &quot;/Gaussian_theta_known&quot;)))
 dyn.load(TMB::dynlib(paste0(cpp_dir, &quot;/Gaussian_just_fixed&quot;)))
@@ -1400,9 +1412,9 @@ U.ed = cov_ed(mash_data, U.pca, subset=strong)
 U.c = cov_canonical(mash_data)  
 m   = mash(mash_data, c(U.c,U.ed))</code></pre>
 <pre><code> - Computing 1500 x 1189 likelihood matrix.
- - Likelihood calculations took 3.54 seconds.
+ - Likelihood calculations took 3.53 seconds.
  - Fitting model with 1189 mixture components.
- - Model fitting took 3.46 seconds.
+ - Model fitting took 3.44 seconds.
  - Computing posterior matrices.
  - Computation allocated took 0.44 seconds.</code></pre>
 <pre class="r"><code>mash.pm &lt;- get_pm(m)
@@ -1456,6 +1468,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/699ce67383bb15918ba1b82b89f0d8b0da54b2ee/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-20-1.png" target="_blank">699ce67</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4b95d3dc762086aa26686a072ffd9386d92c1032/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-20-1.png" target="_blank">4b95d3d</a>
@@ -1512,6 +1535,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/699ce67383bb15918ba1b82b89f0d8b0da54b2ee/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-21-1.png" target="_blank">699ce67</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4b95d3dc762086aa26686a072ffd9386d92c1032/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-21-1.png" target="_blank">4b95d3d</a>
@@ -1580,6 +1614,43 @@ ggplot(melt((rmse_df_compare)), aes(x = variable, y = value, fill = variable)) +
   ggtitle(&quot;Comparison of rMSE between FASH, MASH, SS and ML&quot;)</code></pre>
 <pre><code>Using SNR as id variables</code></pre>
 <p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
+Past versions of unnamed-chunk-22-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/699ce67383bb15918ba1b82b89f0d8b0da54b2ee/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-22-1.png" target="_blank">699ce67</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rmse_df_compare &lt;- rmse_df/ rmse_df$RAW
 rmse_df_compare$type &lt;- as.factor(rep(c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;), each = each_size))
 # ggplot of boxplot colored by method, facet by sigma
@@ -1592,6 +1663,43 @@ ggplot(melt(rmse_df_compare), aes(x = variable, y = value, fill = variable)) +
   ggtitle(&quot;Comparison of rMSE between FASH, MASH, SS and ML&quot;)</code></pre>
 <pre><code>Using type as id variables</code></pre>
 <p><img src="figure/simulation_eQTL.Rmd/unnamed-chunk-22-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-2">
+Past versions of unnamed-chunk-22-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/699ce67383bb15918ba1b82b89f0d8b0da54b2ee/docs/figure/simulation_eQTL.Rmd/unnamed-chunk-22-2.png" target="_blank">699ce67</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-24
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># summarize into a table
 rmse_df_compare &lt;- rmse_df
 # convert rmse to relative to RAW

@@ -109,8 +109,10 @@ Compute_Ti <- function(x,p = 2,i){
   denom <- factorial(c(0:(p-1)))
   numr <- delta[i+1]^(0:(p-1))
   Ti[1,] <- numr/denom
-  for (i in 2:p) {
-    Ti[i,] <- c(rep(0,(i-1)),Ti[(i-1),((i-1):(p-1))])
+  if(p > 1){
+    for (i in 2:p) {
+      Ti[i,] <- c(rep(0,(i-1)),Ti[(i-1),((i-1):(p-1))])
+    }
   }
   Ti
 }
@@ -177,79 +179,162 @@ Compute_design_Aug_deriv <- function(x, p = 2, degree){
 }
 ### Compute the log-marginal likelihood of the exact method with state-space
 compute_log_likelihood_exact_aug <- function(x, y, p, psd_iwp, pred_step, betaprec = 0.001, sd_gaussian = 0.1){
-  P = Compute_Aug_Wp_Prec(x, p = p)
-  X = BayesGP:::global_poly_helper(x, p = p)
-  B = Compute_design_Aug(x, p = p)
-  tmbdat <- list(
-    X = as(X,'dgTMatrix'),
-    B = B,
-    P = P,
-    # Response
-    y = y,
-    # other known quantities
-    logPdet = as.numeric(determinant(P,logarithm = T)$modulus),
-    betaprec = betaprec,
-    sigmaIWP = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2))),
-    sigmaGaussian = sd_gaussian
-  )
+  if(psd_iwp != 0){
+    P = Compute_Aug_Wp_Prec(x, p = p)
+    X = BayesGP:::global_poly_helper(x, p = p)
+    B = Compute_design_Aug(x, p = p)
+    tmbdat <- list(
+      X = as(X,'dgTMatrix'),
+      B = B,
+      P = P,
+      # Response
+      y = y,
+      # other known quantities
+      logPdet = as.numeric(determinant(P,logarithm = T)$modulus),
+      betaprec = betaprec,
+      sigmaIWP = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2))),
+      sigmaGaussian = sd_gaussian
+    )
 
-  tmbparams <- list(
-    W = c(rep(0, (ncol(X) + ncol(B))))
-  )
+    tmbparams <- list(
+      W = c(rep(0, (ncol(X) + ncol(B))))
+    )
 
-  ff <- TMB::MakeADFun(
-    random = "W",
-    data = tmbdat,
-    parameters = tmbparams,
-    DLL = "Gaussian_theta_known",
-    silent = TRUE
-  )
+    ff <- TMB::MakeADFun(
+      random = "W",
+      data = tmbdat,
+      parameters = tmbparams,
+      DLL = "Gaussian_theta_known",
+      silent = TRUE
+    )
+
+  }
+
+  else{
+    X = BayesGP:::global_poly_helper(x, p = p)
+    tmbdat <- list(
+      X = as(X,'dgTMatrix'),
+      # Response
+      y = y,
+      # other known quantities
+      betaprec = betaprec,
+      sigmaGaussian = sd_gaussian
+    )
+
+    tmbparams <- list(
+      W = c(rep(0, (ncol(X))))
+    )
+
+    ff <- TMB::MakeADFun(
+      data = tmbdat,
+      parameters = tmbparams,
+      random = "W",
+      DLL = "Gaussian_just_fixed",
+      silent = TRUE
+    )
+  }
 
   -ff$fn()
 }
+
 ### Fit the exact method with state-space
 fit_exact_aug <- function(x, y, p, psd_iwp, pred_step, betaprec = 0.001, sd_gaussian = 0.1){
-  P = Compute_Aug_Wp_Prec(x, p = p)
-  X = BayesGP:::global_poly_helper(x, p = p)
-  B = Compute_design_Aug(x, p = p)
-  tmbdat <- list(
-    X = as(X,'dgTMatrix'),
-    B = B,
-    P = P,
-    # Response
-    y = y,
-    # other known quantities
-    logPdet = as.numeric(determinant(P,logarithm = T)$modulus),
-    betaprec = betaprec,
-    sigmaIWP = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2))),
-    sigmaGaussian = sd_gaussian
-  )
+  if(psd_iwp != 0){
+    P = Compute_Aug_Wp_Prec(x, p = p)
+    X = BayesGP:::global_poly_helper(x, p = p)
+    B = Compute_design_Aug(x, p = p)
+    tmbdat <- list(
+      X = as(X,'dgTMatrix'),
+      B = B,
+      P = P,
+      # Response
+      y = y,
+      # other known quantities
+      logPdet = as.numeric(determinant(P,logarithm = T)$modulus),
+      betaprec = betaprec,
+      sigmaIWP = psd_iwp/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2))),
+      sigmaGaussian = sd_gaussian
+    )
 
-  tmbparams <- list(
-    W = c(rep(0, (ncol(X) + ncol(B))))
-  )
+    tmbparams <- list(
+      W = c(rep(0, (ncol(X) + ncol(B))))
+    )
 
-  ff2 <- TMB::MakeADFun(
-    data = tmbdat,
-    parameters = tmbparams,
-    DLL = "Gaussian_theta_known",
-    silent = TRUE
-  )
-  ff2$he <- function(w) numDeriv::jacobian(ff2$gr, w)
+    ff2 <- TMB::MakeADFun(
+      data = tmbdat,
+      parameters = tmbparams,
+      DLL = "Gaussian_theta_known",
+      silent = TRUE
+    )
+    ff2$he <- function(w) numDeriv::jacobian(ff2$gr, w)
 
-  opt <- nlminb(start = ff2$par, objective = ff2$fn, gradient = ff2$gr, hessian = ff2$he,
-                control = list(eval.max = 20000, iter.max = 20000))
+    opt <- nlminb(start = ff2$par, objective = ff2$fn, gradient = ff2$gr, hessian = ff2$he,
+                  control = list(eval.max = 20000, iter.max = 20000))
 
-  prec_matrix <- Matrix::forceSymmetric(ff2$he(opt$par))
-  mod = list(mean = opt$par, prec = as.matrix(prec_matrix), opt = opt)
+    prec_matrix <- Matrix::forceSymmetric(ff2$he(opt$par))
 
-  samps_coef <- LaplacesDemon::rmvnp(n = 8000, mu = mod$mean, Omega = as.matrix(mod$prec))
-  samps_fitted <-as.matrix(B) %*% t(samps_coef[,1:ncol(B)]) + as.matrix(X) %*% t(samps_coef[,(ncol(B)+1):ncol(samps_coef)])
+    min_eigen <- min(eigen(prec_matrix, only.values = T)$values)
+    # if not positive definite, add some adjustment to the diagonal
+    if (min_eigen <= 0) {
+      # give a warning and report the minimum eigen value, report adding diagonal adjustment
+      warning(paste("The precision matrix is not positive definite so diagonal adjustment will be added; the minimum eigen value is", min_eigen))
+      prec_matrix <- prec_matrix + diag((abs(min_eigen) + 0.0001), nrow = ncol(prec_matrix))
+    }
+
+    mod = list(mean = opt$par, prec = as.matrix(prec_matrix), opt = opt)
+
+    samps_coef <- LaplacesDemon::rmvnp(n = 8000, mu = mod$mean, Omega = as.matrix(mod$prec))
+    samps_fitted <-as.matrix(B) %*% t(samps_coef[,1:ncol(B)]) + as.matrix(X) %*% t(samps_coef[,(ncol(B)+1):ncol(samps_coef)])
+  }
+
+  else{
+    X = BayesGP:::global_poly_helper(x, p = p)
+    tmbdat <- list(
+      X = as(X,'dgTMatrix'),
+      # Response
+      y = y,
+      # other known quantities
+      betaprec = betaprec,
+      sigmaGaussian = sd_gaussian
+    )
+
+    tmbparams <- list(
+      W = c(rep(0, (ncol(X))))
+    )
+
+    ff2 <- TMB::MakeADFun(
+      data = tmbdat,
+      parameters = tmbparams,
+      DLL = "Gaussian_just_fixed",
+      silent = TRUE
+    )
+    ff2$he <- function(w) numDeriv::jacobian(ff2$gr, w)
+
+    opt <- nlminb(start = ff2$par, objective = ff2$fn, gradient = ff2$gr, hessian = ff2$he,
+                  control = list(eval.max = 20000, iter.max = 20000))
+
+    prec_matrix <- Matrix::forceSymmetric(ff2$he(opt$par))
+
+    min_eigen <- min(eigen(prec_matrix, only.values = T)$values)
+    # if not positive definite, add some adjustment to the diagonal
+    if (min_eigen <= 0) {
+      # give a warning and report the minimum eigen value, report adding diagonal adjustment
+      warning(paste("The precision matrix is not positive definite so diagonal adjustment will be added; the minimum eigen value is", min_eigen))
+      prec_matrix <- prec_matrix + diag((abs(min_eigen) + 0.0001), nrow = ncol(prec_matrix))
+    }
+
+    mod = list(mean = opt$par, prec = as.matrix(prec_matrix), opt = opt)
+
+    samps_coef <- LaplacesDemon::rmvnp(n = 8000, mu = mod$mean, Omega = as.matrix(mod$prec))
+    samps_fitted <- as.matrix(X) %*% t(samps_coef)
+  }
 
   log_likelihood <- -ff2$fn(opt$par) - 0.5 * determinant(as.matrix(ff2$he(opt$par)), logarithm = TRUE)$modulus + 0.5 * length(opt$par) * log(2 * pi)
 
   return(list(samps_coef = samps_coef, samps_fitted = samps_fitted, mod = mod, log_likelihood = log_likelihood))
 }
+
+
 
 
 #############################################################
@@ -470,6 +555,31 @@ compute_log_likelihood_ospline_seq2 <- function(x, y, p_vec, num_knots, psd_iwp_
   return(all_log_likelihoods)
 }
 
+### Fit a sequence of k models with augmented space method using different psd_iwp and different p and record the k marginal likelihoods
+compute_log_likelihood_exact_aug_seq <- function(x, y, p_vec, psd_iwp_vector, pred_step, betaprec = 0.001, sd_gaussian = 0.1) {
+  # Initialize a list to store the results for each p
+  all_log_likelihoods <- c()
+
+  # Loop over each value of p in p_vec
+  for (p in p_vec) {
+    # Compute log likelihoods for the current value of p
+    log_likelihoods <- sapply(psd_iwp_vector, function(psd_iwp) {
+      compute_log_likelihood_exact_aug(
+        x = x,
+        y = y,
+        p = p,
+        psd_iwp = psd_iwp,
+        pred_step = pred_step,
+        betaprec = betaprec,
+        sd_gaussian = sd_gaussian
+      )
+    })
+    all_log_likelihoods <- c(all_log_likelihoods, log_likelihoods)
+  }
+
+  return(all_log_likelihoods)
+}
+
 
 ### Fit a sequence of k models based on a prior matrix: (when psd_iwp is varying)
 fit_ospline_with_prior <- function(x, y, p, num_knots, prior_weight, pred_step, betaprec = 0.001, sd_gaussian = 0.1, num_cores = 1) {
@@ -538,6 +648,90 @@ fit_ospline_with_prior2 <- function(x, y, num_knots, prior_weight, pred_step, be
     for (i in seq_len(nrow(active_prior))) {
       row <- active_prior[i, ]
       fit_result <- fit_ospline(x, y, row$p, num_knots, row$psd_iwp, pred_step, betaprec, sd_gaussian)
+      results_list[[i]] <- fit_result
+      all_log_likelihoods[i] <- fit_result$log_likelihood
+    }
+  }
+
+  # Calculate and normalize posterior weights
+  max_log_likelihood <- max(all_log_likelihoods)
+  stable_exp <- exp(all_log_likelihoods - max_log_likelihood)
+  posterior_weights <- stable_exp * active_prior$prior_weight
+  posterior_weights <- posterior_weights / sum(posterior_weights)
+
+  # Create a data frame of posterior weights along with p and psd_iwp
+  all_posterior_weights <- data.frame(p = active_prior$p, psd_iwp = active_prior$psd_iwp, posterior_weight = posterior_weights)
+
+  return(list(fitted_results = results_list, posterior_weights = all_posterior_weights))
+}
+
+### Fit a sequence of k model based on a prior matrix using exact method with augmented space: (when psd_iwp is varying)
+fit_exact_aug_with_prior <- function(x, y, p, prior_weight, pred_step, betaprec = 0.001, sd_gaussian = 0.1, num_cores = 1) {
+  # Filter out rows where prior weight is zero
+  active_prior <- prior_weight[prior_weight$prior_weight > 0, ]
+
+  # List to store results of fit_exact_aug for each active prior weight
+  results_list <- vector("list", length = nrow(active_prior))
+
+  # Determine whether to use parallel processing
+  if (num_cores > 1 && .Platform$OS.type != "windows") {
+    # Use mclapply for parallel processing on Unix-like systems
+    results_list <- mclapply(seq_len(nrow(active_prior)), function(i) {
+      psd_iwp <- active_prior$psd_iwp[i]
+      fit_exact_aug(x, y, p, psd_iwp, pred_step, betaprec, sd_gaussian)
+    }, mc.cores = num_cores)
+  }
+  else {
+    # Process sequentially
+    for (i in seq_len(nrow(active_prior))) {
+      psd_iwp <- active_prior$psd_iwp[i]
+      results_list[[i]] <- fit_exact_aug(x, y, p, psd_iwp, pred_step, betaprec, sd_gaussian)
+    }
+  }
+
+  # Extract log likelihoods from results
+  log_likelihoods <- sapply(results_list, function(result) result$log_likelihood)
+
+  # Stabilize computation of posterior weights by centering log likelihoods
+  max_log_likelihood <- max(log_likelihoods)
+  stable_exp <- exp(log_likelihoods - max_log_likelihood)
+
+  # Compute the posterior weights
+  posterior_weights <- stable_exp * active_prior$prior_weight
+  posterior_weights <- posterior_weights / sum(posterior_weights)
+
+  # Create a matrix of posterior weights corresponding to active priors
+  posterior_weight_matrix <- cbind(active_prior$psd_iwp, posterior_weights)
+  colnames(posterior_weight_matrix) <- c("psd_iwp", "posterior_weight")
+
+  # Return both the list of fitted results and the matrix of posterior weights
+  list(fitted_results = results_list, posterior_weights = posterior_weight_matrix)
+}
+
+### Fit a sequence of k models based on a prior matrix using exact method with augmented space: (when both psd_iwp and p are varying)
+fit_exact_aug_with_prior2 <- function(x, y, prior_weight, pred_step, betaprec = 0.001, sd_gaussian = 0.1, num_cores = 1) {
+  # Filter out rows where prior weight is zero
+  active_prior <- prior_weight[prior_weight$prior_weight > 0, ]
+
+  # Initialize lists to store the fitting results and data for posterior weights calculation
+  results_list <- vector("list", length = nrow(active_prior))
+  all_log_likelihoods <- numeric(length = nrow(active_prior))
+
+  # Loop through each entry in active_prior
+  if (num_cores > 1 && .Platform$OS.type != "windows") {
+    # Parallel processing for non-Windows platforms
+    results_list <- mclapply(seq_len(nrow(active_prior)), function(i) {
+      row <- active_prior[i, ]
+      fit_result <- fit_exact_aug(x, y, row$p, row$psd_iwp, pred_step, betaprec, sd_gaussian)
+      fit_result
+    }, mc.cores = num_cores)
+    # Extract log likelihoods from results
+    all_log_likelihoods <- sapply(results_list, function(result) result$log_likelihood)
+  } else {
+    # Sequential processing
+    for (i in seq_len(nrow(active_prior))) {
+      row <- active_prior[i, ]
+      fit_result <- fit_exact_aug(x, y, row$p, row$psd_iwp, pred_step, betaprec, sd_gaussian)
       results_list[[i]] <- fit_result
       all_log_likelihoods[i] <- fit_result$log_likelihood
     }

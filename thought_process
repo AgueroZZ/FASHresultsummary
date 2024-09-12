@@ -1,0 +1,71 @@
+----------------------------------------------
+----------------------------------------------
+Tuesday, Sept 10th:
+----------------------------------------------
+----------------------------------------------
+
+Let's explore the following few questions today:
+
+(a): Is the current implementation of FASH correct? Specifically, is the marginal likelihood correctly computed?
+
+Answer: The function `simulate_nonlinear_function` assumes 50 basis of o-spline, whereas the implementation uses 30. This might change the result slightly.
+Also, there should not be a linear trend added for the case when p = 1, but the function `simulate_nonlinear_function` always add it...
+I have modified the function, and let's try the experiment again to see the result.
+Actually that result works well now!
+
+
+(b): Can we estimate the mixture proportion $\pi$ accurately if the number of observation or the number of measurement is large? How much does the result depend on the standard deviation of the noise?
+
+Answer: If the number of measurement is 16, and we have N = 1000, we can already estimate well the pi_0 and pi_1 for the case of two mixtures.
+It also did quite well when we increase the number of mixtures to five.
+If we increase the search space of the mixture components (meaning more pi_i to be estimated), the result suprisingly is still not bad.
+If we increase the standard deviation of the noise, of course it significantly impairs the estimation of the mixture proportion.
+
+
+(c): How much can pooling information across datasets help with the estimation of the psd?
+
+Answer: Let's see through an experiment: first we estimate the psd for each dataset through ML.
+For both the high noise (sd = 1) and the low noise (sd = 0), the EB method improves the estimation of the psd compared to the ML method.
+The improvement is largest for the high noise case.
+What if we have a larger number of datasets? (N = 1000 -> N = 3000) Well, there are more datasets to share information with, I believe it will further improve the performance of EB.
+Let's see the result: Suprisingly, the result does not become significantly better for EB at the largest two values of the psd. My intuition is that these two groups have too small proportions, so their results are kind of pulling down by the other groups with larger proportions, and could not receive as much beneifts from the pooling information.
+We can check again when we increase their proportions: wow.. it actually makes the difference between EB and MLE smaller.. I think the reason is that the two largest psd are at the boundary of the search space, so the EB method could not estimate them well.
+What if we increase the limit of the grid that we are searching (so the two largest psd are no longer at the boundary of the search space): The EB approach is almost always better at different true psd values, only except the largest psd value when SD is very high.
+
+
+----------------------------------------------
+----------------------------------------------
+Wed, Sept 11th:
+----------------------------------------------
+----------------------------------------------
+
+Today, let's stick to the sanity check example from yesterday, and
+try to see how the EB method performs in terms of FDR and Power when
+testing dynamic eQTLs (i.e. when psd > 0).
+
+Question 1: How does the FDR of FASH compare to the FDR of MASH?
+Answer: Both methods performed very well in terms of FDR control in this simple setting.
+When betaprec is specified to be very diffuse, I don't think the conclusion will change for FASH.
+Let's see through a sensitivity experiment if we specify betaprec to be 0.00001: indeed, the
+result does not change.
+
+Question 2: How does the Power of FASH compare to the Power of MASH?
+Answer: FASH has slightly better power when FDR is between 0 to 0.5.
+When betaprec is specified to be very diffuse, I don't think the conclusion will change for FASH.
+Let's see through a sensitivity experiment if we specify betaprec to be 0.00001: indeed, the
+result does not change.
+
+
+Question 3: Answer the same two questions, when the comparison is against the oracle Bayes method.
+Answer: The EB (FASH) and OB (oracle) have extremely similar results! Except OB has better estimation accuracy at the largest value of the true PSD.
+
+
+
+
+
+
+
+
+
+
+

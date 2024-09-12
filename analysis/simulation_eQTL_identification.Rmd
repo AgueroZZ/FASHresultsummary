@@ -9,11 +9,11 @@ editor_options:
 
 ## **Setup**
 
-We consider the effect size estimate of $10,000$ eQTLs measured in day $t = 1$ to day $t = 16$:
+We consider the effect size estimate of $1,000$ eQTLs measured in day $t = 1$ to day $t = 16$:
 
-- there are $7000$ eQTLs that are not dynamic, i.e., the effect size is constant over time.
-- there are $2000$ eQTLs that are linear dynamic, i.e., the effect size is changing linearly over time.
-- there are $1000$ eQTLs that are non-linear dynamic, i.e., the effect size is changing non-linearly over time.
+- there are $700$ eQTLs that are not dynamic, i.e., the effect size is constant over time.
+- there are $200$ eQTLs that are linear dynamic, i.e., the effect size is changing linearly over time.
+- there are $100$ eQTLs that are non-linear dynamic, i.e., the effect size is changing non-linearly over time.
 
 For simplicity, let's assume the SE of effect estimate is constant over time: $\text{SE}(\hat{\beta}_{i}(t_j)) = \sigma_i, \forall j$ and hence: $$\hat{\beta}_i(t_j) \sim N(\beta_i(t_j),\sigma_i^2).$$
 
@@ -47,15 +47,15 @@ dyn.load(TMB::dynlib(paste0(cpp_dir, "/Gaussian_just_fixed")))
 ```{r}
 num_cores <- 4
 set.seed(123)
-N <- 10000
+N <- 1000
 sigma <- sample(c(0.1, 0.5, 1), size = N, replace = TRUE, prob = c(1/3,1/3,1/3))
 set.seed(123)
 ```
 
-First, we simulate $7000$ non-dynamic eQTLs:
+First, we simulate $700$ non-dynamic eQTLs:
 
 ```{r}
-sizeA <- 7000
+sizeA <- 700
 data_sim_list_A <- lapply(1:sizeA, function(i) simulate_process(sd_poly = 1, type = "nondynamic", sd = sigma[i]))
 par(mfrow = c(2, 2))
 for (i in 1:4) {
@@ -68,11 +68,11 @@ for (i in 1:4) {
 par(mfrow = c(1, 1))
 ```
 
-Then, we simulate $2000$ dynamic eQTLs with linear dynamics:
+Then, we simulate $200$ dynamic eQTLs with linear dynamics:
 
 ```{r}
-sizeB <- 2000
-data_sim_list_B <- lapply(1:sizeB, function(i) simulate_process(sd_poly = 0.1, type = "linear", sd = sigma[i + sizeA]))
+sizeB <- 200
+data_sim_list_B <- lapply(1:sizeB, function(i) simulate_process(sd_poly = 1, type = "linear", sd = sigma[i + sizeA]))
 par(mfrow = c(2, 2))
 for (i in 1:4) {
   plot(data_sim_list_B[[i]]$x, data_sim_list_B[[i]]$truef, 
@@ -84,10 +84,10 @@ for (i in 1:4) {
 par(mfrow = c(1, 1))
 ```
 
-Finally, simulate $1000$ non-linear dynamic eQTLs.
+Finally, simulate $100$ non-linear dynamic eQTLs.
 
 ```{r}
-sizeC <- 1000
+sizeC <- 100
 data_sim_list_C <- lapply(1:sizeC, function(i) simulate_process(sd_poly = 0.1, type = "nonlinear", sd = sigma[i + sizeA + sizeB], sd_fun = 1))
 par(mfrow = c(2, 2))
 for (i in 1:4) {
@@ -96,6 +96,7 @@ for (i in 1:4) {
        ylim = range(data_sim_list_C[[i]]$truef, data_sim_list_C[[i]]$y),
        ylab = "Effect size", main = paste0("eQTL ", i))
   points(data_sim_list_C[[i]]$x, data_sim_list_C[[i]]$y, col = "blue")
+  lines(lm(data_sim_list_C[[i]]$y ~ data_sim_list_C[[i]]$x)$fitted.values ~ data_sim_list_C[[i]]$x, col = "purple", lty = "dashed")
 }
 par(mfrow = c(1, 1))
 
@@ -128,12 +129,14 @@ First, we compute the L matrix:
 ```{r, eval=FALSE}
 set.seed(123)
 p_vec <- 1
+beta_prec <- 1e-5
 psd_iwp_vec <- sort(unique(c(0,seq(0,1, by = 0.05))))
 L_vecs <- list()
 # create a progress bar
 pb <- txtProgressBar(min = 0, max = length(datasets), style = 3)
 for (i in 1:length(datasets)) {
   setTxtProgressBar(pb, i)
+  # ospline method:
   L_vecs[[i]] <- compute_log_likelihood_ospline_seq2(
     x = datasets[[i]]$x,
     y = datasets[[i]]$y,
@@ -141,9 +144,19 @@ for (i in 1:length(datasets)) {
     num_knots = 16,
     psd_iwp_vector = psd_iwp_vec,
     pred_step = 1,
-    betaprec = 0.001,
+    betaprec = beta_prec,
     sd_gaussian = sigma[i]
   )
+  # exact aug method:
+  # L_vecs[[i]] <- compute_log_likelihood_exact_aug_seq(
+  #   x = datasets[[i]]$x,
+  #   y = datasets[[i]]$y,
+  #   p = p_vec,
+  #   psd_iwp_vector = psd_iwp_vec,
+  #   pred_step = 1,
+  #   betaprec = beta_prec,
+  #   sd_gaussian = sigma[i]
+  # )
 }
 L_matrix <- do.call(rbind, L_vecs)
 save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
@@ -199,7 +212,7 @@ for (i in seq_along(datasets)) {
     y = dataset$y,
     num_knots = 16,
     prior_weight = prior_weight,
-    betaprec = 0.001,
+    betaprec = beta_prec,
     sd_gaussian = sigma[i],
     pred_step = 1
   )
@@ -249,15 +262,6 @@ fdr_df$cumulative_fdr <- cumsum(fdr_df$fdr)/seq_along(fdr_df$fdr)
 fdr_df$rank <- 1:length(lfdr)
 ```
 
-```{r}
-ggplot(fdr_df, aes(x = 1:length(lfdr), y = cumulative_fdr, col = type)) +
-  geom_point() +
-  geom_hline(yintercept = 0.05, linetype = "dashed", color = "purple") +
-  labs(x = "Ordered eQTLs", y = "Cumulative FDR", col = "Type") +
-  theme_minimal() +
-  ggtitle("FASH:Cumulative FDR Plot") +
-  scale_color_manual(values = c("red", "blue", "green"))
-```
 
 How many false discoveries are there?
 ```{r}
@@ -268,54 +272,6 @@ true_false_discovery_rate <- num_false_discoveries/num_discoveries
 true_false_discovery_rate
 ```
 
-Plot the curve of nominal false discovery rate (threshold) against the actual false discovery rate:
-```{r}
-# Calculate true FDR for FASH
-threshold_vec <- seq(0, 1, by = 0.01)
-fdr_vec <- numeric(length(threshold_vec))
-
-for (i in 1:length(threshold_vec)) {
-  num_discoveries <- sum(fdr_df$cumulative_fdr <= threshold_vec[i])
-  num_false_discoveries <- sum(fdr_df$cumulative_fdr <= threshold_vec[i] & fdr_df$type == "A")
-  fdr_vec[i] <- num_false_discoveries / num_discoveries
-}
-
-# Create a data frame for plotting
-fdr_df_fash_for_plotting <- data.frame(threshold = threshold_vec, true_fdr = fdr_vec)
-
-# Plot the nominal FDR vs true FDR for FASH
-ggplot(fdr_df_fash_for_plotting, aes(x = threshold, y = true_fdr)) +
-  geom_line() +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
-  labs(x = "(Nominal) False Discovery Rate", y = "(Actual) False Discovery Rate") +
-  theme_minimal() +
-  geom_hline(yintercept = sizeA/N, linetype = "dashed", color = "red") +
-  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
-  ggtitle("Nominal FDR vs Actual FDR Curve for FASH")
-```
-
-Also compare the number of false discoveries with the number of discoveries at different level of threshold, where number of discoveries is plotted against number of false discoveries:
-
-```{r}
-threshold_vec <- seq(0, 1, by = 0.01)
-num_discoveries_vec <- numeric(length(threshold_vec))
-num_false_discoveries_vec <- numeric(length(threshold_vec))
-for (i in 1:length(threshold_vec)) {
-  num_discoveries_vec[i] <- sum(fdr_df$cumulative_fdr <= threshold_vec[i])
-  num_false_discoveries_vec[i] <- sum(fdr_df$cumulative_fdr <= threshold_vec[i] & fdr_df$type == "A")
-}
-num_discoveries_df <- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec, num_false_discoveries = num_false_discoveries_vec)
-ggplot(num_discoveries_df, aes(x = (num_discoveries), y = (num_false_discoveries))) +
-  geom_line() +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
-  labs(x = "Number of Discoveries", y = "Number of False Discoveries") +
-  theme_minimal() +
-  ggtitle("FASH: Number of False Discoveries vs Number of Discoveries") +
-  coord_cartesian(xlim = c(0, 3000), ylim = c(0, 3000))
-
-```
 
 #### *FDR Computed Using MASH*
 
@@ -366,69 +322,11 @@ true_false_discovery_rate <- num_false_discoveries/num_discoveries
 true_false_discovery_rate
 ```
 
-```{r}
-ggplot(fdr_df_mash, aes(x = rank, y = cumulative_fdr, col = type)) +
-  geom_point() +
-  geom_hline(yintercept = 0.05, linetype = "dashed", color = "purple") +
-  labs(x = "Ordered eQTLs", y = "Cumulative FDR", col = "Type") +
-  theme_minimal() +
-  coord_cartesian(ylim = c(0, 1)) +
-  ggtitle("Cumulative FDR Plot") +
-  scale_color_manual(values = c("red", "blue", "green"))
-```
-
-```{r}
-# Calculate true FDR for MASH
-threshold_vec <- seq(0, 1, by = 0.01)
-fdr_vec_mash <- numeric(length(threshold_vec))
-
-for (i in 1:length(threshold_vec)) {
-  num_discoveries_mash <- sum(fdr_df_mash$cumulative_fdr <= threshold_vec[i])
-  num_false_discoveries_mash <- sum(fdr_df_mash$cumulative_fdr <= threshold_vec[i] & fdr_df_mash$type == "A")
-  fdr_vec_mash[i] <- num_false_discoveries_mash / num_discoveries_mash
-}
-
-# Create a data frame for plotting
-fdr_df_mash_for_plotting <- data.frame(threshold = threshold_vec, true_fdr = fdr_vec_mash)
-
-# Plot the nominal FDR vs true FDR for MASH
-ggplot(fdr_df_mash_for_plotting, aes(x = threshold, y = true_fdr)) +
-  geom_line() +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
-  labs(x = "(Nominal) False Discovery Rate", y = "(Actual) False Discovery Rate") +
-  theme_minimal() +
-  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
-  ggtitle("Nominal FDR vs Actual FDR Curve for MASH")
-```
-
-Plot the number of false discoveries against the number of total discoveries for MASH:
-
-```{r}
-threshold_vec <- seq(0, 1, by = 0.01)
-num_discoveries_vec <- numeric(length(threshold_vec))
-num_false_discoveries_vec <- numeric(length(threshold_vec))
-for (i in 1:length(threshold_vec)) {
-  num_discoveries_vec[i] <- sum(fdr_df_mash$cumulative_fdr <= threshold_vec[i])
-  num_false_discoveries_vec[i] <- sum(fdr_df_mash$cumulative_fdr <= threshold_vec[i] & fdr_df_mash$type == "A")
-}
-num_discoveries_df_mash <- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec, num_false_discoveries = num_false_discoveries_vec)
-ggplot(num_discoveries_df_mash, aes(x = num_discoveries, y = (num_false_discoveries))) +
-  geom_line() +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
-  labs(x = "Number of Discoveries", y = "Number of False Discoveries") +
-  theme_minimal() +
-  ggtitle("MASH: Number of False Discoveries vs Number of Discoveries") +
-  coord_cartesian(xlim = c(0, 3000), ylim = c(0, 3000))
-```
-
-
 Compare MASH (fdr_df_mash) and FASH (fdr_df)
 
 ```{r}
 # Calculate true FDR for FASH
-threshold_vec <- seq(0, 1, by = 0.01)
+threshold_vec <- seq(0, 1, by = 0.001)
 fdr_vec_fash <- numeric(length(threshold_vec))
 
 for (i in 1:length(threshold_vec)) {
@@ -451,7 +349,8 @@ for (i in 1:length(threshold_vec)) {
 
 # Create a data frame for plotting
 fdr_df_mash_for_plotting <- data.frame(threshold = threshold_vec, true_fdr = fdr_vec_mash, method = "MASH")
-fdr_df_fash_for_plotting$method <- "FASH"
+
+fdr_df_fash_for_plotting <- data.frame(threshold = threshold_vec, true_fdr = fdr_vec_fash, method = "FASH")
 
 # Combine data for plotting
 fdr_df_combined <- rbind(fdr_df_fash_for_plotting, fdr_df_mash_for_plotting)
@@ -459,7 +358,7 @@ fdr_df_combined <- rbind(fdr_df_fash_for_plotting, fdr_df_mash_for_plotting)
 # Plot the nominal FDR vs true FDR for both methods
 ggplot(fdr_df_combined, aes(x = threshold, y = true_fdr, color = method)) +
   geom_line() +
-  geom_point() +
+  # geom_point() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
   labs(x = "Nominal False Discovery Rate", y = "Actual False Discovery Rate") +
   theme_minimal() +
@@ -468,16 +367,15 @@ ggplot(fdr_df_combined, aes(x = threshold, y = true_fdr, color = method)) +
   ggtitle("Nominal FDR vs Actual FDR Curves for MASH and FASH")
 ```
 
-
 Compare the number of false discoveries against the number of total discoveries for both methods:
 
 ```{r}
-threshold_vec <- seq(0, 1, by = 0.001)
+threshold_vec <- seq(0, 1, by = 0.0001)
 num_discoveries_vec_fash <- numeric(length(threshold_vec))
 num_false_discoveries_vec_fash <- numeric(length(threshold_vec))
 for (i in 1:length(threshold_vec)) {
-  num_discoveries_vec_fash[i] <- sum(fdr_df$cumulative_fdr <= threshold_vec[i])
-  num_false_discoveries_vec_fash[i] <- sum(fdr_df$cumulative_fdr <= threshold_vec[i] & fdr_df$type == "A")
+  num_discoveries_vec_fash[i] <- sum(fdr_df$cumulative_fdr < threshold_vec[i])
+  num_false_discoveries_vec_fash[i] <- sum(fdr_df$cumulative_fdr < threshold_vec[i] & fdr_df$type == "A")
 }
 num_discoveries_df_fash <- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec_fash, num_false_discoveries = num_false_discoveries_vec_fash, method = "FASH")
 
@@ -493,15 +391,36 @@ num_discoveries_df_mash <- data.frame(threshold = threshold_vec, num_discoveries
 num_discoveries_df_combined <- rbind(num_discoveries_df_fash, num_discoveries_df_mash)
 
 ggplot(num_discoveries_df_combined, aes(x = num_discoveries, y = num_false_discoveries, color = method)) +
-  geom_line() +
-  # geom_point() +
+  geom_line(aes(linetype = method)) +
+  geom_point(size = 0.1) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
   labs(x = "Number of Discoveries", y = "Number of False Discoveries") +
   theme_minimal() +
   ggtitle("Number of False Discoveries vs Number of Discoveries for MASH and FASH") +
-  coord_cartesian(xlim = c(0, 10000), ylim = c(0, 7000))
+  coord_cartesian(xlim = c(0, 3000), ylim = c(0, 3000))
 ```
 
+Compare the FDR vs Power for both methods:
+
+```{r}
+# Calculate the power for FASH
+num_discoveries_df_fash$power <- (num_discoveries_df_fash$num_discoveries-num_discoveries_df_fash$num_false_discoveries)/(N - sizeA)
+
+# Calculate the power for MASH
+num_discoveries_df_mash$power <- (num_discoveries_df_mash$num_discoveries - num_discoveries_df_mash$num_false_discoveries)/(N - sizeA)
+
+# Combine the data for plotting
+num_discoveries_df_combined <- rbind(num_discoveries_df_fash, num_discoveries_df_mash)
+
+# Plot the FDR vs Power for both methods
+ggplot(num_discoveries_df_combined, aes(x = threshold, y = power, color = method)) +
+  geom_line(aes(linetype = method)) +
+  # geom_point() +
+  labs(x = "FDR", y = "Power") +
+  theme_minimal() +
+  ggtitle("FDR vs Power for MASH and FASH") +
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))
+```
 
 To compare their rankings of eQTLs based on the cumulative FDR, we can compare the rank distribution of each type of eQTLs (A,B,C) based on the two methods:
 
@@ -515,13 +434,6 @@ ggplot(fdr_df_merge, aes(x = type, y = rank, color = type)) +
   ggtitle("Rank Distribution: FASH vs MASH") +
   facet_wrap(~method)
 ```
-
-**Summary:** Overall, FASH tends to make more conservative decision than MASH in terms of the discovery of non-dynamic eQTLs. 
-The actual false discovery rate of FASH tends to be lower than the nominal false discovery rate, while MASH tends to have a higher actual false discovery rate than the nominal false discovery rate.
-This kind of behavior is expected, as each mixture component of FASH is a L-GP prior that shrinks toward the constant base model. In contrast, the mixture components in MASH have different type of shrinkage tendencies. which gains more modeling flexibility at the cost of less informative shrinkage.
-Overall, MASH does better job at controlling an actual FDR closer to the nominal level, but FASH does better job at keeping the actual FDR lower than the nominal level.
-Given a threshold of FDR, MASH is able to find more discoveries than FASH, but the proportion of false discoveries is higher in MASH than in FASH.
-
 
 ### **Which eQTLs have non-linear dynamic?**
 
@@ -545,16 +457,18 @@ L_vecs <- list()
 pb <- txtProgressBar(min = 0, max = length(datasets), style = 3)
 for (i in 1:length(datasets)) {
   setTxtProgressBar(pb, i)
-  L_vecs[[i]] <- compute_log_likelihood_ospline_seq2(
+  
+  # Using exact augmentation:
+  L_vecs[[i]] <- compute_log_likelihood_exact_aug_seq(
     x = datasets[[i]]$x,
     y = datasets[[i]]$y,
     p = p_vec,
-    num_knots = 16,
     psd_iwp_vector = psd_iwp_vec,
     pred_step = 1,
-    betaprec = 0.001,
+    betaprec = beta_prec,
     sd_gaussian = sigma[i]
   )
+  
 }
 L_matrix <- do.call(rbind, L_vecs)
 save(L_matrix, file = paste0(result_dir, "/L_matrix_nonlinear.rda"))
@@ -610,7 +524,7 @@ for (i in seq_along(datasets)) {
     y = dataset$y,
     num_knots = 16,
     prior_weight = prior_weight,
-    betaprec = 0.001,
+    betaprec = beta_prec,
     sd_gaussian = sigma[i],
     pred_step = 1
   )

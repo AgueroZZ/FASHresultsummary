@@ -340,7 +340,7 @@ div.tocify {
   <a href="simulation_pollution.html">Simulation 1</a>
 </li>
 <li>
-  <a href="simulation_eQTL_identification.html">Simulation 2</a>
+  <a href="eQTL_sim.html">Simulation 2</a>
 </li>
 <li>
   <a href="covid_example.html">COVID-19 Example</a>
@@ -399,7 +399,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-05-29
+<strong>Last updated:</strong> 2024-09-12
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -446,15 +446,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreed6e6f37d2a0b3dce3e8e50fbaab1b52c4d6c5650targetblankd6e6f37a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree3f40c47ea8075c62ff5a3d4da697eb688ba6d91ctargetblank3f40c47a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/d6e6f37d2a0b3dce3e8e50fbaab1b52c4d6c5650" target="_blank">d6e6f37</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c" target="_blank">3f40c47</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreed6e6f37d2a0b3dce3e8e50fbaab1b52c4d6c5650targetblankd6e6f37a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree3f40c47ea8075c62ff5a3d4da697eb688ba6d91ctargetblank3f40c47a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -464,7 +464,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/d6e6f37d2a0b3dce3e8e50fbaab1b52c4d6c5650" target="_blank">d6e6f37</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c" target="_blank">3f40c47</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -494,6 +494,7 @@ Ignored files:
     Ignored:    output/example/figure/
 
 Untracked files:
+    Untracked:  analysis/circadian_expression.Rmd
     Untracked:  code/cpp/Gaussian_just_fixed.o
     Untracked:  code/cpp/Gaussian_just_fixed.so
     Untracked:  code/cpp/Gaussian_theta_known.o
@@ -504,6 +505,8 @@ Untracked files:
     Untracked:  code/cpp/Poisson_causes.so
     Untracked:  code/cpp/Poisson_covid.o
     Untracked:  code/cpp/Poisson_covid.so
+    Untracked:  code/cpp/Poisson_expression.o
+    Untracked:  code/cpp/Poisson_expression.so
     Untracked:  code/cpp/Poisson_just_fixed.cpp
     Untracked:  code/cpp/Poisson_just_fixed.o
     Untracked:  code/cpp/Poisson_just_fixed.so
@@ -511,20 +514,37 @@ Untracked files:
     Untracked:  code/cpp/Poisson_just_fixed_causes.so
     Untracked:  code/cpp/Poisson_just_fixed_covid.o
     Untracked:  code/cpp/Poisson_just_fixed_covid.so
+    Untracked:  code/cpp/Poisson_just_fixed_expression.o
+    Untracked:  code/cpp/Poisson_just_fixed_expression.so
+    Untracked:  code/function/functions_Gaussian_fitting_eQTLsim.R
     Untracked:  code/function/functions_fitting_Gaussian_eQTL_irregular.R
+    Untracked:  code/function/functions_fitting_Poisson_circadian_expression.R
+    Untracked:  code/function/functions_simulating.R
     Untracked:  code/function/functions_simulation_eQTL_irregular.R
     Untracked:  data/13100810.csv
     Untracked:  data/13100810_MetaData.csv
+    Untracked:  data/circadian_expression/
     Untracked:  data/expression_data/
     Untracked:  output/causes/
+    Untracked:  output/circadian_expression/
+    Untracked:  output/eQTL_sim/
     Untracked:  output/expression/
     Untracked:  output/simulation_eQTL/
     Untracked:  output/simulation_eQTL_test/
     Untracked:  output/simulation_pollution/
+    Untracked:  thought_process
 
 Unstaged changes:
+    Modified:   analysis/_site.yml
     Deleted:    analysis/simulation.Rmd
     Modified:   analysis/simulation_eQTL.Rmd
+    Modified:   analysis/simulation_eQTL_identification.Rmd
+    Modified:   analysis/simulation_pollution.Rmd
+    Modified:   code/cpp/Gaussian_just_fixed.cpp
+    Modified:   code/function/functions_fitting_Gaussian.R
+    Modified:   code/function/functions_fitting_Gaussian_eQTL.R
+    Modified:   code/function/functions_fitting_Gaussian_eQTL_test.R
+    Modified:   code/function/functions_simulation.R
     Modified:   output/example/L_matrix.rda
     Modified:   output/example/fitted_datasets.rda
     Modified:   output/example/functional_datasets.rda
@@ -576,6 +596,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/179b1c0911e8764809d01effee0f6508022777ea/docs/index.html" target="_blank">179b1c0</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-29
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -825,7 +862,7 @@ html
 Ziang Zhang
 </td>
 <td>
-2024-05-08
+2024-05-07
 </td>
 <td>
 initialize the website
@@ -842,7 +879,7 @@ Rmd
 Ziang Zhang
 </td>
 <td>
-2024-05-08
+2024-05-07
 </td>
 <td>
 wflow_git_commit(c("analysis/covid_example.Rmd", "analysis/index.Rmd",

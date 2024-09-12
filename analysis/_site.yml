@@ -10,7 +10,7 @@ navbar:
   - text: Simulation 1
     href: simulation_pollution.html
   - text: Simulation 2
-    href: simulation_eQTL_identification.html
+    href: eQTL_sim.html
   - text: COVID-19 Example
     href: covid_example.html
   - text: Gene Expression Example
