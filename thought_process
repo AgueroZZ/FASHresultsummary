@@ -43,21 +43,101 @@ Today, let's stick to the sanity check example from yesterday, and
 try to see how the EB method performs in terms of FDR and Power when
 testing dynamic eQTLs (i.e. when psd > 0).
 
-Question 1: How does the FDR of FASH compare to the FDR of MASH?
+(a): How does the FDR of FASH compare to the FDR of MASH?
+
 Answer: Both methods performed very well in terms of FDR control in this simple setting.
 When betaprec is specified to be very diffuse, I don't think the conclusion will change for FASH.
 Let's see through a sensitivity experiment if we specify betaprec to be 0.00001: indeed, the
 result does not change.
 
-Question 2: How does the Power of FASH compare to the Power of MASH?
+(b): How does the Power of FASH compare to the Power of MASH?
+
 Answer: FASH has slightly better power when FDR is between 0 to 0.5.
 When betaprec is specified to be very diffuse, I don't think the conclusion will change for FASH.
 Let's see through a sensitivity experiment if we specify betaprec to be 0.00001: indeed, the
 result does not change.
 
 
-Question 3: Answer the same two questions, when the comparison is against the oracle Bayes method.
+(c) Answer the same two questions, when the comparison is against the oracle Bayes method.
+
 Answer: The EB (FASH) and OB (oracle) have extremely similar results! Except OB has better estimation accuracy at the largest value of the true PSD.
+
+
+
+----------------------------------------------
+----------------------------------------------
+Thu, Sept 12th:
+----------------------------------------------
+----------------------------------------------
+
+Today, I am revisiting the previous examples, with the updated cpp code for the Gaussian likelihood computation at the base model (aka sigma = 0).
+
+(a): For the Simulation 1 (Pollutant) example, what would happen with this code change?
+
+Answer: Not any significant change, except that the PSD that was estimated to be zero now becomes some non-zero small value. 
+No more prior weight is assigned to the zero case now.
+
+(b): For the original Simulation 2 (testing eQTL), what would happen?
+
+Answer: First, the power of the FASH approach is significantly boosted, and it seems like the inference no longer being sensitive to the choice of beta_prec.
+However, the estimation of pi_0 seems to be consistently lower than the true, causing the FDR calibration to be non-accurate. 
+I am investigating if this is something wrong in my code or this is something for real...
+This problem does not occur when the model is correct... (see the new version of Simulation 2 when there is no model-misspecification).
+Would this problem still occur if we only compare linear vs non-dynamic eQTLs? ---> Still underestimate by the same amount (0.65 where the truth is 0.7).
+So if we remove those linear observations? ---> still not correct... now it is estimated as 0.63...
+What if we change the dynamic-simulation so it draws from the IWP? There should be no more model-misspecification then... --> Indeed, it fixes the problem.
+So we conclude, for the FASH approach to have nice FDR calibration. Model-specification is indeed important!
+This kind of make sense too.. Even ASH underestimates \pi_0 when the true model is bi-modal. Here we can think of the model being bi-modal too: one mode around the
+Constant space, and a smaller mode around some other space (for example, linear space).
+
+(c): Since the original FASH is sensitive to model-misspecification (so is ash, so nothing extremely surprising though), how can we make it more robust?
+
+Answer: Idea 1 -> How about we introduce a penalty that is just like the one from ash?
+Without using the correction (pi_0 = 0.5, whereas pi_0 estimate is 0.43).
+Now let's try to incorporate that penalty into FASH... We can do that by adding \lambda_0-1 number of observations with likelihood being 1 at the null
+Component and 0 at the other components. It is important to use the original (not log) likelihood matrix then.
+It improves pi_0 from 0.43 to 0.45 in this particular example.
+If we reduce the number of linear cases, and increase pi to 0.7, try again we get --> (unpenalized result 0.6685535), (penalized result 0.6753572).
+It indeed helps a little, using the default lambda_0 = 10 suggested in ash.
+If we increase lambda_0 to 50, it helps to make our estimate of pi_0 conservative in FASH.
+Finally, let's try again when using a more refined grid of sigma in the mixture --> Not much difference!
+
+
+
+
+
+----------------------------------------------
+----------------------------------------------
+Fri, Sept 13th:
+----------------------------------------------
+----------------------------------------------
+
+Today, we will continue to revisit some examples of FASH using the corrected code of the likelihood computation.
+
+
+(a): For the expression data analysis, will the result change if we increase the number of knots to 16?
+
+Answer: Let's try this.
+
+(b): For the COVID-19 example, will the likelihood computation change any result?
+
+Answer: The result basically does not change.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

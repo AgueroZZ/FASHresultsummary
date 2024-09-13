@@ -33,6 +33,9 @@ Type objective_function<Type>::operator() ()
   lpW += -0.5 * betaprec * bb; // Beta part
   lpW += -0.5 * d_beta * log(2*M_PI);
 
+  Type logdet2 = d_beta * log(betaprec);
+  lpW += 0.5 * logdet2; // for fixed effect
+
   REPORT(lpW);
   
   // Final result!

@@ -11,7 +11,7 @@ simulate_data <- function(g, sd=0.1, snr = NULL){
 }
 
 ### Write a function, to simulate a random function as g using cubic B-spline basis representation with random basis weights:
-simulate_nonlinear_function <- function(n_basis = 5, sd_function = 1, sd_poly = 0.1) {
+simulate_nonlinear_function <- function(n_basis = 20, sd_function = 1, sd_poly = 0.1) {
   if(n_basis < 3) stop("n_basis must be greater than 3")
   # Define the range and knots for the B-spline basis
   x_min <- 0
@@ -21,18 +21,22 @@ simulate_nonlinear_function <- function(n_basis = 5, sd_function = 1, sd_poly = 
   knots <- seq(x_min, x_max, length.out = n_basis - 3)
 
   # Generate random weights for the basis functions
-  weights <- rnorm((n_basis), mean = 0, sd = sd_function) # Adjusted to match the number of knots for cubic spline
-
+  pred_step = 1
+  p = 1
+  sd_function <- sd_function/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2)))
+  prec_mat <- (1/sd_function^2) * BayesGP:::compute_weights_precision_helper(knots)
+  weights <- as.vector(LaplacesDemon::rmvnp(n = 1, mu = rep(0, ncol(prec_mat)), Omega = prec_mat))
   # Generate random weights for the linear functions
-  beta0 <- rnorm(1, mean = 0, sd = sd_poly)
-  beta1 <- rnorm(1, mean = 0, sd = sd_poly)
+  beta_vec <- rnorm(n = p, mean = 0, sd = sd_poly)
 
   # Return a function that evaluates the spline at new x values
   function(x_new) {
     # Create the B-spline basis for the new x values using the predefined knots
-    bspline_new <- bs(x_new, knots = knots, degree = 3, Boundary.knots = c(x_min, x_max))
+    spline_new <- BayesGP:::local_poly_helper(knots = knots, refined_x = x_new, p = p)
+    x_new_design <- BayesGP:::global_poly_helper(x = x_new, p = p)
     # Return the function
-    return(beta0 + beta1 * x_new + as.vector(bspline_new %*% weights))
+    return(x_new_design %*% beta_vec + as.vector(spline_new %*% weights))
+
   }
 }
 
@@ -64,7 +68,7 @@ simulate_nondynamic_function <- function(sd_poly = 1){
 }
 
 ### simulate process: first draw a random function g, then draw a dataset from g
-simulate_process <- function(n_basis = 5, sd_fun = 1, sd = 0.1, snr = NULL, sd_poly = 0.1, type = "nonlinear"){
+simulate_process <- function(n_basis = 50, sd_fun = 1, sd = 0.1, snr = NULL, sd_poly = 0.1, type = "nonlinear"){
   if(type == "linear"){
     g <- simulate_linear_function(sd_poly = sd_poly)
 

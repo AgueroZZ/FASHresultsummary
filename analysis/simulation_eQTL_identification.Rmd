@@ -48,6 +48,7 @@ dyn.load(TMB::dynlib(paste0(cpp_dir, "/Gaussian_just_fixed")))
 num_cores <- 4
 set.seed(123)
 N <- 1000
+propA <- 0.7; propB <- 0.2; propC <- 0.1
 sigma <- sample(c(0.1, 0.5, 1), size = N, replace = TRUE, prob = c(1/3,1/3,1/3))
 set.seed(123)
 ```
@@ -55,7 +56,7 @@ set.seed(123)
 First, we simulate $700$ non-dynamic eQTLs:
 
 ```{r}
-sizeA <- 700
+sizeA <- N * propA
 data_sim_list_A <- lapply(1:sizeA, function(i) simulate_process(sd_poly = 1, type = "nondynamic", sd = sigma[i]))
 par(mfrow = c(2, 2))
 for (i in 1:4) {
@@ -71,8 +72,9 @@ par(mfrow = c(1, 1))
 Then, we simulate $200$ dynamic eQTLs with linear dynamics:
 
 ```{r}
-sizeB <- 200
-data_sim_list_B <- lapply(1:sizeB, function(i) simulate_process(sd_poly = 1, type = "linear", sd = sigma[i + sizeA]))
+sizeB <- N * propB
+if(sizeB > 0){
+data_sim_list_B <- lapply(1:sizeB, function(i) simulate_process(sd_poly = 0.1, type = "linear", sd = sigma[i + sizeA]))
 par(mfrow = c(2, 2))
 for (i in 1:4) {
   plot(data_sim_list_B[[i]]$x, data_sim_list_B[[i]]$truef, 
@@ -82,13 +84,17 @@ for (i in 1:4) {
   points(data_sim_list_B[[i]]$x, data_sim_list_B[[i]]$y, col = "blue")
 }
 par(mfrow = c(1, 1))
+}else{
+  data_sim_list_B <- list()
+}
 ```
 
 Finally, simulate $100$ non-linear dynamic eQTLs.
 
 ```{r}
-sizeC <- 100
+sizeC <- N * propC
 data_sim_list_C <- lapply(1:sizeC, function(i) simulate_process(sd_poly = 0.1, type = "nonlinear", sd = sigma[i + sizeA + sizeB], sd_fun = 1))
+
 par(mfrow = c(2, 2))
 for (i in 1:4) {
   plot(data_sim_list_C[[i]]$x, data_sim_list_C[[i]]$truef, 
@@ -130,7 +136,7 @@ First, we compute the L matrix:
 set.seed(123)
 p_vec <- 1
 beta_prec <- 1e-5
-psd_iwp_vec <- sort(unique(c(0,seq(0,1, by = 0.05))))
+psd_iwp_vec <- sort(unique(c(0,seq(0,1.2, by = 0.05))))
 L_vecs <- list()
 # create a progress bar
 pb <- txtProgressBar(min = 0, max = length(datasets), style = 3)
@@ -147,6 +153,9 @@ for (i in 1:length(datasets)) {
     betaprec = beta_prec,
     sd_gaussian = sigma[i]
   )
+  if(any(is.na(L_vecs[[i]]))){
+    warning(paste0("NA in L_vecs[[", i, "]]"))
+  }
   # exact aug method:
   # L_vecs[[i]] <- compute_log_likelihood_exact_aug_seq(
   #   x = datasets[[i]]$x,
@@ -165,14 +174,23 @@ save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
 ```{r, echo=FALSE}
 set.seed(123)
 p_vec <- 1
-psd_iwp_vec <- sort(unique(c(0,seq(0,1, by = 0.05))))
+psd_iwp_vec <- sort(unique(c(0,seq(0,1.2, by = 0.05))))
 load(paste0(result_dir, "/L_matrix.rda"))
 ```
 
 Based on the L-matrix, we optimize the prior weights through EB:
 
 ```{r}
-fit.sqp <- mixsqp(L = L_matrix, log = TRUE)
+prior_null_lambda = 50
+if(prior_null_lambda > 1){
+  prior_null <- matrix(0, nrow = (prior_null_lambda-1), ncol = ncol(L_matrix))
+  prior_null[,1] <- 1
+  L_matrix_original <- rbind(exp(L_matrix), prior_null)
+  fit.sqp <- mixsqp(L = L_matrix_original, log = FALSE, control = list(tol.svd = 0))
+}else{
+  fit.sqp <- mixsqp(L = L_matrix, log = TRUE, control = list(tol.svd = 0))
+}
+
 numiter <- nrow(fit.sqp$progress)
 plot(1:numiter,fit.sqp$progress$objective,type = "b",
      pch = 20,lwd = 2,xlab = "SQP iteration",
@@ -182,14 +200,6 @@ prior_weight <- data.frame(p = rep(p_vec, each = length(psd_iwp_vec)), psd_iwp =
 
 ```{r}
 head(prior_weight)
-```
-
-The estimated overall proportion of non-dynamic eQTLs is:
-
-```{r}
-prior_weight %>%
-  filter(psd_iwp == 0) %>%
-  pull(prior_weight)
 ```
 
 With the estimated prior, we can now perform the posterior inference for each dataset:
@@ -451,7 +461,7 @@ First, we compute the L matrix:
 ```{r, eval=FALSE}
 set.seed(123)
 p_vec <- 2
-psd_iwp_vec <- sort(unique(c(0,seq(0,1, by = 0.05))))
+psd_iwp_vec <- sort(unique(c(0,seq(0,1.2, by = 0.05))))
 L_vecs <- list()
 # create a progress bar
 pb <- txtProgressBar(min = 0, max = length(datasets), style = 3)
@@ -477,14 +487,23 @@ save(L_matrix, file = paste0(result_dir, "/L_matrix_nonlinear.rda"))
 ```{r, echo=FALSE}
 set.seed(123)
 p_vec <- 2
-psd_iwp_vec <- sort(unique(c(0,seq(0,1, by = 0.05))))
+psd_iwp_vec <- sort(unique(c(0,seq(0,1.2, by = 0.05))))
 load(paste0(result_dir, "/L_matrix_nonlinear.rda"))
 ```
                     
 Based on the L-matrix, we optimize the prior weights through EB:
 
 ```{r}
-fit.sqp <- mixsqp(L = L_matrix, log = TRUE)
+prior_null_lambda = 50
+if(prior_null_lambda > 1){
+  prior_null <- matrix(0, nrow = (prior_null_lambda-1), ncol = ncol(L_matrix))
+  prior_null[,1] <- 1
+  L_matrix_original <- rbind(exp(L_matrix), prior_null)
+  fit.sqp <- mixsqp(L = L_matrix_original, log = FALSE, control = list(tol.svd = 0))
+}else{
+  fit.sqp <- mixsqp(L = L_matrix, log = TRUE, control = list(tol.svd = 0))
+}
+
 numiter <- nrow(fit.sqp$progress)
 plot(1:numiter,fit.sqp$progress$objective,type = "b",
      pch = 20,lwd = 2,xlab = "SQP iteration",
@@ -494,14 +513,6 @@ prior_weight <- data.frame(p = rep(p_vec, each = length(psd_iwp_vec)), psd_iwp =
 
 ```{r}
 head(prior_weight)
-```
-
-The estimated overall proportion of linear eQTLs (including non dynamic eQTLs) is:
-
-```{r}
-prior_weight %>%
-  filter(psd_iwp == 0) %>%
-  pull(prior_weight)
 ```
 
 With the estimated prior, we can now perform the posterior inference for each dataset:

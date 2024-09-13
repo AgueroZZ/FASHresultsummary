@@ -1,5 +1,5 @@
 ---
-title: "Example: COVID mortality data across countries"
+title: "Example: COVID Mortality Data Across Countries"
 output:
   workflowr::wflow_html:
     toc: false

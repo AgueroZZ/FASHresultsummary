@@ -71,7 +71,7 @@ save(datasets, file = paste0(result_dir, "/datasets.rda"))
 
 
 ```{r echo=FALSE}
-num_knots <- 8
+num_knots <- 16
 p <- 2
 datasets <- list()
 all_gene <- unique(expression_data_one_cell_line$Gene_id)
@@ -221,7 +221,7 @@ ggplot(melted_data_sorted, aes(x = factor(id, levels = sorted_posterior_weights_
 
 ### **Clustering based on posterior weights**
 
-Let's group them into 4 groups, based on the quantiles of the mean PSD:
+Let's group them into 6 groups, based on the quantiles of the mean PSD:
 ```{r}
 mean_psd_ordered <- mean_psd[sorted_index]
 quantiles <- quantile(mean_psd_ordered, probs = seq(0, 1, 1/6))
@@ -314,28 +314,41 @@ plot_gene_expression_log_just_f <- function(gene, log_size_vec) {
 
 # plot_gene_expression(gene)
 plot_cluster_genes <- function(genes) {
-  if(length(genes) < 16) stop("Not enough genes in the cluster")
-  par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
-  for (gene in genes[1:16]) {
-    plot_gene_expression(gene)
+  if(length(genes) < 16){
+        plot_gene_expression(genes[1])
   }
-  par(mfrow = c(1, 1))
+  else{
+      par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
+      for (gene in genes[1:16]) {
+        plot_gene_expression(gene)
+      }
+      par(mfrow = c(1, 1))
+  }
 }
+
 plot_cluster_genes_log <- function(genes) {
-  if(length(genes) < 16) stop("Not enough genes in the cluster")
-  par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
+  if(length(genes) < 16) {
+      plot_gene_expression_log(genes[1])
+  }
+  else{
+      par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
   for (gene in genes[1:16]) {
     plot_gene_expression_log(gene)
   }
   par(mfrow = c(1, 1))
+  }
 }
 plot_cluster_genes_log_just_f <- function(genes, log_size_vec){
-  if(length(genes) < 16) stop("Not enough genes in the cluster")
-  par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
+  if(length(genes) < 16) {
+      plot_gene_expression_log_just_f(genes[1], log_size_vec)
+  }
+  else{
+      par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
   for (gene in genes[1:16]) {
     plot_gene_expression_log_just_f(gene, log_size_vec)
   }
   par(mfrow = c(1, 1))
+  }
 }
 # plot_cluster_genes(genes_cluster1)
 ```

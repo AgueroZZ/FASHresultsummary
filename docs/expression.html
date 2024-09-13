@@ -264,7 +264,7 @@ $(document).ready(function () {
   <a href="simulation_pollution.html">Simulation 1</a>
 </li>
 <li>
-  <a href="simulation_eQTL_identification.html">Simulation 2</a>
+  <a href="eQTL_sim.html">Simulation 2</a>
 </li>
 <li>
   <a href="covid_example.html">COVID-19 Example</a>
@@ -322,7 +322,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-06-10
+<strong>Last updated:</strong> 2024-09-13
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -453,15 +453,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree62566ff29f2e98ea1b83dcba8b8ad3a569e58d41targetblank62566ffa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea6ad79339cfcd4b0e3f141d89fa94d8a75e55717targetblanka6ad793a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/62566ff29f2e98ea1b83dcba8b8ad3a569e58d41" target="_blank">62566ff</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a6ad79339cfcd4b0e3f141d89fa94d8a75e55717" target="_blank">a6ad793</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree62566ff29f2e98ea1b83dcba8b8ad3a569e58d41targetblank62566ffa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea6ad79339cfcd4b0e3f141d89fa94d8a75e55717targetblanka6ad793a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -471,7 +471,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/62566ff29f2e98ea1b83dcba8b8ad3a569e58d41" target="_blank">62566ff</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a6ad79339cfcd4b0e3f141d89fa94d8a75e55717" target="_blank">a6ad793</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -496,53 +496,32 @@ Ignored files:
     Ignored:    code/function/.DS_Store
     Ignored:    code/function/.Rhistory
     Ignored:    data/.DS_Store
+    Ignored:    data/expression_data/.DS_Store
     Ignored:    output/.DS_Store
     Ignored:    output/example/.DS_Store
     Ignored:    output/example/figure/
-
-Untracked files:
-    Untracked:  code/cpp/Gaussian_just_fixed.o
-    Untracked:  code/cpp/Gaussian_just_fixed.so
-    Untracked:  code/cpp/Gaussian_theta_known.o
-    Untracked:  code/cpp/Gaussian_theta_known.so
-    Untracked:  code/cpp/Poisson.o
-    Untracked:  code/cpp/Poisson.so
-    Untracked:  code/cpp/Poisson_causes.o
-    Untracked:  code/cpp/Poisson_causes.so
-    Untracked:  code/cpp/Poisson_covid.o
-    Untracked:  code/cpp/Poisson_covid.so
-    Untracked:  code/cpp/Poisson_expression.o
-    Untracked:  code/cpp/Poisson_expression.so
-    Untracked:  code/cpp/Poisson_just_fixed.cpp
-    Untracked:  code/cpp/Poisson_just_fixed.o
-    Untracked:  code/cpp/Poisson_just_fixed.so
-    Untracked:  code/cpp/Poisson_just_fixed_causes.o
-    Untracked:  code/cpp/Poisson_just_fixed_causes.so
-    Untracked:  code/cpp/Poisson_just_fixed_covid.o
-    Untracked:  code/cpp/Poisson_just_fixed_covid.so
-    Untracked:  code/cpp/Poisson_just_fixed_expression.o
-    Untracked:  code/cpp/Poisson_just_fixed_expression.so
-    Untracked:  code/function/functions_fitting_Gaussian_eQTL_irregular.R
-    Untracked:  code/function/functions_simulation_eQTL_irregular.R
-    Untracked:  data/13100810.csv
-    Untracked:  data/13100810_MetaData.csv
-    Untracked:  data/expression_data/
-    Untracked:  output/causes/
-    Untracked:  output/expression/
-    Untracked:  output/simulation_eQTL/
-    Untracked:  output/simulation_eQTL_test/
-    Untracked:  output/simulation_pollution/
+    Ignored:    output/simulation_pollution/.DS_Store
+    Ignored:    output/simulation_pollution/figure/
 
 Unstaged changes:
-    Deleted:    analysis/simulation.Rmd
-    Modified:   analysis/simulation_eQTL.Rmd
-    Modified:   output/example/L_matrix.rda
-    Modified:   output/example/fitted_datasets.rda
-    Modified:   output/example/functional_datasets.rda
-    Modified:   output/example/posterior_weights_matrix.rda
-    Deleted:    output/simulation/L_matrix.rda
-    Deleted:    output/simulation/fitted_datasets.rda
-    Deleted:    output/simulation/posterior_weights_matrix.rda
+    Modified:   analysis/simulation_eQTL_identification.Rmd
+    Modified:   code/cpp/Poisson_just_fixed.cpp
+    Modified:   code/cpp/Poisson_just_fixed_causes.cpp
+    Modified:   code/cpp/Poisson_just_fixed_covid.cpp
+    Modified:   code/cpp/Poisson_just_fixed_expression.cpp
+    Modified:   code/cpp/Poisson_just_fixed_expression.o
+    Modified:   code/cpp/Poisson_just_fixed_expression.so
+    Modified:   code/function/functions_simulation_eQTL_test.R
+    Modified:   output/expression/L_matrix.rda
+    Modified:   output/expression/fitted_pos_results.rda
+    Modified:   output/simulation_eQTL_test/L_matrix.rda
+    Modified:   output/simulation_eQTL_test/L_matrix_nonlinear.rda
+    Modified:   output/simulation_eQTL_test/fitted_datasets.rda
+    Modified:   output/simulation_eQTL_test/fitted_datasets_nonlinear.rda
+    Modified:   output/simulation_eQTL_test/mash_result.rda
+    Modified:   output/simulation_eQTL_test/posterior_weights_matrix.rda
+    Modified:   output/simulation_eQTL_test/posterior_weights_matrix_nonlinear.rda
+    Modified:   thought_process
 
 </code></pre>
 <p>
@@ -588,6 +567,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/expression.html" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -991,20 +987,20 @@ number of EM iterations:    10
 Computing SVD of 16319 x 11 matrix.
 Matrix is not low-rank; falling back to full matrix.
 iter        objective max(rdual) nnz stepsize max.diff nqp nls
-   1 +1.516187791e+00  -- EM --   11 1.00e+00 8.96e-02  --  --
-   2 +1.511565656e+00  -- EM --   11 1.00e+00 1.37e-02  --  --
-   3 +1.509719458e+00  -- EM --   11 1.00e+00 7.59e-03  --  --
-   4 +1.508484651e+00  -- EM --   11 1.00e+00 6.52e-03  --  --
-   5 +1.507599338e+00  -- EM --   11 1.00e+00 5.77e-03  --  --
-   6 +1.506936500e+00  -- EM --   11 1.00e+00 5.10e-03  --  --
-   7 +1.506420567e+00  -- EM --   11 1.00e+00 4.54e-03  --  --
-   8 +1.506004748e+00  -- EM --   11 1.00e+00 4.08e-03  --  --
-   9 +1.505659367e+00  -- EM --   11 1.00e+00 3.68e-03  --  --
-  10 +1.505365206e+00  -- EM --   11 1.00e+00 3.35e-03  --  --
-   1 +1.505109562e+00 +1.313e-02  11  ------   ------   --  --
-   2 +1.501778597e+00 +3.771e-04   9 1.00e+00 6.85e-02   4   1
-   3 +1.501778517e+00 +5.881e-08   9 1.00e+00 7.88e-04   2   1
-   4 +1.501778517e+00 -3.686e-08   9 1.00e+00 2.38e-07   2   1
+   1 +1.288380258e+00  -- EM --   11 1.00e+00 8.54e-02  --  --
+   2 +1.271886900e+00  -- EM --   11 1.00e+00 3.61e-02  --  --
+   3 +1.266954815e+00  -- EM --   11 1.00e+00 2.02e-02  --  --
+   4 +1.264398622e+00  -- EM --   11 1.00e+00 1.42e-02  --  --
+   5 +1.262746443e+00  -- EM --   11 1.00e+00 1.10e-02  --  --
+   6 +1.261562091e+00  -- EM --   11 1.00e+00 8.91e-03  --  --
+   7 +1.260661164e+00  -- EM --   11 1.00e+00 7.38e-03  --  --
+   8 +1.259947407e+00  -- EM --   11 1.00e+00 6.26e-03  --  --
+   9 +1.259363962e+00  -- EM --   11 1.00e+00 5.67e-03  --  --
+  10 +1.258874758e+00  -- EM --   11 1.00e+00 5.15e-03  --  --
+   1 +1.258455882e+00 +1.484e-02  11  ------   ------   --  --
+   2 +1.253372174e+00 +1.052e-03   9 1.00e+00 9.63e-02   4   1
+   3 +1.253371522e+00 +1.787e-06   9 1.00e+00 1.99e-03   2   1
+   4 +1.253371522e+00 -3.452e-08   9 1.00e+00 2.45e-06   2   1
 Optimization took 0.02 seconds.
 Convergence criteria met---optimal solution found.</code></pre>
 <pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
@@ -1286,6 +1282,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-13-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-13-1.png" target="_blank">bf7911a</a>
 </td>
 <td>
@@ -1437,6 +1444,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-16-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-16-1.png" target="_blank">bf7911a</a>
 </td>
 <td>
@@ -1488,6 +1506,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-17-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-17-1.png" target="_blank">bf7911a</a>
@@ -1543,6 +1572,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">bf7911a</a>
 </td>
 <td>
@@ -1594,6 +1634,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">bf7911a</a>
@@ -1649,6 +1700,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">bf7911a</a>
 </td>
 <td>
@@ -1700,6 +1762,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">bf7911a</a>
@@ -1762,6 +1835,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">bf7911a</a>
 </td>
 <td>
@@ -1813,6 +1897,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">bf7911a</a>
@@ -1868,6 +1963,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">bf7911a</a>
 </td>
 <td>
@@ -1919,6 +2025,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">bf7911a</a>
@@ -1974,6 +2091,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-26-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-26-1.png" target="_blank">bf7911a</a>
 </td>
 <td>
@@ -2025,6 +2153,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-27-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-27-1.png" target="_blank">bf7911a</a>
@@ -2098,6 +2237,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-29-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-29-1.png" target="_blank">bf7911a</a>
 </td>
 <td>
@@ -2136,7 +2286,7 @@ Ziang Zhang
 <p>What proportion of the genes are likely having non-linear
 trajectories?</p>
 <pre class="r"><code>fda_df %&gt;% filter(cumulative_fda &lt; 0.05) %&gt;% nrow() / nrow(fda_df)</code></pre>
-<pre><code>[1] 0.8630497</code></pre>
+<pre><code>[1] 1</code></pre>
 <pre class="r"><code>fda_df %&gt;% filter(cumulative_fda &lt; 0.05, !is.na(gene_name)) %&gt;% 
   arrange(cumulative_fda) %&gt;%
   head(16)</code></pre>
@@ -2187,6 +2337,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">bf7911a</a>
 </td>
 <td>
@@ -2231,7 +2392,7 @@ LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlap
 locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 
-time zone: America/Toronto
+time zone: America/Chicago
 tzcode source: internal
 
 attached base packages:
