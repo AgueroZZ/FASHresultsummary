@@ -264,7 +264,7 @@ $(document).ready(function () {
   <a href="simulation_pollution.html">Simulation 1</a>
 </li>
 <li>
-  <a href="simulation_eQTL_identification.html">Simulation 2</a>
+  <a href="eQTL_sim.html">Simulation 2</a>
 </li>
 <li>
   <a href="covid_example.html">COVID-19 Example</a>
@@ -301,7 +301,7 @@ $(document).ready(function () {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -312,8 +312,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -322,13 +322,13 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-09-05
+<strong>Last updated:</strong> 2024-09-13
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>FASHresultsummary/</code> <span
@@ -351,21 +351,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -456,15 +453,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeb729c3febd0f9dc9309871c6d9ce8544ecff7d5etargetblankb729c3fa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreead988fcf8567dbcc95a1673c376253076d7a23a5targetblankad988fca">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e" target="_blank">b729c3f</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/ad988fcf8567dbcc95a1673c376253076d7a23a5" target="_blank">ad988fc</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeb729c3febd0f9dc9309871c6d9ce8544ecff7d5etargetblankb729c3fa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreead988fcf8567dbcc95a1673c376253076d7a23a5targetblankad988fca"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -474,7 +471,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e" target="_blank">b729c3f</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/ad988fcf8567dbcc95a1673c376253076d7a23a5" target="_blank">ad988fc</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -499,60 +496,21 @@ Ignored files:
     Ignored:    code/function/.DS_Store
     Ignored:    code/function/.Rhistory
     Ignored:    data/.DS_Store
+    Ignored:    data/expression_data/.DS_Store
     Ignored:    output/.DS_Store
     Ignored:    output/example/.DS_Store
     Ignored:    output/example/figure/
+    Ignored:    output/simulation_pollution/.DS_Store
+    Ignored:    output/simulation_pollution/figure/
 
 Untracked files:
-    Untracked:  analysis/circadian_expression.Rmd
-    Untracked:  code/cpp/Gaussian_just_fixed.o
-    Untracked:  code/cpp/Gaussian_just_fixed.so
-    Untracked:  code/cpp/Gaussian_theta_known.o
-    Untracked:  code/cpp/Gaussian_theta_known.so
-    Untracked:  code/cpp/Poisson.o
-    Untracked:  code/cpp/Poisson.so
-    Untracked:  code/cpp/Poisson_causes.o
-    Untracked:  code/cpp/Poisson_causes.so
-    Untracked:  code/cpp/Poisson_covid.o
-    Untracked:  code/cpp/Poisson_covid.so
-    Untracked:  code/cpp/Poisson_expression.o
-    Untracked:  code/cpp/Poisson_expression.so
-    Untracked:  code/cpp/Poisson_just_fixed.cpp
-    Untracked:  code/cpp/Poisson_just_fixed.o
-    Untracked:  code/cpp/Poisson_just_fixed.so
-    Untracked:  code/cpp/Poisson_just_fixed_causes.o
-    Untracked:  code/cpp/Poisson_just_fixed_causes.so
-    Untracked:  code/cpp/Poisson_just_fixed_covid.o
-    Untracked:  code/cpp/Poisson_just_fixed_covid.so
-    Untracked:  code/cpp/Poisson_just_fixed_expression.o
-    Untracked:  code/cpp/Poisson_just_fixed_expression.so
-    Untracked:  code/function/functions_fitting_Gaussian_eQTL_irregular.R
-    Untracked:  code/function/functions_fitting_Poisson_circadian_expression.R
-    Untracked:  code/function/functions_simulation_eQTL_irregular.R
-    Untracked:  data/13100810.csv
-    Untracked:  data/13100810_MetaData.csv
-    Untracked:  data/circadian_expression/
-    Untracked:  data/expression_data/
-    Untracked:  output/causes/
-    Untracked:  output/circadian_expression/
-    Untracked:  output/expression/
-    Untracked:  output/simulation_eQTL/
-    Untracked:  output/simulation_eQTL_test/
-    Untracked:  output/simulation_pollution/
+    Untracked:  code/function/functions_sim_Poisson_circadian_expression.R
 
 Unstaged changes:
-    Deleted:    analysis/simulation.Rmd
-    Modified:   analysis/simulation_eQTL.Rmd
-    Modified:   analysis/simulation_pollution.Rmd
-    Modified:   code/function/functions_fitting_Gaussian.R
-    Modified:   code/function/functions_simulation.R
-    Modified:   output/example/L_matrix.rda
-    Modified:   output/example/fitted_datasets.rda
-    Modified:   output/example/functional_datasets.rda
-    Modified:   output/example/posterior_weights_matrix.rda
-    Deleted:    output/simulation/L_matrix.rda
-    Deleted:    output/simulation/fitted_datasets.rda
-    Deleted:    output/simulation/posterior_weights_matrix.rda
+    Modified:   code/function/functions_fitting_Poisson_expression.R
+    Modified:   output/expression/L_matrix.rda
+    Modified:   output/expression/fitted_pos_results.rda
+    Modified:   thought_process
 
 </code></pre>
 <p>
@@ -598,6 +556,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a6ad79339cfcd4b0e3f141d89fa94d8a75e55717/analysis/simulation_pollution.Rmd" target="_blank">a6ad793</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+<td>
+update some result
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/a6ad79339cfcd4b0e3f141d89fa94d8a75e55717/docs/simulation_pollution.html" target="_blank">a6ad793</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+<td>
+update some result
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -942,21 +934,21 @@ number of EM iterations:    10
 Computing SVD of 48 x 48 matrix.
 Matrix is not low-rank; falling back to full matrix.
 iter        objective max(rdual) nnz stepsize max.diff nqp nls
-   1 +2.059242743e+00  -- EM --   43 1.00e+00 9.37e-02  --  --
-   2 +2.005627596e+00  -- EM --   43 1.00e+00 2.53e-02  --  --
-   3 +1.985920171e+00  -- EM --   39 1.00e+00 1.39e-02  --  --
-   4 +1.976259235e+00  -- EM --   39 1.00e+00 1.08e-02  --  --
-   5 +1.970650031e+00  -- EM --   38 1.00e+00 8.89e-03  --  --
-   6 +1.966996657e+00  -- EM --   38 1.00e+00 7.66e-03  --  --
-   7 +1.964413615e+00  -- EM --   37 1.00e+00 6.80e-03  --  --
-   8 +1.962472449e+00  -- EM --   37 1.00e+00 6.18e-03  --  --
-   9 +1.960944866e+00  -- EM --   37 1.00e+00 5.69e-03  --  --
-  10 +1.959700250e+00  -- EM --   36 1.00e+00 5.30e-03  --  --
-   1 +1.958659440e+00 +3.036e-02  35  ------   ------   --  --
-   2 +1.952467076e+00 +1.306e-02  15 1.00e+00 9.93e-02  20   1
-   3 +1.949525509e+00 +1.220e-03  11 1.00e+00 1.05e-01   9   1
-   4 +1.949524527e+00 +1.024e-06  11 1.00e+00 1.96e-03   2   1
-   5 +1.949524527e+00 -5.829e-08  11 1.00e+00 2.76e-06   2   1
+   1 +1.976867397e+00  -- EM --   43 1.00e+00 1.04e-01  --  --
+   2 +1.910779389e+00  -- EM --   43 1.00e+00 3.71e-02  --  --
+   3 +1.884827259e+00  -- EM --   40 1.00e+00 2.03e-02  --  --
+   4 +1.871453168e+00  -- EM --   38 1.00e+00 1.32e-02  --  --
+   5 +1.863399168e+00  -- EM --   37 1.00e+00 1.10e-02  --  --
+   6 +1.858027136e+00  -- EM --   37 1.00e+00 9.40e-03  --  --
+   7 +1.854198593e+00  -- EM --   37 1.00e+00 8.15e-03  --  --
+   8 +1.851350022e+00  -- EM --   37 1.00e+00 7.12e-03  --  --
+   9 +1.849168968e+00  -- EM --   37 1.00e+00 6.23e-03  --  --
+  10 +1.847465765e+00  -- EM --   36 1.00e+00 5.44e-03  --  --
+   1 +1.846116930e+00 +2.415e-02  34  ------   ------   --  --
+   2 +1.841417298e+00 +1.499e-02  14 1.00e+00 1.09e-01  20   1
+   3 +1.838152321e+00 +1.036e-03  10 1.00e+00 1.92e-01  15   1
+   4 +1.838152054e+00 +7.972e-07  10 1.00e+00 8.19e-04   2   1
+   5 +1.838152054e+00 -5.635e-08  10 1.00e+00 9.94e-07   2   1
 Optimization took 0.00 seconds.
 Convergence criteria met---optimal solution found.</code></pre>
 <pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
@@ -988,6 +980,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a6ad79339cfcd4b0e3f141d89fa94d8a75e55717/docs/figure/simulation_pollution.Rmd/unnamed-chunk-8-1.png" target="_blank">a6ad793</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49dbb1251a432a05925eb234d78092703335c669/docs/figure/simulation_pollution.Rmd/unnamed-chunk-8-1.png" target="_blank">49dbb12</a>
 </td>
 <td>
@@ -1005,12 +1008,12 @@ Ziang Zhang
 <p>We can take a look at the estimated prior:</p>
 <pre class="r"><code>head(prior_weight)</code></pre>
 <pre><code>  p     psd_iwp prior_weight
-1 2 0.000000000   0.02077435
-2 2 0.006737947   0.00000000
-3 2 0.011108997   0.00000000
-4 2 0.018315639   0.00000000
-5 2 0.030197383   0.00000000
-6 2 0.049787068   0.00000000</code></pre>
+1 2 0.000000000            0
+2 2 0.006737947            0
+3 2 0.011108997            0
+4 2 0.018315639            0
+5 2 0.030197383            0
+6 2 0.049787068            0</code></pre>
 </div>
 <div id="posterior-inference" class="section level3">
 <h3><strong>Posterior Inference</strong></h3>
@@ -1100,6 +1103,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a6ad79339cfcd4b0e3f141d89fa94d8a75e55717/docs/figure/simulation_pollution.Rmd/unnamed-chunk-12-1.png" target="_blank">a6ad793</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49dbb1251a432a05925eb234d78092703335c669/docs/figure/simulation_pollution.Rmd/unnamed-chunk-12-1.png" target="_blank">49dbb12</a>
 </td>
 <td>
@@ -1146,6 +1160,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a6ad79339cfcd4b0e3f141d89fa94d8a75e55717/docs/figure/simulation_pollution.Rmd/unnamed-chunk-13-1.png" target="_blank">a6ad793</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49dbb1251a432a05925eb234d78092703335c669/docs/figure/simulation_pollution.Rmd/unnamed-chunk-13-1.png" target="_blank">49dbb12</a>
@@ -1196,6 +1221,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a6ad79339cfcd4b0e3f141d89fa94d8a75e55717/docs/figure/simulation_pollution.Rmd/unnamed-chunk-14-1.png" target="_blank">a6ad793</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49dbb1251a432a05925eb234d78092703335c669/docs/figure/simulation_pollution.Rmd/unnamed-chunk-14-1.png" target="_blank">49dbb12</a>
 </td>
 <td>
@@ -1244,6 +1280,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a6ad79339cfcd4b0e3f141d89fa94d8a75e55717/docs/figure/simulation_pollution.Rmd/unnamed-chunk-15-1.png" target="_blank">a6ad793</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49dbb1251a432a05925eb234d78092703335c669/docs/figure/simulation_pollution.Rmd/unnamed-chunk-15-1.png" target="_blank">49dbb12</a>
 </td>
 <td>
@@ -1288,23 +1335,24 @@ other attached packages:
  [1] lubridate_1.9.3 forcats_1.0.0   stringr_1.5.0   dplyr_1.1.3    
  [5] purrr_1.0.2     readr_2.1.4     tidyr_1.3.0     tibble_3.2.1   
  [9] tidyverse_2.0.0 mixsqp_0.3-54   reshape2_1.4.4  ggplot2_3.5.1  
-[13] Matrix_1.6-3    TMB_1.9.7       BayesGP_0.1.1  
+[13] Matrix_1.6-3    TMB_1.9.7       BayesGP_0.1.1   workflowr_1.7.1
 
 loaded via a namespace (and not attached):
- [1] sass_0.4.7        utf8_1.2.3        generics_0.1.3    stringi_1.7.12   
- [5] lattice_0.21-8    hms_1.1.3         digest_0.6.33     magrittr_2.0.3   
- [9] timechange_0.2.0  evaluate_0.22     grid_4.3.1        fastmap_1.1.1    
-[13] plyr_1.8.9        rprojroot_2.0.3   workflowr_1.7.1   jsonlite_1.8.7   
-[17] whisker_0.4.1     promises_1.2.1    fansi_1.0.5       scales_1.3.0     
-[21] jquerylib_0.1.4   cli_3.6.1         rlang_1.1.1       munsell_0.5.0    
-[25] withr_2.5.1       cachem_1.0.8      yaml_2.3.7        tools_4.3.1      
-[29] tzdb_0.4.0        colorspace_2.1-0  httpuv_1.6.11     vctrs_0.6.4      
-[33] R6_2.5.1          lifecycle_1.0.3   git2r_0.33.0      fs_1.6.3         
-[37] irlba_2.3.5.1     pkgconfig_2.0.3   pillar_1.9.0      bslib_0.5.1      
-[41] later_1.3.1       gtable_0.3.4      glue_1.6.2        Rcpp_1.0.11      
-[45] xfun_0.40         tidyselect_1.2.0  rstudioapi_0.15.0 knitr_1.44       
-[49] farver_2.1.1      htmltools_0.5.6.1 labeling_0.4.3    rmarkdown_2.25   
-[53] compiler_4.3.1   </code></pre>
+ [1] gtable_0.3.4      xfun_0.40         bslib_0.5.1       processx_3.8.2   
+ [5] lattice_0.21-8    callr_3.7.3       tzdb_0.4.0        vctrs_0.6.4      
+ [9] tools_4.3.1       ps_1.7.5          generics_0.1.3    fansi_1.0.5      
+[13] pkgconfig_2.0.3   lifecycle_1.0.3   farver_2.1.1      compiler_4.3.1   
+[17] git2r_0.33.0      munsell_0.5.0     getPass_0.2-4     httpuv_1.6.11    
+[21] htmltools_0.5.6.1 sass_0.4.7        yaml_2.3.7        later_1.3.1      
+[25] pillar_1.9.0      jquerylib_0.1.4   whisker_0.4.1     cachem_1.0.8     
+[29] tidyselect_1.2.0  digest_0.6.33     stringi_1.7.12    labeling_0.4.3   
+[33] rprojroot_2.0.3   fastmap_1.1.1     grid_4.3.1        colorspace_2.1-0 
+[37] cli_3.6.1         magrittr_2.0.3    utf8_1.2.3        withr_2.5.1      
+[41] scales_1.3.0      promises_1.2.1    timechange_0.2.0  rmarkdown_2.25   
+[45] httr_1.4.7        hms_1.1.3         evaluate_0.22     knitr_1.44       
+[49] irlba_2.3.5.1     rlang_1.1.1       Rcpp_1.0.11       glue_1.6.2       
+[53] rstudioapi_0.15.0 jsonlite_1.8.7    R6_2.5.1          plyr_1.8.9       
+[57] fs_1.6.3         </code></pre>
 </div>
 </div>
 
