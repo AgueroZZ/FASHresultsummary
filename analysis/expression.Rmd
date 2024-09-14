@@ -37,6 +37,7 @@ compile(paste0(cpp_dir, "/Poisson_just_fixed_expression.cpp"))
 dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_expression")))
 dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_just_fixed_expression")))
 num_cores <- 4
+betaprec <- 1e-6
 ```
 
 ### **Model**
@@ -57,7 +58,7 @@ str(expression_data_one_cell_line)
 
 Let's create one dataset for each gene:
 ```{r eval=FALSE}
-num_knots <- 8
+num_knots <- 16
 p <- 2
 datasets <- list()
 all_gene <- unique(expression_data_one_cell_line$Gene_id)
@@ -95,8 +96,7 @@ log_size_vec <- log(size_vec)
 ### **Applying empirical Bayes**
 
 ```{r eval = FALSE}
-log_prec <- seq(0,5, length.out = 10)
-psd_vec <- sort(c(0,exp(-.5*log_prec)))
+psd_vec <- sort(unique(c(0, seq(0,1, length.out = 21))))
 
 ## set up a progress bar
 L_vecs <- vector("list", length(datasets))
@@ -110,7 +110,7 @@ for (i in 1:length(datasets)) {
     num_knots = num_knots,
     psd_iwp_vector = psd_vec,
     pred_step = 1,
-    betaprec = 0.0001,
+    betaprec = betaprec,
     log_lib_size = log_size_vec
   )
 }
@@ -119,8 +119,7 @@ save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
 ```
 
 ```{r echo=FALSE}
-log_prec <- seq(0,5, length.out = 10)
-psd_vec <- sort(c(0,exp(-.5*log_prec)))
+psd_vec <- sort(unique(c(0, seq(0,1, length.out = 21))))
 load(paste0(result_dir, "/L_matrix.rda"))
 ```
 
@@ -148,11 +147,11 @@ for (i in seq_along(datasets)) {
   setTxtProgressBar(pb, i)
   dataset <- datasets[[i]]
   fit_result_final <- fit_ospline_with_prior2(
-    num_cores = num_cores,
+    num_cores = 1,
     dataset = dataset,
     num_knots = num_knots,
     prior_weight = prior_weight,
-    betaprec = 0.0001,
+    betaprec = betaprec,
     pred_step = 1,
     log_lib_size = log_size_vec
   )
