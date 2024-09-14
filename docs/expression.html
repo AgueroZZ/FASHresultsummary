@@ -453,15 +453,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea6ad79339cfcd4b0e3f141d89fa94d8a75e55717targetblanka6ad793a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreee57fc389bf9a834c1770a720a2cc554ee769424etargetblanke57fc38a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a6ad79339cfcd4b0e3f141d89fa94d8a75e55717" target="_blank">a6ad793</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/e57fc389bf9a834c1770a720a2cc554ee769424e" target="_blank">e57fc38</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea6ad79339cfcd4b0e3f141d89fa94d8a75e55717targetblanka6ad793a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreee57fc389bf9a834c1770a720a2cc554ee769424etargetblanke57fc38a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -471,7 +471,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a6ad79339cfcd4b0e3f141d89fa94d8a75e55717" target="_blank">a6ad793</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/e57fc389bf9a834c1770a720a2cc554ee769424e" target="_blank">e57fc38</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -503,24 +503,13 @@ Ignored files:
     Ignored:    output/simulation_pollution/.DS_Store
     Ignored:    output/simulation_pollution/figure/
 
+Untracked files:
+    Untracked:  code/function/functions_sim_Poisson_circadian_expression.R
+
 Unstaged changes:
-    Modified:   analysis/simulation_eQTL_identification.Rmd
-    Modified:   code/cpp/Poisson_just_fixed.cpp
-    Modified:   code/cpp/Poisson_just_fixed_causes.cpp
-    Modified:   code/cpp/Poisson_just_fixed_covid.cpp
-    Modified:   code/cpp/Poisson_just_fixed_expression.cpp
-    Modified:   code/cpp/Poisson_just_fixed_expression.o
-    Modified:   code/cpp/Poisson_just_fixed_expression.so
-    Modified:   code/function/functions_simulation_eQTL_test.R
+    Modified:   code/function/functions_fitting_Poisson_expression.R
     Modified:   output/expression/L_matrix.rda
     Modified:   output/expression/fitted_pos_results.rda
-    Modified:   output/simulation_eQTL_test/L_matrix.rda
-    Modified:   output/simulation_eQTL_test/L_matrix_nonlinear.rda
-    Modified:   output/simulation_eQTL_test/fitted_datasets.rda
-    Modified:   output/simulation_eQTL_test/fitted_datasets_nonlinear.rda
-    Modified:   output/simulation_eQTL_test/mash_result.rda
-    Modified:   output/simulation_eQTL_test/posterior_weights_matrix.rda
-    Modified:   output/simulation_eQTL_test/posterior_weights_matrix_nonlinear.rda
     Modified:   thought_process
 
 </code></pre>
@@ -567,6 +556,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/e57fc389bf9a834c1770a720a2cc554ee769424e/analysis/expression.Rmd" target="_blank">e57fc38</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+<td>
+wflow_publish("analysis/expression.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/analysis/expression.Rmd" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+<td>
+update the website
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/a22557d0109871a2740522e971cb8f72c87ac72b/docs/expression.html" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+<td>
+update the website
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -931,7 +971,7 @@ str(expression_data_one_cell_line) </code></pre>
  $ value             : int [1:261104] 825 2432 1044 874 766 632 839 685 640 636 ...
  $ external_gene_name: chr [1:261104] &quot;DPM1&quot; &quot;DPM1&quot; &quot;DPM1&quot; &quot;DPM1&quot; ...</code></pre>
 <p>Let’s create one dataset for each gene:</p>
-<pre class="r"><code>num_knots &lt;- 8
+<pre class="r"><code>num_knots &lt;- 16
 p &lt;- 2
 datasets &lt;- list()
 all_gene &lt;- unique(expression_data_one_cell_line$Gene_id)
@@ -951,8 +991,7 @@ log_size_vec &lt;- log(size_vec)</code></pre>
 </div>
 <div id="applying-empirical-bayes" class="section level3">
 <h3><strong>Applying empirical Bayes</strong></h3>
-<pre class="r"><code>log_prec &lt;- seq(0,5, length.out = 10)
-psd_vec &lt;- sort(c(0,exp(-.5*log_prec)))
+<pre class="r"><code>psd_vec &lt;- sort(unique(c(0, seq(0,1, length.out = 21))))
 
 ## set up a progress bar
 L_vecs &lt;- vector(&quot;list&quot;, length(datasets))
@@ -966,14 +1005,14 @@ for (i in 1:length(datasets)) {
     num_knots = num_knots,
     psd_iwp_vector = psd_vec,
     pred_step = 1,
-    betaprec = 0.0001,
+    betaprec = betaprec,
     log_lib_size = log_size_vec
   )
 }
 L_matrix &lt;- do.call(rbind, L_vecs)
 save(L_matrix, file = paste0(result_dir, &quot;/L_matrix.rda&quot;))</code></pre>
 <pre class="r"><code>fit.sqp &lt;- mixsqp(L = L_matrix, log = TRUE)</code></pre>
-<pre><code>Running mix-SQP algorithm 0.3-54 on 16319 x 11 matrix
+<pre><code>Running mix-SQP algorithm 0.3-54 on 16319 x 21 matrix
 convergence tol. (SQP):     1.0e-08
 conv. tol. (active-set):    1.0e-10
 zero threshold (solution):  1.0e-08
@@ -982,26 +1021,26 @@ l.s. sufficient decrease:   1.0e-02
 step size reduction factor: 7.5e-01
 minimum step size:          1.0e-08
 max. iter (SQP):            1000
-max. iter (active-set):     12
+max. iter (active-set):     20
 number of EM iterations:    10
-Computing SVD of 16319 x 11 matrix.
+Computing SVD of 16319 x 21 matrix.
 Matrix is not low-rank; falling back to full matrix.
 iter        objective max(rdual) nnz stepsize max.diff nqp nls
-   1 +1.288380258e+00  -- EM --   11 1.00e+00 8.54e-02  --  --
-   2 +1.271886900e+00  -- EM --   11 1.00e+00 3.61e-02  --  --
-   3 +1.266954815e+00  -- EM --   11 1.00e+00 2.02e-02  --  --
-   4 +1.264398622e+00  -- EM --   11 1.00e+00 1.42e-02  --  --
-   5 +1.262746443e+00  -- EM --   11 1.00e+00 1.10e-02  --  --
-   6 +1.261562091e+00  -- EM --   11 1.00e+00 8.91e-03  --  --
-   7 +1.260661164e+00  -- EM --   11 1.00e+00 7.38e-03  --  --
-   8 +1.259947407e+00  -- EM --   11 1.00e+00 6.26e-03  --  --
-   9 +1.259363962e+00  -- EM --   11 1.00e+00 5.67e-03  --  --
-  10 +1.258874758e+00  -- EM --   11 1.00e+00 5.15e-03  --  --
-   1 +1.258455882e+00 +1.484e-02  11  ------   ------   --  --
-   2 +1.253372174e+00 +1.052e-03   9 1.00e+00 9.63e-02   4   1
-   3 +1.253371522e+00 +1.787e-06   9 1.00e+00 1.99e-03   2   1
-   4 +1.253371522e+00 -3.452e-08   9 1.00e+00 2.45e-06   2   1
-Optimization took 0.02 seconds.
+   1 +1.503694243e+00  -- EM --   21 1.00e+00 6.45e-02  --  --
+   2 +1.463779963e+00  -- EM --   21 1.00e+00 5.50e-02  --  --
+   3 +1.444786356e+00  -- EM --   21 1.00e+00 4.01e-02  --  --
+   4 +1.434048688e+00  -- EM --   21 1.00e+00 2.86e-02  --  --
+   5 +1.427260512e+00  -- EM --   21 1.00e+00 2.07e-02  --  --
+   6 +1.422653665e+00  -- EM --   21 1.00e+00 1.53e-02  --  --
+   7 +1.419376240e+00  -- EM --   21 1.00e+00 1.16e-02  --  --
+   8 +1.416965317e+00  -- EM --   21 1.00e+00 8.93e-03  --  --
+   9 +1.415146663e+00  -- EM --   21 1.00e+00 6.96e-03  --  --
+  10 +1.413747424e+00  -- EM --   21 1.00e+00 5.48e-03  --  --
+   1 +1.412653514e+00 +2.087e-02  21  ------   ------   --  --
+   2 +1.406776327e+00 +1.710e-03   9 1.00e+00 1.24e-01  20   1
+   3 +1.406725117e+00 +3.530e-05   9 1.00e+00 7.57e-02   5   1
+   4 +1.406725117e+00 -3.510e-08   9 1.00e+00 2.85e-05   2   1
+Optimization took 0.05 seconds.
 Convergence criteria met---optimal solution found.</code></pre>
 <pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
 plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
@@ -1030,6 +1069,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-8-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-8-1.png" target="_blank">bf7911a</a>
@@ -1061,11 +1111,11 @@ for (i in seq_along(datasets)) {
   setTxtProgressBar(pb, i)
   dataset &lt;- datasets[[i]]
   fit_result_final &lt;- fit_ospline_with_prior2(
-    num_cores = num_cores,
+    num_cores = 1,
     dataset = dataset,
     num_knots = num_knots,
     prior_weight = prior_weight,
-    betaprec = 0.0001,
+    betaprec = betaprec,
     pred_step = 1,
     log_lib_size = log_size_vec
   )
@@ -1118,6 +1168,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-11-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-11-1.png" target="_blank">bf7911a</a>
@@ -1195,6 +1256,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-12-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-12-1.png" target="_blank">bf7911a</a>
 </td>
 <td>
@@ -1222,7 +1294,7 @@ Ziang Zhang
 </div>
 <div id="clustering-based-on-posterior-weights" class="section level3">
 <h3><strong>Clustering based on posterior weights</strong></h3>
-<p>Let’s group them into 4 groups, based on the quantiles of the mean
+<p>Let’s group them into 6 groups, based on the quantiles of the mean
 PSD:</p>
 <pre class="r"><code>mean_psd_ordered &lt;- mean_psd[sorted_index]
 quantiles &lt;- quantile(mean_psd_ordered, probs = seq(0, 1, 1/6))
@@ -1280,6 +1352,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-13-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-13-1.png" target="_blank">b729c3f</a>
@@ -1377,28 +1460,41 @@ plot_gene_expression_log_just_f &lt;- function(gene, log_size_vec) {
 
 # plot_gene_expression(gene)
 plot_cluster_genes &lt;- function(genes) {
-  if(length(genes) &lt; 16) stop(&quot;Not enough genes in the cluster&quot;)
-  par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
-  for (gene in genes[1:16]) {
-    plot_gene_expression(gene)
+  if(length(genes) &lt; 16){
+        plot_gene_expression(genes[1])
   }
-  par(mfrow = c(1, 1))
+  else{
+      par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
+      for (gene in genes[1:16]) {
+        plot_gene_expression(gene)
+      }
+      par(mfrow = c(1, 1))
+  }
 }
+
 plot_cluster_genes_log &lt;- function(genes) {
-  if(length(genes) &lt; 16) stop(&quot;Not enough genes in the cluster&quot;)
-  par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
+  if(length(genes) &lt; 16) {
+      plot_gene_expression_log(genes[1])
+  }
+  else{
+      par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
   for (gene in genes[1:16]) {
     plot_gene_expression_log(gene)
   }
   par(mfrow = c(1, 1))
+  }
 }
 plot_cluster_genes_log_just_f &lt;- function(genes, log_size_vec){
-  if(length(genes) &lt; 16) stop(&quot;Not enough genes in the cluster&quot;)
-  par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
+  if(length(genes) &lt; 16) {
+      plot_gene_expression_log_just_f(genes[1], log_size_vec)
+  }
+  else{
+      par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
   for (gene in genes[1:16]) {
     plot_gene_expression_log_just_f(gene, log_size_vec)
   }
   par(mfrow = c(1, 1))
+  }
 }
 # plot_cluster_genes(genes_cluster1)</code></pre>
 <pre class="r"><code>num_genes_per_cluster &lt;- 16
@@ -1442,6 +1538,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-16-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-16-1.png" target="_blank">b729c3f</a>
@@ -1508,6 +1615,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-17-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-17-1.png" target="_blank">b729c3f</a>
 </td>
 <td>
@@ -1570,6 +1688,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">b729c3f</a>
@@ -1636,6 +1765,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">b729c3f</a>
 </td>
 <td>
@@ -1700,6 +1840,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">b729c3f</a>
 </td>
 <td>
@@ -1762,6 +1913,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">b729c3f</a>
@@ -1835,6 +1997,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">b729c3f</a>
 </td>
 <td>
@@ -1897,6 +2070,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">b729c3f</a>
@@ -1963,6 +2147,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">b729c3f</a>
 </td>
 <td>
@@ -2025,6 +2220,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">b729c3f</a>
@@ -2091,6 +2297,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-26-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-26-1.png" target="_blank">b729c3f</a>
 </td>
 <td>
@@ -2153,6 +2370,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-27-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-27-1.png" target="_blank">b729c3f</a>
@@ -2237,6 +2465,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-29-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-29-1.png" target="_blank">b729c3f</a>
 </td>
 <td>
@@ -2292,21 +2531,21 @@ trajectories?</p>
   head(16)</code></pre>
 <pre><code>              gene fda cumulative_fda gene_name
 1  ENSG00000001617   0              0    SEMA3F
-2  ENSG00000003249   0              0    DBNDD1
-3  ENSG00000003436   0              0      TFPI
-4  ENSG00000003509   0              0   NDUFAF7
-5  ENSG00000003756   0              0      RBM5
-6  ENSG00000003989   0              0    SLC7A2
-7  ENSG00000004399   0              0    PLXND1
-8  ENSG00000004478   0              0     FKBP4
-9  ENSG00000004866   0              0       ST7
-10 ENSG00000005100   0              0     DHX33
-11 ENSG00000005108   0              0    THSD7A
-12 ENSG00000005249   0              0   PRKAR2B
-13 ENSG00000005339   0              0    CREBBP
-14 ENSG00000005884   0              0     ITGA3
-15 ENSG00000006016   0              0     CRLF1
-16 ENSG00000006042   0              0    TMEM98</code></pre>
+2  ENSG00000002834   0              0     LASP1
+3  ENSG00000003249   0              0    DBNDD1
+4  ENSG00000003436   0              0      TFPI
+5  ENSG00000003509   0              0   NDUFAF7
+6  ENSG00000003756   0              0      RBM5
+7  ENSG00000003989   0              0    SLC7A2
+8  ENSG00000004399   0              0    PLXND1
+9  ENSG00000004478   0              0     FKBP4
+10 ENSG00000004864   0              0  SLC25A13
+11 ENSG00000004866   0              0       ST7
+12 ENSG00000005100   0              0     DHX33
+13 ENSG00000005108   0              0    THSD7A
+14 ENSG00000005249   0              0   PRKAR2B
+15 ENSG00000005339   0              0    CREBBP
+16 ENSG00000005884   0              0     ITGA3</code></pre>
 <p>Plot the log expression of the top 16 genes:</p>
 <pre class="r"><code>top_genes &lt;- fda_df %&gt;% filter(cumulative_fda &lt; 0.05, !is.na(gene_name)) %&gt;% 
   arrange(cumulative_fda) %&gt;%
@@ -2335,6 +2574,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">b729c3f</a>
