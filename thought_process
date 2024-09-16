@@ -115,23 +115,44 @@ Fri, Sept 13th:
 Today, we will continue to revisit some examples of FASH using the corrected code of the likelihood computation.
 
 
-(a): For the expression data analysis, will the result change if we increase the number of knots to 16?
+(a): For the expression data analysis, will the result change if we increase the number of knots to 16, and make the PSD equally placed between 0 to 1?
 
-Answer: Let's try this.
+Answer: The result indeed changes. Many genes are estimated to have larger deviation from the linearity now.
+
 
 (b): For the COVID-19 example, will the likelihood computation change any result?
 
 Answer: The result basically does not change.
 
 
+(c): For detecting periodicity: can we try (i): mixture of sGP, and then test for sigma = 0, if beta_s is significantly nonzero?
+					or (ii): mixture of sGP and mixture of IWP? Then test sGP vs IWP?
+
+Answer: My feeling is both approaches could be used. For approach (i): directly testing sigma = 0 should give the FDR on detecting 
+Exact periodocity. Further including the FSR based on the joint distribution of \beta_sin and \beta_cos can make the inference more
+Robust.
+For approach (ii): the question becomes detecting periodic or quasi-periodic behavior...
+Let's focus on the second approach for now. The important lesson, to make the result invariant to diffuse beta_prec, each model should have the same 
+Number of diffuse terms.
 
 
 
 
 
+----------------------------------------------
+----------------------------------------------
+Mon, Sept 16th:
+----------------------------------------------
+----------------------------------------------
+
+There are two things that I would like to explore today:
+
+(A): For the periodicity detection setting, when there are no model misspecification (aka. The null model is from IWP2, and the alternative model is from sGP), will there be any FDR calibration issue?
+
+Answer:
 
 
-
+(B): When there are model-misspecification, can we consider more robust multiple hypothesis controlling method than FDR? How about max-lfdr?
 
 
 

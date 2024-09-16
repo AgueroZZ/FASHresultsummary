@@ -314,7 +314,7 @@ fit_ospline_with_prior2 <- function(dataset, num_knots, prior_weight, pred_step,
   } else {
     # Sequential processing
     for (i in seq_len(nrow(active_prior))) {
-      print(rownames(active_prior)[i])
+      # print(rownames(active_prior)[i])
       row <- active_prior[i, ]
       fit_result <- fit_ospline(dataset, row$p, num_knots, row$psd_iwp, pred_step, betaprec, log_lib_size)
       results_list[[i]] <- fit_result

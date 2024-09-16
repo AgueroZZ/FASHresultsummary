@@ -302,7 +302,7 @@ Countries</h1>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -313,8 +313,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -327,9 +327,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>FASHresultsummary/</code> <span
@@ -352,21 +352,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -457,15 +454,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea6ad79339cfcd4b0e3f141d89fa94d8a75e55717targetblanka6ad793a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeebf883fde169fc0f549f7c97199ce41e184790a7targetblankebf883fa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a6ad79339cfcd4b0e3f141d89fa94d8a75e55717" target="_blank">a6ad793</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/ebf883fde169fc0f549f7c97199ce41e184790a7" target="_blank">ebf883f</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea6ad79339cfcd4b0e3f141d89fa94d8a75e55717targetblanka6ad793a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeebf883fde169fc0f549f7c97199ce41e184790a7targetblankebf883fa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -475,7 +472,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a6ad79339cfcd4b0e3f141d89fa94d8a75e55717" target="_blank">a6ad793</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/ebf883fde169fc0f549f7c97199ce41e184790a7" target="_blank">ebf883f</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -507,31 +504,13 @@ Ignored files:
     Ignored:    output/simulation_pollution/.DS_Store
     Ignored:    output/simulation_pollution/figure/
 
+Untracked files:
+    Untracked:  code/function/functions_sim_Poisson_circadian_expression.R
+
 Unstaged changes:
-    Modified:   analysis/covid_example.Rmd
-    Modified:   analysis/expression.Rmd
-    Modified:   analysis/simulation_eQTL_identification.Rmd
-    Modified:   code/cpp/Poisson_just_fixed.cpp
-    Modified:   code/cpp/Poisson_just_fixed_causes.cpp
-    Modified:   code/cpp/Poisson_just_fixed_covid.cpp
-    Modified:   code/cpp/Poisson_just_fixed_covid.o
-    Modified:   code/cpp/Poisson_just_fixed_covid.so
-    Modified:   code/cpp/Poisson_just_fixed_expression.cpp
-    Modified:   code/cpp/Poisson_just_fixed_expression.o
-    Modified:   code/cpp/Poisson_just_fixed_expression.so
-    Modified:   code/function/functions_simulation_eQTL_test.R
-    Modified:   output/example/L_matrix.rda
-    Modified:   output/example/fitted_datasets.rda
-    Modified:   output/example/functional_datasets.rda
+    Modified:   code/function/functions_fitting_Poisson_expression.R
     Modified:   output/expression/L_matrix.rda
     Modified:   output/expression/fitted_pos_results.rda
-    Modified:   output/simulation_eQTL_test/L_matrix.rda
-    Modified:   output/simulation_eQTL_test/L_matrix_nonlinear.rda
-    Modified:   output/simulation_eQTL_test/fitted_datasets.rda
-    Modified:   output/simulation_eQTL_test/fitted_datasets_nonlinear.rda
-    Modified:   output/simulation_eQTL_test/mash_result.rda
-    Modified:   output/simulation_eQTL_test/posterior_weights_matrix.rda
-    Modified:   output/simulation_eQTL_test/posterior_weights_matrix_nonlinear.rda
     Modified:   thought_process
 
 </code></pre>
@@ -578,6 +557,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/analysis/covid_example.Rmd" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+<td>
+update the website
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/a22557d0109871a2740522e971cb8f72c87ac72b/docs/covid_example.html" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+<td>
+update the website
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1478,6 +1491,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/covid_example.Rmd/unnamed-chunk-11-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8c38a399b5ec84d0a687fd322b4a7182cfd6fd1c/docs/figure/covid_example.Rmd/unnamed-chunk-11-1.png" target="_blank">8c38a39</a>
 </td>
 <td>
@@ -1551,6 +1575,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/covid_example.Rmd/unnamed-chunk-12-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8c38a399b5ec84d0a687fd322b4a7182cfd6fd1c/docs/figure/covid_example.Rmd/unnamed-chunk-12-1.png" target="_blank">8c38a39</a>
 </td>
 <td>
@@ -1622,6 +1657,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/covid_example.Rmd/unnamed-chunk-13-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8c38a399b5ec84d0a687fd322b4a7182cfd6fd1c/docs/figure/covid_example.Rmd/unnamed-chunk-13-1.png" target="_blank">8c38a39</a>
@@ -1772,6 +1818,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/covid_example.Rmd/unnamed-chunk-17-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8c38a399b5ec84d0a687fd322b4a7182cfd6fd1c/docs/figure/covid_example.Rmd/unnamed-chunk-17-1.png" target="_blank">8c38a39</a>
 </td>
 <td>
@@ -1814,6 +1871,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/covid_example.Rmd/unnamed-chunk-18-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8c38a399b5ec84d0a687fd322b4a7182cfd6fd1c/docs/figure/covid_example.Rmd/unnamed-chunk-18-1.png" target="_blank">8c38a39</a>
@@ -1880,6 +1948,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/covid_example.Rmd/unnamed-chunk-19-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8c38a399b5ec84d0a687fd322b4a7182cfd6fd1c/docs/figure/covid_example.Rmd/unnamed-chunk-19-1.png" target="_blank">8c38a39</a>
@@ -1956,6 +2035,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/covid_example.Rmd/unnamed-chunk-20-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49da234bab619372eed3ca44767d42c8eed2fe73/docs/figure/covid_example.Rmd/unnamed-chunk-20-1.png" target="_blank">49da234</a>
@@ -2054,6 +2144,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/covid_example.Rmd/unnamed-chunk-21-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/49da234bab619372eed3ca44767d42c8eed2fe73/docs/figure/covid_example.Rmd/unnamed-chunk-21-1.png" target="_blank">49da234</a>
