@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="AgueroZZ" />
+
+<meta name="date" content="2024-09-13" />
+
+<title>Circadian Detection: Simulation (Hard)</title>
+
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">resultsummary</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="simulation_pollution.html">Simulation 1</a>
+</li>
+<li>
+  <a href="eQTL_sim.html">Simulation 2</a>
+</li>
+<li>
+  <a href="covid_example.html">COVID-19 Example</a>
+</li>
+<li>
+  <a href="expression.html">Gene Expression Example</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/AgueroZZ/resultsummary">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Circadian Detection: Simulation (Hard)</h1>
+<h4 class="author">AgueroZZ</h4>
+<h4 class="date">2024-09-13</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2024-09-16
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>FASHresultsummary/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240507code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240507)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240507code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240507)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree97d41c6b20bfa74de61fbc3bf86507f544eeb000targetblank97d41c6a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/97d41c6b20bfa74de61fbc3bf86507f544eeb000" target="_blank">97d41c6</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree97d41c6b20bfa74de61fbc3bf86507f544eeb000targetblank97d41c6a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/97d41c6b20bfa74de61fbc3bf86507f544eeb000" target="_blank">97d41c6</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.Rhistory
+    Ignored:    code/.DS_Store
+    Ignored:    code/cpp/.DS_Store
+    Ignored:    data/.DS_Store
+    Ignored:    data/expression_data/.DS_Store
+    Ignored:    output/.DS_Store
+    Ignored:    output/example/.DS_Store
+    Ignored:    output/example/figure/
+    Ignored:    output/simulation_pollution/.DS_Store
+    Ignored:    output/simulation_pollution/figure/
+
+Untracked files:
+    Untracked:  output/circadian_sim/
+
+Unstaged changes:
+    Modified:   code/function/functions_fitting_Poisson_circadian_expression.R
+    Modified:   code/function/functions_sim_Poisson_circadian_expression.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/circadian_sim.Rmd</code>) and
+HTML (<code>docs/circadian_sim.html</code>) files. If you’ve configured
+a remote Git repository (see <code>?wflow_git_remote</code>), click on
+the hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/97d41c6b20bfa74de61fbc3bf86507f544eeb000/analysis/circadian_sim.Rmd" target="_blank">97d41c6</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+<td>
+workflowr::wflow_publish("analysis/circadian_sim.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<pre class="r"><code>library(BayesGP)
+library(TMB)
+library(Matrix)
+library(splines)
+library(parallel)
+library(ggplot2)
+library(reshape2)
+library(mixsqp)
+library(tidyverse)</code></pre>
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.3     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.0
+✔ lubridate 1.9.3     ✔ tibble    3.2.1
+✔ purrr     1.0.2     ✔ tidyr     1.3.0
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ tidyr::expand() masks Matrix::expand()
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+✖ tidyr::pack()   masks Matrix::pack()
+✖ tidyr::unpack() masks Matrix::unpack()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code>cpp_dir &lt;- paste0(getwd(), &quot;/code/cpp&quot;)
+fig_dir &lt;- paste0(getwd(), &quot;/output/circadian_sim&quot;)
+result_dir &lt;- paste0(getwd(), &quot;/output/circadian_sim&quot;)
+function_dir &lt;- paste0(getwd(), &quot;/code/function&quot;)
+source(paste0(function_dir, &quot;/functions_fitting_Poisson_circadian_expression.R&quot;))
+source(paste0(function_dir, &quot;/functions_sim_Poisson_circadian_expression.R&quot;))
+compile(paste0(cpp_dir, &quot;/Poisson_expression.cpp&quot;))</code></pre>
+<pre><code>Warning in readLines(file): incomplete final line found on
+&#39;/Users/ziangzhang/Desktop/FASH/FASHresultsummary/code/cpp/Poisson_expression.cpp&#39;</code></pre>
+<pre><code>Note: Using Makevars in /Users/ziangzhang/.R/Makevars </code></pre>
+<pre><code>using C++ compiler: &#39;Apple clang version 13.1.6 (clang-1316.0.21.2.5)&#39;
+using SDK: &#39;MacOSX12.3.sdk&#39;</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code>compile(paste0(cpp_dir, &quot;/Poisson_just_fixed_expression.cpp&quot;))</code></pre>
+<pre><code>Warning in readLines(file): incomplete final line found on
+&#39;/Users/ziangzhang/Desktop/FASH/FASHresultsummary/code/cpp/Poisson_just_fixed_expression.cpp&#39;</code></pre>
+<pre><code>Note: Using Makevars in /Users/ziangzhang/.R/Makevars </code></pre>
+<pre><code>using C++ compiler: &#39;Apple clang version 13.1.6 (clang-1316.0.21.2.5)&#39;
+using SDK: &#39;MacOSX12.3.sdk&#39;</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code>dyn.load(TMB::dynlib(paste0(cpp_dir, &quot;/Poisson_expression&quot;)))
+dyn.load(TMB::dynlib(paste0(cpp_dir, &quot;/Poisson_just_fixed_expression&quot;)))
+num_cores &lt;- 4</code></pre>
+<pre class="r"><code>x &lt;- seq(0,4, length.out = 50)
+a &lt;- 2*pi
+sd_exact &lt;- 1
+sd_quasi &lt;- 0.2
+sd_np = 1
+intercept_sd &lt;- 0.2
+k &lt;- 40
+m &lt;- 1
+beta_prec &lt;- 1e-10
+psd_vec &lt;- seq(0, 1, length.out = 11)
+datasets &lt;- list()</code></pre>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>We simulate the following data sets:</p>
+<p>The first <span class="math inline">\(N_1\)</span> datasets are from
+quasi-periodic model:</p>
+<pre class="r"><code>N1 &lt;- 100
+for(i in 1:N1){
+  datasets[[i]] &lt;- simulate_data(type = &quot;v2&quot;, x = x, a = a, sd_quasi = sd_quasi, sd_exact = sd_exact, intercept_sd = intercept_sd)
+}
+# plot 4 dataset
+par(mfrow = c(2,2))
+for(i in 1:4){
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = &quot;p&quot;, col = &quot;blue&quot;, xlab = &quot;x&quot;, ylab = &quot;y&quot;)
+  lines(datasets[[i]]$x, exp(datasets[[i]]$f), col = &quot;red&quot;, lwd = 2)
+}</code></pre>
+<p><img src="figure/circadian_sim.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow = c(1,1))</code></pre>
+<p>The second <span class="math inline">\(N_2\)</span> datasets are from
+the Poisson model with no periodic effect:</p>
+<pre class="r"><code>N2 &lt;- 200
+for(i in (N1+1):(N1+N2)){
+  datasets[[i]] &lt;- simulate_data(type = &quot;np&quot;, x = x, sd_np = sd_np, intercept_sd = intercept_sd)
+}
+# plot 4 dataset
+par(mfrow = c(2,2))
+for(i in 1:4){
+  plot(datasets[[N1 + i]]$x, datasets[[N1 + i]]$y, type = &quot;p&quot;, col = &quot;blue&quot;, xlab = &quot;x&quot;, ylab = &quot;y&quot;)
+  lines(datasets[[N1 + i]]$x, exp(datasets[[N1 + i]]$f), col = &quot;red&quot;, lwd = 2)
+}</code></pre>
+<p><img src="figure/circadian_sim.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow = c(1,1))</code></pre>
+<p>Compute the L matrix</p>
+<pre class="r"><code>## set up a progress bar
+L_vecs &lt;- vector(&quot;list&quot;, length(datasets))
+pb &lt;- txtProgressBar(min = 0, max = length(datasets), style = 3)
+for (i in 1:length(datasets)) {
+  setTxtProgressBar(pb, i)
+  data &lt;- datasets[[i]]
+  like_vec1 &lt;- compute_log_likelihood_sBspline_seq(dataset = data, 
+                                    period = 1, 
+                                    num_knots = k, 
+                                    psd_sgp_vector = psd_vec,
+                                    pred_step = 1,
+                                    betaprec = betaprec, 
+                                    log_lib_size = NULL, 
+                                    m = 1)
+  like_vec2 &lt;- compute_log_likelihood_ospline_seq(dataset = data, 
+                                    p = 2, 
+                                    num_knots = k, 
+                                    psd_iwp_vector = psd_vec,
+                                    pred_step = 1,
+                                    betaprec = betaprec, 
+                                    log_lib_size = NULL)
+  
+  L_vecs[[i]] &lt;- c(like_vec1, like_vec2)
+}
+L_matrix &lt;- do.call(rbind, L_vecs)
+save(L_matrix, file = paste0(result_dir, &quot;/L_matrix.rda&quot;))</code></pre>
+<pre class="r"><code>load(paste0(result_dir, &quot;/L_matrix.rda&quot;))
+
+fit.sqp &lt;- mixsqp(L = L_matrix, log = TRUE)</code></pre>
+<pre><code>Running mix-SQP algorithm 0.3-54 on 300 x 22 matrix
+convergence tol. (SQP):     1.0e-08
+conv. tol. (active-set):    1.0e-10
+zero threshold (solution):  1.0e-08
+zero thresh. (search dir.): 1.0e-14
+l.s. sufficient decrease:   1.0e-02
+step size reduction factor: 7.5e-01
+minimum step size:          1.0e-08
+max. iter (SQP):            1000
+max. iter (active-set):     20
+number of EM iterations:    10
+Computing SVD of 300 x 22 matrix.
+Matrix is not low-rank; falling back to full matrix.
+iter        objective max(rdual) nnz stepsize max.diff nqp nls
+   1 +1.332092225e+00  -- EM --   22 1.00e+00 4.10e-02  --  --
+   2 +1.311180308e+00  -- EM --   22 1.00e+00 3.31e-02  --  --
+   3 +1.299050645e+00  -- EM --   22 1.00e+00 2.73e-02  --  --
+   4 +1.290940968e+00  -- EM --   22 1.00e+00 2.30e-02  --  --
+   5 +1.285011457e+00  -- EM --   22 1.00e+00 1.96e-02  --  --
+   6 +1.280392278e+00  -- EM --   22 1.00e+00 1.68e-02  --  --
+   7 +1.276630978e+00  -- EM --   22 1.00e+00 1.46e-02  --  --
+   8 +1.273475724e+00  -- EM --   22 1.00e+00 1.28e-02  --  --
+   9 +1.270776944e+00  -- EM --   22 1.00e+00 1.14e-02  --  --
+  10 +1.268439249e+00  -- EM --   22 1.00e+00 1.01e-02  --  --
+   1 +1.266397136e+00 +3.693e-02  22  ------   ------   --  --
+   2 +1.246850642e+00 +1.634e-02   7 1.00e+00 1.11e-01  20   1
+   3 +1.246742257e+00 +1.914e-04   7 1.00e+00 1.81e-01   5   1
+   4 +1.246742252e+00 -1.750e-08   7 1.00e+00 1.82e-04   2   1
+Optimization took 0.00 seconds.
+Convergence criteria met---optimal solution found.</code></pre>
+<pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
+plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
+     pch = 20,lwd = 2,xlab = &quot;SQP iteration&quot;,
+     ylab = &quot;objective&quot;,xaxp = c(1,numiter,numiter - 1))</code></pre>
+<p><img src="figure/circadian_sim.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># create prior weight 
+prior_weight &lt;- data.frame(name = paste0(rep(c(&quot;sgp_&quot;, &quot;iwp_&quot;), each = length(psd_vec)), psd_vec), prior_weight = fit.sqp$x)
+prior_weight</code></pre>
+<pre><code>      name prior_weight
+1    sgp_0   0.00000000
+2  sgp_0.1   0.00000000
+3  sgp_0.2   0.00000000
+4  sgp_0.3   0.00000000
+5  sgp_0.4   0.10023261
+6  sgp_0.5   0.18835194
+7  sgp_0.6   0.02510516
+8  sgp_0.7   0.00000000
+9  sgp_0.8   0.00000000
+10 sgp_0.9   0.00000000
+11   sgp_1   0.07063443
+12   iwp_0   0.00000000
+13 iwp_0.1   0.18047152
+14 iwp_0.2   0.06093014
+15 iwp_0.3   0.00000000
+16 iwp_0.4   0.00000000
+17 iwp_0.5   0.00000000
+18 iwp_0.6   0.00000000
+19 iwp_0.7   0.00000000
+20 iwp_0.8   0.00000000
+21 iwp_0.9   0.00000000
+22   iwp_1   0.37427420</code></pre>
+<p>Compute the posterior:</p>
+<pre class="r"><code># Compute the posterior using the likelihood and prior
+posterior_matrix &lt;- matrix(0, nrow = nrow(L_matrix), ncol = ncol(L_matrix))
+for(i in 1:nrow(L_matrix)){
+  posterior_matrix[i,] &lt;- exp(L_matrix[i,] - max(L_matrix[i,]) + fit.sqp$x)
+  posterior_matrix[i,] &lt;- posterior_matrix[i,]/sum(posterior_matrix[i,])
+}</code></pre>
+<pre class="r"><code>colnames(posterior_matrix) &lt;- paste0(rep(c(&quot;sgp_&quot;, &quot;iwp_&quot;), each = length(psd_vec)), psd_vec)</code></pre>
+<p>The posterior probability of being in class sgp (summing all sgp
+columns):</p>
+<pre class="r"><code>posterior_prob &lt;- rowSums(posterior_matrix[, grepl(&quot;sgp_&quot;, colnames(posterior_matrix))])
+head(posterior_prob)</code></pre>
+<pre><code>[1] 0.9999681 0.9970637 0.5473352 1.0000000 1.0000000 0.9988441</code></pre>
+<pre class="r"><code>plot(posterior_prob, type = &quot;p&quot;, col = &quot;blue&quot;, xlab = &quot;dataset&quot;, ylab = &quot;posterior probability&quot;)</code></pre>
+<p><img src="figure/circadian_sim.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>posterior_weights_df &lt;- as.data.frame(posterior_matrix)
+posterior_weights_df$id &lt;- 1:nrow(posterior_weights_df)
+melted_data &lt;- melt(posterior_weights_df, id.vars = &quot;id&quot;)
+
+ggplot(melted_data, aes(x = id, y = value, fill = variable)) +
+  geom_bar(stat = &quot;identity&quot;, width = 0.7) +  # Adjust bar width if necessary
+  ggtitle(&quot;Structure Plot of Posterior Weights&quot;) +
+  coord_flip() +  # Flips the coordinates to make &#39;Gene&#39; on the y-axis
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),  
+    panel.background = element_rect(fill = &quot;white&quot;, colour = &quot;grey&quot;),
+    plot.background = element_rect(fill = &quot;white&quot;, colour = NA) 
+  )</code></pre>
+<p><img src="figure/circadian_sim.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The local FDR for testing periodicity:</p>
+<pre class="r"><code>lfdr &lt;- 1 - posterior_prob
+lfdr &lt;- ifelse(lfdr &lt; 0, 0, lfdr) # set to 0 if it is negative due to numerical error
+lfdr &lt;- ifelse(lfdr &gt; 1, 1, lfdr) # set to 1 if it is greater than 1 due to numerical error
+
+fdr_df &lt;- data.frame(ID = 1:length(lfdr), fdr = lfdr, type = rep(c(&quot;P&quot;, &quot;NP&quot;), times = c(N1,N2)))
+fdr_df &lt;- fdr_df[order(fdr_df$fdr), ] # ordering it
+fdr_df$cumulative_fdr &lt;- cumsum(fdr_df$fdr)/seq_along(fdr_df$fdr)
+fdr_df$rank &lt;- 1:length(lfdr)</code></pre>
+<p>Plot the FDR curve:</p>
+<pre class="r"><code>ggplot(fdr_df, aes(x = 1:length(lfdr), y = cumulative_fdr, col = type)) +
+  geom_point() +
+  geom_hline(yintercept = 0.05, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;Ordered Units&quot;, y = &quot;Cumulative FDR&quot;, col = &quot;Type&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;FASH:Cumulative FDR Plot&quot;) +
+  scale_color_manual(values = c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;))</code></pre>
+<p><img src="figure/circadian_sim.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Plot the curve of nominal false discovery rate (threshold) against
+the actual false discovery rate:</p>
+<pre class="r"><code># Calculate true FDR for FASH
+threshold_vec &lt;- seq(0, 2/3, by = 0.001)
+fdr_vec &lt;- numeric(length(threshold_vec))
+
+for (i in 1:length(threshold_vec)) {
+  num_discoveries &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df$type == &quot;NP&quot;)
+  fdr_vec[i] &lt;- num_false_discoveries / num_discoveries
+}
+
+# Create a data frame for plotting
+fdr_df_fash_for_plotting &lt;- data.frame(threshold = threshold_vec, true_fdr = fdr_vec)
+
+# Plot the nominal FDR vs true FDR for FASH
+ggplot(fdr_df_fash_for_plotting, aes(x = threshold, y = true_fdr)) +
+  geom_line() +
+  geom_point(size = 0.1) +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;(Nominal) False Discovery Rate&quot;, y = &quot;(Actual) False Discovery Rate&quot;) +
+  theme_minimal() +
+  geom_hline(yintercept = N2/(N1 + N2), linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
+  coord_cartesian(xlim = c(0, 2/3), ylim = c(0, 2/3)) +
+  ggtitle(&quot;Nominal FDR vs Actual FDR Curve for FASH&quot;)</code></pre>
+<p><img src="figure/circadian_sim.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.01)
+num_discoveries_vec &lt;- numeric(length(threshold_vec))
+num_false_discoveries_vec &lt;- numeric(length(threshold_vec))
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_vec[i] &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries_vec[i] &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df$type == &quot;NP&quot;)
+}
+num_discoveries_df &lt;- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec, num_false_discoveries = num_false_discoveries_vec)
+ggplot(num_discoveries_df, aes(x = (num_discoveries), y = (num_false_discoveries))) +
+  geom_line() +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;Number of Discoveries&quot;, y = &quot;Number of False Discoveries&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;FASH: Number of False Discoveries vs Number of Discoveries&quot;) +
+  coord_cartesian(xlim = c(0, (N1 + N2)), ylim = c(0, (N2)))</code></pre>
+<p><img src="figure/circadian_sim.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.0001)
+num_discoveries_vec_fash &lt;- numeric(length(threshold_vec))
+num_false_discoveries_vec_fash &lt;- numeric(length(threshold_vec))
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_vec_fash[i] &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i])
+  num_false_discoveries_vec_fash[i] &lt;- sum(fdr_df$cumulative_fdr &lt;= threshold_vec[i] &amp; fdr_df$type == &quot;NP&quot;)
+}
+num_discoveries_df_fash &lt;- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec_fash, num_false_discoveries = num_false_discoveries_vec_fash, method = &quot;FASH&quot;)
+
+# Calculate the power for FASH
+num_discoveries_df_fash$power &lt;- (num_discoveries_df_fash$num_discoveries-num_discoveries_df_fash$num_false_discoveries)/(N1)
+
+# Plot the FDR vs Power
+ggplot(num_discoveries_df_fash, aes(x = threshold, y = power, color = method)) +
+  geom_line() +
+  # geom_point() +
+  labs(x = &quot;FDR&quot;, y = &quot;Power&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;FDR vs Power for FASH&quot;) +
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))</code></pre>
+<p><img src="figure/circadian_sim.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS Monterey 12.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] parallel  splines   stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] lubridate_1.9.3 forcats_1.0.0   stringr_1.5.0   dplyr_1.1.3    
+ [5] purrr_1.0.2     readr_2.1.4     tidyr_1.3.0     tibble_3.2.1   
+ [9] tidyverse_2.0.0 mixsqp_0.3-54   reshape2_1.4.4  ggplot2_3.5.1  
+[13] Matrix_1.6-3    TMB_1.9.7       BayesGP_0.1.1   workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.4      xfun_0.40         bslib_0.5.1       processx_3.8.2   
+ [5] lattice_0.21-8    callr_3.7.3       tzdb_0.4.0        vctrs_0.6.4      
+ [9] tools_4.3.1       ps_1.7.5          generics_0.1.3    fansi_1.0.5      
+[13] pkgconfig_2.0.3   lifecycle_1.0.3   farver_2.1.1      compiler_4.3.1   
+[17] git2r_0.33.0      munsell_0.5.0     getPass_0.2-4     httpuv_1.6.11    
+[21] htmltools_0.5.6.1 sass_0.4.7        yaml_2.3.7        later_1.3.1      
+[25] pillar_1.9.0      jquerylib_0.1.4   whisker_0.4.1     cachem_1.0.8     
+[29] tidyselect_1.2.0  digest_0.6.33     stringi_1.7.12    labeling_0.4.3   
+[33] rprojroot_2.0.3   fastmap_1.1.1     grid_4.3.1        colorspace_2.1-0 
+[37] cli_3.6.1         magrittr_2.0.3    utf8_1.2.3        withr_2.5.1      
+[41] scales_1.3.0      promises_1.2.1    timechange_0.2.0  rmarkdown_2.25   
+[45] httr_1.4.7        hms_1.1.3         evaluate_0.22     knitr_1.44       
+[49] irlba_2.3.5.1     rlang_1.1.1       Rcpp_1.0.11       glue_1.6.2       
+[53] rstudioapi_0.15.0 jsonlite_1.8.7    R6_2.5.1          plyr_1.8.9       
+[57] fs_1.6.3         </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
