@@ -4,18 +4,23 @@ simulate_data_v1 <- function(x, a, k = 30, sd_fun, boundary_sd, intercept_sd = 0
   m <- 1
   P <- BayesGP:::Compute_Q_sB(a = a, k = k, region = range(x), accuracy = 1000)
   B <- BayesGP:::Compute_B_sB_helper(refined_x = x, a = a, k = k, m = m, region = range(x))
-
-  ## simulate from precision matrix
-  random_weights <- LaplacesDemon::rmvnp(1, mu = rep(0, ncol(P)), Omega = as.matrix(((1/sd_fun)^2) * P))
-  f_standard <- B %*% as.vector(random_weights)
-
   ## add boundary condition
   boundary_weights <- rnorm(m, 0, boundary_sd)
   # add intercept
   intercept <- rnorm(1, 0, intercept_sd)
 
-  f <- intercept + f_standard + sin(a*x) * boundary_weights
+  if(sd_fun != 0){
+    sd_fun <- sd_fun/BayesGP:::compute_d_step_sgpsd(d = 1, a = a)
+    ## simulate from precision matrix
+    random_weights <- LaplacesDemon::rmvnp(1, mu = rep(0, ncol(P)), Omega = as.matrix(((1/sd_fun)^2) * P))
+    f_standard <- B %*% as.vector(random_weights)
 
+    f <- intercept + f_standard + sin(a*x) * boundary_weights
+  } else{
+    f <- intercept + sin(a*x) * boundary_weights
+  }
+
+  f <- f - mean(f) + 3
 
   y <- rpois(lambda = exp(f), n = n)
   return(list(x = x, y = y, f = f))
@@ -31,8 +36,8 @@ simulate_data_v2 <- function(x, a, sd_quasi = 1, sd_exact = 1, intercept_sd = 0.
 
   f <- f_standard + f_quasi + intercept
 
-  # for comparison purpose, center the mean at zero
-  f <- f - mean(f)
+  # for comparison purpose, center the mean at some value
+  f <- f - mean(f) + 3
 
   y <- rpois(lambda = exp(f), n = n)
   return(list(x = x, y = y, f = f))
@@ -62,13 +67,44 @@ simulate_data <- function(type, x, a, k = 30, sd_fun = NULL, boundary_sd = NULL,
     # simulate some bspline basis
     f <- rnorm(1, 0, slope_sd)*x + rnorm(1, 0, sd_np) * bs(x, degree = 3, knots = quantile(x, probs = seq(0, 1, length.out = 5))) %*% rnorm(8)
 
-    # for comparison, center f around zero.
-    f <- f - mean(f)
+    # for comparison, center f around some value
+    f <- f - mean(f) + 3
 
     y <- rpois(lambda = exp(f), n = n)
     return(list(x = x, y = y, f = f))
 
-  } else {
+  }
+  else if(type == "iwp"){
+    n <- length(x)
+
+    x_min <- min(x); x_max <- max(x)
+    knots <- seq(x_min, x_max, length.out = 50)
+    pred_step = 1
+    p = 2
+    x_new_design <- BayesGP:::global_poly_helper(x = x, p = p)
+
+    # Generate random weights for the linear functions
+    beta_vec <- rnorm(n = p, mean = 0, sd = boundary_sd)
+
+    if(sd_fun != 0){
+      sd_fun <- sd_fun/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2)))
+
+      prec_mat <- (1/sd_fun^2) * BayesGP:::compute_weights_precision_helper(knots)
+      weights <- as.vector(LaplacesDemon::rmvnp(n = 1, mu = rep(0, ncol(prec_mat)), Omega = prec_mat))
+
+      spline_new <- BayesGP:::local_poly_helper(knots = knots, refined_x = x, p = p)
+      f <- x_new_design %*% beta_vec + as.vector(spline_new %*% weights)
+    } else{
+      f <- x_new_design %*% beta_vec
+    }
+
+    # for comparison, center f around some value
+    f <- f - mean(f) + 3
+
+    y <- rpois(lambda = exp(f), n = n)
+    return(list(x = x, y = y, f = f))
+  }
+  else {
     stop("type not recognized")
   }
 }
