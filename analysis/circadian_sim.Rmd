@@ -1,0 +1,280 @@
+---
+title: "Circadian Detection: Simulation (Hard)"
+author: "AgueroZZ"
+date: "2024-09-13"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+
+```{r}
+library(BayesGP)
+library(TMB)
+library(Matrix)
+library(splines)
+library(parallel)
+library(ggplot2)
+library(reshape2)
+library(mixsqp)
+library(tidyverse)
+cpp_dir <- paste0(getwd(), "/code/cpp")
+fig_dir <- paste0(getwd(), "/output/circadian_sim")
+result_dir <- paste0(getwd(), "/output/circadian_sim")
+function_dir <- paste0(getwd(), "/code/function")
+source(paste0(function_dir, "/functions_fitting_Poisson_circadian_expression.R"))
+source(paste0(function_dir, "/functions_sim_Poisson_circadian_expression.R"))
+compile(paste0(cpp_dir, "/Poisson_expression.cpp"))
+compile(paste0(cpp_dir, "/Poisson_just_fixed_expression.cpp"))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_expression")))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_just_fixed_expression")))
+num_cores <- 4
+```
+
+```{r}
+x <- seq(0,4, length.out = 50)
+a <- 2*pi
+sd_exact <- 1
+sd_quasi <- 0.2
+sd_np = 1
+intercept_sd <- 0.2
+k <- 40
+m <- 1
+beta_prec <- 1e-10
+psd_vec <- seq(0, 1, length.out = 11)
+datasets <- list()
+```
+
+
+## Introduction
+
+We simulate the following data sets:
+
+The first $N_1$ datasets are from quasi-periodic model:
+
+```{r}
+N1 <- 100
+for(i in 1:N1){
+  datasets[[i]] <- simulate_data(type = "v2", x = x, a = a, sd_quasi = sd_quasi, sd_exact = sd_exact, intercept_sd = intercept_sd)
+}
+# plot 4 dataset
+par(mfrow = c(2,2))
+for(i in 1:4){
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = "p", col = "blue", xlab = "x", ylab = "y")
+  lines(datasets[[i]]$x, exp(datasets[[i]]$f), col = "red", lwd = 2)
+}
+par(mfrow = c(1,1))
+```
+
+
+The second $N_2$ datasets are from the Poisson model with no periodic effect:
+
+```{r}
+N2 <- 200
+for(i in (N1+1):(N1+N2)){
+  datasets[[i]] <- simulate_data(type = "np", x = x, sd_np = sd_np, intercept_sd = intercept_sd)
+}
+# plot 4 dataset
+par(mfrow = c(2,2))
+for(i in 1:4){
+  plot(datasets[[N1 + i]]$x, datasets[[N1 + i]]$y, type = "p", col = "blue", xlab = "x", ylab = "y")
+  lines(datasets[[N1 + i]]$x, exp(datasets[[N1 + i]]$f), col = "red", lwd = 2)
+}
+par(mfrow = c(1,1))
+```
+
+
+Compute the L matrix
+
+```{r eval = FALSE}
+## set up a progress bar
+L_vecs <- vector("list", length(datasets))
+pb <- txtProgressBar(min = 0, max = length(datasets), style = 3)
+for (i in 1:length(datasets)) {
+  setTxtProgressBar(pb, i)
+  data <- datasets[[i]]
+  like_vec1 <- compute_log_likelihood_sBspline_seq(dataset = data, 
+                                    period = 1, 
+                                    num_knots = k, 
+                                    psd_sgp_vector = psd_vec,
+                                    pred_step = 1,
+                                    betaprec = betaprec, 
+                                    log_lib_size = NULL, 
+                                    m = 1)
+  like_vec2 <- compute_log_likelihood_ospline_seq(dataset = data, 
+                                    p = 2, 
+                                    num_knots = k, 
+                                    psd_iwp_vector = psd_vec,
+                                    pred_step = 1,
+                                    betaprec = betaprec, 
+                                    log_lib_size = NULL)
+  
+  L_vecs[[i]] <- c(like_vec1, like_vec2)
+}
+L_matrix <- do.call(rbind, L_vecs)
+save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
+```
+
+```{r}
+load(paste0(result_dir, "/L_matrix.rda"))
+
+fit.sqp <- mixsqp(L = L_matrix, log = TRUE)
+numiter <- nrow(fit.sqp$progress)
+plot(1:numiter,fit.sqp$progress$objective,type = "b",
+     pch = 20,lwd = 2,xlab = "SQP iteration",
+     ylab = "objective",xaxp = c(1,numiter,numiter - 1))
+
+# create prior weight 
+prior_weight <- data.frame(name = paste0(rep(c("sgp_", "iwp_"), each = length(psd_vec)), psd_vec), prior_weight = fit.sqp$x)
+prior_weight
+```
+
+
+Compute the posterior:
+
+```{r}
+# Compute the posterior using the likelihood and prior
+posterior_matrix <- matrix(0, nrow = nrow(L_matrix), ncol = ncol(L_matrix))
+for(i in 1:nrow(L_matrix)){
+  posterior_matrix[i,] <- exp(L_matrix[i,] - max(L_matrix[i,]) + fit.sqp$x)
+  posterior_matrix[i,] <- posterior_matrix[i,]/sum(posterior_matrix[i,])
+}
+```
+
+```{r}
+colnames(posterior_matrix) <- paste0(rep(c("sgp_", "iwp_"), each = length(psd_vec)), psd_vec)
+```
+
+The posterior probability of being in class sgp (summing all sgp columns):
+
+```{r}
+posterior_prob <- rowSums(posterior_matrix[, grepl("sgp_", colnames(posterior_matrix))])
+head(posterior_prob)
+```
+
+```{r}
+plot(posterior_prob, type = "p", col = "blue", xlab = "dataset", ylab = "posterior probability")
+```
+
+
+```{r}
+posterior_weights_df <- as.data.frame(posterior_matrix)
+posterior_weights_df$id <- 1:nrow(posterior_weights_df)
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+
+ggplot(melted_data, aes(x = id, y = value, fill = variable)) +
+  geom_bar(stat = "identity", width = 0.7) +  # Adjust bar width if necessary
+  ggtitle("Structure Plot of Posterior Weights") +
+  coord_flip() +  # Flips the coordinates to make 'Gene' on the y-axis
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),  
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA) 
+  )
+```
+
+
+The local FDR for testing periodicity:
+
+
+```{r}
+lfdr <- 1 - posterior_prob
+lfdr <- ifelse(lfdr < 0, 0, lfdr) # set to 0 if it is negative due to numerical error
+lfdr <- ifelse(lfdr > 1, 1, lfdr) # set to 1 if it is greater than 1 due to numerical error
+
+fdr_df <- data.frame(ID = 1:length(lfdr), fdr = lfdr, type = rep(c("P", "NP"), times = c(N1,N2)))
+fdr_df <- fdr_df[order(fdr_df$fdr), ] # ordering it
+fdr_df$cumulative_fdr <- cumsum(fdr_df$fdr)/seq_along(fdr_df$fdr)
+fdr_df$rank <- 1:length(lfdr)
+```
+
+
+Plot the FDR curve:
+
+```{r}
+ggplot(fdr_df, aes(x = 1:length(lfdr), y = cumulative_fdr, col = type)) +
+  geom_point() +
+  geom_hline(yintercept = 0.05, linetype = "dashed", color = "purple") +
+  labs(x = "Ordered Units", y = "Cumulative FDR", col = "Type") +
+  theme_minimal() +
+  ggtitle("FASH:Cumulative FDR Plot") +
+  scale_color_manual(values = c("red", "blue", "green"))
+```
+
+Plot the curve of nominal false discovery rate (threshold) against the actual false discovery rate:
+
+```{r}
+# Calculate true FDR for FASH
+threshold_vec <- seq(0, 2/3, by = 0.001)
+fdr_vec <- numeric(length(threshold_vec))
+
+for (i in 1:length(threshold_vec)) {
+  num_discoveries <- sum(fdr_df$cumulative_fdr <= threshold_vec[i])
+  num_false_discoveries <- sum(fdr_df$cumulative_fdr <= threshold_vec[i] & fdr_df$type == "NP")
+  fdr_vec[i] <- num_false_discoveries / num_discoveries
+}
+
+# Create a data frame for plotting
+fdr_df_fash_for_plotting <- data.frame(threshold = threshold_vec, true_fdr = fdr_vec)
+
+# Plot the nominal FDR vs true FDR for FASH
+ggplot(fdr_df_fash_for_plotting, aes(x = threshold, y = true_fdr)) +
+  geom_line() +
+  geom_point(size = 0.1) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
+  labs(x = "(Nominal) False Discovery Rate", y = "(Actual) False Discovery Rate") +
+  theme_minimal() +
+  geom_hline(yintercept = N2/(N1 + N2), linetype = "dashed", color = "red") +
+  coord_cartesian(xlim = c(0, 2/3), ylim = c(0, 2/3)) +
+  ggtitle("Nominal FDR vs Actual FDR Curve for FASH")
+```
+
+```{r}
+threshold_vec <- seq(0, 1, by = 0.01)
+num_discoveries_vec <- numeric(length(threshold_vec))
+num_false_discoveries_vec <- numeric(length(threshold_vec))
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_vec[i] <- sum(fdr_df$cumulative_fdr <= threshold_vec[i])
+  num_false_discoveries_vec[i] <- sum(fdr_df$cumulative_fdr <= threshold_vec[i] & fdr_df$type == "NP")
+}
+num_discoveries_df <- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec, num_false_discoveries = num_false_discoveries_vec)
+ggplot(num_discoveries_df, aes(x = (num_discoveries), y = (num_false_discoveries))) +
+  geom_line() +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
+  labs(x = "Number of Discoveries", y = "Number of False Discoveries") +
+  theme_minimal() +
+  ggtitle("FASH: Number of False Discoveries vs Number of Discoveries") +
+  coord_cartesian(xlim = c(0, (N1 + N2)), ylim = c(0, (N2)))
+```
+
+
+```{r}
+threshold_vec <- seq(0, 1, by = 0.0001)
+num_discoveries_vec_fash <- numeric(length(threshold_vec))
+num_false_discoveries_vec_fash <- numeric(length(threshold_vec))
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_vec_fash[i] <- sum(fdr_df$cumulative_fdr <= threshold_vec[i])
+  num_false_discoveries_vec_fash[i] <- sum(fdr_df$cumulative_fdr <= threshold_vec[i] & fdr_df$type == "NP")
+}
+num_discoveries_df_fash <- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec_fash, num_false_discoveries = num_false_discoveries_vec_fash, method = "FASH")
+
+# Calculate the power for FASH
+num_discoveries_df_fash$power <- (num_discoveries_df_fash$num_discoveries-num_discoveries_df_fash$num_false_discoveries)/(N1)
+
+# Plot the FDR vs Power
+ggplot(num_discoveries_df_fash, aes(x = threshold, y = power, color = method)) +
+  geom_line() +
+  # geom_point() +
+  labs(x = "FDR", y = "Power") +
+  theme_minimal() +
+  ggtitle("FDR vs Power for FASH") +
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))
+```
+
+
+
+
+
+
