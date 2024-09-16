@@ -8,13 +8,13 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
   knots <- unique(c(0,seq(min(x), max(x), length=num_knots)))
   X <- BayesGP:::global_poly_helper(x, p = p)[,-1]
   # detrend
-  X_detrend <- cbind(1, x)
+  X_detrend <- matrix(1, nrow = length(x), ncol = 1)
   X <- cbind(X_detrend, X)
 
   P <- BayesGP::compute_weights_precision_helper(knots)
   B <- BayesGP:::local_poly_helper(knots = knots, refined_x = x, p = p)
   if(is.null(log_lib_size)){
-    log_lib_size <- numeric(12)
+    log_lib_size <- numeric(length(x))
   }
   if(psd_iwp != 0){
   tmbdat <- list(
@@ -76,21 +76,21 @@ compute_log_likelihood_sBspline <- function(dataset, period, num_knots = 30, psd
   y <- dataset$y
   k <- num_knots
   a <- 2*pi/period
-  X <- BayesGP:::global_poly_helper_sgp(refined_x = x, a = a, m = m)
+  X <- BayesGP:::global_poly_helper_sgp(refined_x = x, a = a, m = m)[,2,drop = F]
 
   # Add the part to detrend
-  X_detrend <- cbind(1, x)
+  X_detrend <- matrix(1, nrow = length(x), ncol = 1)
   X <- cbind(X_detrend, X)
 
-  P <- BayesGP:::Compute_Q_sB(a = a, k = k, region = c(0,2), accuracy = 1000)
+  P <- BayesGP:::Compute_Q_sB(a = a, k = k, region = range(x), accuracy = 1000)
   if(m >= 2){
     for (i in 2:m) {
-      P <- bdiag(P, BayesGP:::Compute_Q_sB(a = (i*a), k = k, region = c(0,2), accuracy = 1000))
+      P <- bdiag(P, BayesGP:::Compute_Q_sB(a = (i*a), k = k, region = range(x), accuracy = 1000))
     }
   }
-  B <- BayesGP:::Compute_B_sB_helper(refined_x = x, a = a, k = k, m = m, region = c(0,2))
+  B <- BayesGP:::Compute_B_sB_helper(refined_x = x, a = a, k = k, m = m, region = range(x))
   if(is.null(log_lib_size)){
-    log_lib_size <- numeric(12)
+    log_lib_size <- numeric(length(x))
   }
 
   if(psd_sgp != 0){
@@ -154,7 +154,7 @@ compute_log_likelihood_sBspline <- function(dataset, period, num_knots = 30, psd
 fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betaprec = 0.001, log_lib_size = NULL){
   condition_fitting <- 0 # 1 means the fitting is good, 1 means the fitting requires numerical adjustment
   if(is.null(log_lib_size)){
-    log_lib_size <- numeric(12)
+    log_lib_size <- numeric(length(x))
   }
   x <- dataset$x
   y <- dataset$y
@@ -257,23 +257,23 @@ fit_sBspline <- function(dataset, period, num_knots = 30, psd_sgp, pred_step, be
   y <- dataset$y
   k <- num_knots
   a <- 2*pi/period
-  X <- BayesGP:::global_poly_helper_sgp(refined_x = x, a = a, m = m)
+  X <- BayesGP:::global_poly_helper_sgp(refined_x = x, a = a, m = m)[,2,drop = F]
 
   if(is.null(log_lib_size)){
-    log_lib_size <- numeric(12)
+    log_lib_size <- numeric(length(x))
   }
 
   # Add the part to detrend
-  X_detrend <- cbind(1, x)
+  X_detrend <- matrix(1, nrow = length(x), ncol = 1)
   X <- cbind(X_detrend, X)
 
-  P <- BayesGP:::Compute_Q_sB(a = a, k = k, region = c(0,2), accuracy = 1000)
+  P <- BayesGP:::Compute_Q_sB(a = a, k = k, region = range(x), accuracy = 1000)
   if(m >= 2){
     for (i in 2:m) {
-      P <- bdiag(P, BayesGP:::Compute_Q_sB(a = (i*a), k = k, region = c(0,2), accuracy = 1000))
+      P <- bdiag(P, BayesGP:::Compute_Q_sB(a = (i*a), k = k, region = range(x), accuracy = 1000))
     }
   }
-  B <- BayesGP:::Compute_B_sB_helper(refined_x = x, a = a, k = k, m = m, region = c(0,2))
+  B <- BayesGP:::Compute_B_sB_helper(refined_x = x, a = a, k = k, m = m, region = range(x))
   if(psd_sgp != 0){
     correction_factor <- 0
     for (i in 1:m) {
@@ -412,12 +412,12 @@ visualize_fit <- function(x, fit_result, y = NULL, plot_samps = FALSE, original 
   else{
     samps_coef <- fit_result$samps_coef
     x_refined <- seq(min(x), max(x), length = 100)
-    X_refined <- BayesGP:::global_poly_helper_sgp(refined_x = x_refined, a = a, m = m)
-    X_refined_detrend <- cbind(1, x_refined)
+    X_refined <- BayesGP:::global_poly_helper_sgp(refined_x = x_refined, a = a, m = m)[,2,drop = F]
+    X_refined_detrend <- matrix(1, nrow = length(x_refined), ncol = 1)
     X_refined <- cbind(X_refined_detrend, X_refined)
 
     if(ncol(X_refined) != ncol(samps_coef)){
-      B_refined <- BayesGP:::Compute_B_sB_helper(refined_x = x_refined, a = a, k = k, m = m, region = c(0,2))
+      B_refined <- BayesGP:::Compute_B_sB_helper(refined_x = x_refined, a = a, k = k, m = m, region = range(x))
       samps_fitted <- as.matrix(B_refined) %*% t(samps_coef[,1:ncol(B_refined)]) + as.matrix(X_refined) %*% t(samps_coef[,(ncol(B_refined)+1):ncol(samps_coef)])
     }
     else{
@@ -544,8 +544,15 @@ fit_ospline_with_prior <- function(dataset, p, num_knots, prior_weight, pred_ste
   posterior_weight_matrix <- cbind(active_prior$psd_iwp, posterior_weights)
   colnames(posterior_weight_matrix) <- c("psd_iwp", "posterior_weight")
 
+  # Create a matrix of log-likelihoods corresponding to active priors
+  log_likelihood_matrix <- cbind(active_prior$psd_iwp, log_likelihoods)
+  colnames(log_likelihood_matrix) <- c("psd_iwp", "log_likelihood")
+
   # Return both the list of fitted results and the matrix of posterior weights
-  list(fitted_results = results_list, posterior_weights = posterior_weight_matrix, condition_fitting = condition_fitting)
+  list(fitted_results = results_list,
+       posterior_weights = posterior_weight_matrix,
+       log_likelihoods = log_likelihood_matrix,
+       condition_fitting = condition_fitting)
 }
 
 ### Fit a sequence of k models based on a prior matrix: (when psd_sgp is varying)
@@ -590,9 +597,15 @@ fit_sBspline_with_prior <- function(dataset, period, num_knots, prior_weight, pr
   posterior_weight_matrix <- cbind(active_prior$psd_sgp, posterior_weights)
   colnames(posterior_weight_matrix) <- c("psd_sgp", "posterior_weight")
 
-  # Return both the list of fitted results and the matrix of
-  # posterior weights
-  list(fitted_results = results_list, posterior_weights = posterior_weight_matrix, condition_fitting = condition_fitting)
+  # Create a matrix of log-likelihoods corresponding to active priors
+  log_likelihood_matrix <- cbind(active_prior$psd_sgp, log_likelihoods)
+  colnames(log_likelihood_matrix) <- c("psd_sgp", "log_likelihood")
+
+  # Return both the list of fitted results and the matrix of posterior weights
+  list(fitted_results = results_list,
+       posterior_weights = posterior_weight_matrix,
+       log_likelihoods = log_likelihood_matrix,
+       condition_fitting = condition_fitting)
 }
 
 ### aggregate result from fit_ospline_with_prior
