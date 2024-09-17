@@ -129,7 +129,7 @@ Answer: The result basically does not change.
 					or (ii): mixture of sGP and mixture of IWP? Then test sGP vs IWP?
 
 Answer: My feeling is both approaches could be used. For approach (i): directly testing sigma = 0 should give the FDR on detecting 
-Exact periodocity. Further including the FSR based on the joint distribution of \beta_sin and \beta_cos can make the inference more
+Exact periodicity. Further including the FSR based on the joint distribution of \beta_sin and \beta_cos can make the inference more
 Robust.
 For approach (ii): the question becomes detecting periodic or quasi-periodic behavior...
 Let's focus on the second approach for now. The important lesson, to make the result invariant to diffuse beta_prec, each model should have the same 
@@ -145,18 +145,41 @@ Mon, Sept 16th:
 ----------------------------------------------
 ----------------------------------------------
 
-There are two things that I would like to explore today:
+There are two things that I would like to explore today. Both of them are for the circadian detection simulation:
 
 (A): For the periodicity detection setting, when there are no model misspecification (aka. The null model is from IWP2, and the alternative model is from sGP), will there be any FDR calibration issue?
 
-Answer:
+Answer: The estimated prior proportions are still not accurate.. and the FDR is still not calibrated.
+Maybe the problem is due to the approximation error of Laplace approximation? Or is it just some coding issue..
+Let me check again once we increase the number of counts in each x value. This should reduce the approximation error of the Laplace approximation to the marginal likelihood.
+The result indeed seems to be slightly better when the number of counts increases. Let's increase the number of measurement from 50 to 100 to check its behaviour as well. Indeed, the result is further improved a little.
+Another check, if the approximation error is the problem, then it should also affect the oracle Bayes procedure. 
+Let's check the oracle Bayes: Indeed.. Even the oracle result has similar calibration issue...
+If we significantly increase the count numbers, can we reduce the approximation effect to practically zero?
+Indeed, the FASH approach then has result very close to the true FDR curve. The oracle Bayes is closer to the truth, almost indistinguishable.
+So the issue is indeed the Laplace approximation accuracy when the count number is low. Both methods have satisfactory FDR calibration when the number of count is high.
+Wait!!! I just notice that there was an issue with the posterior matrix computation! The prior was mis-treated as the log-prior!! Let's update and retry it.
+Wow!! The result is perfect now!!!! (Also needs to expand the grid of the PSD too) 
 
 
 (B): When there are model-misspecification, can we consider more robust multiple hypothesis controlling method than FDR? How about max-lfdr?
 
+Answer: Actually even for the model-misspecification case, if we increase the number of count to reduce the Laplace approximation error, the FDR becomes quite well calibrated. 
+To double check this, let me rerun the misspecified case with ten times of the datasets (N1 = 1000 and N2 = 2000 now). The calibration of FASH's FDR does not change by much.
+If we still care about the non-preciseness of the calibration, how about we increase the possibility of the null-hypothesis (considering a wider range of psd for IWP) --> This helps a lot too!!
 
 
 
+(C): What would be the main underlying effect of model-misspecification in the FDR control setting? How does it affect the power and FDR calibration of FASH?
+
+Answer: My intuition is: when the alternative hypothesis is wrongly specified (see eQTL example, where the alternative hypothesis should be linear function, but wrongly specified as Brownian motion), the corresponding likelihood components tend to be under-estimated, which leads to larger estimate of pi_0 hence lower power.
+When the null hypothesis is wrongly specified (for example, the non-quasi-periodic behaviour is random B spline basis, rather than samples of IWP2), the likelihood of the null component will be under estimated, leading to lower estimate of pi_0 hence under-conservative FDR.
+To check if this is true, let's consider the following experiment:
+(i): If the alternative hypothesis (quasi-periodicity) is simulated from the sGP. But the null hypothesis is not simulated from the IWP2.
+(ii): Vice versa, if the null is correctly simulated from IWP2, but the alternative hypothesis is not from sGP.
+I expect to see (ii) to cause lower power and (i) to cause incorrect calibration. 
+Let's try (i) first: For the circadian detection example, when alternative is mis-specified, pi_0 is over-estimated, leading to lower power.
+Then try (ii): For the circadian detection example, mis-specification of the null hypothesis under-estimates pi_0 leading to incorrect (inflated) FDR calibration.
 
 
 

@@ -34,7 +34,7 @@ num_cores <- 4
 x <- seq(0,4, length.out = 100)
 a <- 2*pi
 sd_exact <- 1
-sd_quasi <- 0.2
+sd_quasi <- 0.5
 sd_np = 1
 intercept_sd <- 0.2
 boundary_sd <- 0.5
@@ -42,6 +42,8 @@ k <- 50
 m <- 1
 beta_prec <- 1e-10
 psd_vec <- seq(0, 1, length.out = 11)
+# psd_vec <- seq(0, 1, length.out = 11)[-1]
+
 datasets <- list()
 ```
 
@@ -58,7 +60,12 @@ sd_fun_draw_prop <- c(0.2, 0.2, 0.15, 0.15, 0.15, 0.15)
 sd_fun_draw_vec <- rep(c(0, 0.1, 0.2, 0.3, 0.4, 0.5), times = c(0.2, 0.2, 0.15, 0.15, 0.15, 0.15)*N1)
 for(i in 1:N1){
   sd_fun_draw <- sd_fun_draw_vec[i]
+  # sd_fun_draw <- 0
   datasets[[i]] <- simulate_data(type = "v1", x = x, a = a, sd_fun = sd_fun_draw, boundary_sd = 1)
+  
+  # # mis-specified alternative...
+  # sd_quasi <- 1
+  # datasets[[i]] <- simulate_data(type = "v2", x = x, a = a, sd_quasi = sd_quasi, sd_exact = sd_exact, intercept_sd = intercept_sd)
 }
 # plot 4 dataset
 par(mfrow = c(2,2))
@@ -79,6 +86,7 @@ sd_fun_draw_prop <- c(0.2, 0.2, 0.15, 0.15, 0.15, 0.15)
 sd_fun_draw_vec2 <- rep(c(0, 0.1, 0.2, 0.3, 0.4, 0.5), times = c(0.2, 0.2, 0.15, 0.15, 0.15, 0.15)*N2)
 for(i in (N1+1):(N1+N2)){
   sd_fun_draw <- sd_fun_draw_vec2[i-N1]
+  # sd_fun_draw <- sd_fun_draw_vec2[i-N1] + 0.1
   datasets[[i]] <- simulate_data(type = "iwp", x = x, sd_fun = sd_fun_draw, intercept_sd = intercept_sd, boundary_sd = boundary_sd)
 }
 # plot 4 dataset
@@ -135,6 +143,8 @@ plot(1:numiter,fit.sqp$progress$objective,type = "b",
 # create prior weight 
 prior_weight <- data.frame(name = paste0(rep(c("sgp_", "iwp_"), each = length(psd_vec)), psd_vec), prior_weight = fit.sqp$x)
 prior_weight
+
+sum(fit.sqp$x[grepl("sgp_", prior_weight$name)])
 ```
 
 
@@ -144,7 +154,7 @@ Compute the posterior:
 # Compute the posterior using the likelihood and prior
 posterior_matrix <- matrix(0, nrow = nrow(L_matrix), ncol = ncol(L_matrix))
 for(i in 1:nrow(L_matrix)){
-  posterior_matrix[i,] <- exp(L_matrix[i,] - max(L_matrix[i,]) + fit.sqp$x)
+  posterior_matrix[i,] <- exp(L_matrix[i,] - max(L_matrix[i,]) + log(fit.sqp$x))
   posterior_matrix[i,] <- posterior_matrix[i,]/sum(posterior_matrix[i,])
 }
 ```

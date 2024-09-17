@@ -41,7 +41,8 @@ intercept_sd <- 0.2
 k <- 40
 m <- 1
 beta_prec <- 1e-10
-psd_vec <- seq(0, 1, length.out = 11)
+# psd_vec <- seq(0, 1, length.out = 11)
+psd_vec <- seq(0, 2, length.out = 21)
 datasets <- list()
 ```
 
@@ -98,7 +99,7 @@ for (i in 1:length(datasets)) {
                                     num_knots = k, 
                                     psd_sgp_vector = psd_vec,
                                     pred_step = 1,
-                                    betaprec = betaprec, 
+                                    betaprec = beta_prec, 
                                     log_lib_size = NULL, 
                                     m = 1)
   like_vec2 <- compute_log_likelihood_ospline_seq(dataset = data, 
@@ -106,7 +107,7 @@ for (i in 1:length(datasets)) {
                                     num_knots = k, 
                                     psd_iwp_vector = psd_vec,
                                     pred_step = 1,
-                                    betaprec = betaprec, 
+                                    betaprec = beta_prec, 
                                     log_lib_size = NULL)
   
   L_vecs[[i]] <- c(like_vec1, like_vec2)
@@ -127,7 +128,11 @@ plot(1:numiter,fit.sqp$progress$objective,type = "b",
 # create prior weight 
 prior_weight <- data.frame(name = paste0(rep(c("sgp_", "iwp_"), each = length(psd_vec)), psd_vec), prior_weight = fit.sqp$x)
 prior_weight
+
+# sum the prior weight corresponding to sgp
+sum(fit.sqp$x[grepl("sgp_", prior_weight$name)])
 ```
+
 
 
 Compute the posterior:
@@ -136,7 +141,7 @@ Compute the posterior:
 # Compute the posterior using the likelihood and prior
 posterior_matrix <- matrix(0, nrow = nrow(L_matrix), ncol = ncol(L_matrix))
 for(i in 1:nrow(L_matrix)){
-  posterior_matrix[i,] <- exp(L_matrix[i,] - max(L_matrix[i,]) + fit.sqp$x)
+  posterior_matrix[i,] <- exp(L_matrix[i,] - max(L_matrix[i,]) + log(fit.sqp$x))
   posterior_matrix[i,] <- posterior_matrix[i,]/sum(posterior_matrix[i,])
 }
 ```
@@ -273,6 +278,18 @@ ggplot(num_discoveries_df_fash, aes(x = threshold, y = power, color = method)) +
   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))
 ```
 
+Carry out the max-lfdr procedure:
+
+```{r}
+ggplot(fdr_df, aes(x = 1:length(lfdr), y = fdr, col = type)) +
+  geom_point() +
+  geom_hline(yintercept = 0.05, linetype = "dashed", color = "purple") +
+  labs(x = "Ordered Units", y = "lfdr", col = "Type") +
+  theme_minimal() +
+  ggtitle("FASH: lfdr Plot") +
+  scale_color_manual(values = c("red", "blue", "green"))
+
+```
 
 
 

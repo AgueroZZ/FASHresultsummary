@@ -15,7 +15,7 @@
 
 <title>Circadian Detection: Simulation (Easy)</title>
 
-<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -533,15 +533,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree3573d41d4ffd5696ddafbe558f8b77fd4f0cfb1ctargetblank3573d41a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea16501d2d1af849b9cdaa1807aa316e413404981targetblanka16501da">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/3573d41d4ffd5696ddafbe558f8b77fd4f0cfb1c" target="_blank">3573d41</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a16501d2d1af849b9cdaa1807aa316e413404981" target="_blank">a16501d</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree3573d41d4ffd5696ddafbe558f8b77fd4f0cfb1ctargetblank3573d41a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea16501d2d1af849b9cdaa1807aa316e413404981targetblanka16501da"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -551,7 +551,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/3573d41d4ffd5696ddafbe558f8b77fd4f0cfb1c" target="_blank">3573d41</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a16501d2d1af849b9cdaa1807aa316e413404981" target="_blank">a16501d</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -566,21 +566,32 @@ were generated:
 </p>
 <pre><code>
 Ignored files:
+    Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/figure/
-
-Untracked files:
-    Untracked:  analysis/simulation_eQTL_irregular.Rmd
-    Untracked:  output/circadian_sim_easy/
-    Untracked:  output/simulation_eQTL_irregular/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.Rhistory
+    Ignored:    code/.DS_Store
+    Ignored:    code/cpp/.DS_Store
+    Ignored:    data/.DS_Store
+    Ignored:    data/expression_data/.DS_Store
+    Ignored:    output/.DS_Store
+    Ignored:    output/example/.DS_Store
+    Ignored:    output/example/figure/
+    Ignored:    output/simulation_pollution/.DS_Store
+    Ignored:    output/simulation_pollution/figure/
 
 Unstaged changes:
-    Modified:   code/cpp/Poisson_expression.o
-    Modified:   code/cpp/Poisson_expression.so
-    Modified:   code/cpp/Poisson_just_fixed_expression.o
-    Modified:   code/cpp/Poisson_just_fixed_expression.so
-    Modified:   code/function/functions_sim_Poisson_circadian_expression.R
+    Modified:   analysis/circadian_sim.Rmd
+    Deleted:    code/cpp/Poisson.o
+    Deleted:    code/cpp/Poisson.so
+    Deleted:    code/cpp/Poisson_expression.o
+    Deleted:    code/cpp/Poisson_expression.so
+    Deleted:    code/cpp/Poisson_just_fixed.o
+    Deleted:    code/cpp/Poisson_just_fixed.so
+    Deleted:    code/cpp/Poisson_just_fixed_expression.o
+    Deleted:    code/cpp/Poisson_just_fixed_expression.so
+    Modified:   thought_process
 
 </code></pre>
 <p>
@@ -628,6 +639,23 @@ Message
 <tbody>
 <tr>
 <td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/circadian_sim_easy.html" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
 Rmd
 </td>
 <td>
@@ -660,10 +688,10 @@ library(reshape2)
 library(mixsqp)
 library(tidyverse)</code></pre>
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.5
-✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ dplyr     1.1.3     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.0
 ✔ lubridate 1.9.3     ✔ tibble    3.2.1
-✔ purrr     1.0.2     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     ✔ tidyr     1.3.0
 ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ✖ tidyr::expand() masks Matrix::expand()
 ✖ dplyr::filter() masks stats::filter()
@@ -679,13 +707,17 @@ source(paste0(function_dir, &quot;/functions_fitting_Poisson_circadian_expressio
 source(paste0(function_dir, &quot;/functions_sim_Poisson_circadian_expression.R&quot;))
 compile(paste0(cpp_dir, &quot;/Poisson_expression.cpp&quot;))</code></pre>
 <pre><code>Warning in readLines(file): incomplete final line found on
-&#39;/home/ziang/FASHresultsummary/code/cpp/Poisson_expression.cpp&#39;</code></pre>
-<pre><code>using C++ compiler: &#39;g++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0&#39;</code></pre>
+&#39;/Users/ziangzhang/Desktop/FASH/FASHresultsummary/code/cpp/Poisson_expression.cpp&#39;</code></pre>
+<pre><code>Note: Using Makevars in /Users/ziangzhang/.R/Makevars </code></pre>
+<pre><code>using C++ compiler: &#39;Apple clang version 13.1.6 (clang-1316.0.21.2.5)&#39;
+using SDK: &#39;MacOSX12.3.sdk&#39;</code></pre>
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>compile(paste0(cpp_dir, &quot;/Poisson_just_fixed_expression.cpp&quot;))</code></pre>
 <pre><code>Warning in readLines(file): incomplete final line found on
-&#39;/home/ziang/FASHresultsummary/code/cpp/Poisson_just_fixed_expression.cpp&#39;</code></pre>
-<pre><code>using C++ compiler: &#39;g++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0&#39;</code></pre>
+&#39;/Users/ziangzhang/Desktop/FASH/FASHresultsummary/code/cpp/Poisson_just_fixed_expression.cpp&#39;</code></pre>
+<pre><code>Note: Using Makevars in /Users/ziangzhang/.R/Makevars </code></pre>
+<pre><code>using C++ compiler: &#39;Apple clang version 13.1.6 (clang-1316.0.21.2.5)&#39;
+using SDK: &#39;MacOSX12.3.sdk&#39;</code></pre>
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>dyn.load(TMB::dynlib(paste0(cpp_dir, &quot;/Poisson_expression&quot;)))
 dyn.load(TMB::dynlib(paste0(cpp_dir, &quot;/Poisson_just_fixed_expression&quot;)))
@@ -722,6 +754,43 @@ for(i in 1:4){
   lines(datasets[[index]]$x, exp(datasets[[index]]$f), col = &quot;red&quot;, lwd = 2)
 }</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
+Past versions of unnamed-chunk-3-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-3-1.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow = c(1,1))</code></pre>
 <p>The second <span class="math inline">\(N_2\)</span> datasets are from
 the Poisson model with no periodic effect:</p>
@@ -740,6 +809,43 @@ for(i in 1:4){
   lines(datasets[[index]]$x, exp(datasets[[index]]$f), col = &quot;red&quot;, lwd = 2)
 }</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-1">
+Past versions of unnamed-chunk-4-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-4-1.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow = c(1,1))</code></pre>
 <p>Compute the L matrix</p>
 <pre class="r"><code>## set up a progress bar
@@ -808,6 +914,43 @@ plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
      pch = 20,lwd = 2,xlab = &quot;SQP iteration&quot;,
      ylab = &quot;objective&quot;,xaxp = c(1,numiter,numiter - 1))</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-6-1.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># create prior weight 
 prior_weight &lt;- data.frame(name = paste0(rep(c(&quot;sgp_&quot;, &quot;iwp_&quot;), each = length(psd_vec)), psd_vec), prior_weight = fit.sqp$x)
 prior_weight</code></pre>
@@ -849,6 +992,43 @@ head(posterior_prob)</code></pre>
 <pre><code>[1] 1.0000000 0.3749057 1.0000000 1.0000000 1.0000000 1.0000000</code></pre>
 <pre class="r"><code>plot(posterior_prob, type = &quot;p&quot;, col = &quot;blue&quot;, xlab = &quot;dataset&quot;, ylab = &quot;posterior probability&quot;)</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-10-1.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>posterior_weights_df &lt;- as.data.frame(posterior_matrix)
 posterior_weights_df$id &lt;- 1:nrow(posterior_weights_df)
 melted_data &lt;- melt(posterior_weights_df, id.vars = &quot;id&quot;)
@@ -864,6 +1044,43 @@ ggplot(melted_data, aes(x = id, y = value, fill = variable)) +
     plot.background = element_rect(fill = &quot;white&quot;, colour = NA) 
   )</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-11-1.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>The local FDR for testing periodicity:</p>
 <pre class="r"><code>lfdr &lt;- 1 - posterior_prob
 lfdr &lt;- ifelse(lfdr &lt; 0, 0, lfdr) # set to 0 if it is negative due to numerical error
@@ -882,6 +1099,43 @@ fdr_df$rank &lt;- 1:length(lfdr)</code></pre>
   ggtitle(&quot;FASH:Cumulative FDR Plot&quot;) +
   scale_color_manual(values = c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;))</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-13-1.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Plot the curve of nominal false discovery rate (threshold) against
 the actual false discovery rate:</p>
 <pre class="r"><code># Calculate true FDR for FASH
@@ -908,6 +1162,43 @@ ggplot(fdr_df_fash_for_plotting, aes(x = threshold, y = true_fdr)) +
   coord_cartesian(xlim = c(0, 2/3), ylim = c(0, 2/3)) +
   ggtitle(&quot;Nominal FDR vs Actual FDR Curve for FASH&quot;)</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-14-1.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.01)
 num_discoveries_vec &lt;- numeric(length(threshold_vec))
 num_false_discoveries_vec &lt;- numeric(length(threshold_vec))
@@ -925,6 +1216,43 @@ ggplot(num_discoveries_df, aes(x = (num_discoveries), y = (num_false_discoveries
   ggtitle(&quot;FASH: Number of False Discoveries vs Number of Discoveries&quot;) +
   coord_cartesian(xlim = c(0, (N1 + N2)), ylim = c(0, (N2)))</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
+Past versions of unnamed-chunk-15-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-15-1.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.0001)
 num_discoveries_vec_fash &lt;- numeric(length(threshold_vec))
 num_false_discoveries_vec_fash &lt;- numeric(length(threshold_vec))
@@ -946,6 +1274,43 @@ ggplot(num_discoveries_df_fash, aes(x = threshold, y = power, color = method)) +
   ggtitle(&quot;FDR vs Power for FASH&quot;) +
   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
+Past versions of unnamed-chunk-16-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-16-1.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Compare with the posterior using the oracle Bayes:</p>
 <p>Compute the posterior:</p>
 <pre class="r"><code># Compute the posterior using the likelihood and prior
@@ -962,6 +1327,43 @@ head(posterior_prob_ob)</code></pre>
 <pre><code>[1] 1.0000000 0.2479439 1.0000000 1.0000000 1.0000000 1.0000000</code></pre>
 <pre class="r"><code>plot(posterior_prob_ob, type = &quot;p&quot;, col = &quot;blue&quot;, xlab = &quot;dataset&quot;, ylab = &quot;posterior probability&quot;)</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-19-1">
+Past versions of unnamed-chunk-19-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-19-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-19-1.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>posterior_weights_df_ob &lt;- as.data.frame(posterior_matrix_ob)
 
 posterior_weights_df_ob$id &lt;- 1:nrow(posterior_weights_df_ob)
@@ -978,6 +1380,43 @@ ggplot(melted_data_ob, aes(x = id, y = value, fill = variable)) +
     plot.background = element_rect(fill = &quot;white&quot;, colour = NA) 
   )</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-19-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-19-2">
+Past versions of unnamed-chunk-19-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-19-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-19-2.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>The local FDR for testing periodicity:</p>
 <pre class="r"><code>lfdr_ob &lt;- 1 - posterior_prob_ob
 lfdr_ob &lt;- ifelse(lfdr_ob &lt; 0, 0, lfdr_ob) # set to 0 if it is negative due to numerical error
@@ -997,6 +1436,43 @@ ggplot(fdr_df_ob, aes(x = 1:length(lfdr_ob), y = cumulative_fdr, col = type)) +
   ggtitle(&quot;Oracle: Cumulative FDR Plot&quot;) +
   scale_color_manual(values = c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;))</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-20-1.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Check calibration of oracle Bayes: the curve of nominal false
 discovery rate (threshold) against the actual false discovery rate:</p>
 <pre class="r"><code># Calculate true FDR for Oracle
@@ -1025,6 +1501,43 @@ ggplot(fdr_df_ob_for_plotting, aes(x = threshold, y = true_fdr)) +
   coord_cartesian(xlim = c(0, 2/3), ylim = c(0, 2/3)) +
   ggtitle(&quot;Nominal FDR vs Actual FDR Curve for Oracle&quot;)</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
+Past versions of unnamed-chunk-21-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-21-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-21-1.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.01)
 num_discoveries_vec_ob &lt;- numeric(length(threshold_vec))
 num_false_discoveries_vec_ob &lt;- numeric(length(threshold_vec))
@@ -1042,6 +1555,43 @@ ggplot(num_discoveries_df_ob, aes(x = (num_discoveries), y = (num_false_discover
   ggtitle(&quot;Oracle: Number of False Discoveries vs Number of Discoveries&quot;) +
   coord_cartesian(xlim = c(0, (N1 + N2)), ylim = c(0, (N2)))</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
+Past versions of unnamed-chunk-22-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-22-1.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.0001)
 num_discoveries_vec_ob_fash &lt;- numeric(length(threshold_vec))
 num_false_discoveries_vec_ob_fash &lt;- numeric(length(threshold_vec))
@@ -1064,6 +1614,43 @@ ggplot(num_discoveries_df_ob_fash, aes(x = threshold, y = power, color = method)
   ggtitle(&quot;FDR vs Power for Oracle&quot;) +
   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-22-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-2">
+Past versions of unnamed-chunk-22-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-22-2.png" target="_blank">d634fe3</a>
+</td>
+<td>
+AgueroZZ
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1073,60 +1660,54 @@ Session information
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 4.4.1 (2024-06-14)
-Platform: x86_64-pc-linux-gnu
-Running under: Ubuntu 22.04.4 LTS
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS Monterey 12.7.4
 
 Matrix products: default
-BLAS/LAPACK: /opt/intel/oneapi/mkl/2024.2/lib/libmkl_rt.so.2;  LAPACK version 3.11.0
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
 
 locale:
- [1] LC_CTYPE=en_CA.UTF-8       LC_NUMERIC=C              
- [3] LC_TIME=en_CA.UTF-8        LC_COLLATE=en_CA.UTF-8    
- [5] LC_MONETARY=en_CA.UTF-8    LC_MESSAGES=en_CA.UTF-8   
- [7] LC_PAPER=en_CA.UTF-8       LC_NAME=C                 
- [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-[11] LC_MEASUREMENT=en_CA.UTF-8 LC_IDENTIFICATION=C       
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 
-time zone: America/Toronto
-tzcode source: system (glibc)
+time zone: America/Chicago
+tzcode source: internal
 
 attached base packages:
 [1] parallel  splines   stats     graphics  grDevices utils     datasets 
 [8] methods   base     
 
 other attached packages:
- [1] lubridate_1.9.3 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
- [5] purrr_1.0.2     readr_2.1.5     tidyr_1.3.1     tibble_3.2.1   
+ [1] lubridate_1.9.3 forcats_1.0.0   stringr_1.5.0   dplyr_1.1.3    
+ [5] purrr_1.0.2     readr_2.1.4     tidyr_1.3.0     tibble_3.2.1   
  [9] tidyverse_2.0.0 mixsqp_0.3-54   reshape2_1.4.4  ggplot2_3.5.1  
-[13] Matrix_1.7-0    TMB_1.9.14      BayesGP_0.1.1   workflowr_1.7.1
+[13] Matrix_1.6-3    TMB_1.9.7       BayesGP_0.1.1  
 
 loaded via a namespace (and not attached):
- [1] gtable_0.3.5         xfun_0.47            bslib_0.8.0         
- [4] ks_1.14.2            processx_3.8.4       lattice_0.22-6      
- [7] callr_3.7.6          tzdb_0.4.0           bitops_1.0-8        
-[10] vctrs_0.6.5          tools_4.4.1          ps_1.7.7            
-[13] generics_0.1.3       fansi_1.0.6          highr_0.11          
-[16] cluster_2.1.6        fds_1.8              pkgconfig_2.0.3     
-[19] KernSmooth_2.23-24   lifecycle_1.0.4      farver_2.1.2        
-[22] compiler_4.4.1       git2r_0.33.0         munsell_0.5.1       
-[25] getPass_0.2-4        httpuv_1.6.15        rainbow_3.8         
-[28] htmltools_0.5.8.1    sass_0.4.9           RCurl_1.98-1.16     
-[31] yaml_2.3.10          pracma_2.4.4         later_1.3.2         
-[34] pillar_1.9.0         jquerylib_0.1.4      whisker_0.4.1       
-[37] MASS_7.3-61          cachem_1.1.0         mclust_6.1.1        
-[40] tidyselect_1.2.1     digest_0.6.37        mvtnorm_1.2-6       
-[43] stringi_1.8.4        LaplacesDemon_16.1.6 labeling_0.4.3      
-[46] pcaPP_2.0-5          rprojroot_2.0.4      fastmap_1.2.0       
-[49] grid_4.4.1           colorspace_2.1-1     cli_3.6.3           
-[52] magrittr_2.0.3       utf8_1.2.4           withr_3.0.1         
-[55] scales_1.3.0         promises_1.3.0       timechange_0.3.0    
-[58] rmarkdown_2.28       httr_1.4.7           deSolve_1.40        
-[61] hms_1.1.3            evaluate_0.24.0      knitr_1.48          
-[64] irlba_2.3.5.1        rlang_1.1.4          Rcpp_1.0.13         
-[67] hdrcde_3.4           fda_6.1.8            glue_1.7.0          
-[70] rstudioapi_0.16.0    jsonlite_1.8.8       R6_2.5.1            
-[73] plyr_1.8.9           fs_1.6.4            </code></pre>
+ [1] gtable_0.3.4         xfun_0.40            bslib_0.5.1         
+ [4] ks_1.14.1            lattice_0.21-8       tzdb_0.4.0          
+ [7] bitops_1.0-7         vctrs_0.6.4          tools_4.3.1         
+[10] generics_0.1.3       fansi_1.0.5          cluster_2.1.4       
+[13] pkgconfig_2.0.3      fds_1.8              KernSmooth_2.23-21  
+[16] lifecycle_1.0.3      farver_2.1.1         compiler_4.3.1      
+[19] git2r_0.33.0         munsell_0.5.0        httpuv_1.6.11       
+[22] htmltools_0.5.6.1    rainbow_3.7          sass_0.4.7          
+[25] RCurl_1.98-1.12      yaml_2.3.7           pracma_2.4.2        
+[28] later_1.3.1          pillar_1.9.0         jquerylib_0.1.4     
+[31] whisker_0.4.1        MASS_7.3-60          cachem_1.0.8        
+[34] mclust_6.0.0         tidyselect_1.2.0     digest_0.6.33       
+[37] mvtnorm_1.2-3        stringi_1.7.12       LaplacesDemon_16.1.6
+[40] labeling_0.4.3       pcaPP_2.0-3          rprojroot_2.0.3     
+[43] fastmap_1.1.1        grid_4.3.1           colorspace_2.1-0    
+[46] cli_3.6.1            magrittr_2.0.3       utf8_1.2.3          
+[49] withr_2.5.1          scales_1.3.0         promises_1.2.1      
+[52] timechange_0.2.0     rmarkdown_2.25       deSolve_1.38        
+[55] workflowr_1.7.1      hms_1.1.3            evaluate_0.22       
+[58] knitr_1.44           irlba_2.3.5.1        rlang_1.1.1         
+[61] Rcpp_1.0.11          hdrcde_3.4           glue_1.6.2          
+[64] fda_6.1.4            rstudioapi_0.15.0    jsonlite_1.8.7      
+[67] R6_2.5.1             plyr_1.8.9           fs_1.6.3            </code></pre>
 </div>
 </div>
 
