@@ -13,7 +13,7 @@
 
 <meta name="date" content="2024-09-09" />
 
-<title>eQTL Simulation</title>
+<title>Simulation: Identifying dynamic eQTLs using FASH (without Model-Misspecification)</title>
 
 <script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -371,7 +371,8 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">eQTL Simulation</h1>
+<h1 class="title toc-ignore">Simulation: Identifying dynamic eQTLs using
+FASH (without Model-Misspecification)</h1>
 <h4 class="author">Ziang Zhang</h4>
 <h4 class="date">2024-09-09</h4>
 
@@ -402,7 +403,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-09-12
+<strong>Last updated:</strong> 2024-09-16
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -533,15 +534,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree8299ac0e6d8fd0111e48ab6a9cbbaf0c913b4342targetblank8299ac0a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeb4a011a618afef177acc3f55e502f7209995f3fdtargetblankb4a011aa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/8299ac0e6d8fd0111e48ab6a9cbbaf0c913b4342" target="_blank">8299ac0</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/b4a011a618afef177acc3f55e502f7209995f3fd" target="_blank">b4a011a</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree8299ac0e6d8fd0111e48ab6a9cbbaf0c913b4342targetblank8299ac0a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeb4a011a618afef177acc3f55e502f7209995f3fdtargetblankb4a011aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -551,7 +552,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/8299ac0e6d8fd0111e48ab6a9cbbaf0c913b4342" target="_blank">8299ac0</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/b4a011a618afef177acc3f55e502f7209995f3fd" target="_blank">b4a011a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -573,72 +574,16 @@ Ignored files:
     Ignored:    analysis/.Rhistory
     Ignored:    code/.DS_Store
     Ignored:    code/cpp/.DS_Store
-    Ignored:    code/function/.DS_Store
-    Ignored:    code/function/.Rhistory
     Ignored:    data/.DS_Store
+    Ignored:    data/expression_data/.DS_Store
     Ignored:    output/.DS_Store
     Ignored:    output/example/.DS_Store
     Ignored:    output/example/figure/
-
-Untracked files:
-    Untracked:  analysis/circadian_expression.Rmd
-    Untracked:  code/cpp/Gaussian_just_fixed.o
-    Untracked:  code/cpp/Gaussian_just_fixed.so
-    Untracked:  code/cpp/Gaussian_theta_known.o
-    Untracked:  code/cpp/Gaussian_theta_known.so
-    Untracked:  code/cpp/Poisson.o
-    Untracked:  code/cpp/Poisson.so
-    Untracked:  code/cpp/Poisson_causes.o
-    Untracked:  code/cpp/Poisson_causes.so
-    Untracked:  code/cpp/Poisson_covid.o
-    Untracked:  code/cpp/Poisson_covid.so
-    Untracked:  code/cpp/Poisson_expression.o
-    Untracked:  code/cpp/Poisson_expression.so
-    Untracked:  code/cpp/Poisson_just_fixed.cpp
-    Untracked:  code/cpp/Poisson_just_fixed.o
-    Untracked:  code/cpp/Poisson_just_fixed.so
-    Untracked:  code/cpp/Poisson_just_fixed_causes.o
-    Untracked:  code/cpp/Poisson_just_fixed_causes.so
-    Untracked:  code/cpp/Poisson_just_fixed_covid.o
-    Untracked:  code/cpp/Poisson_just_fixed_covid.so
-    Untracked:  code/cpp/Poisson_just_fixed_expression.o
-    Untracked:  code/cpp/Poisson_just_fixed_expression.so
-    Untracked:  code/function/functions_Gaussian_fitting_eQTLsim.R
-    Untracked:  code/function/functions_fitting_Gaussian_eQTL_irregular.R
-    Untracked:  code/function/functions_fitting_Poisson_circadian_expression.R
-    Untracked:  code/function/functions_simulating.R
-    Untracked:  code/function/functions_simulation_eQTL_irregular.R
-    Untracked:  data/13100810.csv
-    Untracked:  data/13100810_MetaData.csv
-    Untracked:  data/circadian_expression/
-    Untracked:  data/expression_data/
-    Untracked:  output/causes/
-    Untracked:  output/circadian_expression/
-    Untracked:  output/eQTL_sim/
-    Untracked:  output/expression/
-    Untracked:  output/simulation_eQTL/
-    Untracked:  output/simulation_eQTL_test/
-    Untracked:  output/simulation_pollution/
-    Untracked:  thought_process
+    Ignored:    output/simulation_pollution/.DS_Store
+    Ignored:    output/simulation_pollution/figure/
 
 Unstaged changes:
-    Modified:   analysis/_site.yml
-    Deleted:    analysis/simulation.Rmd
-    Modified:   analysis/simulation_eQTL.Rmd
     Modified:   analysis/simulation_eQTL_identification.Rmd
-    Modified:   analysis/simulation_pollution.Rmd
-    Modified:   code/cpp/Gaussian_just_fixed.cpp
-    Modified:   code/function/functions_fitting_Gaussian.R
-    Modified:   code/function/functions_fitting_Gaussian_eQTL.R
-    Modified:   code/function/functions_fitting_Gaussian_eQTL_test.R
-    Modified:   code/function/functions_simulation.R
-    Modified:   output/example/L_matrix.rda
-    Modified:   output/example/fitted_datasets.rda
-    Modified:   output/example/functional_datasets.rda
-    Modified:   output/example/posterior_weights_matrix.rda
-    Deleted:    output/simulation/L_matrix.rda
-    Deleted:    output/simulation/fitted_datasets.rda
-    Deleted:    output/simulation/posterior_weights_matrix.rda
 
 </code></pre>
 <p>
@@ -684,6 +629,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b4a011a618afef177acc3f55e502f7209995f3fd/analysis/eQTL_sim.rmd" target="_blank">b4a011a</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+<td>
+workflowr::wflow_publish("analysis/eQTL_sim.rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/eQTL_sim.html" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -749,6 +728,43 @@ for (i in 1:9) {
   points(data_sim_list[[index]]$x, data_sim_list[[index]]$y, col = &quot;blue&quot;)
 }</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
+Past versions of unnamed-chunk-2-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-2-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow = c(1, 1))
 
 sigma &lt;- unlist(lapply(data_sim_list, function(x) unique(x$sd)))</code></pre>
@@ -820,6 +836,43 @@ plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
      pch = 20,lwd = 2,xlab = &quot;SQP iteration&quot;,
      ylab = &quot;objective&quot;,xaxp = c(1,numiter,numiter - 1))</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
+Past versions of unnamed-chunk-5-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-5-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>prior_weight &lt;- data.frame(p = rep(p_vec, each = length(psd_iwp_vec)), psd_iwp = psd_iwp_vec, prior_weight = fit.sqp$x)</code></pre>
 <pre class="r"><code>head(prior_weight)</code></pre>
 <pre><code>  p psd_iwp prior_weight
@@ -901,6 +954,43 @@ plot_combined &lt;- PSD_data_long %&gt;%
 <pre class="r"><code># Print the combined plot
 print(plot_combined)</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-13-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Also compare the boxplot of the squared error for MLE and EB:</p>
 <pre class="r"><code>PSD_data$error_EB &lt;- (PSD_data$EB - PSD_data$truth)^2
 PSD_data$error_MLE &lt;- (PSD_data$MLE - PSD_data$truth)^2
@@ -927,6 +1017,43 @@ ggplot(summary_data, aes(x = as.factor(sd), y = mean_error, color = Method)) +
   theme_minimal() +
   scale_color_discrete(name = &quot;Method&quot;)</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-14-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>This illustrates that by pooling the information through EB, the
 posterior mean from FASH improves the estimate of <span
 class="math inline">\(\sigma\)</span> compared to the original MLE.</p>
@@ -951,6 +1078,43 @@ fdr_df$rank &lt;- 1:length(lfdr)</code></pre>
   ggtitle(&quot;FASH:Cumulative FDR Plot&quot;) +
   scale_color_manual(values = c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;))</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
+Past versions of unnamed-chunk-16-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-16-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>How many false discoveries are there?</p>
 <pre class="r"><code>alpha &lt;- 0.05
 num_discoveries &lt;- sum(fdr_df$cumulative_fdr &lt;= alpha)
@@ -985,6 +1149,43 @@ ggplot(fdr_df_fash_for_plotting, aes(x = threshold, y = true_fdr)) +
   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
   ggtitle(&quot;Nominal FDR vs Actual FDR Curve for FASH&quot;)</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
+Past versions of unnamed-chunk-18-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-18-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-18-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Also compare the number of false discoveries with the number of
 discoveries at different level of threshold, where number of discoveries
 is plotted against number of false discoveries:</p>
@@ -1005,6 +1206,43 @@ ggplot(num_discoveries_df, aes(x = (num_discoveries), y = (num_false_discoveries
   ggtitle(&quot;FASH: Number of False Discoveries vs Number of Discoveries&quot;) +
   coord_cartesian(xlim = c(0, size_each[1]), ylim = c(0, size_each[1]))</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-19-1">
+Past versions of unnamed-chunk-19-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-19-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-19-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="comparison-with-mash" class="section level2">
@@ -1057,6 +1295,43 @@ true_false_discovery_rate</code></pre>
   ggtitle(&quot;Cumulative FDR Plot&quot;) +
   scale_color_manual(values = c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;))</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
+Past versions of unnamed-chunk-23-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-23-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-23-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Check the calibration of FDR for MASH:</p>
 <pre class="r"><code># Calculate true FDR for MASH
 threshold_vec &lt;- seq(0, 1, by = 0.01)
@@ -1081,6 +1356,43 @@ ggplot(fdr_df_mash_for_plotting, aes(x = threshold, y = true_fdr)) +
   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
   ggtitle(&quot;Nominal FDR vs Actual FDR Curve for MASH&quot;)</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-24-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Plot the number of false discoveries against the number of total
 discoveries for MASH:</p>
 <pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.01)
@@ -1100,6 +1412,43 @@ ggplot(num_discoveries_df_mash, aes(x = num_discoveries, y = (num_false_discover
   ggtitle(&quot;MASH: Number of False Discoveries vs Number of Discoveries&quot;) +
   coord_cartesian(xlim = c(0, size_each[1]), ylim = c(0, size_each[1]))</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-25-1">
+Past versions of unnamed-chunk-25-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-25-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-25-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Compare MASH (fdr_df_mash) and FASH (fdr_df)</p>
 <pre class="r"><code># Calculate true FDR for FASH
 threshold_vec &lt;- seq(0, 1, by = 0.01)
@@ -1141,6 +1490,43 @@ ggplot(fdr_df_combined, aes(x = threshold, y = true_fdr, color = method)) +
   geom_hline(yintercept = size_each[1]/N, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   ggtitle(&quot;Nominal FDR vs Actual FDR Curves for MASH and FASH&quot;)</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-26-1">
+Past versions of unnamed-chunk-26-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-26-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-26-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Compare the number of false discoveries against the number of total
 discoveries for both methods:</p>
 <pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.0001)
@@ -1171,6 +1557,43 @@ ggplot(num_discoveries_df_combined, aes(x = num_discoveries, y = num_false_disco
   ggtitle(&quot;Number of False Discoveries vs Number of Discoveries for MASH and FASH&quot;) +
   coord_cartesian(xlim = c(0, size_each[1]), ylim = c(0, size_each[1]))</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-27-1">
+Past versions of unnamed-chunk-27-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-27-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-27-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Compare the FDR vs Power for both methods:</p>
 <pre class="r"><code># Calculate the power for FASH
 num_discoveries_df_fash$power &lt;- (num_discoveries_df_fash$num_discoveries-num_discoveries_df_fash$num_false_discoveries)/(N - size_each[1])
@@ -1190,6 +1613,43 @@ ggplot(num_discoveries_df_combined, aes(x = threshold, y = power, color = method
   ggtitle(&quot;FDR vs Power for MASH and FASH&quot;) +
   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-28-1">
+Past versions of unnamed-chunk-28-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-28-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-28-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="comparison-with-oracle-bayes" class="section level2">
 <h2><strong>Comparison with Oracle Bayes</strong></h2>
@@ -1256,6 +1716,43 @@ plot_combined &lt;- PSD_data_long %&gt;%
 <pre class="r"><code># Print the combined plot
 print(plot_combined)</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-32-1">
+Past versions of unnamed-chunk-32-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-32-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-32-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Then, let’s check the calibration of FDR and its corresponding
 power.</p>
 <p>Compute the local false discovery rate (lfdr):</p>
@@ -1285,6 +1782,43 @@ ggplot(num_discoveries_df, aes(x = (num_discoveries), y = (num_false_discoveries
   ggtitle(&quot;OB: Number of False Discoveries vs Number of Discoveries&quot;) +
   coord_cartesian(xlim = c(0, size_each[1]), ylim = c(0, size_each[1]))</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-34-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-34-1">
+Past versions of unnamed-chunk-34-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-34-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-34-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Compare FASH, OB and MASH in terms of FDR calibration:</p>
 <pre class="r"><code># Create a data frame for plotting
 fdr_vec_ob &lt;- numeric(length(threshold_vec))
@@ -1310,6 +1844,43 @@ ggplot(fdr_df_combined, aes(x = threshold, y = true_fdr, color = method)) +
   geom_hline(yintercept = size_each[1]/N, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
   ggtitle(&quot;Nominal FDR vs Actual FDR Curves for All Methods&quot;)</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-35-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-35-1">
+Past versions of unnamed-chunk-35-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-35-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-35-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Compare FASH, OB and MASH in terms of number of discoveries:</p>
 <pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.0001)
 num_discoveries_vec_ob &lt;- numeric(length(threshold_vec))
@@ -1342,6 +1913,43 @@ ggplot(num_discoveries_df_combined, aes(x = num_discoveries, y = num_false_disco
   ggtitle(&quot;Number of False Discoveries vs Number of Discoveries for All Methods&quot;) +
   coord_cartesian(xlim = c(0, size_each[1]), ylim = c(0, size_each[1]))</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-36-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-36-1">
+Past versions of unnamed-chunk-36-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-36-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-36-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Compare FASH, OB and MASH in terms of power:</p>
 <pre class="r"><code># Plot the FDR vs Power for both methods
 ggplot(num_discoveries_df_combined, aes(x = threshold, y = power, color = method)) +
@@ -1352,6 +1960,43 @@ ggplot(num_discoveries_df_combined, aes(x = threshold, y = power, color = method
   ggtitle(&quot;FDR vs Power for All Methods&quot;) +
   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))</code></pre>
 <p><img src="figure/eQTL_sim.rmd/unnamed-chunk-37-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-37-1">
+Past versions of unnamed-chunk-37-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-37-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3f40c47ea8075c62ff5a3d4da697eb688ba6d91c/docs/figure/eQTL_sim.rmd/unnamed-chunk-37-1.png" target="_blank">3f40c47</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Overall, FASH seems to perform quite close to the oracle Bayes (OB)
 approach that utilizes the true prior.</p>
 <br>
