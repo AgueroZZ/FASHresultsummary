@@ -1,5 +1,5 @@
 ---
-title: "eQTL Simulation"
+title: "Simulation: Identifying dynamic eQTLs using FASH (without Model-Misspecification)"
 author: "Ziang Zhang"
 date: "2024-09-09"
 output: workflowr::wflow_html
