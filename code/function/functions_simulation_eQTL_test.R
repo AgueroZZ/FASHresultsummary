@@ -43,7 +43,8 @@ simulate_nonlinear_function <- function(n_basis = 20, sd_function = 1, sd_poly =
 ### Write a function, to simulate a random function as g using constant and linear function
 simulate_linear_function <- function(sd_poly = 1){
   beta0 <- rnorm(1, mean = 0, sd = sd_poly)
-  beta1 <- rnorm(1, mean = 0, sd = sd_poly)
+  # beta1 <- rnorm(1, mean = 0, sd = sd_poly)
+  beta1 <- sample(c(-0.5,0.5),1)
   function(x_new) {
     return(beta0 + beta1 * x_new)
   }

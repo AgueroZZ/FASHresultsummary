@@ -161,13 +161,11 @@ So the issue is indeed the Laplace approximation accuracy when the count number 
 Wait!!! I just notice that there was an issue with the posterior matrix computation! The prior was mis-treated as the log-prior!! Let's update and retry it.
 Wow!! The result is perfect now!!!! (Also needs to expand the grid of the PSD too) 
 
-
 (B): When there are model-misspecification, can we consider more robust multiple hypothesis controlling method than FDR? How about max-lfdr?
 
 Answer: Actually even for the model-misspecification case, if we increase the number of count to reduce the Laplace approximation error, the FDR becomes quite well calibrated. 
 To double check this, let me rerun the misspecified case with ten times of the datasets (N1 = 1000 and N2 = 2000 now). The calibration of FASH's FDR does not change by much.
 If we still care about the non-preciseness of the calibration, how about we increase the possibility of the null-hypothesis (considering a wider range of psd for IWP) --> This helps a lot too!!
-
 
 
 (C): What would be the main underlying effect of model-misspecification in the FDR control setting? How does it affect the power and FDR calibration of FASH?
@@ -180,14 +178,46 @@ To check if this is true, let's consider the following experiment:
 I expect to see (ii) to cause lower power and (i) to cause incorrect calibration. 
 Let's try (i) first: For the circadian detection example, when alternative is mis-specified, pi_0 is over-estimated, leading to lower power.
 Then try (ii): For the circadian detection example, mis-specification of the null hypothesis under-estimates pi_0 leading to incorrect (inflated) FDR calibration.
+Note that although this phenomenon happens most often, this is not an absolute result. We could come up with example where significant mis-specification of the alternative model could lead to under-estimate of pi_0. 
+For example, if the null is constant, the true alternative is linear function, but the fitted alternative is IWP1. 
+Introducing those linear functions may lead to underestimation of pi_0. Why? Let's explore this tomorrow! 
 
 
 
 
 
+----------------------------------------------
+----------------------------------------------
+Tue, Sept 17th:
+----------------------------------------------
+----------------------------------------------
 
+Today, I will continue on the exploration of my question from yesterday: why in the eQTL example, the misspecification of the alternative hypothesis (true: linear, fitted: IWP1) leads to under-estimation of pi_0 hence inflated FDR control?
 
+(a): Hypothesis 1: Linear terms with larger slopes are causing the issue. Because their larger slopes mislead the likelihood, they are significantly more likely to be in the IWP groups than the null group. So they penalize the value of pi_0 even more severely than regular observations from the IWP groups.
 
+Answer: To check if this is the reason, we can truncate the normal distribution used to generate the random slopes, and see if the result gets better.
+If I truncate the (abs value) normal slopes at 1, the result still does not improve by much.
+Trying truncating at 0.5 just to double check -> the result still does not change by much.
+So it is unlikely caused by the abs size of the random slope...
+
+(b): Hypothesis 2: All linear terms could affect the estimation of pi_0. As the distances to the null space happen to be even larger than the distance for a fitted true alternative from the null space.
+
+Answer: Let's take a look at the likelihood matrix for the true alternative and the false alternative (linear terms) ---> No it does not look like this case. The likelihood seems to be less informative than those from the true alternative.
+
+(c): Let's further simplify the context, consider equal standard deviation, and assuming the slope is fixed at beta = 0.5. See if it changes anything.
+
+Answer: Based on the controlled experiment, it seems like the main factor that affects the performance is the value of the noise in the dataset. 
+When the datasets are quite noisy (for example sd = 1 or 5), the pi_0 could be severely underestimated.
+But when the dataset has small noise (for example sd = 0.1 or 0.3), the estimate of pi_0 is fairly accurate.
+Let's pick the case when sd = 0.1, and see if the result will change once we allow the slope to be random --> still works fairly well...
+
+(d): Here is one possible explanation based on the experiment result today: When the noise level is high (high standard deviation), the likelihoods for observations from the constant or the IWP group are very flat. However, the likelihoods for the observations from the linear group with larger slope are not flat. So they dominate the estimation of pi_0 and break the equilibrium created by those correct flat likelihoods...
+
+Answer: If this is the reason, then we should see their likelihood vectors differ in structure to the likelihood vectors of the other two groups.
+Let's check how does the structure of the likelihood varies as the noise level changes, for each of the three groups. 
+When sigma = 1, many linear models penalize the null case significant with very small likelihood. Many of the linear models penalizes the null case more severely than the many of the true alternative.
+If we decrease sigma to 0.3, 
 
 
 
