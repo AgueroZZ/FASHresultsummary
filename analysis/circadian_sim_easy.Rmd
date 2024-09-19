@@ -41,8 +41,7 @@ boundary_sd <- 0.5
 k <- 50
 m <- 1
 beta_prec <- 1e-10
-psd_vec <- seq(0, 1, length.out = 11)
-# psd_vec <- seq(0, 1, length.out = 11)[-1]
+psd_vec <- seq(0, 2, length.out = 11)
 
 datasets <- list()
 ```
