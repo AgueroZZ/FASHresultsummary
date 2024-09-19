@@ -402,7 +402,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-09-16
+<strong>Last updated:</strong> 2024-09-19
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -533,15 +533,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree97d41c6b20bfa74de61fbc3bf86507f544eeb000targetblank97d41c6a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreee89bb93497bc61927a7d37519d8b28992abff1f5targetblanke89bb93a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/97d41c6b20bfa74de61fbc3bf86507f544eeb000" target="_blank">97d41c6</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/e89bb93497bc61927a7d37519d8b28992abff1f5" target="_blank">e89bb93</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree97d41c6b20bfa74de61fbc3bf86507f544eeb000targetblank97d41c6a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreee89bb93497bc61927a7d37519d8b28992abff1f5targetblanke89bb93a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -551,7 +551,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/97d41c6b20bfa74de61fbc3bf86507f544eeb000" target="_blank">97d41c6</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/e89bb93497bc61927a7d37519d8b28992abff1f5" target="_blank">e89bb93</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -581,12 +581,9 @@ Ignored files:
     Ignored:    output/simulation_pollution/.DS_Store
     Ignored:    output/simulation_pollution/figure/
 
-Untracked files:
-    Untracked:  output/circadian_sim/
-
 Unstaged changes:
-    Modified:   code/function/functions_fitting_Poisson_circadian_expression.R
-    Modified:   code/function/functions_sim_Poisson_circadian_expression.R
+    Modified:   output/circadian_sim_easy/L_matrix.rda
+    Modified:   thought_process
 
 </code></pre>
 <p>
@@ -632,6 +629,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/analysis/circadian_sim.Rmd" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+<td>
+some experiments to study the effect of model-misspecification
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/262129bac4567e9af360e2040440fcd4c2c3da3b/docs/circadian_sim.html" target="_blank">262129b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -709,7 +740,8 @@ intercept_sd &lt;- 0.2
 k &lt;- 40
 m &lt;- 1
 beta_prec &lt;- 1e-10
-psd_vec &lt;- seq(0, 1, length.out = 11)
+# psd_vec &lt;- seq(0, 1, length.out = 11)
+psd_vec &lt;- seq(0, 2, length.out = 21)
 datasets &lt;- list()</code></pre>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
@@ -727,6 +759,43 @@ for(i in 1:4){
   lines(datasets[[i]]$x, exp(datasets[[i]]$f), col = &quot;red&quot;, lwd = 2)
 }</code></pre>
 <p><img src="figure/circadian_sim.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
+Past versions of unnamed-chunk-3-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/262129bac4567e9af360e2040440fcd4c2c3da3b/docs/figure/circadian_sim.Rmd/unnamed-chunk-3-1.png" target="_blank">262129b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow = c(1,1))</code></pre>
 <p>The second <span class="math inline">\(N_2\)</span> datasets are from
 the Poisson model with no periodic effect:</p>
@@ -741,6 +810,43 @@ for(i in 1:4){
   lines(datasets[[N1 + i]]$x, exp(datasets[[N1 + i]]$f), col = &quot;red&quot;, lwd = 2)
 }</code></pre>
 <p><img src="figure/circadian_sim.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-1">
+Past versions of unnamed-chunk-4-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/262129bac4567e9af360e2040440fcd4c2c3da3b/docs/figure/circadian_sim.Rmd/unnamed-chunk-4-1.png" target="_blank">262129b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow = c(1,1))</code></pre>
 <p>Compute the L matrix</p>
 <pre class="r"><code>## set up a progress bar
@@ -754,7 +860,7 @@ for (i in 1:length(datasets)) {
                                     num_knots = k, 
                                     psd_sgp_vector = psd_vec,
                                     pred_step = 1,
-                                    betaprec = betaprec, 
+                                    betaprec = beta_prec, 
                                     log_lib_size = NULL, 
                                     m = 1)
   like_vec2 &lt;- compute_log_likelihood_ospline_seq(dataset = data, 
@@ -762,7 +868,7 @@ for (i in 1:length(datasets)) {
                                     num_knots = k, 
                                     psd_iwp_vector = psd_vec,
                                     pred_step = 1,
-                                    betaprec = betaprec, 
+                                    betaprec = beta_prec, 
                                     log_lib_size = NULL)
   
   L_vecs[[i]] &lt;- c(like_vec1, like_vec2)
@@ -772,7 +878,7 @@ save(L_matrix, file = paste0(result_dir, &quot;/L_matrix.rda&quot;))</code></pre
 <pre class="r"><code>load(paste0(result_dir, &quot;/L_matrix.rda&quot;))
 
 fit.sqp &lt;- mixsqp(L = L_matrix, log = TRUE)</code></pre>
-<pre><code>Running mix-SQP algorithm 0.3-54 on 300 x 22 matrix
+<pre><code>Running mix-SQP algorithm 0.3-54 on 300 x 42 matrix
 convergence tol. (SQP):     1.0e-08
 conv. tol. (active-set):    1.0e-10
 zero threshold (solution):  1.0e-08
@@ -783,23 +889,24 @@ minimum step size:          1.0e-08
 max. iter (SQP):            1000
 max. iter (active-set):     20
 number of EM iterations:    10
-Computing SVD of 300 x 22 matrix.
+Computing SVD of 300 x 42 matrix.
 Matrix is not low-rank; falling back to full matrix.
 iter        objective max(rdual) nnz stepsize max.diff nqp nls
-   1 +1.332092225e+00  -- EM --   22 1.00e+00 4.10e-02  --  --
-   2 +1.311180308e+00  -- EM --   22 1.00e+00 3.31e-02  --  --
-   3 +1.299050645e+00  -- EM --   22 1.00e+00 2.73e-02  --  --
-   4 +1.290940968e+00  -- EM --   22 1.00e+00 2.30e-02  --  --
-   5 +1.285011457e+00  -- EM --   22 1.00e+00 1.96e-02  --  --
-   6 +1.280392278e+00  -- EM --   22 1.00e+00 1.68e-02  --  --
-   7 +1.276630978e+00  -- EM --   22 1.00e+00 1.46e-02  --  --
-   8 +1.273475724e+00  -- EM --   22 1.00e+00 1.28e-02  --  --
-   9 +1.270776944e+00  -- EM --   22 1.00e+00 1.14e-02  --  --
-  10 +1.268439249e+00  -- EM --   22 1.00e+00 1.01e-02  --  --
-   1 +1.266397136e+00 +3.693e-02  22  ------   ------   --  --
-   2 +1.246850642e+00 +1.634e-02   7 1.00e+00 1.11e-01  20   1
-   3 +1.246742257e+00 +1.914e-04   7 1.00e+00 1.81e-01   5   1
-   4 +1.246742252e+00 -1.750e-08   7 1.00e+00 1.82e-04   2   1
+   1 +2.083474401e+00  -- EM --   42 1.00e+00 3.53e-02  --  --
+   2 +2.050893297e+00  -- EM --   42 1.00e+00 2.59e-02  --  --
+   3 +2.037047612e+00  -- EM --   42 1.00e+00 2.10e-02  --  --
+   4 +2.029053316e+00  -- EM --   42 1.00e+00 1.65e-02  --  --
+   5 +2.023572635e+00  -- EM --   42 1.00e+00 1.31e-02  --  --
+   6 +2.019449838e+00  -- EM --   42 1.00e+00 1.06e-02  --  --
+   7 +2.016185416e+00  -- EM --   42 1.00e+00 8.73e-03  --  --
+   8 +2.013519671e+00  -- EM --   42 1.00e+00 7.33e-03  --  --
+   9 +2.011297651e+00  -- EM --   42 1.00e+00 6.24e-03  --  --
+  10 +2.009417630e+00  -- EM --   42 1.00e+00 5.38e-03  --  --
+   1 +2.007808341e+00 +4.644e-02  42  ------   ------   --  --
+   2 +2.004388701e+00 +3.216e-02  22 1.00e+00 5.36e-02  20   1
+   3 +1.990356100e+00 +2.787e-02  12 1.00e+00 1.49e-01  20   1
+   4 +1.990351435e+00 +7.137e-04  12 1.00e+00 2.74e-03   2   1
+   5 +1.990351434e+00 -9.805e-10  12 1.00e+00 1.27e-05   2   1
 Optimization took 0.00 seconds.
 Convergence criteria met---optimal solution found.</code></pre>
 <pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
@@ -807,37 +914,97 @@ plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
      pch = 20,lwd = 2,xlab = &quot;SQP iteration&quot;,
      ylab = &quot;objective&quot;,xaxp = c(1,numiter,numiter - 1))</code></pre>
 <p><img src="figure/circadian_sim.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/262129bac4567e9af360e2040440fcd4c2c3da3b/docs/figure/circadian_sim.Rmd/unnamed-chunk-6-1.png" target="_blank">262129b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># create prior weight 
 prior_weight &lt;- data.frame(name = paste0(rep(c(&quot;sgp_&quot;, &quot;iwp_&quot;), each = length(psd_vec)), psd_vec), prior_weight = fit.sqp$x)
 prior_weight</code></pre>
 <pre><code>      name prior_weight
-1    sgp_0   0.00000000
-2  sgp_0.1   0.00000000
-3  sgp_0.2   0.00000000
-4  sgp_0.3   0.00000000
-5  sgp_0.4   0.10023261
-6  sgp_0.5   0.18835194
-7  sgp_0.6   0.02510516
-8  sgp_0.7   0.00000000
-9  sgp_0.8   0.00000000
-10 sgp_0.9   0.00000000
-11   sgp_1   0.07063443
-12   iwp_0   0.00000000
-13 iwp_0.1   0.18047152
-14 iwp_0.2   0.06093014
-15 iwp_0.3   0.00000000
-16 iwp_0.4   0.00000000
-17 iwp_0.5   0.00000000
-18 iwp_0.6   0.00000000
-19 iwp_0.7   0.00000000
-20 iwp_0.8   0.00000000
-21 iwp_0.9   0.00000000
-22   iwp_1   0.37427420</code></pre>
+1    sgp_0  0.000000000
+2  sgp_0.1  0.001504636
+3  sgp_0.2  0.000000000
+4  sgp_0.3  0.155956510
+5  sgp_0.4  0.000000000
+6  sgp_0.5  0.000000000
+7  sgp_0.6  0.008238631
+8  sgp_0.7  0.072718046
+9  sgp_0.8  0.000000000
+10 sgp_0.9  0.000000000
+11   sgp_1  0.000000000
+12 sgp_1.1  0.000000000
+13 sgp_1.2  0.051532518
+14 sgp_1.3  0.000000000
+15 sgp_1.4  0.000000000
+16 sgp_1.5  0.000000000
+17 sgp_1.6  0.000000000
+18 sgp_1.7  0.000000000
+19 sgp_1.8  0.000000000
+20 sgp_1.9  0.000000000
+21   sgp_2  0.038896161
+22   iwp_0  0.053816228
+23 iwp_0.1  0.068261385
+24 iwp_0.2  0.000000000
+25 iwp_0.3  0.150009402
+26 iwp_0.4  0.000000000
+27 iwp_0.5  0.000000000
+28 iwp_0.6  0.000000000
+29 iwp_0.7  0.000000000
+30 iwp_0.8  0.000000000
+31 iwp_0.9  0.033340388
+32   iwp_1  0.148822217
+33 iwp_1.1  0.000000000
+34 iwp_1.2  0.000000000
+35 iwp_1.3  0.000000000
+36 iwp_1.4  0.000000000
+37 iwp_1.5  0.000000000
+38 iwp_1.6  0.000000000
+39 iwp_1.7  0.000000000
+40 iwp_1.8  0.000000000
+41 iwp_1.9  0.000000000
+42   iwp_2  0.216903878</code></pre>
+<pre class="r"><code># sum the prior weight corresponding to sgp
+sum(fit.sqp$x[grepl(&quot;sgp_&quot;, prior_weight$name)])</code></pre>
+<pre><code>[1] 0.3288465</code></pre>
 <p>Compute the posterior:</p>
 <pre class="r"><code># Compute the posterior using the likelihood and prior
 posterior_matrix &lt;- matrix(0, nrow = nrow(L_matrix), ncol = ncol(L_matrix))
 for(i in 1:nrow(L_matrix)){
-  posterior_matrix[i,] &lt;- exp(L_matrix[i,] - max(L_matrix[i,]) + fit.sqp$x)
+  posterior_matrix[i,] &lt;- exp(L_matrix[i,] - max(L_matrix[i,]) + log(fit.sqp$x))
   posterior_matrix[i,] &lt;- posterior_matrix[i,]/sum(posterior_matrix[i,])
 }</code></pre>
 <pre class="r"><code>colnames(posterior_matrix) &lt;- paste0(rep(c(&quot;sgp_&quot;, &quot;iwp_&quot;), each = length(psd_vec)), psd_vec)</code></pre>
@@ -845,9 +1012,46 @@ for(i in 1:nrow(L_matrix)){
 columns):</p>
 <pre class="r"><code>posterior_prob &lt;- rowSums(posterior_matrix[, grepl(&quot;sgp_&quot;, colnames(posterior_matrix))])
 head(posterior_prob)</code></pre>
-<pre><code>[1] 0.9999681 0.9970637 0.5473352 1.0000000 1.0000000 0.9988441</code></pre>
+<pre><code>[1] 0.08014017 1.00000000 1.00000000 1.00000000 1.00000000 1.00000000</code></pre>
 <pre class="r"><code>plot(posterior_prob, type = &quot;p&quot;, col = &quot;blue&quot;, xlab = &quot;dataset&quot;, ylab = &quot;posterior probability&quot;)</code></pre>
 <p><img src="figure/circadian_sim.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/262129bac4567e9af360e2040440fcd4c2c3da3b/docs/figure/circadian_sim.Rmd/unnamed-chunk-10-1.png" target="_blank">262129b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>posterior_weights_df &lt;- as.data.frame(posterior_matrix)
 posterior_weights_df$id &lt;- 1:nrow(posterior_weights_df)
 melted_data &lt;- melt(posterior_weights_df, id.vars = &quot;id&quot;)
@@ -863,6 +1067,43 @@ ggplot(melted_data, aes(x = id, y = value, fill = variable)) +
     plot.background = element_rect(fill = &quot;white&quot;, colour = NA) 
   )</code></pre>
 <p><img src="figure/circadian_sim.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/262129bac4567e9af360e2040440fcd4c2c3da3b/docs/figure/circadian_sim.Rmd/unnamed-chunk-11-1.png" target="_blank">262129b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>The local FDR for testing periodicity:</p>
 <pre class="r"><code>lfdr &lt;- 1 - posterior_prob
 lfdr &lt;- ifelse(lfdr &lt; 0, 0, lfdr) # set to 0 if it is negative due to numerical error
@@ -881,6 +1122,43 @@ fdr_df$rank &lt;- 1:length(lfdr)</code></pre>
   ggtitle(&quot;FASH:Cumulative FDR Plot&quot;) +
   scale_color_manual(values = c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;))</code></pre>
 <p><img src="figure/circadian_sim.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/262129bac4567e9af360e2040440fcd4c2c3da3b/docs/figure/circadian_sim.Rmd/unnamed-chunk-13-1.png" target="_blank">262129b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Plot the curve of nominal false discovery rate (threshold) against
 the actual false discovery rate:</p>
 <pre class="r"><code># Calculate true FDR for FASH
@@ -907,6 +1185,43 @@ ggplot(fdr_df_fash_for_plotting, aes(x = threshold, y = true_fdr)) +
   coord_cartesian(xlim = c(0, 2/3), ylim = c(0, 2/3)) +
   ggtitle(&quot;Nominal FDR vs Actual FDR Curve for FASH&quot;)</code></pre>
 <p><img src="figure/circadian_sim.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/262129bac4567e9af360e2040440fcd4c2c3da3b/docs/figure/circadian_sim.Rmd/unnamed-chunk-14-1.png" target="_blank">262129b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.01)
 num_discoveries_vec &lt;- numeric(length(threshold_vec))
 num_false_discoveries_vec &lt;- numeric(length(threshold_vec))
@@ -924,6 +1239,43 @@ ggplot(num_discoveries_df, aes(x = (num_discoveries), y = (num_false_discoveries
   ggtitle(&quot;FASH: Number of False Discoveries vs Number of Discoveries&quot;) +
   coord_cartesian(xlim = c(0, (N1 + N2)), ylim = c(0, (N2)))</code></pre>
 <p><img src="figure/circadian_sim.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
+Past versions of unnamed-chunk-15-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/262129bac4567e9af360e2040440fcd4c2c3da3b/docs/figure/circadian_sim.Rmd/unnamed-chunk-15-1.png" target="_blank">262129b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>threshold_vec &lt;- seq(0, 1, by = 0.0001)
 num_discoveries_vec_fash &lt;- numeric(length(threshold_vec))
 num_false_discoveries_vec_fash &lt;- numeric(length(threshold_vec))
@@ -945,6 +1297,52 @@ ggplot(num_discoveries_df_fash, aes(x = threshold, y = power, color = method)) +
   ggtitle(&quot;FDR vs Power for FASH&quot;) +
   coord_cartesian(xlim = c(0, 1), ylim = c(0, 1))</code></pre>
 <p><img src="figure/circadian_sim.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
+Past versions of unnamed-chunk-16-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/262129bac4567e9af360e2040440fcd4c2c3da3b/docs/figure/circadian_sim.Rmd/unnamed-chunk-16-1.png" target="_blank">262129b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Carry out the max-lfdr procedure:</p>
+<pre class="r"><code>ggplot(fdr_df, aes(x = 1:length(lfdr), y = fdr, col = type)) +
+  geom_point() +
+  geom_hline(yintercept = 0.05, linetype = &quot;dashed&quot;, color = &quot;purple&quot;) +
+  labs(x = &quot;Ordered Units&quot;, y = &quot;lfdr&quot;, col = &quot;Type&quot;) +
+  theme_minimal() +
+  ggtitle(&quot;FASH: lfdr Plot&quot;) +
+  scale_color_manual(values = c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;))</code></pre>
+<p><img src="figure/circadian_sim.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
