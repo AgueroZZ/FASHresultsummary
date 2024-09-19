@@ -402,7 +402,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-09-16
+<strong>Last updated:</strong> 2024-09-19
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -533,15 +533,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea16501d2d1af849b9cdaa1807aa316e413404981targetblanka16501da">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree241868be1996961f9baa2049ed9c8c5303f06fb3targetblank241868ba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a16501d2d1af849b9cdaa1807aa316e413404981" target="_blank">a16501d</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/241868be1996961f9baa2049ed9c8c5303f06fb3" target="_blank">241868b</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea16501d2d1af849b9cdaa1807aa316e413404981targetblanka16501da"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree241868be1996961f9baa2049ed9c8c5303f06fb3targetblank241868ba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -551,7 +551,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a16501d2d1af849b9cdaa1807aa316e413404981" target="_blank">a16501d</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/241868be1996961f9baa2049ed9c8c5303f06fb3" target="_blank">241868b</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -582,15 +582,7 @@ Ignored files:
     Ignored:    output/simulation_pollution/figure/
 
 Unstaged changes:
-    Modified:   analysis/circadian_sim.Rmd
-    Deleted:    code/cpp/Poisson.o
-    Deleted:    code/cpp/Poisson.so
-    Deleted:    code/cpp/Poisson_expression.o
-    Deleted:    code/cpp/Poisson_expression.so
-    Deleted:    code/cpp/Poisson_just_fixed.o
-    Deleted:    code/cpp/Poisson_just_fixed.so
-    Deleted:    code/cpp/Poisson_just_fixed_expression.o
-    Deleted:    code/cpp/Poisson_just_fixed_expression.so
+    Modified:   output/circadian_sim_easy/L_matrix.rda
     Modified:   thought_process
 
 </code></pre>
@@ -637,6 +629,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/241868be1996961f9baa2049ed9c8c5303f06fb3/analysis/circadian_sim_easy.Rmd" target="_blank">241868b</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-19
+</td>
+<td>
+wflow_publish("analysis/circadian_sim_easy.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/analysis/circadian_sim_easy.Rmd" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+<td>
+some experiments to study the effect of model-misspecification
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/circadian_sim_easy.html" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+<td>
+some experiments to study the effect of model-misspecification
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -725,14 +768,15 @@ num_cores &lt;- 4</code></pre>
 <pre class="r"><code>x &lt;- seq(0,4, length.out = 100)
 a &lt;- 2*pi
 sd_exact &lt;- 1
-sd_quasi &lt;- 0.2
+sd_quasi &lt;- 0.5
 sd_np = 1
 intercept_sd &lt;- 0.2
 boundary_sd &lt;- 0.5
 k &lt;- 50
 m &lt;- 1
 beta_prec &lt;- 1e-10
-psd_vec &lt;- seq(0, 1, length.out = 11)
+psd_vec &lt;- seq(0, 2, length.out = 11)
+
 datasets &lt;- list()</code></pre>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
@@ -744,7 +788,12 @@ sd_fun_draw_prop &lt;- c(0.2, 0.2, 0.15, 0.15, 0.15, 0.15)
 sd_fun_draw_vec &lt;- rep(c(0, 0.1, 0.2, 0.3, 0.4, 0.5), times = c(0.2, 0.2, 0.15, 0.15, 0.15, 0.15)*N1)
 for(i in 1:N1){
   sd_fun_draw &lt;- sd_fun_draw_vec[i]
+  # sd_fun_draw &lt;- 0
   datasets[[i]] &lt;- simulate_data(type = &quot;v1&quot;, x = x, a = a, sd_fun = sd_fun_draw, boundary_sd = 1)
+  
+  # # mis-specified alternative...
+  # sd_quasi &lt;- 1
+  # datasets[[i]] &lt;- simulate_data(type = &quot;v2&quot;, x = x, a = a, sd_quasi = sd_quasi, sd_exact = sd_exact, intercept_sd = intercept_sd)
 }
 # plot 4 dataset
 par(mfrow = c(2,2))
@@ -778,6 +827,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-3-1.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-3-1.png" target="_blank">d634fe3</a>
 </td>
 <td>
@@ -799,6 +859,7 @@ sd_fun_draw_prop &lt;- c(0.2, 0.2, 0.15, 0.15, 0.15, 0.15)
 sd_fun_draw_vec2 &lt;- rep(c(0, 0.1, 0.2, 0.3, 0.4, 0.5), times = c(0.2, 0.2, 0.15, 0.15, 0.15, 0.15)*N2)
 for(i in (N1+1):(N1+N2)){
   sd_fun_draw &lt;- sd_fun_draw_vec2[i-N1]
+  # sd_fun_draw &lt;- sd_fun_draw_vec2[i-N1] + 0.1
   datasets[[i]] &lt;- simulate_data(type = &quot;iwp&quot;, x = x, sd_fun = sd_fun_draw, intercept_sd = intercept_sd, boundary_sd = boundary_sd)
 }
 # plot 4 dataset
@@ -831,6 +892,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-4-1.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-4-1.png" target="_blank">d634fe3</a>
@@ -891,22 +963,20 @@ number of EM iterations:    10
 Computing SVD of 300 x 22 matrix.
 Matrix is not low-rank; falling back to full matrix.
 iter        objective max(rdual) nnz stepsize max.diff nqp nls
-   1 +1.834688689e+00  -- EM --   22 1.00e+00 7.63e-02  --  --
-   2 +1.809032472e+00  -- EM --   22 1.00e+00 1.86e-02  --  --
-   3 +1.802387630e+00  -- EM --   22 1.00e+00 6.08e-03  --  --
-   4 +1.799243370e+00  -- EM --   22 1.00e+00 2.96e-03  --  --
-   5 +1.797338838e+00  -- EM --   22 1.00e+00 2.68e-03  --  --
-   6 +1.796030452e+00  -- EM --   22 1.00e+00 2.41e-03  --  --
-   7 +1.795059818e+00  -- EM --   22 1.00e+00 2.18e-03  --  --
-   8 +1.794302358e+00  -- EM --   21 1.00e+00 1.98e-03  --  --
-   9 +1.793689985e+00  -- EM --   21 1.00e+00 1.81e-03  --  --
-  10 +1.793181842e+00  -- EM --   21 1.00e+00 1.66e-03  --  --
-   1 +1.792751642e+00 +2.904e-02  21  ------   ------   --  --
-   2 +1.787775842e+00 +2.458e-03  11 1.00e+00 8.55e-02  12   1
-   3 +1.787663961e+00 +1.064e-02  12 1.00e+00 3.10e-03   7   1
-   4 +1.787659796e+00 +3.961e-04  12 1.00e+00 8.07e-04   2   1
-   5 +1.787659790e+00 +3.834e-07  12 1.00e+00 3.32e-05   2   1
-   6 +1.787659790e+00 -4.276e-08  12 1.00e+00 5.07e-08   2   1
+   1 +1.674719640e+00  -- EM --   22 1.00e+00 1.55e-01  --  --
+   2 +1.626596261e+00  -- EM --   19 1.00e+00 4.16e-02  --  --
+   3 +1.617020734e+00  -- EM --   18 1.00e+00 1.50e-02  --  --
+   4 +1.614024007e+00  -- EM --   16 1.00e+00 8.84e-03  --  --
+   5 +1.612817030e+00  -- EM --   15 1.00e+00 6.99e-03  --  --
+   6 +1.612237031e+00  -- EM --   13 1.00e+00 5.58e-03  --  --
+   7 +1.611922975e+00  -- EM --   13 1.00e+00 4.49e-03  --  --
+   8 +1.611739180e+00  -- EM --   12 1.00e+00 3.62e-03  --  --
+   9 +1.611625708e+00  -- EM --   12 1.00e+00 2.94e-03  --  --
+  10 +1.611552556e+00  -- EM --   12 1.00e+00 2.39e-03  --  --
+   1 +1.611503367e+00 +7.849e-03  12  ------   ------   --  --
+   2 +1.611168476e+00 +5.075e-03   9 1.00e+00 2.49e-02   5   1
+   3 +1.611165877e+00 +4.697e-05   9 1.00e+00 1.73e-03   2   1
+   4 +1.611165877e+00 -3.798e-08   9 1.00e+00 2.25e-05   2   1
 Optimization took 0.00 seconds.
 Convergence criteria met---optimal solution found.</code></pre>
 <pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
@@ -938,6 +1008,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-6-1.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-6-1.png" target="_blank">d634fe3</a>
 </td>
 <td>
@@ -955,33 +1036,35 @@ AgueroZZ
 prior_weight &lt;- data.frame(name = paste0(rep(c(&quot;sgp_&quot;, &quot;iwp_&quot;), each = length(psd_vec)), psd_vec), prior_weight = fit.sqp$x)
 prior_weight</code></pre>
 <pre><code>      name prior_weight
-1    sgp_0   0.07012691
-2  sgp_0.1   0.05401808
-3  sgp_0.2   0.06942097
-4  sgp_0.3   0.06752890
-5  sgp_0.4   0.00000000
-6  sgp_0.5   0.07114683
-7  sgp_0.6   0.00394424
-8  sgp_0.7   0.00000000
-9  sgp_0.8   0.00000000
-10 sgp_0.9   0.00000000
-11   sgp_1   0.00000000
-12   iwp_0   0.11284080
-13 iwp_0.1   0.18341235
-14 iwp_0.2   0.06457638
-15 iwp_0.3   0.13420174
-16 iwp_0.4   0.00000000
-17 iwp_0.5   0.14986793
-18 iwp_0.6   0.01891489
-19 iwp_0.7   0.00000000
-20 iwp_0.8   0.00000000
-21 iwp_0.9   0.00000000
-22   iwp_1   0.00000000</code></pre>
+1    sgp_0   0.07527619
+2  sgp_0.2   0.11538635
+3  sgp_0.4   0.12200041
+4  sgp_0.6   0.01594638
+5  sgp_0.8   0.00000000
+6    sgp_1   0.00000000
+7  sgp_1.2   0.00000000
+8  sgp_1.4   0.00000000
+9  sgp_1.6   0.00000000
+10 sgp_1.8   0.00000000
+11   sgp_2   0.00000000
+12   iwp_0   0.17510661
+13 iwp_0.2   0.24569724
+14 iwp_0.4   0.22552525
+15 iwp_0.6   0.01495035
+16 iwp_0.8   0.01011122
+17   iwp_1   0.00000000
+18 iwp_1.2   0.00000000
+19 iwp_1.4   0.00000000
+20 iwp_1.6   0.00000000
+21 iwp_1.8   0.00000000
+22   iwp_2   0.00000000</code></pre>
+<pre class="r"><code>sum(fit.sqp$x[grepl(&quot;sgp_&quot;, prior_weight$name)])</code></pre>
+<pre><code>[1] 0.3286093</code></pre>
 <p>Compute the posterior:</p>
 <pre class="r"><code># Compute the posterior using the likelihood and prior
 posterior_matrix &lt;- matrix(0, nrow = nrow(L_matrix), ncol = ncol(L_matrix))
 for(i in 1:nrow(L_matrix)){
-  posterior_matrix[i,] &lt;- exp(L_matrix[i,] - max(L_matrix[i,]) + fit.sqp$x)
+  posterior_matrix[i,] &lt;- exp(L_matrix[i,] - max(L_matrix[i,]) + log(fit.sqp$x))
   posterior_matrix[i,] &lt;- posterior_matrix[i,]/sum(posterior_matrix[i,])
 }</code></pre>
 <pre class="r"><code>colnames(posterior_matrix) &lt;- paste0(rep(c(&quot;sgp_&quot;, &quot;iwp_&quot;), each = length(psd_vec)), psd_vec)</code></pre>
@@ -989,7 +1072,7 @@ for(i in 1:nrow(L_matrix)){
 columns):</p>
 <pre class="r"><code>posterior_prob &lt;- rowSums(posterior_matrix[, grepl(&quot;sgp_&quot;, colnames(posterior_matrix))])
 head(posterior_prob)</code></pre>
-<pre><code>[1] 1.0000000 0.3749057 1.0000000 1.0000000 1.0000000 1.0000000</code></pre>
+<pre><code>[1] 0.9974691 0.1693590 0.0500618 0.4275863 1.0000000 1.0000000</code></pre>
 <pre class="r"><code>plot(posterior_prob, type = &quot;p&quot;, col = &quot;blue&quot;, xlab = &quot;dataset&quot;, ylab = &quot;posterior probability&quot;)</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1014,6 +1097,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-10-1.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-10-1.png" target="_blank">d634fe3</a>
@@ -1066,6 +1160,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-11-1.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-11-1.png" target="_blank">d634fe3</a>
@@ -1121,6 +1226,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-13-1.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-13-1.png" target="_blank">d634fe3</a>
@@ -1186,6 +1302,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-14-1.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-14-1.png" target="_blank">d634fe3</a>
 </td>
 <td>
@@ -1238,6 +1365,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-15-1.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-15-1.png" target="_blank">d634fe3</a>
@@ -1298,6 +1436,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-16-1.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-16-1.png" target="_blank">d634fe3</a>
 </td>
 <td>
@@ -1324,7 +1473,7 @@ for(i in 1:nrow(L_matrix)){
 
 posterior_prob_ob &lt;- rowSums(posterior_matrix_ob[, grepl(&quot;sgp_&quot;, colnames(posterior_matrix_ob))])
 head(posterior_prob_ob)</code></pre>
-<pre><code>[1] 1.0000000 0.2479439 1.0000000 1.0000000 1.0000000 1.0000000</code></pre>
+<pre><code>[1] 0.99803868 0.19988157 0.07394802 0.47407070 1.00000000 1.00000000</code></pre>
 <pre class="r"><code>plot(posterior_prob_ob, type = &quot;p&quot;, col = &quot;blue&quot;, xlab = &quot;dataset&quot;, ylab = &quot;posterior probability&quot;)</code></pre>
 <p><img src="figure/circadian_sim_easy.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1349,6 +1498,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-19-1.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-19-1.png" target="_blank">d634fe3</a>
@@ -1402,6 +1562,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-19-2.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-19-2.png" target="_blank">d634fe3</a>
@@ -1458,6 +1629,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-20-1.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-20-1.png" target="_blank">d634fe3</a>
@@ -1525,6 +1707,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-21-1.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-21-1.png" target="_blank">d634fe3</a>
 </td>
 <td>
@@ -1577,6 +1770,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-22-1.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-22-1.png" target="_blank">d634fe3</a>
@@ -1638,6 +1842,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5ba5178a0aec28d8177a6151ea69380d8cce95b9/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-22-2.png" target="_blank">5ba5178</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d634fe361609d2dc92204afc5397e787ef9ad2e3/docs/figure/circadian_sim_easy.Rmd/unnamed-chunk-22-2.png" target="_blank">d634fe3</a>
 </td>
 <td>
@@ -1682,32 +1897,34 @@ other attached packages:
  [1] lubridate_1.9.3 forcats_1.0.0   stringr_1.5.0   dplyr_1.1.3    
  [5] purrr_1.0.2     readr_2.1.4     tidyr_1.3.0     tibble_3.2.1   
  [9] tidyverse_2.0.0 mixsqp_0.3-54   reshape2_1.4.4  ggplot2_3.5.1  
-[13] Matrix_1.6-3    TMB_1.9.7       BayesGP_0.1.1  
+[13] Matrix_1.6-3    TMB_1.9.7       BayesGP_0.1.1   workflowr_1.7.1
 
 loaded via a namespace (and not attached):
  [1] gtable_0.3.4         xfun_0.40            bslib_0.5.1         
- [4] ks_1.14.1            lattice_0.21-8       tzdb_0.4.0          
- [7] bitops_1.0-7         vctrs_0.6.4          tools_4.3.1         
-[10] generics_0.1.3       fansi_1.0.5          cluster_2.1.4       
-[13] pkgconfig_2.0.3      fds_1.8              KernSmooth_2.23-21  
-[16] lifecycle_1.0.3      farver_2.1.1         compiler_4.3.1      
-[19] git2r_0.33.0         munsell_0.5.0        httpuv_1.6.11       
-[22] htmltools_0.5.6.1    rainbow_3.7          sass_0.4.7          
-[25] RCurl_1.98-1.12      yaml_2.3.7           pracma_2.4.2        
-[28] later_1.3.1          pillar_1.9.0         jquerylib_0.1.4     
-[31] whisker_0.4.1        MASS_7.3-60          cachem_1.0.8        
-[34] mclust_6.0.0         tidyselect_1.2.0     digest_0.6.33       
-[37] mvtnorm_1.2-3        stringi_1.7.12       LaplacesDemon_16.1.6
-[40] labeling_0.4.3       pcaPP_2.0-3          rprojroot_2.0.3     
-[43] fastmap_1.1.1        grid_4.3.1           colorspace_2.1-0    
-[46] cli_3.6.1            magrittr_2.0.3       utf8_1.2.3          
-[49] withr_2.5.1          scales_1.3.0         promises_1.2.1      
-[52] timechange_0.2.0     rmarkdown_2.25       deSolve_1.38        
-[55] workflowr_1.7.1      hms_1.1.3            evaluate_0.22       
-[58] knitr_1.44           irlba_2.3.5.1        rlang_1.1.1         
-[61] Rcpp_1.0.11          hdrcde_3.4           glue_1.6.2          
-[64] fda_6.1.4            rstudioapi_0.15.0    jsonlite_1.8.7      
-[67] R6_2.5.1             plyr_1.8.9           fs_1.6.3            </code></pre>
+ [4] ks_1.14.1            processx_3.8.2       lattice_0.21-8      
+ [7] callr_3.7.3          tzdb_0.4.0           bitops_1.0-7        
+[10] vctrs_0.6.4          tools_4.3.1          ps_1.7.5            
+[13] generics_0.1.3       fansi_1.0.5          cluster_2.1.4       
+[16] fds_1.8              pkgconfig_2.0.3      KernSmooth_2.23-21  
+[19] lifecycle_1.0.3      farver_2.1.1         compiler_4.3.1      
+[22] git2r_0.33.0         munsell_0.5.0        getPass_0.2-4       
+[25] httpuv_1.6.11        rainbow_3.7          htmltools_0.5.6.1   
+[28] sass_0.4.7           RCurl_1.98-1.12      yaml_2.3.7          
+[31] pracma_2.4.2         later_1.3.1          pillar_1.9.0        
+[34] jquerylib_0.1.4      whisker_0.4.1        MASS_7.3-60         
+[37] cachem_1.0.8         mclust_6.0.0         tidyselect_1.2.0    
+[40] digest_0.6.33        mvtnorm_1.2-3        stringi_1.7.12      
+[43] LaplacesDemon_16.1.6 labeling_0.4.3       pcaPP_2.0-3         
+[46] rprojroot_2.0.3      fastmap_1.1.1        grid_4.3.1          
+[49] colorspace_2.1-0     cli_3.6.1            magrittr_2.0.3      
+[52] utf8_1.2.3           withr_2.5.1          scales_1.3.0        
+[55] promises_1.2.1       timechange_0.2.0     rmarkdown_2.25      
+[58] httr_1.4.7           deSolve_1.38         hms_1.1.3           
+[61] evaluate_0.22        knitr_1.44           irlba_2.3.5.1       
+[64] rlang_1.1.1          Rcpp_1.0.11          hdrcde_3.4          
+[67] fda_6.1.4            glue_1.6.2           rstudioapi_0.15.0   
+[70] jsonlite_1.8.7       R6_2.5.1             plyr_1.8.9          
+[73] fs_1.6.3            </code></pre>
 </div>
 </div>
 
