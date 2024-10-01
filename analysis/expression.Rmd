@@ -96,7 +96,7 @@ log_size_vec <- log(size_vec)
 ### **Applying empirical Bayes**
 
 ```{r eval = FALSE}
-psd_vec <- sort(unique(c(0, seq(0,1, length.out = 21))))
+psd_vec <- sort(unique(c(0, seq(0,3, length.out = 31))))
 
 ## set up a progress bar
 L_vecs <- vector("list", length(datasets))
@@ -119,7 +119,7 @@ save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
 ```
 
 ```{r echo=FALSE}
-psd_vec <- sort(unique(c(0, seq(0,1, length.out = 21))))
+psd_vec <- sort(unique(c(0, seq(0,3, length.out = 31))))
 load(paste0(result_dir, "/L_matrix.rda"))
 ```
 
@@ -130,6 +130,14 @@ plot(1:numiter,fit.sqp$progress$objective,type = "b",
      pch = 20,lwd = 2,xlab = "SQP iteration",
      ylab = "objective",xaxp = c(1,numiter,numiter - 1))
 prior_weight <- data.frame(p = rep(p, each = length(psd_vec)), psd_iwp = psd_vec, prior_weight = fit.sqp$x)
+
+posterior_matrix <- matrix(0, nrow = nrow(L_matrix), ncol = ncol(L_matrix))
+for(i in 1:nrow(L_matrix)){
+  posterior_matrix[i,] <- exp(L_matrix[i,] - max(L_matrix[i,]) + log(fit.sqp$x))
+  posterior_matrix[i,] <- posterior_matrix[i,]/sum(posterior_matrix[i,])
+}
+colnames(posterior_matrix) <- paste0(p,"_",psd_vec)
+posterior_weights_matrix <- posterior_matrix
 ```
 
 ### **Obtaining posteriors**
@@ -165,30 +173,12 @@ save(fitted_datasets, posterior_weights_matrix, file = paste0(result_dir, "/fitt
 ```
 
 ```{r}
-load(paste0(result_dir, "/fitted_pos_results.rda"))
-```
-
-```{r}
 posterior_weights_df <- as.data.frame(posterior_weights_matrix)
 posterior_weights_df$id <- all_gene
 melted_data <- melt(posterior_weights_df, id.vars = "id")
 melted_data$variable2 <- sub("_.*", "", melted_data$variable)
 melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
-
-ggplot(melted_data, aes(x = id, y = value, fill = variable3)) +
-  geom_bar(stat = "identity", width = 0.7) +  # Adjust bar width if necessary
-  labs(x = "Gene", y = "Weight", fill = "PSD") +
-  ggtitle("Structure Plot of Posterior Weights") +
-  scale_fill_gradient(low = "white", high = "blue") +
-  coord_flip() +  # Flips the coordinates to make 'Gene' on the y-axis
-  theme(
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank(),  
-    panel.background = element_rect(fill = "white", colour = "grey"),
-    plot.background = element_rect(fill = "white", colour = NA) 
-  )
 ```
-
 
 Plot a sorted version of this, based on the mean PSD in each gene:
 ```{r}
@@ -218,14 +208,20 @@ ggplot(melted_data_sorted, aes(x = factor(id, levels = sorted_posterior_weights_
   )
 ```
 
+
 ### **Clustering based on posterior weights**
 
-Let's group them into 6 groups, based on the quantiles of the mean PSD:
+Let's group them into `num_clusters` groups, based on the quantiles of the mean PSD:
 ```{r}
 mean_psd_ordered <- mean_psd[sorted_index]
-quantiles <- quantile(mean_psd_ordered, probs = seq(0, 1, 1/6))
+# num_clusters <- 15
+# quantiles <- quantile(mean_psd_ordered, probs = seq(0, 1, 1/num_clusters))
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 3)
+
 quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
                        include.lowest = TRUE, labels = FALSE)
+table(quantile_groups)
+num_clusters <- length(unique(quantile_groups))
 
 sorted_posterior_weights_df$cluster <- quantile_groups
 melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
@@ -233,14 +229,17 @@ melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable
 melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
 melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
 
-# Plotting
-ggplot(melted_data_quantiles, aes(x = factor(id), y = value, fill = variable3)) +
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
   geom_bar(stat = "identity") +
-  labs(x = "Gene Index", y = "Weight", fill = "PSD Level") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
   ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
   coord_flip() +
   scale_fill_gradient(low = "white", high = "blue") +
-  facet_wrap(~cluster, scales = "free_y") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
   theme_minimal() +
   theme(
     axis.text.y = element_blank(),
@@ -251,6 +250,7 @@ ggplot(melted_data_quantiles, aes(x = factor(id), y = value, fill = variable3)) 
     strip.text = element_text(face = "bold")
   )
 ```
+
 
 ```{r}
 plot_gene_expression <- function(gene) {
@@ -353,127 +353,180 @@ plot_cluster_genes_log_just_f <- function(genes, log_size_vec){
 ```
 
 
-```{r}
+```{r setup, include=FALSE}
+# Define the number of genes and clusters
 num_genes_per_cluster <- 16
-num_clusters <- 6
-genes_cluster1 <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 1][1:num_genes_per_cluster]
-genes_cluster2 <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 2][1:num_genes_per_cluster]
-genes_cluster3 <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 3][1:num_genes_per_cluster]
-genes_cluster4 <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 4][1:num_genes_per_cluster]
-genes_cluster5 <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 5][1:num_genes_per_cluster]
-genes_cluster6 <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 6][1:num_genes_per_cluster]
+
+# Automatically extract gene IDs for each cluster
+genes_per_cluster <- list()
+for (i in 1:num_clusters) {
+  genes_per_cluster[[i]] <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == i][1:num_genes_per_cluster]
+}
 ```
 
+<!-- ### **Smoothing result for each cluster (Overall expression level $o_j\exp(f_i(t_j))$** {.tabset .tabset-pills} -->
 
-### **Smoothing result for each cluster (Overall expression level $o_j\exp(f_i(t_j))$** {.tabset .tabset-pills}
+<!-- ```{r, results='asis'} -->
+<!-- for (i in 1:num_clusters) { -->
+<!--   cat(paste0("#### For cluster ", i, ":\n")) -->
+<!--   # Dynamically evaluate the plotting function for each cluster -->
+<!--   plot_cluster_genes(genes_per_cluster[[i]], log_size_vec) -->
+<!-- } -->
+<!-- ``` -->
 
-#### For cluster 1:
-```{r}
-plot_cluster_genes(genes_cluster1)
-```
+<!-- ### **Smoothing result for each cluster (Just the function $f_i$ after Log)** {.tabset .tabset-pills} -->
 
-#### For cluster 2:
-```{r}
-plot_cluster_genes(genes_cluster2)
-```
+<!-- ```{r} -->
+<!-- for (i in 1:num_clusters) { -->
+<!--   # Header for each cluster -->
+<!--   cat(paste0("#### For cluster ", i, ":\n")) -->
 
-#### For cluster 3:
-```{r}
-plot_cluster_genes(genes_cluster3)
-```
-
-#### For cluster 4:
-```{r}
-plot_cluster_genes(genes_cluster4)
-```
-
-#### For cluster 5:
-```{r}
-plot_cluster_genes(genes_cluster5)
-```
-
-#### For cluster 6:
-```{r}
-plot_cluster_genes(genes_cluster6)
-```
+<!--   # Dynamically evaluate the plotting function for each cluster -->
+<!--   plot_cluster_genes_log_just_f(genes_per_cluster[[i]], log_size_vec) -->
+<!-- } -->
+<!-- ``` -->
 
 
-### **Smoothing result for each cluster (Just the function $f_i$ after Log)** {.tabset .tabset-pills}
+### **Question: what genes are enriched in each of the cluster? **
 
-#### For cluster 1:
-```{r}
-plot_cluster_genes_log_just_f(genes_cluster1, log_size_vec)
-```
+```{r, message = FALSE, warning = FALSE}
+library(clusterProfiler)
+library(msigdbr)
+library(org.Hs.eg.db)  # Assuming human genes
+library(biomaRt)
+library(clusterProfiler)
+library(cowplot)
 
-#### For cluster 2:
-```{r}
-plot_cluster_genes_log_just_f(genes_cluster2, log_size_vec)
-```
+# Retrieve Hallmark gene sets for Homo sapiens
+m_t2g <- msigdbr(species = "Homo sapiens", category = "H") %>% 
+  dplyr::select(gs_name, entrez_gene)
+mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 
-#### For cluster 3:
-```{r}
-plot_cluster_genes_log_just_f(genes_cluster3, log_size_vec)
-```
+enrich_cluster <- function(cluster_id, q_val_cutoff = 0.05, pvalueCutoff = 0.05, melted_data) {
+  genes_selected <- melted_data %>% filter(cluster == cluster_id) %>% pull(id) %>% as.character() %>% unique()
+  
+  genes_converted <- getBM(
+  filters = "ensembl_gene_id", 
+  attributes = c("ensembl_gene_id", "entrezgene_id"), 
+  values = genes_selected, 
+  mart = mart
+  )
+  
+  # Extract Entrez IDs from the converted data
+  entrez_gene_list <- genes_converted$entrezgene_id
 
-#### For cluster 4:
-```{r}
-plot_cluster_genes_log_just_f(genes_cluster4, log_size_vec)
-```
-
-#### For cluster 5:
-```{r}
-plot_cluster_genes_log_just_f(genes_cluster5, log_size_vec)
-```
-
-#### For cluster 6:
-```{r}
-plot_cluster_genes_log_just_f(genes_cluster6, log_size_vec)
-```
-
-
-### **Question: what genes have non-linear trajectories? **
-
-```{r}
-p0 <- posterior_weights_df$`2_0` # prob of PSD = 0 -> linear
-local_fda <- p0
-fda_df <- data.frame(gene = all_gene, fda = local_fda)
-fda_df <- fda_df[order(fda_df$fda), ] # ordering it
-fda_df$cumulative_fda <- cumsum(fda_df$fda)/seq_along(fda_df$fda)
-ensembl <- biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-# Assuming your data frame is 'gene_exp_ordered' and it has a column 'Gene_id'
-gene_symbols <- biomaRt::getBM(attributes = c('ensembl_gene_id', 'external_gene_name'), 
-                      filters = 'ensembl_gene_id', 
-                      values = fda_df$gene, 
-                      mart = ensembl)
-colnames(gene_symbols)[1] <- "gene"
-colnames(gene_symbols)[2] <- "gene_name"
-fda_df <- merge(fda_df, gene_symbols, by = "gene") %>% arrange(cumulative_fda)
-```
-
-```{r}
-plot(fda_df$cumulative_fda, type = "l", xlab = "Ordered Genes", ylab = "Cumulative FDA", ylim = c(0,1), cex = 0.1)
-abline(h = 0.05, col = "purple", lty = "dashed")
-```
-
-What proportion of the genes are likely having non-linear trajectories?
-```{r}
-fda_df %>% filter(cumulative_fda < 0.05) %>% nrow() / nrow(fda_df)
+  # Perform enrichment analysis using Hallmark gene sets
+  enrich_res <- enricher(entrez_gene_list, TERM2GENE = m_t2g, qvalueCutoff = q_val_cutoff, pvalueCutoff = pvalueCutoff)
+  enrich_res
+}
 ```
 
 
 ```{r}
-fda_df %>% filter(cumulative_fda < 0.05, !is.na(gene_name)) %>% 
-  arrange(cumulative_fda) %>%
-  head(16)
+enriched_list <- list()
+for (i in 1:num_clusters) {
+  # for each cluster, record the list of its enriched gene sets
+  enrich_res <- enrich_cluster(cluster_id = i, q_val_cutoff = 0.05, melted_data = melted_data_quantiles)  # Adjust parameters as needed
+  enriched_list[[i]] <- enrich_res$Description
+  names(enriched_list)[i] <- paste0(i)
+}
+
+# Automatically create a list of all unique enriched terms
+all_enriched_terms <- unique(unlist(enriched_list))
+
+# Remove the "HALLMARK_" prefix from each term
+all_enriched_terms_clean <- gsub("HALLMARK_", "", all_enriched_terms)
+
+# Initialize a data frame with clusters as columns and terms as rows
+enrichment_table <- data.frame(matrix(nrow = length(all_enriched_terms_clean), ncol = length(enriched_list)))
+rownames(enrichment_table) <- all_enriched_terms_clean
+colnames(enrichment_table) <- names(enriched_list)
+
+# Fill the table with "yes" or "no"
+for (cluster in names(enriched_list)) {
+  for (term in all_enriched_terms_clean) {
+    # Check if the term is present in the enriched list of the cluster (after removing "HALLMARK_")
+    original_term <- paste0("HALLMARK_", term)  # Add back the prefix for comparison
+    enrichment_table[term, cluster] <- ifelse(original_term %in% enriched_list[[cluster]], "yes", "no")
+  }
+}
+
+# Display the resulting table
+print(enrichment_table)
 ```
 
-Plot the log expression of the top 16 genes:
+
+
 ```{r}
-top_genes <- fda_df %>% filter(cumulative_fda < 0.05, !is.na(gene_name)) %>% 
-  arrange(cumulative_fda) %>%
-  head(16) %>% pull(gene)
-plot_cluster_genes_log_just_f(top_genes, log_size_vec)
+enriched_list <- list()  # To store enrichment results
+
+for (i in 1:num_clusters) {
+  # For each cluster, perform enrichment and store the results
+  enrich_res <- enrich_cluster(cluster_id = i, q_val_cutoff = 1, melted_data = melted_data_quantiles)  # Set q_val_cutoff to 1 to ensure all p-values are returned
+  
+  # Store both the descriptions and p-values (not filtered by significance)
+  enriched_list[[i]] <- data.frame(
+    Description = enrich_res$Description, 
+    PValue = enrich_res$p.adjust
+  )
+  
+  names(enriched_list)[i] <- paste0(i)
+}
+
+# Automatically create a list of all unique enriched terms
+all_enriched_terms <- unique(unlist(lapply(enriched_list, function(x) x$Description)))
+
+# Remove the "HALLMARK_" prefix from each term
+all_enriched_terms_clean <- gsub("HALLMARK_", "", all_enriched_terms)
+
+# Initialize a data frame with clusters as columns and terms as rows
+enrichment_table <- data.frame(matrix(nrow = length(all_enriched_terms_clean), ncol = length(enriched_list)))
+rownames(enrichment_table) <- all_enriched_terms_clean
+colnames(enrichment_table) <- names(enriched_list)
+
+# Fill the table with p-values
+for (cluster in names(enriched_list)) {
+  for (term in all_enriched_terms_clean) {
+    # Check if the term is present in the enriched list of the cluster
+    original_term <- paste0("HALLMARK_", term)  # Add back the prefix for comparison
+    term_in_cluster <- enriched_list[[cluster]]$Description == original_term
+    
+    # If the term is enriched, fill in the p-value; otherwise, compute the enrichment and add its p-value
+    if (any(term_in_cluster)) {
+      enrichment_table[term, cluster] <- round(enriched_list[[cluster]]$PValue[term_in_cluster], 4)
+    } else {
+      # If not found in the original result, perform enrichment for the gene set specifically
+      cluster_id <- as.numeric(cluster)
+      genes_selected <- melted_data %>% filter(cluster == cluster_id) %>% pull(id) %>% as.character() %>% unique()
+  
+  genes_converted <- getBM(
+  filters = "ensembl_gene_id", 
+  attributes = c("ensembl_gene_id", "entrezgene_id"), 
+  values = genes_selected, 
+  mart = mart
+  )
+  
+  # Extract Entrez IDs from the converted data
+  entrez_gene_list <- genes_converted$entrezgene_id
+  
+      enrich_res_full <- enricher(entrez_gene_list, TERM2GENE = m_t2g, pvalueCutoff = 2)
+      specific_term <- enrich_res_full %>% filter(Description == original_term)
+      
+      # Add p-value if it exists
+      if (nrow(specific_term) > 0) {
+        enrichment_table[term, cluster] <- round(specific_term$p.adjust, 4)
+      } else {
+        enrichment_table[term, cluster] <- 1  # No p-value found
+      }
+    }
+  }
+}
+
+# Display the resulting table with p-values
+print(enrichment_table)
 ```
+
+
 
 
 
