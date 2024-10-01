@@ -13,7 +13,7 @@
 
 <title>Example: Expression Analysis</title>
 
-<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -322,7 +322,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-09-13
+<strong>Last updated:</strong> 2024-10-01
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -453,15 +453,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreee57fc389bf9a834c1770a720a2cc554ee769424etargetblanke57fc38a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree0414ce6e5ba33711324308e3be187f47e267cb3dtargetblank0414ce6a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/e57fc389bf9a834c1770a720a2cc554ee769424e" target="_blank">e57fc38</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/0414ce6e5ba33711324308e3be187f47e267cb3d" target="_blank">0414ce6</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreee57fc389bf9a834c1770a720a2cc554ee769424etargetblanke57fc38a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree0414ce6e5ba33711324308e3be187f47e267cb3dtargetblank0414ce6a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -471,7 +471,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/e57fc389bf9a834c1770a720a2cc554ee769424e" target="_blank">e57fc38</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/0414ce6e5ba33711324308e3be187f47e267cb3d" target="_blank">0414ce6</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -493,8 +493,6 @@ Ignored files:
     Ignored:    analysis/.Rhistory
     Ignored:    code/.DS_Store
     Ignored:    code/cpp/.DS_Store
-    Ignored:    code/function/.DS_Store
-    Ignored:    code/function/.Rhistory
     Ignored:    data/.DS_Store
     Ignored:    data/expression_data/.DS_Store
     Ignored:    output/.DS_Store
@@ -504,12 +502,14 @@ Ignored files:
     Ignored:    output/simulation_pollution/figure/
 
 Untracked files:
-    Untracked:  code/function/functions_sim_Poisson_circadian_expression.R
+    Untracked:  analysis/circadian_expression (experimment).Rmd
 
 Unstaged changes:
-    Modified:   code/function/functions_fitting_Poisson_expression.R
+    Modified:   analysis/circadian_expression.Rmd
+    Modified:   code/function/functions_fitting_Poisson_circadian_expression.R
+    Modified:   output/circadian_expression/L_matrix.rda
+    Modified:   output/circadian_sim_easy/L_matrix.rda
     Modified:   output/expression/L_matrix.rda
-    Modified:   output/expression/fitted_pos_results.rda
     Modified:   thought_process
 
 </code></pre>
@@ -556,6 +556,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/0414ce6e5ba33711324308e3be187f47e267cb3d/analysis/expression.Rmd" target="_blank">0414ce6</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+workflowr::wflow_publish("analysis/expression.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/expression.html" target="_blank">ad988fc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -991,7 +1025,7 @@ log_size_vec &lt;- log(size_vec)</code></pre>
 </div>
 <div id="applying-empirical-bayes" class="section level3">
 <h3><strong>Applying empirical Bayes</strong></h3>
-<pre class="r"><code>psd_vec &lt;- sort(unique(c(0, seq(0,1, length.out = 21))))
+<pre class="r"><code>psd_vec &lt;- sort(unique(c(0, seq(0,3, length.out = 31))))
 
 ## set up a progress bar
 L_vecs &lt;- vector(&quot;list&quot;, length(datasets))
@@ -1012,7 +1046,7 @@ for (i in 1:length(datasets)) {
 L_matrix &lt;- do.call(rbind, L_vecs)
 save(L_matrix, file = paste0(result_dir, &quot;/L_matrix.rda&quot;))</code></pre>
 <pre class="r"><code>fit.sqp &lt;- mixsqp(L = L_matrix, log = TRUE)</code></pre>
-<pre><code>Running mix-SQP algorithm 0.3-54 on 16319 x 21 matrix
+<pre><code>Running mix-SQP algorithm 0.3-54 on 16319 x 31 matrix
 convergence tol. (SQP):     1.0e-08
 conv. tol. (active-set):    1.0e-10
 zero threshold (solution):  1.0e-08
@@ -1023,24 +1057,25 @@ minimum step size:          1.0e-08
 max. iter (SQP):            1000
 max. iter (active-set):     20
 number of EM iterations:    10
-Computing SVD of 16319 x 21 matrix.
+Computing SVD of 16319 x 31 matrix.
 Matrix is not low-rank; falling back to full matrix.
 iter        objective max(rdual) nnz stepsize max.diff nqp nls
-   1 +1.503694243e+00  -- EM --   21 1.00e+00 6.45e-02  --  --
-   2 +1.463779963e+00  -- EM --   21 1.00e+00 5.50e-02  --  --
-   3 +1.444786356e+00  -- EM --   21 1.00e+00 4.01e-02  --  --
-   4 +1.434048688e+00  -- EM --   21 1.00e+00 2.86e-02  --  --
-   5 +1.427260512e+00  -- EM --   21 1.00e+00 2.07e-02  --  --
-   6 +1.422653665e+00  -- EM --   21 1.00e+00 1.53e-02  --  --
-   7 +1.419376240e+00  -- EM --   21 1.00e+00 1.16e-02  --  --
-   8 +1.416965317e+00  -- EM --   21 1.00e+00 8.93e-03  --  --
-   9 +1.415146663e+00  -- EM --   21 1.00e+00 6.96e-03  --  --
-  10 +1.413747424e+00  -- EM --   21 1.00e+00 5.48e-03  --  --
-   1 +1.412653514e+00 +2.087e-02  21  ------   ------   --  --
-   2 +1.406776327e+00 +1.710e-03   9 1.00e+00 1.24e-01  20   1
-   3 +1.406725117e+00 +3.530e-05   9 1.00e+00 7.57e-02   5   1
-   4 +1.406725117e+00 -3.510e-08   9 1.00e+00 2.85e-05   2   1
-Optimization took 0.05 seconds.
+   1 +1.634441920e+00  -- EM --   31 1.00e+00 1.11e-01  --  --
+   2 +1.618829189e+00  -- EM --   31 1.00e+00 2.75e-02  --  --
+   3 +1.615448617e+00  -- EM --   31 1.00e+00 9.87e-03  --  --
+   4 +1.613879324e+00  -- EM --   31 1.00e+00 5.46e-03  --  --
+   5 +1.612942812e+00  -- EM --   31 1.00e+00 3.48e-03  --  --
+   6 +1.612296643e+00  -- EM --   31 1.00e+00 2.42e-03  --  --
+   7 +1.611809877e+00  -- EM --   31 1.00e+00 2.10e-03  --  --
+   8 +1.611423134e+00  -- EM --   31 1.00e+00 1.84e-03  --  --
+   9 +1.611105393e+00  -- EM --   31 1.00e+00 1.61e-03  --  --
+  10 +1.610838410e+00  -- EM --   31 1.00e+00 1.42e-03  --  --
+   1 +1.610610420e+00 +3.320e-02  31  ------   ------   --  --
+   2 +1.608587903e+00 +2.507e-03  13 1.00e+00 6.29e-02  20   1
+   3 +1.608291005e+00 +5.191e-04  13 1.00e+00 1.04e-01  20   1
+   4 +1.608290952e+00 +1.919e-07  14 1.00e+00 3.60e-03  12   1
+   5 +1.608290952e+00 -4.218e-08  14 1.00e+00 2.31e-06  18   1
+Optimization took 0.09 seconds.
 Convergence criteria met---optimal solution found.</code></pre>
 <pre class="r"><code>numiter &lt;- nrow(fit.sqp$progress)
 plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
@@ -1071,6 +1106,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-8-1.png" target="_blank">ad988fc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-8-1.png" target="_blank">a22557d</a>
 </td>
 <td>
@@ -1095,7 +1141,15 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<pre class="r"><code>prior_weight &lt;- data.frame(p = rep(p, each = length(psd_vec)), psd_iwp = psd_vec, prior_weight = fit.sqp$x)</code></pre>
+<pre class="r"><code>prior_weight &lt;- data.frame(p = rep(p, each = length(psd_vec)), psd_iwp = psd_vec, prior_weight = fit.sqp$x)
+
+posterior_matrix &lt;- matrix(0, nrow = nrow(L_matrix), ncol = ncol(L_matrix))
+for(i in 1:nrow(L_matrix)){
+  posterior_matrix[i,] &lt;- exp(L_matrix[i,] - max(L_matrix[i,]) + log(fit.sqp$x))
+  posterior_matrix[i,] &lt;- posterior_matrix[i,]/sum(posterior_matrix[i,])
+}
+colnames(posterior_matrix) &lt;- paste0(p,&quot;_&quot;,psd_vec)
+posterior_weights_matrix &lt;- posterior_matrix</code></pre>
 </div>
 <div id="obtaining-posteriors" class="section level3">
 <h3><strong>Obtaining posteriors</strong></h3>
@@ -1126,19 +1180,31 @@ names(fitted_datasets) &lt;- all_gene
 colnames(posterior_weights_matrix) &lt;- paste(as.character(fit_result_final$posterior_weights[, &quot;p&quot;]),
                                             as.character(fit_result_final$posterior_weights[, &quot;psd_iwp&quot;]), sep = &quot;_&quot;)
 save(fitted_datasets, posterior_weights_matrix, file = paste0(result_dir, &quot;/fitted_pos_results.rda&quot;))</code></pre>
-<pre class="r"><code>load(paste0(result_dir, &quot;/fitted_pos_results.rda&quot;))</code></pre>
 <pre class="r"><code>posterior_weights_df &lt;- as.data.frame(posterior_weights_matrix)
 posterior_weights_df$id &lt;- all_gene
 melted_data &lt;- melt(posterior_weights_df, id.vars = &quot;id&quot;)
 melted_data$variable2 &lt;- sub(&quot;_.*&quot;, &quot;&quot;, melted_data$variable)
-melted_data$variable3 &lt;- (round(as.numeric(sub(&quot;*._&quot;, &quot;&quot;, melted_data$variable)), 3))
+melted_data$variable3 &lt;- (round(as.numeric(sub(&quot;*._&quot;, &quot;&quot;, melted_data$variable)), 3))</code></pre>
+<p>Plot a sorted version of this, based on the mean PSD in each
+gene:</p>
+<pre class="r"><code>mean_psd &lt;- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd &lt;- as.numeric(sub(&quot;*._&quot;, &quot;&quot;, colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index &lt;- order(mean_psd)
+sorted_posterior_weights_matrix &lt;- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df &lt;- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id &lt;- all_gene[sorted_index]
+melted_data_sorted &lt;- melt(sorted_posterior_weights_df, id.vars = &quot;id&quot;)
+melted_data_sorted$variable2 &lt;- sub(&quot;_.*&quot;, &quot;&quot;, melted_data_sorted$variable)
+melted_data_sorted$variable3 &lt;- (round(as.numeric(sub(&quot;*._&quot;, &quot;&quot;, melted_data_sorted$variable)), 3))
 
-ggplot(melted_data, aes(x = id, y = value, fill = variable3)) +
-  geom_bar(stat = &quot;identity&quot;, width = 0.7) +  # Adjust bar width if necessary
+ggplot(melted_data_sorted, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = &quot;identity&quot;) +
   labs(x = &quot;Gene&quot;, y = &quot;Weight&quot;, fill = &quot;PSD&quot;) +
   ggtitle(&quot;Structure Plot of Posterior Weights&quot;) +
+  coord_flip() +
   scale_fill_gradient(low = &quot;white&quot;, high = &quot;blue&quot;) +
-  coord_flip() +  # Flips the coordinates to make &#39;Gene&#39; on the y-axis
   theme(
     axis.text.y = element_blank(),
     axis.ticks.y = element_blank(),  
@@ -1168,6 +1234,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-11-1.png" target="_blank">ad988fc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-11-1.png" target="_blank">a22557d</a>
@@ -1205,32 +1282,55 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<p>Plot a sorted version of this, based on the mean PSD in each
-gene:</p>
-<pre class="r"><code>mean_psd &lt;- apply(posterior_weights_matrix, 1, function(x) {
-  weighted_psd &lt;- as.numeric(sub(&quot;*._&quot;, &quot;&quot;, colnames(posterior_weights_matrix)))
-  sum(x * weighted_psd)
-})
-sorted_index &lt;- order(mean_psd)
-sorted_posterior_weights_matrix &lt;- posterior_weights_matrix[sorted_index, ]
-sorted_posterior_weights_df &lt;- as.data.frame(sorted_posterior_weights_matrix)
-sorted_posterior_weights_df$id &lt;- all_gene[sorted_index]
-melted_data_sorted &lt;- melt(sorted_posterior_weights_df, id.vars = &quot;id&quot;)
-melted_data_sorted$variable2 &lt;- sub(&quot;_.*&quot;, &quot;&quot;, melted_data_sorted$variable)
-melted_data_sorted$variable3 &lt;- (round(as.numeric(sub(&quot;*._&quot;, &quot;&quot;, melted_data_sorted$variable)), 3))
+</div>
+<div id="clustering-based-on-posterior-weights" class="section level3">
+<h3><strong>Clustering based on posterior weights</strong></h3>
+<p>Let’s group them into <code>num_clusters</code> groups, based on the
+quantiles of the mean PSD:</p>
+<pre class="r"><code>mean_psd_ordered &lt;- mean_psd[sorted_index]
+# num_clusters &lt;- 15
+# quantiles &lt;- quantile(mean_psd_ordered, probs = seq(0, 1, 1/num_clusters))
+quantiles &lt;- c(0, 0.1, 0.2, 0.35, 0.5, 1, 3)
 
-ggplot(melted_data_sorted, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+quantile_groups &lt;- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+table(quantile_groups)</code></pre>
+<pre><code>quantile_groups
+   1    2    3    4    5    6 
+ 446 3429 3168 2203 3879 3194 </code></pre>
+<pre class="r"><code>num_clusters &lt;- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster &lt;- quantile_groups
+melted_data_quantiles &lt;- melt(sorted_posterior_weights_df, id.vars = c(&quot;id&quot;, &quot;cluster&quot;))
+melted_data_quantiles$variable2 &lt;- sub(&quot;_.*&quot;, &quot;&quot;, melted_data_quantiles$variable)
+melted_data_quantiles$variable3 &lt;- round(as.numeric(sub(&quot;.*_&quot;, &quot;&quot;, melted_data_quantiles$variable)), 3)
+melted_data_quantiles &lt;- melted_data_quantiles %&gt;% arrange(cluster)
+
+# Ensure the &#39;id&#39; factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id &lt;- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of &#39;id&#39;
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
   geom_bar(stat = &quot;identity&quot;) +
-  labs(x = &quot;Gene&quot;, y = &quot;Weight&quot;, fill = &quot;PSD&quot;) +
-  ggtitle(&quot;Structure Plot of Posterior Weights&quot;) +
+  labs(x = &quot;Gene&quot;, y = &quot;Weight&quot;, fill = &quot;PSD Level&quot;) +
+  ggtitle(&quot;Structure Plot of Posterior Weights by Quantile Group&quot;) +
   coord_flip() +
   scale_fill_gradient(low = &quot;white&quot;, high = &quot;blue&quot;) +
+  facet_wrap(~cluster, scales = &quot;free_y&quot;) +  # Faceting by cluster while keeping order
+  theme_minimal() +
   theme(
     axis.text.y = element_blank(),
-    axis.ticks.y = element_blank(),  
+    axis.ticks.y = element_blank(),
     panel.background = element_rect(fill = &quot;white&quot;, colour = &quot;grey&quot;),
-    plot.background = element_rect(fill = &quot;white&quot;, colour = NA) 
+    plot.background = element_rect(fill = &quot;white&quot;, colour = NA),
+    strip.background = element_rect(fill = &quot;lightblue&quot;, colour = &quot;deepskyblue&quot;, size = 1),
+    strip.text = element_text(face = &quot;bold&quot;)
   )</code></pre>
+<pre><code>Warning: The `size` argument of `element_rect()` is deprecated as of ggplot2 3.4.0.
+ℹ Please use the `linewidth` argument instead.
+This warning is displayed once every 8 hours.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+generated.</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
@@ -1256,6 +1356,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-12-1.png" target="_blank">ad988fc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-12-1.png" target="_blank">a22557d</a>
 </td>
 <td>
@@ -1279,115 +1390,6 @@ Ziang Zhang
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-12-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="clustering-based-on-posterior-weights" class="section level3">
-<h3><strong>Clustering based on posterior weights</strong></h3>
-<p>Let’s group them into 6 groups, based on the quantiles of the mean
-PSD:</p>
-<pre class="r"><code>mean_psd_ordered &lt;- mean_psd[sorted_index]
-quantiles &lt;- quantile(mean_psd_ordered, probs = seq(0, 1, 1/6))
-quantile_groups &lt;- cut(mean_psd_ordered, breaks = quantiles, 
-                       include.lowest = TRUE, labels = FALSE)
-
-sorted_posterior_weights_df$cluster &lt;- quantile_groups
-melted_data_quantiles &lt;- melt(sorted_posterior_weights_df, id.vars = c(&quot;id&quot;, &quot;cluster&quot;))
-melted_data_quantiles$variable2 &lt;- sub(&quot;_.*&quot;, &quot;&quot;, melted_data_quantiles$variable)
-melted_data_quantiles$variable3 &lt;- round(as.numeric(sub(&quot;.*_&quot;, &quot;&quot;, melted_data_quantiles$variable)), 3)
-melted_data_quantiles &lt;- melted_data_quantiles %&gt;% arrange(cluster)
-
-# Plotting
-ggplot(melted_data_quantiles, aes(x = factor(id), y = value, fill = variable3)) +
-  geom_bar(stat = &quot;identity&quot;) +
-  labs(x = &quot;Gene Index&quot;, y = &quot;Weight&quot;, fill = &quot;PSD Level&quot;) +
-  ggtitle(&quot;Structure Plot of Posterior Weights by Quantile Group&quot;) +
-  coord_flip() +
-  scale_fill_gradient(low = &quot;white&quot;, high = &quot;blue&quot;) +
-  facet_wrap(~cluster, scales = &quot;free_y&quot;) +
-  theme_minimal() +
-  theme(
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    panel.background = element_rect(fill = &quot;white&quot;, colour = &quot;grey&quot;),
-    plot.background = element_rect(fill = &quot;white&quot;, colour = NA),
-    strip.background = element_rect(fill = &quot;lightblue&quot;, colour = &quot;deepskyblue&quot;, size = 1),
-    strip.text = element_text(face = &quot;bold&quot;)
-  )</code></pre>
-<pre><code>Warning: The `size` argument of `element_rect()` is deprecated as of ggplot2 3.4.0.
-ℹ Please use the `linewidth` argument instead.
-This warning is displayed once every 8 hours.
-Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-generated.</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
-Past versions of unnamed-chunk-13-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-13-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-13-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-13-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-13-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-13-1.png" target="_blank">5f486a4</a>
 </td>
 <td>
 Ziang Zhang
@@ -1497,1131 +1499,207 @@ plot_cluster_genes_log_just_f &lt;- function(genes, log_size_vec){
   }
 }
 # plot_cluster_genes(genes_cluster1)</code></pre>
-<pre class="r"><code>num_genes_per_cluster &lt;- 16
-num_clusters &lt;- 6
-genes_cluster1 &lt;- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 1][1:num_genes_per_cluster]
-genes_cluster2 &lt;- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 2][1:num_genes_per_cluster]
-genes_cluster3 &lt;- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 3][1:num_genes_per_cluster]
-genes_cluster4 &lt;- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 4][1:num_genes_per_cluster]
-genes_cluster5 &lt;- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 5][1:num_genes_per_cluster]
-genes_cluster6 &lt;- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == 6][1:num_genes_per_cluster]</code></pre>
+<!-- ### **Smoothing result for each cluster (Overall expression level $o_j\exp(f_i(t_j))$** {.tabset .tabset-pills} -->
+<!-- ```{r, results='asis'} -->
+<!-- for (i in 1:num_clusters) { -->
+<!--   cat(paste0("#### For cluster ", i, ":\n")) -->
+<!--   # Dynamically evaluate the plotting function for each cluster -->
+<!--   plot_cluster_genes(genes_per_cluster[[i]], log_size_vec) -->
+<!-- } -->
+<!-- ``` -->
+<!-- ### **Smoothing result for each cluster (Just the function $f_i$ after Log)** {.tabset .tabset-pills} -->
+<!-- ```{r} -->
+<!-- for (i in 1:num_clusters) { -->
+<!--   # Header for each cluster -->
+<!--   cat(paste0("#### For cluster ", i, ":\n")) -->
+<!--   # Dynamically evaluate the plotting function for each cluster -->
+<!--   plot_cluster_genes_log_just_f(genes_per_cluster[[i]], log_size_vec) -->
+<!-- } -->
+<!-- ``` -->
 </div>
-<div
-id="smoothing-result-for-each-cluster-overall-expression-level-o_jexpf_it_j"
-class="section level3 tabset tabset-pills">
-<h3 class="tabset tabset-pills"><strong>Smoothing result for each
-cluster (Overall expression level <span
-class="math inline">\(o_j\exp(f_i(t_j))\)</span></strong></h3>
-<div id="for-cluster-1" class="section level4">
-<h4>For cluster 1:</h4>
-<pre class="r"><code>plot_cluster_genes(genes_cluster1)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
-Past versions of unnamed-chunk-16-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-16-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-16-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-16-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-16-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-16-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="for-cluster-2" class="section level4">
-<h4>For cluster 2:</h4>
-<pre class="r"><code>plot_cluster_genes(genes_cluster2)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-17-1">
-Past versions of unnamed-chunk-17-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-17-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-17-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-17-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-17-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-17-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="for-cluster-3" class="section level4">
-<h4>For cluster 3:</h4>
-<pre class="r"><code>plot_cluster_genes(genes_cluster3)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
-Past versions of unnamed-chunk-18-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-18-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="for-cluster-4" class="section level4">
-<h4>For cluster 4:</h4>
-<pre class="r"><code>plot_cluster_genes(genes_cluster4)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-19-1">
-Past versions of unnamed-chunk-19-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-19-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="for-cluster-5" class="section level4">
-<h4>For cluster 5:</h4>
-<pre class="r"><code>plot_cluster_genes(genes_cluster5)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
-Past versions of unnamed-chunk-20-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-20-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="for-cluster-6" class="section level4">
-<h4>For cluster 6:</h4>
-<pre class="r"><code>plot_cluster_genes(genes_cluster6)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
-Past versions of unnamed-chunk-21-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-21-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-<div
-id="smoothing-result-for-each-cluster-just-the-function-f_i-after-log"
-class="section level3 tabset tabset-pills">
-<h3 class="tabset tabset-pills"><strong>Smoothing result for each
-cluster (Just the function <span class="math inline">\(f_i\)</span>
-after Log)</strong></h3>
-<div id="for-cluster-1-1" class="section level4">
-<h4>For cluster 1:</h4>
-<pre class="r"><code>plot_cluster_genes_log_just_f(genes_cluster1, log_size_vec)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
-Past versions of unnamed-chunk-22-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-22-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="for-cluster-2-1" class="section level4">
-<h4>For cluster 2:</h4>
-<pre class="r"><code>plot_cluster_genes_log_just_f(genes_cluster2, log_size_vec)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
-Past versions of unnamed-chunk-23-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-23-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="for-cluster-3-1" class="section level4">
-<h4>For cluster 3:</h4>
-<pre class="r"><code>plot_cluster_genes_log_just_f(genes_cluster3, log_size_vec)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
-Past versions of unnamed-chunk-24-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-24-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="for-cluster-4-1" class="section level4">
-<h4>For cluster 4:</h4>
-<pre class="r"><code>plot_cluster_genes_log_just_f(genes_cluster4, log_size_vec)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-25-1">
-Past versions of unnamed-chunk-25-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-25-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="for-cluster-5-1" class="section level4">
-<h4>For cluster 5:</h4>
-<pre class="r"><code>plot_cluster_genes_log_just_f(genes_cluster5, log_size_vec)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-26-1">
-Past versions of unnamed-chunk-26-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-26-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-26-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-26-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-26-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-26-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="for-cluster-6-1" class="section level4">
-<h4>For cluster 6:</h4>
-<pre class="r"><code>plot_cluster_genes_log_just_f(genes_cluster6, log_size_vec)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-27-1">
-Past versions of unnamed-chunk-27-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-27-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-27-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-27-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-27-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-27-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-<div id="question-what-genes-have-non-linear-trajectories"
+<div id="question-what-genes-are-enriched-in-each-of-the-cluster"
 class="section level3">
-<h3><strong>Question: what genes have non-linear trajectories?
+<h3><strong>Question: what genes are enriched in each of the cluster?
 </strong></h3>
-<pre class="r"><code>p0 &lt;- posterior_weights_df$`2_0` # prob of PSD = 0 -&gt; linear
-local_fda &lt;- p0
-fda_df &lt;- data.frame(gene = all_gene, fda = local_fda)
-fda_df &lt;- fda_df[order(fda_df$fda), ] # ordering it
-fda_df$cumulative_fda &lt;- cumsum(fda_df$fda)/seq_along(fda_df$fda)
-ensembl &lt;- biomaRt::useMart(&quot;ensembl&quot;, dataset = &quot;hsapiens_gene_ensembl&quot;)
-# Assuming your data frame is &#39;gene_exp_ordered&#39; and it has a column &#39;Gene_id&#39;
-gene_symbols &lt;- biomaRt::getBM(attributes = c(&#39;ensembl_gene_id&#39;, &#39;external_gene_name&#39;), 
-                      filters = &#39;ensembl_gene_id&#39;, 
-                      values = fda_df$gene, 
-                      mart = ensembl)
-colnames(gene_symbols)[1] &lt;- &quot;gene&quot;
-colnames(gene_symbols)[2] &lt;- &quot;gene_name&quot;
-fda_df &lt;- merge(fda_df, gene_symbols, by = &quot;gene&quot;) %&gt;% arrange(cumulative_fda)</code></pre>
-<pre class="r"><code>plot(fda_df$cumulative_fda, type = &quot;l&quot;, xlab = &quot;Ordered Genes&quot;, ylab = &quot;Cumulative FDA&quot;, ylim = c(0,1), cex = 0.1)
-abline(h = 0.05, col = &quot;purple&quot;, lty = &quot;dashed&quot;)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-29-1">
-Past versions of unnamed-chunk-29-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-29-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-29-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-29-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-29-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/00d489f81ae68aabc7c4692348649dcdde6dcaae/docs/figure/expression.Rmd/unnamed-chunk-29-1.png" target="_blank">00d489f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-27
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-29-1.png" target="_blank">5f486a4</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>What proportion of the genes are likely having non-linear
-trajectories?</p>
-<pre class="r"><code>fda_df %&gt;% filter(cumulative_fda &lt; 0.05) %&gt;% nrow() / nrow(fda_df)</code></pre>
-<pre><code>[1] 1</code></pre>
-<pre class="r"><code>fda_df %&gt;% filter(cumulative_fda &lt; 0.05, !is.na(gene_name)) %&gt;% 
-  arrange(cumulative_fda) %&gt;%
-  head(16)</code></pre>
-<pre><code>              gene fda cumulative_fda gene_name
-1  ENSG00000001617   0              0    SEMA3F
-2  ENSG00000002834   0              0     LASP1
-3  ENSG00000003249   0              0    DBNDD1
-4  ENSG00000003436   0              0      TFPI
-5  ENSG00000003509   0              0   NDUFAF7
-6  ENSG00000003756   0              0      RBM5
-7  ENSG00000003989   0              0    SLC7A2
-8  ENSG00000004399   0              0    PLXND1
-9  ENSG00000004478   0              0     FKBP4
-10 ENSG00000004864   0              0  SLC25A13
-11 ENSG00000004866   0              0       ST7
-12 ENSG00000005100   0              0     DHX33
-13 ENSG00000005108   0              0    THSD7A
-14 ENSG00000005249   0              0   PRKAR2B
-15 ENSG00000005339   0              0    CREBBP
-16 ENSG00000005884   0              0     ITGA3</code></pre>
-<p>Plot the log expression of the top 16 genes:</p>
-<pre class="r"><code>top_genes &lt;- fda_df %&gt;% filter(cumulative_fda &lt; 0.05, !is.na(gene_name)) %&gt;% 
-  arrange(cumulative_fda) %&gt;%
-  head(16) %&gt;% pull(gene)
-plot_cluster_genes_log_just_f(top_genes, log_size_vec)</code></pre>
-<p><img src="figure/expression.Rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-32-1">
-Past versions of unnamed-chunk-32-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-32-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">a22557d</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-09-13
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">b729c3f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-06-10
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">bf7911a</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/00d489f81ae68aabc7c4692348649dcdde6dcaae/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">00d489f</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2024-05-27
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<pre class="r"><code>library(clusterProfiler)
+library(msigdbr)
+library(org.Hs.eg.db)  # Assuming human genes
+library(biomaRt)
+library(clusterProfiler)
+library(cowplot)
+
+# Retrieve Hallmark gene sets for Homo sapiens
+m_t2g &lt;- msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;H&quot;) %&gt;% 
+  dplyr::select(gs_name, entrez_gene)
+mart &lt;- useMart(&quot;ensembl&quot;, dataset = &quot;hsapiens_gene_ensembl&quot;)
+
+enrich_cluster &lt;- function(cluster_id, q_val_cutoff = 0.05, pvalueCutoff = 0.05, melted_data) {
+  genes_selected &lt;- melted_data %&gt;% filter(cluster == cluster_id) %&gt;% pull(id) %&gt;% as.character() %&gt;% unique()
+  
+  genes_converted &lt;- getBM(
+  filters = &quot;ensembl_gene_id&quot;, 
+  attributes = c(&quot;ensembl_gene_id&quot;, &quot;entrezgene_id&quot;), 
+  values = genes_selected, 
+  mart = mart
+  )
+  
+  # Extract Entrez IDs from the converted data
+  entrez_gene_list &lt;- genes_converted$entrezgene_id
+
+  # Perform enrichment analysis using Hallmark gene sets
+  enrich_res &lt;- enricher(entrez_gene_list, TERM2GENE = m_t2g, qvalueCutoff = q_val_cutoff, pvalueCutoff = pvalueCutoff)
+  enrich_res
+}</code></pre>
+<pre class="r"><code>enriched_list &lt;- list()
+for (i in 1:num_clusters) {
+  # for each cluster, record the list of its enriched gene sets
+  enrich_res &lt;- enrich_cluster(cluster_id = i, q_val_cutoff = 0.05, melted_data = melted_data_quantiles)  # Adjust parameters as needed
+  enriched_list[[i]] &lt;- enrich_res$Description
+  names(enriched_list)[i] &lt;- paste0(i)
+}
+
+# Automatically create a list of all unique enriched terms
+all_enriched_terms &lt;- unique(unlist(enriched_list))
+
+# Remove the &quot;HALLMARK_&quot; prefix from each term
+all_enriched_terms_clean &lt;- gsub(&quot;HALLMARK_&quot;, &quot;&quot;, all_enriched_terms)
+
+# Initialize a data frame with clusters as columns and terms as rows
+enrichment_table &lt;- data.frame(matrix(nrow = length(all_enriched_terms_clean), ncol = length(enriched_list)))
+rownames(enrichment_table) &lt;- all_enriched_terms_clean
+colnames(enrichment_table) &lt;- names(enriched_list)
+
+# Fill the table with &quot;yes&quot; or &quot;no&quot;
+for (cluster in names(enriched_list)) {
+  for (term in all_enriched_terms_clean) {
+    # Check if the term is present in the enriched list of the cluster (after removing &quot;HALLMARK_&quot;)
+    original_term &lt;- paste0(&quot;HALLMARK_&quot;, term)  # Add back the prefix for comparison
+    enrichment_table[term, cluster] &lt;- ifelse(original_term %in% enriched_list[[cluster]], &quot;yes&quot;, &quot;no&quot;)
+  }
+}
+
+# Display the resulting table
+print(enrichment_table)</code></pre>
+<pre><code>                                    1  2   3   4   5   6
+BILE_ACID_METABOLISM              yes no  no  no  no  no
+MYC_TARGETS_V2                     no no yes yes  no  no
+OXIDATIVE_PHOSPHORYLATION          no no yes  no yes  no
+DNA_REPAIR                         no no yes yes  no  no
+MYC_TARGETS_V1                     no no yes  no yes  no
+E2F_TARGETS                        no no  no yes  no  no
+UNFOLDED_PROTEIN_RESPONSE          no no  no yes  no  no
+EPITHELIAL_MESENCHYMAL_TRANSITION  no no  no  no  no yes
+MYOGENESIS                         no no  no  no  no yes
+HYPOXIA                            no no  no  no  no yes
+TNFA_SIGNALING_VIA_NFKB            no no  no  no  no yes
+UV_RESPONSE_DN                     no no  no  no  no yes
+COAGULATION                        no no  no  no  no yes
+MTORC1_SIGNALING                   no no  no  no  no yes
+ANGIOGENESIS                       no no  no  no  no yes
+IL2_STAT5_SIGNALING                no no  no  no  no yes
+APICAL_JUNCTION                    no no  no  no  no yes
+CHOLESTEROL_HOMEOSTASIS            no no  no  no  no yes
+NOTCH_SIGNALING                    no no  no  no  no yes
+ESTROGEN_RESPONSE_LATE             no no  no  no  no yes
+INFLAMMATORY_RESPONSE              no no  no  no  no yes
+ESTROGEN_RESPONSE_EARLY            no no  no  no  no yes
+G2M_CHECKPOINT                     no no  no  no  no yes
+ANDROGEN_RESPONSE                  no no  no  no  no yes
+APOPTOSIS                          no no  no  no  no yes
+UV_RESPONSE_UP                     no no  no  no  no yes</code></pre>
+<pre class="r"><code>enriched_list &lt;- list()  # To store enrichment results
+
+for (i in 1:num_clusters) {
+  # For each cluster, perform enrichment and store the results
+  enrich_res &lt;- enrich_cluster(cluster_id = i, q_val_cutoff = 1, melted_data = melted_data_quantiles)  # Set q_val_cutoff to 1 to ensure all p-values are returned
+  
+  # Store both the descriptions and p-values (not filtered by significance)
+  enriched_list[[i]] &lt;- data.frame(
+    Description = enrich_res$Description, 
+    PValue = enrich_res$p.adjust
+  )
+  
+  names(enriched_list)[i] &lt;- paste0(i)
+}
+
+# Automatically create a list of all unique enriched terms
+all_enriched_terms &lt;- unique(unlist(lapply(enriched_list, function(x) x$Description)))
+
+# Remove the &quot;HALLMARK_&quot; prefix from each term
+all_enriched_terms_clean &lt;- gsub(&quot;HALLMARK_&quot;, &quot;&quot;, all_enriched_terms)
+
+# Initialize a data frame with clusters as columns and terms as rows
+enrichment_table &lt;- data.frame(matrix(nrow = length(all_enriched_terms_clean), ncol = length(enriched_list)))
+rownames(enrichment_table) &lt;- all_enriched_terms_clean
+colnames(enrichment_table) &lt;- names(enriched_list)
+
+# Fill the table with p-values
+for (cluster in names(enriched_list)) {
+  for (term in all_enriched_terms_clean) {
+    # Check if the term is present in the enriched list of the cluster
+    original_term &lt;- paste0(&quot;HALLMARK_&quot;, term)  # Add back the prefix for comparison
+    term_in_cluster &lt;- enriched_list[[cluster]]$Description == original_term
+    
+    # If the term is enriched, fill in the p-value; otherwise, compute the enrichment and add its p-value
+    if (any(term_in_cluster)) {
+      enrichment_table[term, cluster] &lt;- round(enriched_list[[cluster]]$PValue[term_in_cluster], 4)
+    } else {
+      # If not found in the original result, perform enrichment for the gene set specifically
+      cluster_id &lt;- as.numeric(cluster)
+      genes_selected &lt;- melted_data %&gt;% filter(cluster == cluster_id) %&gt;% pull(id) %&gt;% as.character() %&gt;% unique()
+  
+  genes_converted &lt;- getBM(
+  filters = &quot;ensembl_gene_id&quot;, 
+  attributes = c(&quot;ensembl_gene_id&quot;, &quot;entrezgene_id&quot;), 
+  values = genes_selected, 
+  mart = mart
+  )
+  
+  # Extract Entrez IDs from the converted data
+  entrez_gene_list &lt;- genes_converted$entrezgene_id
+  
+      enrich_res_full &lt;- enricher(entrez_gene_list, TERM2GENE = m_t2g, pvalueCutoff = 2)
+      specific_term &lt;- enrich_res_full %&gt;% filter(Description == original_term)
+      
+      # Add p-value if it exists
+      if (nrow(specific_term) &gt; 0) {
+        enrichment_table[term, cluster] &lt;- round(specific_term$p.adjust, 4)
+      } else {
+        enrichment_table[term, cluster] &lt;- 1  # No p-value found
+      }
+    }
+  }
+}
+
+# Display the resulting table with p-values
+print(enrichment_table)</code></pre>
+<pre><code>                                       1      2      3      4      5      6
+BILE_ACID_METABOLISM              0.0312 1.0000 1.0000 1.0000 1.0000 1.0000
+MYC_TARGETS_V2                    0.1194 0.1194 0.0156 0.0271 0.1194 0.1194
+OXIDATIVE_PHOSPHORYLATION         0.2298 0.2298 0.0417 0.2298 0.0037 0.2298
+DNA_REPAIR                        0.1413 0.1413 0.0417 0.0295 0.1413 0.1413
+MYC_TARGETS_V1                    0.0758 0.0758 0.0451 0.0758 0.0011 0.0758
+E2F_TARGETS                       0.0391 0.0391 0.0391 0.0099 0.0391 0.0391
+UNFOLDED_PROTEIN_RESPONSE         0.0801 0.0801 0.0801 0.0491 0.0801 0.0801
+EPITHELIAL_MESENCHYMAL_TRANSITION 0.1194 0.1194 0.1194 0.1194 0.1194 0.0000
+MYOGENESIS                        0.0995 0.0995 0.0995 0.0995 0.0995 0.0000
+HYPOXIA                           1.0000 1.0000 1.0000 1.0000 1.0000 0.0000
+TNFA_SIGNALING_VIA_NFKB           0.1194 0.1194 0.1194 0.1194 0.1194 0.0000
+UV_RESPONSE_DN                    0.0083 0.0083 0.0083 0.0083 0.0083 0.0000
+COAGULATION                       1.0000 1.0000 1.0000 1.0000 1.0000 0.0001
+MTORC1_SIGNALING                  0.0995 0.0995 0.0995 0.0995 0.0995 0.0004
+ANGIOGENESIS                      1.0000 1.0000 1.0000 1.0000 1.0000 0.0007
+IL2_STAT5_SIGNALING               1.0000 1.0000 1.0000 1.0000 1.0000 0.0015
+APICAL_JUNCTION                   1.0000 1.0000 1.0000 1.0000 1.0000 0.0028
+CHOLESTEROL_HOMEOSTASIS           1.0000 1.0000 1.0000 1.0000 1.0000 0.0030
+NOTCH_SIGNALING                   0.1587 0.1587 0.1587 0.1587 0.1587 0.0032
+ESTROGEN_RESPONSE_LATE            1.0000 1.0000 1.0000 1.0000 1.0000 0.0058
+INFLAMMATORY_RESPONSE             1.0000 1.0000 1.0000 1.0000 1.0000 0.0058
+ESTROGEN_RESPONSE_EARLY           0.1194 0.1194 0.1194 0.1194 0.1194 0.0142
+G2M_CHECKPOINT                    0.1587 0.1587 0.1587 0.1587 0.1587 0.0322
+ANDROGEN_RESPONSE                 1.0000 1.0000 1.0000 1.0000 1.0000 0.0381
+APOPTOSIS                         1.0000 1.0000 1.0000 1.0000 1.0000 0.0381
+UV_RESPONSE_UP                    0.0303 0.0303 0.0303 0.0303 0.0303 0.0382</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -2646,46 +1724,62 @@ time zone: America/Chicago
 tzcode source: internal
 
 attached base packages:
-[1] parallel  splines   stats     graphics  grDevices utils     datasets 
-[8] methods   base     
+ [1] stats4    parallel  splines   stats     graphics  grDevices utils    
+ [8] datasets  methods   base     
 
 other attached packages:
- [1] lubridate_1.9.3 forcats_1.0.0   stringr_1.5.0   dplyr_1.1.3    
- [5] purrr_1.0.2     readr_2.1.4     tidyr_1.3.0     tibble_3.2.1   
- [9] tidyverse_2.0.0 mixsqp_0.3-54   reshape2_1.4.4  ggplot2_3.5.1  
-[13] Matrix_1.6-3    TMB_1.9.7       BayesGP_0.1.1   workflowr_1.7.1
+ [1] cowplot_1.1.3          biomaRt_2.58.2         org.Hs.eg.db_3.18.0   
+ [4] AnnotationDbi_1.64.1   IRanges_2.36.0         S4Vectors_0.40.2      
+ [7] Biobase_2.62.0         BiocGenerics_0.48.1    msigdbr_7.5.1         
+[10] clusterProfiler_4.10.1 lubridate_1.9.3        forcats_1.0.0         
+[13] stringr_1.5.1          dplyr_1.1.4            purrr_1.0.2           
+[16] readr_2.1.5            tidyr_1.3.1            tibble_3.2.1          
+[19] tidyverse_2.0.0        mixsqp_0.3-54          reshape2_1.4.4        
+[22] ggplot2_3.5.1          Matrix_1.6-3           TMB_1.9.15            
+[25] BayesGP_0.1.1          workflowr_1.7.1       
 
 loaded via a namespace (and not attached):
- [1] tidyselect_1.2.0        farver_2.1.1            blob_1.2.4             
- [4] filelock_1.0.3          bitops_1.0-7            Biostrings_2.70.3      
- [7] RCurl_1.98-1.12         fastmap_1.1.1           BiocFileCache_2.10.2   
-[10] promises_1.2.1          XML_3.99-0.14           digest_0.6.33          
-[13] timechange_0.2.0        lifecycle_1.0.3         processx_3.8.2         
-[16] KEGGREST_1.42.0         RSQLite_2.3.6           magrittr_2.0.3         
-[19] compiler_4.3.1          progress_1.2.2          rlang_1.1.1            
-[22] sass_0.4.7              tools_4.3.1             utf8_1.2.3             
-[25] yaml_2.3.7              knitr_1.44              prettyunits_1.2.0      
-[28] labeling_0.4.3          curl_5.1.0              bit_4.0.5              
-[31] xml2_1.3.5              plyr_1.8.9              withr_2.5.1            
-[34] BiocGenerics_0.48.1     grid_4.3.1              stats4_4.3.1           
-[37] fansi_1.0.5             git2r_0.33.0            colorspace_2.1-0       
-[40] scales_1.3.0            biomaRt_2.58.2          cli_3.6.1              
-[43] rmarkdown_2.25          crayon_1.5.2            generics_0.1.3         
-[46] rstudioapi_0.15.0       httr_1.4.7              tzdb_0.4.0             
-[49] DBI_1.2.2               cachem_1.0.8            zlibbioc_1.48.2        
-[52] AnnotationDbi_1.64.1    XVector_0.42.0          vctrs_0.6.4            
-[55] jsonlite_1.8.7          callr_3.7.3             IRanges_2.36.0         
-[58] hms_1.1.3               S4Vectors_0.40.2        bit64_4.0.5            
-[61] irlba_2.3.5.1           jquerylib_0.1.4         glue_1.6.2             
-[64] ps_1.7.5                stringi_1.7.12          gtable_0.3.4           
-[67] GenomeInfoDb_1.38.8     later_1.3.1             munsell_0.5.0          
-[70] pillar_1.9.0            rappdirs_0.3.3          htmltools_0.5.6.1      
-[73] GenomeInfoDbData_1.2.11 dbplyr_2.3.4            R6_2.5.1               
-[76] rprojroot_2.0.3         evaluate_0.22           lattice_0.21-8         
-[79] Biobase_2.62.0          png_0.1-8               memoise_2.0.1          
-[82] httpuv_1.6.11           bslib_0.5.1             Rcpp_1.0.11            
-[85] whisker_0.4.1           xfun_0.40               fs_1.6.3               
-[88] getPass_0.2-4           pkgconfig_2.0.3        </code></pre>
+  [1] RColorBrewer_1.1-3      rstudioapi_0.16.0       jsonlite_1.8.9         
+  [4] magrittr_2.0.3          farver_2.1.2            rmarkdown_2.28         
+  [7] fs_1.6.4                zlibbioc_1.48.2         vctrs_0.6.5            
+ [10] memoise_2.0.1           RCurl_1.98-1.16         ggtree_3.10.1          
+ [13] progress_1.2.3          htmltools_0.5.8.1       curl_5.2.3             
+ [16] gridGraphics_0.5-1      sass_0.4.9              bslib_0.8.0            
+ [19] plyr_1.8.9              cachem_1.1.0            whisker_0.4.1          
+ [22] igraph_2.0.3            lifecycle_1.0.4         pkgconfig_2.0.3        
+ [25] gson_0.1.0              R6_2.5.1                fastmap_1.2.0          
+ [28] GenomeInfoDbData_1.2.11 digest_0.6.37           aplot_0.2.3            
+ [31] enrichplot_1.22.0       colorspace_2.1-1        patchwork_1.3.0        
+ [34] ps_1.8.0                rprojroot_2.0.4         irlba_2.3.5.1          
+ [37] RSQLite_2.3.7           filelock_1.0.3          labeling_0.4.3         
+ [40] fansi_1.0.6             timechange_0.3.0        httr_1.4.7             
+ [43] polyclip_1.10-7         compiler_4.3.1          bit64_4.5.2            
+ [46] withr_3.0.1             BiocParallel_1.36.0     viridis_0.6.5          
+ [49] DBI_1.2.3               highr_0.11              ggforce_0.4.2          
+ [52] MASS_7.3-60             rappdirs_0.3.3          HDO.db_0.99.1          
+ [55] tools_4.3.1             scatterpie_0.2.4        ape_5.8                
+ [58] httpuv_1.6.15           glue_1.7.0              callr_3.7.6            
+ [61] nlme_3.1-166            GOSemSim_2.28.1         promises_1.3.0         
+ [64] shadowtext_0.1.4        grid_4.3.1              getPass_0.2-4          
+ [67] fgsea_1.28.0            generics_0.1.3          gtable_0.3.5           
+ [70] tzdb_0.4.0              data.table_1.16.0       hms_1.1.3              
+ [73] xml2_1.3.6              tidygraph_1.3.1         utf8_1.2.4             
+ [76] XVector_0.42.0          ggrepel_0.9.6           pillar_1.9.0           
+ [79] babelgene_22.9          yulab.utils_0.1.7       later_1.3.2            
+ [82] tweenr_2.0.3            BiocFileCache_2.10.2    treeio_1.26.0          
+ [85] lattice_0.22-6          bit_4.5.0               tidyselect_1.2.1       
+ [88] GO.db_3.18.0            Biostrings_2.70.3       knitr_1.48             
+ [91] git2r_0.33.0            gridExtra_2.3           xfun_0.47              
+ [94] graphlayouts_1.2.0      stringi_1.8.4           lazyeval_0.2.2         
+ [97] ggfun_0.1.6             yaml_2.3.10             evaluate_1.0.0         
+[100] codetools_0.2-20        ggraph_2.2.1            qvalue_2.34.0          
+[103] ggplotify_0.1.2         cli_3.6.3               munsell_0.5.1          
+[106] processx_3.8.4          jquerylib_0.1.4         Rcpp_1.0.13            
+[109] GenomeInfoDb_1.38.8     dbplyr_2.5.0            png_0.1-8              
+[112] XML_3.99-0.17           blob_1.2.4              prettyunits_1.2.0      
+[115] DOSE_3.28.2             bitops_1.0-8            tidytree_0.4.6         
+[118] viridisLite_0.4.2       scales_1.3.0            crayon_1.5.3           
+[121] rlang_1.1.4             fastmatch_1.1-4         KEGGREST_1.42.0        </code></pre>
 </div>
 </div>
 
