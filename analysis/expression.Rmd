@@ -214,9 +214,9 @@ ggplot(melted_data_sorted, aes(x = factor(id, levels = sorted_posterior_weights_
 Let's group them into `num_clusters` groups, based on the quantiles of the mean PSD:
 ```{r}
 mean_psd_ordered <- mean_psd[sorted_index]
-# num_clusters <- 15
+# num_clusters <- 22
 # quantiles <- quantile(mean_psd_ordered, probs = seq(0, 1, 1/num_clusters))
-quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 3)
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
 
 quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
                        include.lowest = TRUE, labels = FALSE)
@@ -252,7 +252,7 @@ ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weigh
 ```
 
 
-```{r}
+```{r echo=FALSE}
 plot_gene_expression <- function(gene) {
   agg_result <- fitted_datasets[[gene]]
   plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
@@ -402,8 +402,8 @@ m_t2g <- msigdbr(species = "Homo sapiens", category = "H") %>%
   dplyr::select(gs_name, entrez_gene)
 mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 
-enrich_cluster <- function(cluster_id, q_val_cutoff = 0.05, pvalueCutoff = 0.05, melted_data) {
-  genes_selected <- melted_data %>% filter(cluster == cluster_id) %>% pull(id) %>% as.character() %>% unique()
+enrich_cluster <- function(cluster_id, q_val_cutoff = 0.05, pvalueCutoff = 0.05, melted_data_input) {
+  genes_selected <- melted_data_input %>% filter(cluster == cluster_id) %>% pull(id) %>% as.character() %>% unique()
   
   genes_converted <- getBM(
   filters = "ensembl_gene_id", 
@@ -426,7 +426,7 @@ enrich_cluster <- function(cluster_id, q_val_cutoff = 0.05, pvalueCutoff = 0.05,
 enriched_list <- list()
 for (i in 1:num_clusters) {
   # for each cluster, record the list of its enriched gene sets
-  enrich_res <- enrich_cluster(cluster_id = i, q_val_cutoff = 0.05, melted_data = melted_data_quantiles)  # Adjust parameters as needed
+  enrich_res <- enrich_cluster(cluster_id = i, q_val_cutoff = 0.05, melted_data_input = melted_data_quantiles)  # Adjust parameters as needed
   enriched_list[[i]] <- enrich_res$Description
   names(enriched_list)[i] <- paste0(i)
 }
@@ -467,7 +467,7 @@ for (i in 1:num_clusters) {
   # Store both the descriptions and p-values (not filtered by significance)
   enriched_list[[i]] <- data.frame(
     Description = enrich_res$Description, 
-    PValue = enrich_res$p.adjust
+    PValue = enrich_res$pvalue  # Use the raw p-value
   )
   
   names(enriched_list)[i] <- paste0(i)
@@ -480,7 +480,11 @@ all_enriched_terms <- unique(unlist(lapply(enriched_list, function(x) x$Descript
 all_enriched_terms_clean <- gsub("HALLMARK_", "", all_enriched_terms)
 
 # Initialize a data frame with clusters as columns and terms as rows
-enrichment_table <- data.frame(matrix(nrow = length(all_enriched_terms_clean), ncol = length(enriched_list)))
+enrichment_table <-
+  data.frame(matrix(
+    nrow = length(all_enriched_terms_clean),
+    ncol = length(enriched_list)
+  ))
 rownames(enrichment_table) <- all_enriched_terms_clean
 colnames(enrichment_table) <- names(enriched_list)
 
@@ -489,27 +493,33 @@ for (cluster in names(enriched_list)) {
   for (term in all_enriched_terms_clean) {
     # Check if the term is present in the enriched list of the cluster
     original_term <- paste0("HALLMARK_", term)  # Add back the prefix for comparison
-    term_in_cluster <- enriched_list[[cluster]]$Description == original_term
+    term_in_cluster <- if (nrow(enriched_list[[cluster]]) > 0) {
+      enriched_list[[cluster]]$Description == original_term
+    } else {
+      FALSE
+    }
     
     # If the term is enriched, fill in the p-value; otherwise, compute the enrichment and add its p-value
     if (any(term_in_cluster)) {
       enrichment_table[term, cluster] <- round(enriched_list[[cluster]]$PValue[term_in_cluster], 4)
-    } else {
+    } 
+    else {
       # If not found in the original result, perform enrichment for the gene set specifically
       cluster_id <- as.numeric(cluster)
-      genes_selected <- melted_data %>% filter(cluster == cluster_id) %>% pull(id) %>% as.character() %>% unique()
-  
-  genes_converted <- getBM(
-  filters = "ensembl_gene_id", 
-  attributes = c("ensembl_gene_id", "entrezgene_id"), 
-  values = genes_selected, 
-  mart = mart
-  )
-  
-  # Extract Entrez IDs from the converted data
-  entrez_gene_list <- genes_converted$entrezgene_id
-  
-      enrich_res_full <- enricher(entrez_gene_list, TERM2GENE = m_t2g, pvalueCutoff = 2)
+      genes_selected <- melted_data_quantiles %>% filter(cluster == cluster_id) %>% pull(id) %>% as.character() %>% unique()
+      
+      genes_converted <- getBM(
+        filters = "ensembl_gene_id",
+        attributes = c("ensembl_gene_id", "entrezgene_id"),
+        values = genes_selected,
+        mart = mart
+      )
+      
+      # Extract Entrez IDs from the converted data
+      entrez_gene_list <- genes_converted$entrezgene_id
+      enrich_res_full <- enricher(entrez_gene_list,
+                 TERM2GENE = m_t2g,
+                 pvalueCutoff = 2, qvalueCutoff = 2)
       specific_term <- enrich_res_full %>% filter(Description == original_term)
       
       # Add p-value if it exists
