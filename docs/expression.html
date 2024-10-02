@@ -322,7 +322,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-10-01
+<strong>Last updated:</strong> 2024-10-02
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -453,15 +453,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree0414ce6e5ba33711324308e3be187f47e267cb3dtargetblank0414ce6a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreed78bfa8bb385310fe969df41842b6fc02ff257cdtargetblankd78bfa8a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/0414ce6e5ba33711324308e3be187f47e267cb3d" target="_blank">0414ce6</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/d78bfa8bb385310fe969df41842b6fc02ff257cd" target="_blank">d78bfa8</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree0414ce6e5ba33711324308e3be187f47e267cb3dtargetblank0414ce6a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreed78bfa8bb385310fe969df41842b6fc02ff257cdtargetblankd78bfa8a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -471,7 +471,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/0414ce6e5ba33711324308e3be187f47e267cb3d" target="_blank">0414ce6</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/d78bfa8bb385310fe969df41842b6fc02ff257cd" target="_blank">d78bfa8</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -556,6 +556,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d78bfa8bb385310fe969df41842b6fc02ff257cd/analysis/expression.Rmd" target="_blank">d78bfa8</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-02
+</td>
+<td>
+wflow_publish("analysis/expression.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/expression.html" target="_blank">ec579c2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1106,6 +1140,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/figure/expression.Rmd/unnamed-chunk-8-1.png" target="_blank">ec579c2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-8-1.png" target="_blank">ad988fc</a>
 </td>
 <td>
@@ -1236,6 +1281,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/figure/expression.Rmd/unnamed-chunk-11-1.png" target="_blank">ec579c2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-11-1.png" target="_blank">ad988fc</a>
 </td>
 <td>
@@ -1288,16 +1344,16 @@ Ziang Zhang
 <p>Let’s group them into <code>num_clusters</code> groups, based on the
 quantiles of the mean PSD:</p>
 <pre class="r"><code>mean_psd_ordered &lt;- mean_psd[sorted_index]
-# num_clusters &lt;- 15
+# num_clusters &lt;- 22
 # quantiles &lt;- quantile(mean_psd_ordered, probs = seq(0, 1, 1/num_clusters))
-quantiles &lt;- c(0, 0.1, 0.2, 0.35, 0.5, 1, 3)
+quantiles &lt;- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
 
 quantile_groups &lt;- cut(mean_psd_ordered, breaks = quantiles, 
                        include.lowest = TRUE, labels = FALSE)
 table(quantile_groups)</code></pre>
 <pre><code>quantile_groups
-   1    2    3    4    5    6 
- 446 3429 3168 2203 3879 3194 </code></pre>
+   1    2    3    4    5    6    7    8    9 
+ 446 3429 3168 2203 3879 1826  741  277  350 </code></pre>
 <pre class="r"><code>num_clusters &lt;- length(unique(quantile_groups))
 
 sorted_posterior_weights_df$cluster &lt;- quantile_groups
@@ -1356,6 +1412,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/figure/expression.Rmd/unnamed-chunk-12-1.png" target="_blank">ec579c2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-12-1.png" target="_blank">ad988fc</a>
 </td>
 <td>
@@ -1402,103 +1469,6 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<pre class="r"><code>plot_gene_expression &lt;- function(gene) {
-  agg_result &lt;- fitted_datasets[[gene]]
-  plot(datasets[[gene]]$Day, agg_result$median, type = &#39;l&#39;, 
-       main = paste0(gene), xlab = &quot;Day&quot;, ylab = &quot;Expression&quot;, col = &quot;blue&quot;,
-       cex = 0.5, ylim = c(0, max(datasets[[gene]]$y) * 1.2),
-       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
-  points(datasets[[gene]]$Day, datasets[[gene]]$y, col = &quot;black&quot;, cex = 0.5)
-  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
-          c(agg_result$lower, rev(agg_result$upper)),
-          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
-}
-
-plot_gene_expression_log &lt;- function(gene) {
-  agg_result &lt;- fitted_datasets[[gene]]
-  data_points &lt;- datasets[[gene]]$y
-  positive_points &lt;- data_points[data_points &gt; 0]  # Filter out non-positive values
-
-  if (length(positive_points) == 0) {
-    stop(&quot;No positive data points available for logarithmic plotting.&quot;)
-  }
-
-  min_y &lt;- min(positive_points)
-  max_y &lt;- max(agg_result$upper)  # Assuming this is positive and makes sense in your context
-
-  # Set the limits for the y-axis
-  log_min_y &lt;- min_y / 2  # Just a simple heuristic, can adjust based on your data&#39;s distribution
-  log_max_y &lt;- max_y * 1.2
-
-  plot(datasets[[gene]]$Day, agg_result$median, type = &#39;l&#39;, 
-       main = paste0(gene), xlab = &quot;Day&quot;, ylab = &quot;Expression&quot;, col = &quot;blue&quot;,
-       cex = 0.5, log = &quot;y&quot;, ylim = c(log_min_y, log_max_y),
-       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
-  points(datasets[[gene]]$Day, data_points, col = &quot;black&quot;, cex = 0.5)
-  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
-          c(agg_result$lower, rev(agg_result$upper)),
-          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
-}
-
-plot_gene_expression_log_just_f &lt;- function(gene, log_size_vec) {
-  agg_result &lt;- fitted_datasets[[gene]]
-  agg_result[,c(2,3,4)] &lt;-  agg_result[,c(2,3,4)]/exp(log_size_vec)
-  min_y &lt;- min(agg_result$lower)
-  max_y &lt;- max(agg_result$upper)  # Assuming this is positive and makes sense in your context
-
-  # Set the limits for the y-axis
-  log_min_y &lt;- min_y / 2  # Just a simple heuristic, can adjust based on your data&#39;s distribution
-  log_max_y &lt;- max_y * 1.2
-
-  plot(datasets[[gene]]$Day, agg_result$median, type = &#39;l&#39;, 
-       main = paste0(gene), xlab = &quot;Day&quot;, ylab = &quot;Expression&quot;, col = &quot;blue&quot;,
-       cex = 0.5, log = &quot;y&quot;, ylim = c(log_min_y, log_max_y),
-       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
-  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
-          c(agg_result$lower, rev(agg_result$upper)),
-          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
-}
-
-
-# plot_gene_expression(gene)
-plot_cluster_genes &lt;- function(genes) {
-  if(length(genes) &lt; 16){
-        plot_gene_expression(genes[1])
-  }
-  else{
-      par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
-      for (gene in genes[1:16]) {
-        plot_gene_expression(gene)
-      }
-      par(mfrow = c(1, 1))
-  }
-}
-
-plot_cluster_genes_log &lt;- function(genes) {
-  if(length(genes) &lt; 16) {
-      plot_gene_expression_log(genes[1])
-  }
-  else{
-      par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
-  for (gene in genes[1:16]) {
-    plot_gene_expression_log(gene)
-  }
-  par(mfrow = c(1, 1))
-  }
-}
-plot_cluster_genes_log_just_f &lt;- function(genes, log_size_vec){
-  if(length(genes) &lt; 16) {
-      plot_gene_expression_log_just_f(genes[1], log_size_vec)
-  }
-  else{
-      par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
-  for (gene in genes[1:16]) {
-    plot_gene_expression_log_just_f(gene, log_size_vec)
-  }
-  par(mfrow = c(1, 1))
-  }
-}
-# plot_cluster_genes(genes_cluster1)</code></pre>
 <!-- ### **Smoothing result for each cluster (Overall expression level $o_j\exp(f_i(t_j))$** {.tabset .tabset-pills} -->
 <!-- ```{r, results='asis'} -->
 <!-- for (i in 1:num_clusters) { -->
@@ -1533,8 +1503,8 @@ m_t2g &lt;- msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;H&quot;
   dplyr::select(gs_name, entrez_gene)
 mart &lt;- useMart(&quot;ensembl&quot;, dataset = &quot;hsapiens_gene_ensembl&quot;)
 
-enrich_cluster &lt;- function(cluster_id, q_val_cutoff = 0.05, pvalueCutoff = 0.05, melted_data) {
-  genes_selected &lt;- melted_data %&gt;% filter(cluster == cluster_id) %&gt;% pull(id) %&gt;% as.character() %&gt;% unique()
+enrich_cluster &lt;- function(cluster_id, q_val_cutoff = 0.05, pvalueCutoff = 0.05, melted_data_input) {
+  genes_selected &lt;- melted_data_input %&gt;% filter(cluster == cluster_id) %&gt;% pull(id) %&gt;% as.character() %&gt;% unique()
   
   genes_converted &lt;- getBM(
   filters = &quot;ensembl_gene_id&quot;, 
@@ -1553,7 +1523,7 @@ enrich_cluster &lt;- function(cluster_id, q_val_cutoff = 0.05, pvalueCutoff = 0.
 <pre class="r"><code>enriched_list &lt;- list()
 for (i in 1:num_clusters) {
   # for each cluster, record the list of its enriched gene sets
-  enrich_res &lt;- enrich_cluster(cluster_id = i, q_val_cutoff = 0.05, melted_data = melted_data_quantiles)  # Adjust parameters as needed
+  enrich_res &lt;- enrich_cluster(cluster_id = i, q_val_cutoff = 0.05, melted_data_input = melted_data_quantiles)  # Adjust parameters as needed
   enriched_list[[i]] &lt;- enrich_res$Description
   names(enriched_list)[i] &lt;- paste0(i)
 }
@@ -1580,33 +1550,24 @@ for (cluster in names(enriched_list)) {
 
 # Display the resulting table
 print(enrichment_table)</code></pre>
-<pre><code>                                    1  2   3   4   5   6
-BILE_ACID_METABOLISM              yes no  no  no  no  no
-MYC_TARGETS_V2                     no no yes yes  no  no
-OXIDATIVE_PHOSPHORYLATION          no no yes  no yes  no
-DNA_REPAIR                         no no yes yes  no  no
-MYC_TARGETS_V1                     no no yes  no yes  no
-E2F_TARGETS                        no no  no yes  no  no
-UNFOLDED_PROTEIN_RESPONSE          no no  no yes  no  no
-EPITHELIAL_MESENCHYMAL_TRANSITION  no no  no  no  no yes
-MYOGENESIS                         no no  no  no  no yes
-HYPOXIA                            no no  no  no  no yes
-TNFA_SIGNALING_VIA_NFKB            no no  no  no  no yes
-UV_RESPONSE_DN                     no no  no  no  no yes
-COAGULATION                        no no  no  no  no yes
-MTORC1_SIGNALING                   no no  no  no  no yes
-ANGIOGENESIS                       no no  no  no  no yes
-IL2_STAT5_SIGNALING                no no  no  no  no yes
-APICAL_JUNCTION                    no no  no  no  no yes
-CHOLESTEROL_HOMEOSTASIS            no no  no  no  no yes
-NOTCH_SIGNALING                    no no  no  no  no yes
-ESTROGEN_RESPONSE_LATE             no no  no  no  no yes
-INFLAMMATORY_RESPONSE              no no  no  no  no yes
-ESTROGEN_RESPONSE_EARLY            no no  no  no  no yes
-G2M_CHECKPOINT                     no no  no  no  no yes
-ANDROGEN_RESPONSE                  no no  no  no  no yes
-APOPTOSIS                          no no  no  no  no yes
-UV_RESPONSE_UP                     no no  no  no  no yes</code></pre>
+<pre><code>                                    1  2   3   4   5   6   7   8   9
+BILE_ACID_METABOLISM              yes no  no  no  no  no  no  no  no
+MYC_TARGETS_V2                     no no yes yes  no  no  no  no  no
+OXIDATIVE_PHOSPHORYLATION          no no yes  no yes  no  no  no  no
+DNA_REPAIR                         no no yes yes  no  no  no  no  no
+MYC_TARGETS_V1                     no no yes  no yes  no  no  no  no
+E2F_TARGETS                        no no  no yes  no  no  no  no  no
+UNFOLDED_PROTEIN_RESPONSE          no no  no yes  no  no  no  no  no
+MYOGENESIS                         no no  no  no  no yes yes  no  no
+MTORC1_SIGNALING                   no no  no  no  no yes  no  no  no
+EPITHELIAL_MESENCHYMAL_TRANSITION  no no  no  no  no yes yes yes yes
+HYPOXIA                            no no  no  no  no yes  no  no yes
+UV_RESPONSE_DN                     no no  no  no  no yes  no  no yes
+IL2_STAT5_SIGNALING                no no  no  no  no yes  no  no  no
+INFLAMMATORY_RESPONSE              no no  no  no  no  no yes  no  no
+TNFA_SIGNALING_VIA_NFKB            no no  no  no  no  no yes  no yes
+ANGIOGENESIS                       no no  no  no  no  no  no  no yes
+COAGULATION                        no no  no  no  no  no  no  no yes</code></pre>
 <pre class="r"><code>enriched_list &lt;- list()  # To store enrichment results
 
 for (i in 1:num_clusters) {
@@ -1616,7 +1577,7 @@ for (i in 1:num_clusters) {
   # Store both the descriptions and p-values (not filtered by significance)
   enriched_list[[i]] &lt;- data.frame(
     Description = enrich_res$Description, 
-    PValue = enrich_res$p.adjust
+    PValue = enrich_res$pvalue  # Use the raw p-value
   )
   
   names(enriched_list)[i] &lt;- paste0(i)
@@ -1629,7 +1590,11 @@ all_enriched_terms &lt;- unique(unlist(lapply(enriched_list, function(x) x$Descr
 all_enriched_terms_clean &lt;- gsub(&quot;HALLMARK_&quot;, &quot;&quot;, all_enriched_terms)
 
 # Initialize a data frame with clusters as columns and terms as rows
-enrichment_table &lt;- data.frame(matrix(nrow = length(all_enriched_terms_clean), ncol = length(enriched_list)))
+enrichment_table &lt;-
+  data.frame(matrix(
+    nrow = length(all_enriched_terms_clean),
+    ncol = length(enriched_list)
+  ))
 rownames(enrichment_table) &lt;- all_enriched_terms_clean
 colnames(enrichment_table) &lt;- names(enriched_list)
 
@@ -1638,27 +1603,33 @@ for (cluster in names(enriched_list)) {
   for (term in all_enriched_terms_clean) {
     # Check if the term is present in the enriched list of the cluster
     original_term &lt;- paste0(&quot;HALLMARK_&quot;, term)  # Add back the prefix for comparison
-    term_in_cluster &lt;- enriched_list[[cluster]]$Description == original_term
+    term_in_cluster &lt;- if (nrow(enriched_list[[cluster]]) &gt; 0) {
+      enriched_list[[cluster]]$Description == original_term
+    } else {
+      FALSE
+    }
     
     # If the term is enriched, fill in the p-value; otherwise, compute the enrichment and add its p-value
     if (any(term_in_cluster)) {
       enrichment_table[term, cluster] &lt;- round(enriched_list[[cluster]]$PValue[term_in_cluster], 4)
-    } else {
+    } 
+    else {
       # If not found in the original result, perform enrichment for the gene set specifically
       cluster_id &lt;- as.numeric(cluster)
-      genes_selected &lt;- melted_data %&gt;% filter(cluster == cluster_id) %&gt;% pull(id) %&gt;% as.character() %&gt;% unique()
-  
-  genes_converted &lt;- getBM(
-  filters = &quot;ensembl_gene_id&quot;, 
-  attributes = c(&quot;ensembl_gene_id&quot;, &quot;entrezgene_id&quot;), 
-  values = genes_selected, 
-  mart = mart
-  )
-  
-  # Extract Entrez IDs from the converted data
-  entrez_gene_list &lt;- genes_converted$entrezgene_id
-  
-      enrich_res_full &lt;- enricher(entrez_gene_list, TERM2GENE = m_t2g, pvalueCutoff = 2)
+      genes_selected &lt;- melted_data_quantiles %&gt;% filter(cluster == cluster_id) %&gt;% pull(id) %&gt;% as.character() %&gt;% unique()
+      
+      genes_converted &lt;- getBM(
+        filters = &quot;ensembl_gene_id&quot;,
+        attributes = c(&quot;ensembl_gene_id&quot;, &quot;entrezgene_id&quot;),
+        values = genes_selected,
+        mart = mart
+      )
+      
+      # Extract Entrez IDs from the converted data
+      entrez_gene_list &lt;- genes_converted$entrezgene_id
+      enrich_res_full &lt;- enricher(entrez_gene_list,
+                 TERM2GENE = m_t2g,
+                 pvalueCutoff = 2, qvalueCutoff = 2)
       specific_term &lt;- enrich_res_full %&gt;% filter(Description == original_term)
       
       # Add p-value if it exists
@@ -1674,32 +1645,41 @@ for (cluster in names(enriched_list)) {
 # Display the resulting table with p-values
 print(enrichment_table)</code></pre>
 <pre><code>                                       1      2      3      4      5      6
-BILE_ACID_METABOLISM              0.0312 1.0000 1.0000 1.0000 1.0000 1.0000
-MYC_TARGETS_V2                    0.1194 0.1194 0.0156 0.0271 0.1194 0.1194
-OXIDATIVE_PHOSPHORYLATION         0.2298 0.2298 0.0417 0.2298 0.0037 0.2298
-DNA_REPAIR                        0.1413 0.1413 0.0417 0.0295 0.1413 0.1413
-MYC_TARGETS_V1                    0.0758 0.0758 0.0451 0.0758 0.0011 0.0758
-E2F_TARGETS                       0.0391 0.0391 0.0391 0.0099 0.0391 0.0391
-UNFOLDED_PROTEIN_RESPONSE         0.0801 0.0801 0.0801 0.0491 0.0801 0.0801
-EPITHELIAL_MESENCHYMAL_TRANSITION 0.1194 0.1194 0.1194 0.1194 0.1194 0.0000
-MYOGENESIS                        0.0995 0.0995 0.0995 0.0995 0.0995 0.0000
-HYPOXIA                           1.0000 1.0000 1.0000 1.0000 1.0000 0.0000
-TNFA_SIGNALING_VIA_NFKB           0.1194 0.1194 0.1194 0.1194 0.1194 0.0000
-UV_RESPONSE_DN                    0.0083 0.0083 0.0083 0.0083 0.0083 0.0000
-COAGULATION                       1.0000 1.0000 1.0000 1.0000 1.0000 0.0001
-MTORC1_SIGNALING                  0.0995 0.0995 0.0995 0.0995 0.0995 0.0004
-ANGIOGENESIS                      1.0000 1.0000 1.0000 1.0000 1.0000 0.0007
-IL2_STAT5_SIGNALING               1.0000 1.0000 1.0000 1.0000 1.0000 0.0015
-APICAL_JUNCTION                   1.0000 1.0000 1.0000 1.0000 1.0000 0.0028
-CHOLESTEROL_HOMEOSTASIS           1.0000 1.0000 1.0000 1.0000 1.0000 0.0030
-NOTCH_SIGNALING                   0.1587 0.1587 0.1587 0.1587 0.1587 0.0032
-ESTROGEN_RESPONSE_LATE            1.0000 1.0000 1.0000 1.0000 1.0000 0.0058
-INFLAMMATORY_RESPONSE             1.0000 1.0000 1.0000 1.0000 1.0000 0.0058
-ESTROGEN_RESPONSE_EARLY           0.1194 0.1194 0.1194 0.1194 0.1194 0.0142
-G2M_CHECKPOINT                    0.1587 0.1587 0.1587 0.1587 0.1587 0.0322
-ANDROGEN_RESPONSE                 1.0000 1.0000 1.0000 1.0000 1.0000 0.0381
-APOPTOSIS                         1.0000 1.0000 1.0000 1.0000 1.0000 0.0381
-UV_RESPONSE_UP                    0.0303 0.0303 0.0303 0.0303 0.0303 0.0382</code></pre>
+BILE_ACID_METABOLISM              0.0012 1.0000 1.0000 0.9978 0.9989 0.8664
+MYC_TARGETS_V2                    1.0000 1.0000 0.0003 0.0011 0.9989 0.9989
+OXIDATIVE_PHOSPHORYLATION         1.0000 0.9281 0.0021 0.9978 0.0001 0.9989
+DNA_REPAIR                        0.7769 0.9281 0.0026 0.0018 0.9989 0.9989
+MYC_TARGETS_V1                    0.7769 0.9281 0.0037 0.1508 0.0000 0.9989
+E2F_TARGETS                       1.0000 0.9281 1.0000 0.0002 0.8028 0.4339
+UNFOLDED_PROTEIN_RESPONSE         1.0000 0.9281 1.0000 0.0039 0.8028 0.7989
+MYOGENESIS                        0.7769 0.9281 1.0000 0.9978 0.9989 0.0000
+MTORC1_SIGNALING                  1.0000 0.9281 1.0000 0.9978 0.8028 0.0000
+EPITHELIAL_MESENCHYMAL_TRANSITION 1.0000 1.0000 1.0000 0.9978 0.9989 0.0002
+HYPOXIA                           0.7769 0.9281 1.0000 0.9978 0.9989 0.0002
+UV_RESPONSE_DN                    1.0000 0.9281 1.0000 0.9978 0.9989 0.0014
+IL2_STAT5_SIGNALING               0.7769 0.9281 1.0000 0.9978 0.9989 0.0041
+INFLAMMATORY_RESPONSE             1.0000 0.9281 1.0000 0.9978 0.9989 0.1887
+TNFA_SIGNALING_VIA_NFKB           0.7769 0.9281 1.0000 0.9978 0.9989 0.0725
+ANGIOGENESIS                      1.0000 0.9281 1.0000 0.9978 0.9989 0.4339
+COAGULATION                       0.7769 0.9281 1.0000 0.9978 0.9989 0.4339
+                                       7      8      9
+BILE_ACID_METABOLISM              0.4341 0.4464 0.9978
+MYC_TARGETS_V2                    1.0000 0.9151 1.0000
+OXIDATIVE_PHOSPHORYLATION         1.0000 1.0000 0.9978
+DNA_REPAIR                        1.0000 1.0000 1.0000
+MYC_TARGETS_V1                    1.0000 1.0000 0.9978
+E2F_TARGETS                       0.9135 0.9151 0.9978
+UNFOLDED_PROTEIN_RESPONSE         1.0000 0.9151 0.9978
+MYOGENESIS                        0.0008 0.1456 0.8616
+MTORC1_SIGNALING                  0.1076 0.9556 0.9978
+EPITHELIAL_MESENCHYMAL_TRANSITION 0.0000 0.0000 0.0000
+HYPOXIA                           0.0634 0.6794 0.0001
+UV_RESPONSE_DN                    0.9364 0.0753 0.0010
+IL2_STAT5_SIGNALING               0.0885 0.6794 0.9978
+INFLAMMATORY_RESPONSE             0.0017 0.9556 0.6744
+TNFA_SIGNALING_VIA_NFKB           0.0017 0.2333 0.0020
+ANGIOGENESIS                      0.8427 0.6794 0.0000
+COAGULATION                       0.1076 0.6794 0.0000</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1736,7 +1716,7 @@ other attached packages:
 [16] readr_2.1.5            tidyr_1.3.1            tibble_3.2.1          
 [19] tidyverse_2.0.0        mixsqp_0.3-54          reshape2_1.4.4        
 [22] ggplot2_3.5.1          Matrix_1.6-3           TMB_1.9.15            
-[25] BayesGP_0.1.1          workflowr_1.7.1       
+[25] BayesGP_0.1.2          workflowr_1.7.1       
 
 loaded via a namespace (and not attached):
   [1] RColorBrewer_1.1-3      rstudioapi_0.16.0       jsonlite_1.8.9         
