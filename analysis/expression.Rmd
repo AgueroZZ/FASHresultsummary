@@ -414,9 +414,23 @@ enrich_cluster <- function(cluster_id, q_val_cutoff = 0.05, pvalueCutoff = 0.05,
   
   # Extract Entrez IDs from the converted data
   entrez_gene_list <- genes_converted$entrezgene_id
+  
+  genes_converted_all <- getBM(
+    filters = "ensembl_gene_id", 
+    attributes = c("ensembl_gene_id", "entrezgene_id"), 
+    values = melted_data_input$id %>% as.character() %>% unique(), 
+    mart = mart
+  )
+  entrez_universe <- as.character(genes_converted_all$entrezgene_id)
+  entrez_universe <- entrez_universe[!is.na(entrez_universe)]
 
   # Perform enrichment analysis using Hallmark gene sets
-  enrich_res <- enricher(entrez_gene_list, TERM2GENE = m_t2g, qvalueCutoff = q_val_cutoff, pvalueCutoff = pvalueCutoff)
+  enrich_res <- enricher(pAdjustMethod = "BH", 
+                         entrez_gene_list, 
+                         TERM2GENE = m_t2g, 
+                         qvalueCutoff = q_val_cutoff, 
+                         pvalueCutoff = pvalueCutoff, 
+                         universe = entrez_universe)
   enrich_res
 }
 ```
@@ -457,7 +471,7 @@ print(enrichment_table)
 
 
 
-```{r}
+```{r eval = FALSE}
 enriched_list <- list()  # To store enrichment results
 
 for (i in 1:num_clusters) {
@@ -501,7 +515,7 @@ for (cluster in names(enriched_list)) {
     
     # If the term is enriched, fill in the p-value; otherwise, compute the enrichment and add its p-value
     if (any(term_in_cluster)) {
-      enrichment_table[term, cluster] <- round(enriched_list[[cluster]]$PValue[term_in_cluster], 4)
+      enrichment_table[term, cluster] <- round(enriched_list[[cluster]]$PValue[term_in_cluster], 3)
     } 
     else {
       # If not found in the original result, perform enrichment for the gene set specifically
@@ -517,14 +531,27 @@ for (cluster in names(enriched_list)) {
       
       # Extract Entrez IDs from the converted data
       entrez_gene_list <- genes_converted$entrezgene_id
+      
+      genes_converted_all <- getBM(
+        filters = "ensembl_gene_id",
+        attributes = c("ensembl_gene_id", "entrezgene_id"),
+        values = melted_data_quantiles$id %>% as.character() %>% unique(),
+        mart = mart
+      )
+      entrez_universe <- as.character(genes_converted_all$entrezgene_id)
+      entrez_universe <- entrez_universe[!is.na(entrez_universe)]
+      
       enrich_res_full <- enricher(entrez_gene_list,
                  TERM2GENE = m_t2g,
-                 pvalueCutoff = 2, qvalueCutoff = 2)
+                 pvalueCutoff = 2, qvalueCutoff = 2,
+                 universe = entrez_universe)
+      
+      
       specific_term <- enrich_res_full %>% filter(Description == original_term)
       
       # Add p-value if it exists
       if (nrow(specific_term) > 0) {
-        enrichment_table[term, cluster] <- round(specific_term$p.adjust, 4)
+        enrichment_table[term, cluster] <- round(specific_term$p.adjust, 3)
       } else {
         enrichment_table[term, cluster] <- 1  # No p-value found
       }
@@ -537,8 +564,48 @@ print(enrichment_table)
 ```
 
 
+### **Question: what enriched gene sets were not enriched in Strober's analysis? **
+
+```{r}
+# Define the file path where the table is saved
+file_path <- paste0(result_dir, "/gene_set_table_strober")
+
+# Load the table using read.table, assuming tab-delimited format
+gene_set_table <- read.table(file_path, header = TRUE, sep = "|", stringsAsFactors = FALSE, strip.white = TRUE)
+
+# Clean up column names (since separators may have caused extra spaces)
+colnames(gene_set_table) <- trimws(colnames(gene_set_table))
+
+# View the loaded table
+print(gene_set_table)
+
+# Optionally, you can remove any unnecessary row numbers or empty rows
+gene_set_table <- gene_set_table[-1,]  # Remove the first row if it's a redundant header row
+gene_set_table <- gene_set_table[, -1] # Remove the first column if it's a redundant row index
+gene_set_table <- gene_set_table[, -ncol(gene_set_table)] # remove the last column
 
 
+# Convert columns from character to numeric where necessary
+gene_set_table$Gene.cluster.6 <- as.numeric(gene_set_table$Gene.cluster.6)
+gene_set_table$Gene.cluster.9 <- as.numeric(gene_set_table$Gene.cluster.9)
+
+# If you want to handle NA values that result from conversion
+gene_set_table[is.na(gene_set_table)] <- 0  # Replace NAs with 0, or handle them as needed
+
+# Perform a comparison between the two tables
+gene_set_table_strober <- gene_set_table 
+
+# Define the significance threshold
+significance_level <- 0.05
+
+# Apply the conversion using ifelse for each relevant column
+for (col in colnames(gene_set_table)[2:ncol(gene_set_table)]) {
+  gene_set_table[[col]] <- ifelse(as.numeric(gene_set_table[[col]]) < significance_level, "yes", "no")
+}
+
+# Print the updated table
+print(gene_set_table)
+```
 
 
 
