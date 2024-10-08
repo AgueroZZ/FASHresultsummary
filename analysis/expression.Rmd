@@ -466,7 +466,7 @@ for (cluster in names(enriched_list)) {
 }
 
 # Display the resulting table
-print(enrichment_table)
+print(enrichment_table[,-2])
 ```
 
 
@@ -566,28 +566,22 @@ print(enrichment_table)
 
 ### **Question: what enriched gene sets were not enriched in Strober's analysis? **
 
-```{r}
+Here are the enrichment result from Strober's analysis for comparison:
+
+```{r echo=FALSE}
 # Define the file path where the table is saved
 file_path <- paste0(result_dir, "/gene_set_table_strober")
 
 # Load the table using read.table, assuming tab-delimited format
 gene_set_table <- read.table(file_path, header = TRUE, sep = "|", stringsAsFactors = FALSE, strip.white = TRUE)
 
-# Clean up column names (since separators may have caused extra spaces)
-colnames(gene_set_table) <- trimws(colnames(gene_set_table))
-
-# View the loaded table
-print(gene_set_table)
-
 # Optionally, you can remove any unnecessary row numbers or empty rows
 gene_set_table <- gene_set_table[-1,]  # Remove the first row if it's a redundant header row
 gene_set_table <- gene_set_table[, -1] # Remove the first column if it's a redundant row index
 gene_set_table <- gene_set_table[, -ncol(gene_set_table)] # remove the last column
 
-
-# Convert columns from character to numeric where necessary
-gene_set_table$Gene.cluster.6 <- as.numeric(gene_set_table$Gene.cluster.6)
-gene_set_table$Gene.cluster.9 <- as.numeric(gene_set_table$Gene.cluster.9)
+# Clean up column names (since separators may have caused extra spaces)
+colnames(gene_set_table) <- c("Hallmark", 2, 4, 5, 6, 9, 11, 13, 16)
 
 # If you want to handle NA values that result from conversion
 gene_set_table[is.na(gene_set_table)] <- 0  # Replace NAs with 0, or handle them as needed
@@ -603,9 +597,53 @@ for (col in colnames(gene_set_table)[2:ncol(gene_set_table)]) {
   gene_set_table[[col]] <- ifelse(as.numeric(gene_set_table[[col]]) < significance_level, "yes", "no")
 }
 
-# Print the updated table
-print(gene_set_table)
+gene_set_table$Hallmark <- toupper(gsub(" ", "_", gene_set_table$Hallmark))
+
+# Define the desired order based on enrichment_table
+desired_order <- rownames(enrichment_table)
+
+# Step 1: Get the union of gene sets from both tables
+all_gene_sets <- unique(c(gene_set_table$Hallmark, desired_order))
+
+# Step 2: Identify gene sets in the union that are missing from final_gene_set_table
+missing_gene_sets <- setdiff(all_gene_sets, gene_set_table$Hallmark)
+
+# Step 3: Create a data frame for the missing gene sets, with all values set to "no"
+missing_rows <- data.frame(Hallmark = missing_gene_sets, matrix("no", nrow = length(missing_gene_sets), ncol = ncol(gene_set_table) - 1))
+colnames(missing_rows) <- colnames(gene_set_table)
+
+# Step 4: Add the missing rows to the final_gene_set_table
+final_gene_set_table <- rbind(gene_set_table, missing_rows)
+
+# Step 5: Reorder the rows of the final table to match the order of the union of gene sets
+final_gene_set_table <- final_gene_set_table[match(all_gene_sets, final_gene_set_table$Hallmark), ]
+
+
+final_gene_set_table_for_comparison <- final_gene_set_table %>% filter(Hallmark %in% desired_order)
+final_gene_set_table_for_comparison <- final_gene_set_table_for_comparison[match(desired_order, final_gene_set_table_for_comparison$Hallmark), ]
+
+get_first_yes_position <- function(column) {
+  yes_positions <- which(column == "yes")
+  if (length(yes_positions) == 0) {
+    return(Inf)  # Return Inf if there are no "yes" entries
+  } else {
+    return(min(yes_positions))  # Return the position of the first "yes"
+  }
+}
+
+# Apply the function to each column (excluding the Hallmark column)
+column_order <- apply(final_gene_set_table_for_comparison[, -1], 2, get_first_yes_position)
+# Reorder the columns based on the first "yes" position
+ordered_columns <- order(column_order)
+# Reorder the table's columns based on this order
+final_gene_set_table_for_comparison <- final_gene_set_table_for_comparison[, c(1, ordered_columns + 1)]  # +1 to account for the Hallmark column
+rownames(final_gene_set_table_for_comparison) <- final_gene_set_table_for_comparison$Hallmark
+final_gene_set_table_for_comparison[,-1]
 ```
 
+A few interesting observations:
 
+- Many gene-sets are enriched in clusters identified from both approaches. In particular, cluster 7 from FASH identified MYOGENESIS, EPITHELIAL_MESENCHYMAL_TRANSITION, INFLAMMATORY_RESPONSE and TNFA_SIGNALING_VIA_NFKB as enriched gene sets, whereas the cluster 6 from Strober identified MYOGENESIS, EPITHELIAL_MESENCHYMAL_TRANSITION and TNFA_SIGNALING_VIA_NFKB.
+
+- Clusters (especially cluster 9) from FASH identifies some interesting gene-sets that were missed by Strober's analysis, such as UV_RESPONSE_DN, INFLAMMATORY_RESPONSE, IL2_STAT5_SIGNALING, ANGIOGENESIS and HYPOXIA. Note that UV_RESPONSE_DN INFLAMMATORY_RESPONSE and IL2_STAT5_SIGNALING are all related to protective features to prevent external damage due to environment or pathogens. ANGIOGENESIS and HYPOXIA are related to the formation of new blood vessels and the response to low oxygen levels, respectively.
 
