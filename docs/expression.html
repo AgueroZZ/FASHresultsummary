@@ -322,7 +322,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-10-02
+<strong>Last updated:</strong> 2024-10-07
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -453,15 +453,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreed78bfa8bb385310fe969df41842b6fc02ff257cdtargetblankd78bfa8a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreef8d32d7614879dd849c02a80bcbdb6686636928dtargetblankf8d32d7a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/d78bfa8bb385310fe969df41842b6fc02ff257cd" target="_blank">d78bfa8</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/f8d32d7614879dd849c02a80bcbdb6686636928d" target="_blank">f8d32d7</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreed78bfa8bb385310fe969df41842b6fc02ff257cdtargetblankd78bfa8a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreef8d32d7614879dd849c02a80bcbdb6686636928dtargetblankf8d32d7a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -471,7 +471,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/d78bfa8bb385310fe969df41842b6fc02ff257cd" target="_blank">d78bfa8</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/f8d32d7614879dd849c02a80bcbdb6686636928d" target="_blank">f8d32d7</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -503,6 +503,7 @@ Ignored files:
 
 Untracked files:
     Untracked:  analysis/circadian_expression (experimment).Rmd
+    Untracked:  output/expression/gene_set_table_strober
 
 Unstaged changes:
     Modified:   analysis/circadian_expression.Rmd
@@ -556,6 +557,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/f8d32d7614879dd849c02a80bcbdb6686636928d/analysis/expression.Rmd" target="_blank">f8d32d7</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-07
+</td>
+<td>
+wflow_publish("analysis/expression.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/719af82763637ca6dd4dd8b318d656ecea79da60/docs/expression.html" target="_blank">719af82</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1412,6 +1447,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/719af82763637ca6dd4dd8b318d656ecea79da60/docs/figure/expression.Rmd/unnamed-chunk-12-1.png" target="_blank">719af82</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/figure/expression.Rmd/unnamed-chunk-12-1.png" target="_blank">ec579c2</a>
 </td>
 <td>
@@ -1515,9 +1561,23 @@ enrich_cluster &lt;- function(cluster_id, q_val_cutoff = 0.05, pvalueCutoff = 0.
   
   # Extract Entrez IDs from the converted data
   entrez_gene_list &lt;- genes_converted$entrezgene_id
+  
+  genes_converted_all &lt;- getBM(
+    filters = &quot;ensembl_gene_id&quot;, 
+    attributes = c(&quot;ensembl_gene_id&quot;, &quot;entrezgene_id&quot;), 
+    values = melted_data_input$id %&gt;% as.character() %&gt;% unique(), 
+    mart = mart
+  )
+  entrez_universe &lt;- as.character(genes_converted_all$entrezgene_id)
+  entrez_universe &lt;- entrez_universe[!is.na(entrez_universe)]
 
   # Perform enrichment analysis using Hallmark gene sets
-  enrich_res &lt;- enricher(entrez_gene_list, TERM2GENE = m_t2g, qvalueCutoff = q_val_cutoff, pvalueCutoff = pvalueCutoff)
+  enrich_res &lt;- enricher(pAdjustMethod = &quot;BH&quot;, 
+                         entrez_gene_list, 
+                         TERM2GENE = m_t2g, 
+                         qvalueCutoff = q_val_cutoff, 
+                         pvalueCutoff = pvalueCutoff, 
+                         universe = entrez_universe)
   enrich_res
 }</code></pre>
 <pre class="r"><code>enriched_list &lt;- list()
@@ -1552,22 +1612,20 @@ for (cluster in names(enriched_list)) {
 print(enrichment_table)</code></pre>
 <pre><code>                                    1  2   3   4   5   6   7   8   9
 BILE_ACID_METABOLISM              yes no  no  no  no  no  no  no  no
-MYC_TARGETS_V2                     no no yes yes  no  no  no  no  no
-OXIDATIVE_PHOSPHORYLATION          no no yes  no yes  no  no  no  no
-DNA_REPAIR                         no no yes yes  no  no  no  no  no
-MYC_TARGETS_V1                     no no yes  no yes  no  no  no  no
+MYC_TARGETS_V2                     no no yes  no  no  no  no  no  no
 E2F_TARGETS                        no no  no yes  no  no  no  no  no
-UNFOLDED_PROTEIN_RESPONSE          no no  no yes  no  no  no  no  no
+MYC_TARGETS_V1                     no no  no  no yes  no  no  no  no
+OXIDATIVE_PHOSPHORYLATION          no no  no  no yes  no  no  no  no
 MYOGENESIS                         no no  no  no  no yes yes  no  no
 MTORC1_SIGNALING                   no no  no  no  no yes  no  no  no
-EPITHELIAL_MESENCHYMAL_TRANSITION  no no  no  no  no yes yes yes yes
 HYPOXIA                            no no  no  no  no yes  no  no yes
-UV_RESPONSE_DN                     no no  no  no  no yes  no  no yes
+EPITHELIAL_MESENCHYMAL_TRANSITION  no no  no  no  no yes yes yes yes
 IL2_STAT5_SIGNALING                no no  no  no  no yes  no  no  no
+UV_RESPONSE_DN                     no no  no  no  no yes  no  no yes
 INFLAMMATORY_RESPONSE              no no  no  no  no  no yes  no  no
 TNFA_SIGNALING_VIA_NFKB            no no  no  no  no  no yes  no yes
-ANGIOGENESIS                       no no  no  no  no  no  no  no yes
-COAGULATION                        no no  no  no  no  no  no  no yes</code></pre>
+COAGULATION                        no no  no  no  no  no  no  no yes
+ANGIOGENESIS                       no no  no  no  no  no  no  no yes</code></pre>
 <pre class="r"><code>enriched_list &lt;- list()  # To store enrichment results
 
 for (i in 1:num_clusters) {
@@ -1611,7 +1669,7 @@ for (cluster in names(enriched_list)) {
     
     # If the term is enriched, fill in the p-value; otherwise, compute the enrichment and add its p-value
     if (any(term_in_cluster)) {
-      enrichment_table[term, cluster] &lt;- round(enriched_list[[cluster]]$PValue[term_in_cluster], 4)
+      enrichment_table[term, cluster] &lt;- round(enriched_list[[cluster]]$PValue[term_in_cluster], 3)
     } 
     else {
       # If not found in the original result, perform enrichment for the gene set specifically
@@ -1627,14 +1685,27 @@ for (cluster in names(enriched_list)) {
       
       # Extract Entrez IDs from the converted data
       entrez_gene_list &lt;- genes_converted$entrezgene_id
+      
+      genes_converted_all &lt;- getBM(
+        filters = &quot;ensembl_gene_id&quot;,
+        attributes = c(&quot;ensembl_gene_id&quot;, &quot;entrezgene_id&quot;),
+        values = melted_data_quantiles$id %&gt;% as.character() %&gt;% unique(),
+        mart = mart
+      )
+      entrez_universe &lt;- as.character(genes_converted_all$entrezgene_id)
+      entrez_universe &lt;- entrez_universe[!is.na(entrez_universe)]
+      
       enrich_res_full &lt;- enricher(entrez_gene_list,
                  TERM2GENE = m_t2g,
-                 pvalueCutoff = 2, qvalueCutoff = 2)
+                 pvalueCutoff = 2, qvalueCutoff = 2,
+                 universe = entrez_universe)
+      
+      
       specific_term &lt;- enrich_res_full %&gt;% filter(Description == original_term)
       
       # Add p-value if it exists
       if (nrow(specific_term) &gt; 0) {
-        enrichment_table[term, cluster] &lt;- round(specific_term$p.adjust, 4)
+        enrichment_table[term, cluster] &lt;- round(specific_term$p.adjust, 3)
       } else {
         enrichment_table[term, cluster] &lt;- 1  # No p-value found
       }
@@ -1644,42 +1715,184 @@ for (cluster in names(enriched_list)) {
 
 # Display the resulting table with p-values
 print(enrichment_table)</code></pre>
-<pre><code>                                       1      2      3      4      5      6
-BILE_ACID_METABOLISM              0.0012 1.0000 1.0000 0.9978 0.9989 0.8664
-MYC_TARGETS_V2                    1.0000 1.0000 0.0003 0.0011 0.9989 0.9989
-OXIDATIVE_PHOSPHORYLATION         1.0000 0.9281 0.0021 0.9978 0.0001 0.9989
-DNA_REPAIR                        0.7769 0.9281 0.0026 0.0018 0.9989 0.9989
-MYC_TARGETS_V1                    0.7769 0.9281 0.0037 0.1508 0.0000 0.9989
-E2F_TARGETS                       1.0000 0.9281 1.0000 0.0002 0.8028 0.4339
-UNFOLDED_PROTEIN_RESPONSE         1.0000 0.9281 1.0000 0.0039 0.8028 0.7989
-MYOGENESIS                        0.7769 0.9281 1.0000 0.9978 0.9989 0.0000
-MTORC1_SIGNALING                  1.0000 0.9281 1.0000 0.9978 0.8028 0.0000
-EPITHELIAL_MESENCHYMAL_TRANSITION 1.0000 1.0000 1.0000 0.9978 0.9989 0.0002
-HYPOXIA                           0.7769 0.9281 1.0000 0.9978 0.9989 0.0002
-UV_RESPONSE_DN                    1.0000 0.9281 1.0000 0.9978 0.9989 0.0014
-IL2_STAT5_SIGNALING               0.7769 0.9281 1.0000 0.9978 0.9989 0.0041
-INFLAMMATORY_RESPONSE             1.0000 0.9281 1.0000 0.9978 0.9989 0.1887
-TNFA_SIGNALING_VIA_NFKB           0.7769 0.9281 1.0000 0.9978 0.9989 0.0725
-ANGIOGENESIS                      1.0000 0.9281 1.0000 0.9978 0.9989 0.4339
-COAGULATION                       0.7769 0.9281 1.0000 0.9978 0.9989 0.4339
-                                       7      8      9
-BILE_ACID_METABOLISM              0.4341 0.4464 0.9978
-MYC_TARGETS_V2                    1.0000 0.9151 1.0000
-OXIDATIVE_PHOSPHORYLATION         1.0000 1.0000 0.9978
-DNA_REPAIR                        1.0000 1.0000 1.0000
-MYC_TARGETS_V1                    1.0000 1.0000 0.9978
-E2F_TARGETS                       0.9135 0.9151 0.9978
-UNFOLDED_PROTEIN_RESPONSE         1.0000 0.9151 0.9978
-MYOGENESIS                        0.0008 0.1456 0.8616
-MTORC1_SIGNALING                  0.1076 0.9556 0.9978
-EPITHELIAL_MESENCHYMAL_TRANSITION 0.0000 0.0000 0.0000
-HYPOXIA                           0.0634 0.6794 0.0001
-UV_RESPONSE_DN                    0.9364 0.0753 0.0010
-IL2_STAT5_SIGNALING               0.0885 0.6794 0.9978
-INFLAMMATORY_RESPONSE             0.0017 0.9556 0.6744
-TNFA_SIGNALING_VIA_NFKB           0.0017 0.2333 0.0020
-ANGIOGENESIS                      0.8427 0.6794 0.0000
-COAGULATION                       0.1076 0.6794 0.0000</code></pre>
+</div>
+<div
+id="question-what-enriched-gene-sets-were-not-enriched-in-strobers-analysis"
+class="section level3">
+<h3><strong>Question: what enriched gene sets were not enriched in
+Strober’s analysis? </strong></h3>
+<pre class="r"><code># Define the file path where the table is saved
+file_path &lt;- paste0(result_dir, &quot;/gene_set_table_strober&quot;)
+
+# Load the table using read.table, assuming tab-delimited format
+gene_set_table &lt;- read.table(file_path, header = TRUE, sep = &quot;|&quot;, stringsAsFactors = FALSE, strip.white = TRUE)
+
+# Clean up column names (since separators may have caused extra spaces)
+colnames(gene_set_table) &lt;- trimws(colnames(gene_set_table))
+
+# View the loaded table
+print(gene_set_table)</code></pre>
+<pre><code>    X                      Hallmark.gene.set   Gene.cluster.2   Gene.cluster.4
+1  NA -------------------------------------- ---------------- ----------------
+2  NA                TNFA signaling via NFKB                1                1
+3  NA                        Mitotic spindle                1                1
+4  NA                     TGF beta signaling                1                1
+5  NA                             DNA repair                1                1
+6  NA                         G2M checkpoint                1                1
+7  NA                             Myogenesis         9.29e-14                1
+8  NA                      Protein secretion           .00384                1
+9  NA                             Complement                1          1.98e-5
+10 NA              Unfolded protein response                1                1
+11 NA                       MTORC1 signaling                1                1
+12 NA                            E2F targets                1                1
+13 NA                         MYC targets V1                1                1
+14 NA                         MYC targets V2                1                1
+15 NA      Epithelial mesenchymal transition                1          .000310
+16 NA                  Xenobiotic metabolism                1          .000435
+17 NA              Oxidative phosphorylation                1                1
+18 NA                        Heme metabolism          1.24e-6                1
+19 NA                            Coagulation                1         1.72e-16
+20 NA                   Bile acid metabolism                1           .00392
+21 NA                        Spermatogenesis                1                1
+22 NA                      KRAS signaling up                1           .00536
+     Gene.cluster.5   Gene.cluster.6   Gene.cluster.9   Gene.cluster.11
+1  ---------------- ---------------- ---------------- -----------------
+2                 1          .000208                1                 1
+3                 1                1            .0166                 1
+4                 1             .348          .000624                 1
+5           .000242                1                1                 1
+6                 1                1                1                 1
+7                 1          1.05e-5                1                 1
+8                 1                1                1                 1
+9                 1                1                1                 1
+10          6.99e-5                1                1                 1
+11         2.07e-10                1                1              .696
+12            .0111                1                1                 1
+13         3.03e-25                1                1              .329
+14         7.04e-21                1                1                 1
+15                1          2.05e-5                1                 1
+16                1                1                1                 1
+17                1             .134                1          8.11e-11
+18                1                1                1                 1
+19                1                1                1                 1
+20                1                1                1                 1
+21                1                1                1                 1
+22                1             .622                1                 1
+     Gene.cluster.13   Gene.cluster.16 X.1
+1  ----------------- -----------------  NA
+2                  1                 1  NA
+3           1.80e-14                 1  NA
+4                  1                 1  NA
+5            3.73e-7                 1  NA
+6           2.87e-63              .594  NA
+7                  1                 1  NA
+8                  1                 1  NA
+9                  1                 1  NA
+10                 1                 1  NA
+11                 1                 1  NA
+12          5.47e-73             .0458  NA
+13          1.28e-16           1.16e-5  NA
+14              .981                 1  NA
+15                 1                 1  NA
+16                 1                 1  NA
+17                 1                 1  NA
+18                 1                 1  NA
+19                 1                 1  NA
+20                 1                 1  NA
+21            .00433                 1  NA
+22                 1                 1  NA</code></pre>
+<pre class="r"><code># Optionally, you can remove any unnecessary row numbers or empty rows
+gene_set_table &lt;- gene_set_table[-1,]  # Remove the first row if it&#39;s a redundant header row
+gene_set_table &lt;- gene_set_table[, -1] # Remove the first column if it&#39;s a redundant row index
+gene_set_table &lt;- gene_set_table[, -ncol(gene_set_table)] # remove the last column
+
+
+# Convert columns from character to numeric where necessary
+gene_set_table$Gene.cluster.6 &lt;- as.numeric(gene_set_table$Gene.cluster.6)
+gene_set_table$Gene.cluster.9 &lt;- as.numeric(gene_set_table$Gene.cluster.9)
+
+# If you want to handle NA values that result from conversion
+gene_set_table[is.na(gene_set_table)] &lt;- 0  # Replace NAs with 0, or handle them as needed
+
+# Perform a comparison between the two tables
+gene_set_table_strober &lt;- gene_set_table 
+
+# Define the significance threshold
+significance_level &lt;- 0.05
+
+# Apply the conversion using ifelse for each relevant column
+for (col in colnames(gene_set_table)[2:ncol(gene_set_table)]) {
+  gene_set_table[[col]] &lt;- ifelse(as.numeric(gene_set_table[[col]]) &lt; significance_level, &quot;yes&quot;, &quot;no&quot;)
+}
+
+# Print the updated table
+print(gene_set_table)</code></pre>
+<pre><code>                   Hallmark.gene.set Gene.cluster.2 Gene.cluster.4
+2            TNFA signaling via NFKB             no             no
+3                    Mitotic spindle             no             no
+4                 TGF beta signaling             no             no
+5                         DNA repair             no             no
+6                     G2M checkpoint             no             no
+7                         Myogenesis            yes             no
+8                  Protein secretion            yes             no
+9                         Complement             no            yes
+10         Unfolded protein response             no             no
+11                  MTORC1 signaling             no             no
+12                       E2F targets             no             no
+13                    MYC targets V1             no             no
+14                    MYC targets V2             no             no
+15 Epithelial mesenchymal transition             no            yes
+16             Xenobiotic metabolism             no            yes
+17         Oxidative phosphorylation             no             no
+18                   Heme metabolism            yes             no
+19                       Coagulation             no            yes
+20              Bile acid metabolism             no            yes
+21                   Spermatogenesis             no             no
+22                 KRAS signaling up             no            yes
+   Gene.cluster.5 Gene.cluster.6 Gene.cluster.9 Gene.cluster.11 Gene.cluster.13
+2              no            yes             no              no              no
+3              no             no            yes              no             yes
+4              no             no            yes              no              no
+5             yes             no             no              no             yes
+6              no             no             no              no             yes
+7              no            yes             no              no              no
+8              no             no             no              no              no
+9              no             no             no              no              no
+10            yes             no             no              no              no
+11            yes             no             no              no              no
+12            yes             no             no              no             yes
+13            yes             no             no              no             yes
+14            yes             no             no              no              no
+15             no            yes             no              no              no
+16             no             no             no              no              no
+17             no             no             no             yes              no
+18             no             no             no              no              no
+19             no             no             no              no              no
+20             no             no             no              no              no
+21             no             no             no              no             yes
+22             no             no             no              no              no
+   Gene.cluster.16
+2               no
+3               no
+4               no
+5               no
+6               no
+7               no
+8               no
+9               no
+10              no
+11              no
+12             yes
+13             yes
+14              no
+15              no
+16              no
+17              no
+18              no
+19              no
+20              no
+21              no
+22              no</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
