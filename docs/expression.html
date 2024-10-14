@@ -322,7 +322,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-10-08
+<strong>Last updated:</strong> 2024-10-14
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -453,15 +453,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree2946863baa8d6b68a930084aa44e1565911e7b5atargetblank2946863a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeecf3518251e2ae331f6853600a60e86f2d8a8981targetblankecf3518a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/2946863baa8d6b68a930084aa44e1565911e7b5a" target="_blank">2946863</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/ecf3518251e2ae331f6853600a60e86f2d8a8981" target="_blank">ecf3518</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree2946863baa8d6b68a930084aa44e1565911e7b5atargetblank2946863a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeecf3518251e2ae331f6853600a60e86f2d8a8981targetblankecf3518a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -471,7 +471,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/2946863baa8d6b68a930084aa44e1565911e7b5a" target="_blank">2946863</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/ecf3518251e2ae331f6853600a60e86f2d8a8981" target="_blank">ecf3518</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -503,10 +503,12 @@ Ignored files:
 
 Untracked files:
     Untracked:  analysis/circadian_expression (experimment).Rmd
+    Untracked:  explore_visual.R
     Untracked:  output/expression/gene_set_table_strober
 
 Unstaged changes:
     Modified:   analysis/circadian_expression.Rmd
+    Modified:   code/function/functions_fitting_Gaussian.R
     Modified:   code/function/functions_fitting_Poisson_circadian_expression.R
     Modified:   output/circadian_expression/L_matrix.rda
     Modified:   output/circadian_sim_easy/L_matrix.rda
@@ -557,6 +559,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ecf3518251e2ae331f6853600a60e86f2d8a8981/analysis/expression.Rmd" target="_blank">ecf3518</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-14
+</td>
+<td>
+wflow_publish("analysis/expression.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/1f7156c40e154379766a7616bbf28b88734bf4aa/docs/expression.html" target="_blank">1f7156c</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-08
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1569,7 +1605,7 @@ Ziang Zhang
 </div>
 <div id="question-what-genes-are-enriched-in-each-of-the-cluster"
 class="section level3">
-<h3><strong>Question: what genes are enriched in each of the cluster?
+<h3><strong>Question: What genes are enriched in each of the cluster?
 </strong></h3>
 <pre class="r"><code>library(clusterProfiler)
 library(msigdbr)
@@ -1753,7 +1789,7 @@ print(enrichment_table)</code></pre>
 <div
 id="question-what-enriched-gene-sets-were-not-enriched-in-strobers-analysis"
 class="section level3">
-<h3><strong>Question: what enriched gene sets were not enriched in
+<h3><strong>Question: What enriched gene sets were not enriched in
 Strober’s analysis? </strong></h3>
 <p>Here are the enrichment result from Strober’s analysis for
 comparison:</p>
@@ -1790,6 +1826,785 @@ external damage due to environment or pathogens. ANGIOGENESIS and
 HYPOXIA are related to the formation of new blood vessels and the
 response to low oxygen levels, respectively.</p></li>
 </ul>
+</div>
+<div
+id="question-what-are-the-main-features-of-gene-expression-trajectories-identified-in-each-cluster"
+class="section level3">
+<h3><strong>Question: What are the main features of gene-expression
+trajectories identified in each cluster? </strong></h3>
+<div id="from-cluster-9" class="section level4">
+<h4>From cluster 9:</h4>
+<p>Let’s first look at <code>ANGIOGENESIS</code> gene set in cluster
+9:</p>
+<pre><code>&#39;as(&lt;matrix&gt;, &quot;dgTMatrix&quot;)&#39; is deprecated.
+Use &#39;as(as(as(., &quot;dMatrix&quot;), &quot;generalMatrix&quot;), &quot;TsparseMatrix&quot;)&#39; instead.
+See help(&quot;Deprecated&quot;) and help(&quot;Matrix-deprecated&quot;).</code></pre>
+<p><img src="figure/expression.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
+Past versions of unnamed-chunk-18-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-18-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">ec579c2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">ad988fc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">bf7911a</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-31
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-18-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Then, look at <code>UV_RESPONSE_DN</code> gene set in cluster 9:</p>
+<p><img src="figure/expression.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-19-1">
+Past versions of unnamed-chunk-19-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-19-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">ec579c2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">ad988fc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">bf7911a</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-31
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-19-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>And, <code>HYPOXIA</code> in cluster 9:</p>
+<p><img src="figure/expression.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">ec579c2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">ad988fc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">bf7911a</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-31
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-20-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="from-cluster-8" class="section level4">
+<h4>From cluster 8:</h4>
+<p>Take a look at <code>EPITHELIAL_MESENCHYMAL_TRANSITION</code></p>
+<p><img src="figure/expression.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
+Past versions of unnamed-chunk-21-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-21-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">ec579c2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">ad988fc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">bf7911a</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-31
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-21-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="from-cluster-7" class="section level4">
+<h4>From cluster 7:</h4>
+<p>Take a look at <code>INFLAMMATORY_RESPONSE</code></p>
+<p><img src="figure/expression.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
+Past versions of unnamed-chunk-22-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">ec579c2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">ad988fc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">bf7911a</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-31
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-22-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="from-cluster-6" class="section level4">
+<h4>From cluster 6:</h4>
+<p>Take a look at <code>IL2_STAT5_SIGNALING</code></p>
+<p><img src="figure/expression.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
+Past versions of unnamed-chunk-23-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-23-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">ec579c2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">ad988fc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">bf7911a</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-31
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-23-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="from-cluster-3" class="section level4">
+<h4>From cluster 3:</h4>
+<p>Take a look at <code>MYC_TARGETS_V2</code></p>
+<p><img src="figure/expression.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">ec579c2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">ad988fc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">bf7911a</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-31
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-24-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="from-cluster-1" class="section level4">
+<h4>From cluster 1:</h4>
+<p>Take a look at <code>BILE_ACID_METABOLISM</code></p>
+<p><img src="figure/expression.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-25-1">
+Past versions of unnamed-chunk-25-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-25-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">ec579c2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">ad988fc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">bf7911a</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-31
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5f486a45d51713eaa0960b9dd010f9d13cf05ff5/docs/figure/expression.Rmd/unnamed-chunk-25-1.png" target="_blank">5f486a4</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1838,38 +2653,40 @@ loaded via a namespace (and not attached):
  [19] plyr_1.8.9              cachem_1.1.0            whisker_0.4.1          
  [22] igraph_2.0.3            lifecycle_1.0.4         pkgconfig_2.0.3        
  [25] gson_0.1.0              R6_2.5.1                fastmap_1.2.0          
- [28] GenomeInfoDbData_1.2.11 digest_0.6.37           aplot_0.2.3            
- [31] enrichplot_1.22.0       colorspace_2.1-1        patchwork_1.3.0        
- [34] ps_1.8.0                rprojroot_2.0.4         irlba_2.3.5.1          
- [37] RSQLite_2.3.7           filelock_1.0.3          labeling_0.4.3         
- [40] fansi_1.0.6             timechange_0.3.0        httr_1.4.7             
- [43] polyclip_1.10-7         compiler_4.3.1          bit64_4.5.2            
- [46] withr_3.0.1             BiocParallel_1.36.0     viridis_0.6.5          
- [49] DBI_1.2.3               highr_0.11              ggforce_0.4.2          
- [52] MASS_7.3-60             rappdirs_0.3.3          HDO.db_0.99.1          
- [55] tools_4.3.1             scatterpie_0.2.4        ape_5.8                
- [58] httpuv_1.6.15           glue_1.7.0              callr_3.7.6            
- [61] nlme_3.1-166            GOSemSim_2.28.1         promises_1.3.0         
- [64] shadowtext_0.1.4        grid_4.3.1              getPass_0.2-4          
- [67] fgsea_1.28.0            generics_0.1.3          gtable_0.3.5           
- [70] tzdb_0.4.0              data.table_1.16.0       hms_1.1.3              
- [73] xml2_1.3.6              tidygraph_1.3.1         utf8_1.2.4             
- [76] XVector_0.42.0          ggrepel_0.9.6           pillar_1.9.0           
- [79] babelgene_22.9          yulab.utils_0.1.7       later_1.3.2            
- [82] tweenr_2.0.3            BiocFileCache_2.10.2    treeio_1.26.0          
- [85] lattice_0.22-6          bit_4.5.0               tidyselect_1.2.1       
- [88] GO.db_3.18.0            Biostrings_2.70.3       knitr_1.48             
- [91] git2r_0.33.0            gridExtra_2.3           xfun_0.47              
- [94] graphlayouts_1.2.0      stringi_1.8.4           lazyeval_0.2.2         
- [97] ggfun_0.1.6             yaml_2.3.10             evaluate_1.0.0         
-[100] codetools_0.2-20        ggraph_2.2.1            qvalue_2.34.0          
-[103] ggplotify_0.1.2         cli_3.6.3               munsell_0.5.1          
-[106] processx_3.8.4          jquerylib_0.1.4         Rcpp_1.0.13            
-[109] GenomeInfoDb_1.38.8     dbplyr_2.5.0            png_0.1-8              
-[112] XML_3.99-0.17           blob_1.2.4              prettyunits_1.2.0      
-[115] DOSE_3.28.2             bitops_1.0-8            tidytree_0.4.6         
-[118] viridisLite_0.4.2       scales_1.3.0            crayon_1.5.3           
-[121] rlang_1.1.4             fastmatch_1.1-4         KEGGREST_1.42.0        </code></pre>
+ [28] GenomeInfoDbData_1.2.11 numDeriv_2016.8-1.1     digest_0.6.37          
+ [31] aplot_0.2.3             enrichplot_1.22.0       colorspace_2.1-1       
+ [34] patchwork_1.3.0         ps_1.8.0                rprojroot_2.0.4        
+ [37] irlba_2.3.5.1           RSQLite_2.3.7           filelock_1.0.3         
+ [40] labeling_0.4.3          fansi_1.0.6             timechange_0.3.0       
+ [43] httr_1.4.7              polyclip_1.10-7         compiler_4.3.1         
+ [46] bit64_4.5.2             withr_3.0.1             BiocParallel_1.36.0    
+ [49] viridis_0.6.5           DBI_1.2.3               highr_0.11             
+ [52] ggforce_0.4.2           MASS_7.3-60             rappdirs_0.3.3         
+ [55] HDO.db_0.99.1           tools_4.3.1             scatterpie_0.2.4       
+ [58] ape_5.8                 httpuv_1.6.15           glue_1.8.0             
+ [61] callr_3.7.6             nlme_3.1-166            GOSemSim_2.28.1        
+ [64] promises_1.3.0          shadowtext_0.1.4        grid_4.3.1             
+ [67] getPass_0.2-4           fgsea_1.28.0            generics_0.1.3         
+ [70] gtable_0.3.5            tzdb_0.4.0              data.table_1.16.0      
+ [73] hms_1.1.3               xml2_1.3.6              tidygraph_1.3.1        
+ [76] utf8_1.2.4              XVector_0.42.0          ggrepel_0.9.6          
+ [79] pillar_1.9.0            babelgene_22.9          yulab.utils_0.1.7      
+ [82] later_1.3.2             tweenr_2.0.3            BiocFileCache_2.10.2   
+ [85] treeio_1.26.0           lattice_0.22-6          bit_4.5.0              
+ [88] tidyselect_1.2.1        GO.db_3.18.0            Biostrings_2.70.3      
+ [91] knitr_1.48              git2r_0.33.0            gridExtra_2.3          
+ [94] xfun_0.47               graphlayouts_1.2.0      LaplacesDemon_16.1.6   
+ [97] stringi_1.8.4           lazyeval_0.2.2          ggfun_0.1.6            
+[100] yaml_2.3.10             evaluate_1.0.0          codetools_0.2-20       
+[103] ggraph_2.2.1            qvalue_2.34.0           ggplotify_0.1.2        
+[106] cli_3.6.3               munsell_0.5.1           processx_3.8.4         
+[109] jquerylib_0.1.4         Rcpp_1.0.13             GenomeInfoDb_1.38.8    
+[112] dbplyr_2.5.0            png_0.1-8               XML_3.99-0.17          
+[115] blob_1.2.4              prettyunits_1.2.0       DOSE_3.28.2            
+[118] bitops_1.0-8            tidytree_0.4.6          viridisLite_0.4.2      
+[121] scales_1.3.0            crayon_1.5.3            rlang_1.1.4            
+[124] fastmatch_1.1-4         KEGGREST_1.42.0        </code></pre>
+</div>
 </div>
 </div>
 
