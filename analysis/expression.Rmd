@@ -283,7 +283,8 @@ plot_gene_expression_log <- function(gene) {
 
   plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
        main = paste0(gene), xlab = "Day", ylab = "Expression", col = "blue",
-       cex = 0.5, log = "y", ylim = c(log_min_y, log_max_y),
+       cex = 0.5, 
+       log = "y", ylim = c(log_min_y, log_max_y),
        cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
   points(datasets[[gene]]$Day, data_points, col = "black", cex = 0.5)
   polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
@@ -303,7 +304,9 @@ plot_gene_expression_log_just_f <- function(gene, log_size_vec) {
 
   plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
        main = paste0(gene), xlab = "Day", ylab = "Expression", col = "blue",
-       cex = 0.5, log = "y", ylim = c(log_min_y, log_max_y),
+       cex = 0.5, 
+       # log = "y", 
+       # ylim = c(log_min_y, log_max_y),
        cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
   polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
           c(agg_result$lower, rev(agg_result$upper)),
@@ -387,7 +390,7 @@ for (i in 1:num_clusters) {
 <!-- ``` -->
 
 
-### **Question: what genes are enriched in each of the cluster? **
+### **Question: What genes are enriched in each of the cluster? **
 
 ```{r, message = FALSE, warning = FALSE}
 library(clusterProfiler)
@@ -564,7 +567,7 @@ print(enrichment_table)
 ```
 
 
-### **Question: what enriched gene sets were not enriched in Strober's analysis? **
+### **Question: What enriched gene sets were not enriched in Strober's analysis? **
 
 Here are the enrichment result from Strober's analysis for comparison:
 
@@ -646,4 +649,532 @@ A few interesting observations:
 - Many gene-sets are enriched in clusters identified from both approaches. In particular, cluster 7 from FASH identified MYOGENESIS, EPITHELIAL_MESENCHYMAL_TRANSITION, INFLAMMATORY_RESPONSE and TNFA_SIGNALING_VIA_NFKB as enriched gene sets, whereas the cluster 6 from Strober identified MYOGENESIS, EPITHELIAL_MESENCHYMAL_TRANSITION and TNFA_SIGNALING_VIA_NFKB.
 
 - Clusters (especially cluster 9) from FASH identifies some interesting gene-sets that were missed by Strober's analysis, such as UV_RESPONSE_DN, INFLAMMATORY_RESPONSE, IL2_STAT5_SIGNALING, ANGIOGENESIS and HYPOXIA. Note that UV_RESPONSE_DN INFLAMMATORY_RESPONSE and IL2_STAT5_SIGNALING are all related to protective features to prevent external damage due to environment or pathogens. ANGIOGENESIS and HYPOXIA are related to the formation of new blood vessels and the response to low oxygen levels, respectively.
+
+
+
+### **Question: What are the main features of gene-expression trajectories identified in each cluster? **
+
+#### From cluster 9:
+
+Let's first look at `ANGIOGENESIS` gene set in cluster 9:
+
+```{r echo=FALSE}
+ANGIOGENESIS_genes_entrez <- m_t2g$entrez_gene[m_t2g$gs_name == "HALLMARK_ANGIOGENESIS"]
+
+cluster9_genes <- sorted_posterior_weights_df %>% filter(cluster == 9) %>% pull(id)
+
+cluster9_genes_converted <- getBM(
+  filters = "ensembl_gene_id",
+  attributes = c("ensembl_gene_id", "entrezgene_id"),
+  values = cluster9_genes,
+  mart = mart
+)
+
+cluster9_genes_entrez <- cluster9_genes_converted$entrezgene_id
+overlap_genes_entrez <- intersect(ANGIOGENESIS_genes_entrez, cluster9_genes_entrez)
+overlap_genes <- cluster9_genes_converted$ensembl_gene_id[cluster9_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+
+fitted_datasets <- list()
+# pb <- txtProgressBar(min = 0, max = length(overlap_genes), style = 3)
+for (i in 1:length(overlap_genes)) {
+  gene <- overlap_genes[i]
+  # setTxtProgressBar(pb, i)
+  dataset <- datasets[[gene]]
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = 1,
+    dataset = dataset,
+    num_knots = num_knots,
+    prior_weight = prior_weight,
+    betaprec = betaprec,
+    pred_step = 1,
+    log_lib_size = log_size_vec
+  )
+  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
+}
+names(fitted_datasets) <- overlap_genes
+
+sample_index <- 1:length(overlap_genes)
+
+plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+
+par(mfrow = c(2,4))
+for (i in 1:length(overlap_genes)) {
+  gene = overlap_genes[sample_index[i]]
+  agg_result <- fitted_datasets[[gene]]
+  agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
+  # min_y <- min(agg_result$lower)
+  # max_y <- max(agg_result$upper)  
+  min_y <- plot_min
+  max_y <- plot_max
+  log_min_y <- min_y   
+  log_max_y <- max_y 
+
+  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
+       main = paste0(gene), xlab = "Day", ylab = "Expression", 
+       ylim = c(log_min_y, log_max_y),
+       log = "y",
+       col = "blue",
+       cex = 0.5, 
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+par(mfrow = c(1, 1))
+```
+
+Then, look at `UV_RESPONSE_DN` gene set in cluster 9:
+
+```{r echo=FALSE}
+UV_RESPONSE_DN_genes_entrez <- m_t2g$entrez_gene[m_t2g$gs_name == "HALLMARK_UV_RESPONSE_DN"]
+
+cluster9_genes <- sorted_posterior_weights_df %>% filter(cluster == 9) %>% pull(id)
+
+cluster9_genes_converted <- getBM(
+  filters = "ensembl_gene_id",
+  attributes = c("ensembl_gene_id", "entrezgene_id"),
+  values = cluster9_genes,
+  mart = mart
+)
+
+cluster9_genes_entrez <- cluster9_genes_converted$entrezgene_id
+overlap_genes_entrez <- intersect(UV_RESPONSE_DN_genes_entrez, cluster9_genes_entrez)
+overlap_genes <- cluster9_genes_converted$ensembl_gene_id[cluster9_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+
+fitted_datasets <- list()
+# pb <- txtProgressBar(min = 0, max = length(overlap_genes), style = 3)
+for (i in 1:length(overlap_genes)) {
+  gene <- overlap_genes[i]
+  # setTxtProgressBar(pb, i)
+  dataset <- datasets[[gene]]
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = 1,
+    dataset = dataset,
+    num_knots = num_knots,
+    prior_weight = prior_weight,
+    betaprec = betaprec,
+    pred_step = 1,
+    log_lib_size = log_size_vec
+  )
+  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
+}
+names(fitted_datasets) <- overlap_genes
+
+sample_index <- 1:length(overlap_genes)
+plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+
+par(mfrow = c(3,4))
+for (i in 1:length(overlap_genes)) {
+  gene = overlap_genes[sample_index[i]]
+  agg_result <- fitted_datasets[[gene]]
+  agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
+  min_y <- plot_min
+  max_y <- plot_max
+  log_min_y <- min_y   
+  log_max_y <- max_y 
+
+  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
+       main = paste0(gene), xlab = "Day", ylab = "Expression", 
+       ylim = c(log_min_y, log_max_y),
+       log = "y",
+       col = "blue",
+       cex = 0.5, 
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+par(mfrow = c(1, 1))
+```
+
+And, `HYPOXIA` in cluster 9:
+
+```{r echo=FALSE}
+HYPOXIA_genes_entrez <- m_t2g$entrez_gene[m_t2g$gs_name == "HALLMARK_HYPOXIA"]
+
+cluster9_genes <- sorted_posterior_weights_df %>% filter(cluster == 9) %>% pull(id)
+
+cluster9_genes_converted <- getBM(
+  filters = "ensembl_gene_id",
+  attributes = c("ensembl_gene_id", "entrezgene_id"),
+  values = cluster9_genes,
+  mart = mart
+)
+
+cluster9_genes_entrez <- cluster9_genes_converted$entrezgene_id
+overlap_genes_entrez <- intersect(HYPOXIA_genes_entrez, cluster9_genes_entrez)
+overlap_genes <- cluster9_genes_converted$ensembl_gene_id[cluster9_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+
+fitted_datasets <- list()
+# pb <- txtProgressBar(min = 0, max = length(overlap_genes), style = 3)
+for (i in 1:length(overlap_genes)) {
+  gene <- overlap_genes[i]
+  # setTxtProgressBar(pb, i)
+  dataset <- datasets[[gene]]
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = 1,
+    dataset = dataset,
+    num_knots = num_knots,
+    prior_weight = prior_weight,
+    betaprec = betaprec,
+    pred_step = 1,
+    log_lib_size = log_size_vec
+  )
+  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
+}
+names(fitted_datasets) <- overlap_genes
+
+sample_index <- 1:length(overlap_genes)
+plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+
+par(mfrow = c(3,4))
+for (i in 1:12) {
+  gene = overlap_genes[sample_index[i]]
+  agg_result <- fitted_datasets[[gene]]
+  agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
+  min_y <- plot_min
+  max_y <- plot_max
+  log_min_y <- min_y   
+  log_max_y <- max_y 
+
+  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
+       main = paste0(gene), xlab = "Day", ylab = "Expression", 
+       ylim = c(log_min_y, log_max_y),
+       log = "y",
+       col = "blue",
+       cex = 0.5, 
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+par(mfrow = c(1, 1))
+```
+
+
+#### From cluster 8:
+
+Take a look at `EPITHELIAL_MESENCHYMAL_TRANSITION`
+
+```{r echo=FALSE}
+EPITHELIAL_MESENCHYMAL_TRANSITION_genes_entrez <- m_t2g$entrez_gene[m_t2g$gs_name == "HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION"]
+cluster8_genes <- sorted_posterior_weights_df %>% filter(cluster == 8) %>% pull(id)
+cluster8_genes_converted <- getBM(
+  filters = "ensembl_gene_id",
+  attributes = c("ensembl_gene_id", "entrezgene_id"),
+  values = cluster8_genes,
+  mart = mart
+)
+cluster8_genes_entrez <- cluster8_genes_converted$entrezgene_id
+overlap_genes_entrez <- intersect(EPITHELIAL_MESENCHYMAL_TRANSITION_genes_entrez, cluster8_genes_entrez)
+overlap_genes <- cluster8_genes_converted$ensembl_gene_id[cluster8_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+
+fitted_datasets <- list()
+# pb <- txtProgressBar(min = 0, max = length(overlap_genes), style = 3)
+for (i in 1:length(overlap_genes)) {
+  gene <- overlap_genes[i]
+  # setTxtProgressBar(pb, i)
+  dataset <- datasets[[gene]]
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = 1,
+    dataset = dataset,
+    num_knots = num_knots,
+    prior_weight = prior_weight,
+    betaprec = betaprec,
+    pred_step = 1,
+    log_lib_size = log_size_vec
+  )
+  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
+}
+names(fitted_datasets) <- overlap_genes
+
+sample_index <- 1:length(overlap_genes)
+plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+
+par(mfrow = c(3,4))
+for (i in 1:12) {
+  gene = overlap_genes[sample_index[i]]
+  agg_result <- fitted_datasets[[gene]]
+  agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
+  min_y <- plot_min
+  max_y <- plot_max
+  log_min_y <- min_y   
+  log_max_y <- max_y 
+
+  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
+       main = paste0(gene), xlab = "Day", ylab = "Expression", 
+       ylim = c(log_min_y, log_max_y),
+       log = "y",
+       col = "blue",
+       cex = 0.5, 
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+par(mfrow = c(1, 1))
+
+```
+
+
+#### From cluster 7:
+
+Take a look at `INFLAMMATORY_RESPONSE`
+
+```{r echo=FALSE}
+INFLAMMATORY_RESPONSE_genes_entrez <- m_t2g$entrez_gene[m_t2g$gs_name == "HALLMARK_INFLAMMATORY_RESPONSE"]
+cluster7_genes <- sorted_posterior_weights_df %>% filter(cluster == 7) %>% pull(id)
+cluster7_genes_converted <- getBM(
+  filters = "ensembl_gene_id",
+  attributes = c("ensembl_gene_id", "entrezgene_id"),
+  values = cluster7_genes,
+  mart = mart
+)
+cluster7_genes_entrez <- cluster7_genes_converted$entrezgene_id
+overlap_genes_entrez <- intersect(INFLAMMATORY_RESPONSE_genes_entrez, cluster7_genes_entrez)
+overlap_genes <- cluster7_genes_converted$ensembl_gene_id[cluster7_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+
+fitted_datasets <- list()
+# pb <- txtProgressBar(min = 0, max = length(overlap_genes), style = 3)
+for (i in 1:length(overlap_genes)) {
+  gene <- overlap_genes[i]
+  # setTxtProgressBar(pb, i)
+  dataset <- datasets[[gene]]
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = 1,
+    dataset = dataset,
+    num_knots = num_knots,
+    prior_weight = prior_weight,
+    betaprec = betaprec,
+    pred_step = 1,
+    log_lib_size = log_size_vec
+  )
+  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
+}
+names(fitted_datasets) <- overlap_genes
+sample_index <- 1:length(overlap_genes)
+plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+
+par(mfrow = c(3,4))
+for (i in 1:12) {
+  gene = overlap_genes[sample_index[i]]
+  agg_result <- fitted_datasets[[gene]]
+  agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
+  min_y <- plot_min
+  max_y <- plot_max
+  log_min_y <- min_y   
+  log_max_y <- max_y 
+
+  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
+       main = paste0(gene), xlab = "Day", ylab = "Expression", 
+       ylim = c(log_min_y, log_max_y),
+       log = "y",
+       col = "blue",
+       cex = 0.5, 
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+par(mfrow = c(1, 1))
+
+```
+
+
+#### From cluster 6:
+
+Take a look at `IL2_STAT5_SIGNALING`
+
+```{r echo=FALSE}
+IL2_STAT5_SIGNALING_genes_entrez <- m_t2g$entrez_gene[m_t2g$gs_name == "HALLMARK_IL2_STAT5_SIGNALING"]
+cluster6_genes <- sorted_posterior_weights_df %>% filter(cluster == 6) %>% pull(id)
+cluster6_genes_converted <- getBM(
+  filters = "ensembl_gene_id",
+  attributes = c("ensembl_gene_id", "entrezgene_id"),
+  values = cluster6_genes,
+  mart = mart
+)
+cluster6_genes_entrez <- cluster6_genes_converted$entrezgene_id
+overlap_genes_entrez <- intersect(IL2_STAT5_SIGNALING_genes_entrez, cluster6_genes_entrez)
+overlap_genes <- cluster6_genes_converted$ensembl_gene_id[cluster6_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+
+fitted_datasets <- list()
+for (i in 1:length(overlap_genes)) {
+  gene <- overlap_genes[i]
+  dataset <- datasets[[gene]]
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = 1,
+    dataset = dataset,
+    num_knots = num_knots,
+    prior_weight = prior_weight,
+    betaprec = betaprec,
+    pred_step = 1,
+    log_lib_size = log_size_vec
+  )
+  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
+}
+names(fitted_datasets) <- overlap_genes
+sample_index <- 1:length(overlap_genes)
+plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+
+par(mfrow = c(3,4))
+for (i in 1:12) {
+  gene = overlap_genes[sample_index[i]]
+  agg_result <- fitted_datasets[[gene]]
+  agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
+  min_y <- plot_min
+  max_y <- plot_max
+  log_min_y <- min_y   
+  log_max_y <- max_y 
+
+  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
+       main = paste0(gene), xlab = "Day", ylab = "Expression", 
+       ylim = c(log_min_y, log_max_y),
+       log = "y",
+       col = "blue",
+       cex = 0.5, 
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+par(mfrow = c(1, 1))
+
+```
+
+
+
+#### From cluster 3:
+
+Take a look at `MYC_TARGETS_V2`
+
+```{r echo=FALSE}
+MYC_TARGETS_V2_genes_entrez <- m_t2g$entrez_gene[m_t2g$gs_name == "HALLMARK_MYC_TARGETS_V2"]
+cluster3_genes <- sorted_posterior_weights_df %>% filter(cluster == 3) %>% pull(id)
+cluster3_genes_converted <- getBM(
+  filters = "ensembl_gene_id",
+  attributes = c("ensembl_gene_id", "entrezgene_id"),
+  values = cluster3_genes,
+  mart = mart
+)
+cluster3_genes_entrez <- cluster3_genes_converted$entrezgene_id
+overlap_genes_entrez <- intersect(MYC_TARGETS_V2_genes_entrez, cluster3_genes_entrez)
+overlap_genes <- cluster3_genes_converted$ensembl_gene_id[cluster3_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+
+fitted_datasets <- list()
+for (i in 1:length(overlap_genes)) {
+  gene <- overlap_genes[i]
+  dataset <- datasets[[gene]]
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = 1,
+    dataset = dataset,
+    num_knots = num_knots,
+    prior_weight = prior_weight,
+    betaprec = betaprec,
+    pred_step = 1,
+    log_lib_size = log_size_vec
+  )
+  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
+}
+names(fitted_datasets) <- overlap_genes
+sample_index <- 1:length(overlap_genes)
+plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+
+par(mfrow = c(3,4))
+for (i in 1:12) {
+  gene = overlap_genes[sample_index[i]]
+  agg_result <- fitted_datasets[[gene]]
+  agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
+  min_y <- plot_min
+  max_y <- plot_max
+  log_min_y <- min_y   
+  log_max_y <- max_y 
+
+  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
+       main = paste0(gene), xlab = "Day", ylab = "Expression", 
+       ylim = c(log_min_y, log_max_y),
+       log = "y",
+       col = "blue",
+       cex = 0.5, 
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+par(mfrow = c(1, 1))
+```
+
+#### From cluster 1:
+
+Take a look at `BILE_ACID_METABOLISM`
+
+```{r echo=FALSE}
+BILE_ACID_METABOLISM_genes_entrez <- m_t2g$entrez_gene[m_t2g$gs_name == "HALLMARK_BILE_ACID_METABOLISM"]
+cluster1_genes <- sorted_posterior_weights_df %>% filter(cluster == 1) %>% pull(id)
+cluster1_genes_converted <- getBM(
+  filters = "ensembl_gene_id",
+  attributes = c("ensembl_gene_id", "entrezgene_id"),
+  values = cluster1_genes,
+  mart = mart
+)
+  
+cluster1_genes_entrez <- cluster1_genes_converted$entrezgene_id
+overlap_genes_entrez <- intersect(BILE_ACID_METABOLISM_genes_entrez, cluster1_genes_entrez)
+overlap_genes <- cluster1_genes_converted$ensembl_gene_id[cluster1_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+
+fitted_datasets <- list()
+for (i in 1:length(overlap_genes)) {
+  gene <- overlap_genes[i]
+  dataset <- datasets[[gene]]
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = 1,
+    dataset = dataset,
+    num_knots = num_knots,
+    prior_weight = prior_weight,
+    betaprec = betaprec,
+    pred_step = 1,
+    log_lib_size = log_size_vec
+  )
+  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
+}
+names(fitted_datasets) <- overlap_genes
+sample_index <- 1:length(overlap_genes)
+plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+
+par(mfrow = c(2,3))
+for (i in 1:5) {
+  gene = overlap_genes[sample_index[i]]
+  agg_result <- fitted_datasets[[gene]]
+  agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
+  min_y <- plot_min
+  max_y <- plot_max
+  log_min_y <- min_y   
+  log_max_y <- max_y 
+
+  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
+       main = paste0(gene), xlab = "Day", ylab = "Expression", 
+       ylim = c(log_min_y, log_max_y),
+       log = "y",
+       col = "blue",
+       cex = 0.5, 
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+par(mfrow = c(1, 1))
+
+```
+
+
+
+
 
