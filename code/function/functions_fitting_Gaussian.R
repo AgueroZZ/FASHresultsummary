@@ -377,6 +377,7 @@ compute_log_likelihood_ospline <- function(x, y, p, num_knots = 100, psd_iwp, pr
   -ff$fn()
 }
 
+
 ### Fit the IWP model with O-Spline
 fit_ospline <- function(x, y, p, num_knots = 100, psd_iwp, pred_step, betaprec = 0.001, sd_gaussian = 0.1){
   knots <- seq(min(x), max(x), length=num_knots)

@@ -6,10 +6,11 @@ compute_log_likelihood_ospline <- function(dataset, p, num_knots = 100, psd_iwp,
   x <- dataset$x
   y <- dataset$y
   knots <- unique(c(0,seq(min(x), max(x), length=num_knots)))
-  X <- BayesGP:::global_poly_helper(x, p = p)[,-1]
-  # detrend
-  X_detrend <- matrix(1, nrow = length(x), ncol = 1)
-  X <- cbind(X_detrend, X)
+  # X <- BayesGP:::global_poly_helper(x, p = p)[,-c(1,2),drop = F]
+  X <- BayesGP:::global_poly_helper(x, p = p)
+  # # detrend
+  # X_detrend <- matrix(1, nrow = length(x), ncol = 1)
+  # X <- cbind(X_detrend, X)
 
   P <- BayesGP::compute_weights_precision_helper(knots)
   B <- BayesGP:::local_poly_helper(knots = knots, refined_x = x, p = p)
@@ -76,10 +77,10 @@ compute_log_likelihood_sBspline <- function(dataset, period, num_knots = 30, psd
   y <- dataset$y
   k <- num_knots
   a <- 2*pi/period
-  X <- BayesGP:::global_poly_helper_sgp(refined_x = x, a = a, m = m)[,2,drop = F]
+  X <- BayesGP:::global_poly_helper_sgp(refined_x = x, a = a, m = m)
 
   # Add the part to detrend
-  X_detrend <- matrix(1, nrow = length(x), ncol = 1)
+  X_detrend <- BayesGP:::global_poly_helper(x = x, p = 2)
   X <- cbind(X_detrend, X)
 
   P <- BayesGP:::Compute_Q_sB(a = a, k = k, region = range(x), accuracy = 1000)
@@ -159,6 +160,7 @@ fit_ospline <- function(dataset, p, num_knots = 100, psd_iwp, pred_step, betapre
   x <- dataset$x
   y <- dataset$y
   knots <- unique(c(0,seq(min(x), max(x), length=num_knots)))
+  # X <- BayesGP:::global_poly_helper(x, p = p)[,-c(1,2), drop = F]
   X <- BayesGP:::global_poly_helper(x, p = p)
   P <- BayesGP::compute_weights_precision_helper(knots)
   B <- BayesGP:::local_poly_helper(knots = knots, refined_x = x, p = p)
@@ -257,14 +259,14 @@ fit_sBspline <- function(dataset, period, num_knots = 30, psd_sgp, pred_step, be
   y <- dataset$y
   k <- num_knots
   a <- 2*pi/period
-  X <- BayesGP:::global_poly_helper_sgp(refined_x = x, a = a, m = m)[,2,drop = F]
+  X <- BayesGP:::global_poly_helper_sgp(refined_x = x, a = a, m = m)
 
   if(is.null(log_lib_size)){
     log_lib_size <- numeric(length(x))
   }
 
   # Add the part to detrend
-  X_detrend <- matrix(1, nrow = length(x), ncol = 1)
+  X_detrend <- BayesGP:::global_poly_helper(x, p = 2)
   X <- cbind(X_detrend, X)
 
   P <- BayesGP:::Compute_Q_sB(a = a, k = k, region = range(x), accuracy = 1000)
@@ -374,7 +376,7 @@ fit_sBspline <- function(dataset, period, num_knots = 30, psd_sgp, pred_step, be
 
 
 ### visualize the fitted result
-visualize_fit <- function(x, fit_result, y = NULL, plot_samps = FALSE, original = FALSE, refined_result = FALSE, a, m, k){
+visualize_fit <- function(x, fit_result, y = NULL, plot_samps = FALSE, original = FALSE, refined_result = FALSE, a, m, k, offset = NULL, method = "sgp", p = NULL){
   if(!refined_result){
     samps_fitted <- fit_result$samps_fitted
     if(original){
@@ -412,19 +414,35 @@ visualize_fit <- function(x, fit_result, y = NULL, plot_samps = FALSE, original 
   else{
     samps_coef <- fit_result$samps_coef
     x_refined <- seq(min(x), max(x), length = 100)
-    X_refined <- BayesGP:::global_poly_helper_sgp(refined_x = x_refined, a = a, m = m)[,2,drop = F]
-    X_refined_detrend <- matrix(1, nrow = length(x_refined), ncol = 1)
-    X_refined <- cbind(X_refined_detrend, X_refined)
 
-    if(ncol(X_refined) != ncol(samps_coef)){
-      B_refined <- BayesGP:::Compute_B_sB_helper(refined_x = x_refined, a = a, k = k, m = m, region = range(x))
+    if(ncol(samps_coef) > 2){
+      if(method == "sgp"){
+        X_refined <- BayesGP:::global_poly_helper_sgp(refined_x = x_refined, a = a, m = m)
+        B_refined <- BayesGP:::Compute_B_sB_helper(refined_x = x_refined, a = a, k = k, m = m, region = range(x))
+        X_refined_detrend <- BayesGP:::global_poly_helper(x_refined, p = 2)
+        X_refined <- cbind(X_refined_detrend, X_refined)
+      }
+      else{
+        knots <- unique(c(0,seq(min(x), max(x), length= k)))
+        X_refined <- BayesGP:::global_poly_helper(x_refined, p = p)
+        B_refined <- BayesGP:::local_poly_helper(knots = knots, refined_x = x_refined, p = p)
+      }
       samps_fitted <- as.matrix(B_refined) %*% t(samps_coef[,1:ncol(B_refined)]) + as.matrix(X_refined) %*% t(samps_coef[,(ncol(B_refined)+1):ncol(samps_coef)])
     }
     else{
+      if(method == "sgp"){
+        X_refined <- BayesGP:::global_poly_helper_sgp(refined_x = x_refined, a = a, m = m)
+        X_refined_detrend <- BayesGP:::global_poly_helper(x_refined, p = 2)
+        X_refined <- cbind(X_refined_detrend, X_refined)
+      }
+      else{
+        X_refined <- BayesGP:::global_poly_helper(x_refined, p = p)
+      }
       samps_fitted <- as.matrix(X_refined) %*% t(samps_coef)
     }
 
     if(original){
+      warning("The original data is not available when refined_result = TRUE")
       samps_fitted <- exp(samps_fitted)
     }
     ## Produce the summary
@@ -503,7 +521,7 @@ compute_log_likelihood_sBspline_seq <- function(dataset, period, num_knots, psd_
 
 
 ### Fit a sequence of k models based on a prior matrix: (when psd_iwp is varying)
-fit_ospline_with_prior <- function(dataset, p, num_knots, prior_weight, pred_step, betaprec = 0.001, num_cores = 1) {
+fit_ospline_with_prior <- function(dataset, p, num_knots, prior_weight, pred_step, betaprec = 0.001, num_cores = 1, log_lib_size) {
   # Filter out rows where prior weight is zero
   active_prior <- prior_weight[prior_weight$prior_weight > 0, ]
 
@@ -648,7 +666,13 @@ aggregate_fit_with_prior <- function(x, fit_results_with_prior, original = FALSE
 ### visualize result from fit_ospline_with_prior
 visualize_fit_with_prior <- function(x, fit_results_with_prior, y = NULL, plot_samps = FALSE, original = FALSE) {
   fit_results <- fit_results_with_prior$fitted_results
-  posterior_weights <- fit_results_with_prior$posterior_weights[["posterior_weight"]]
+
+  posterior_weights <- tryCatch({
+    fit_results_with_prior$posterior_weights[["posterior_weight"]]
+  }, error = function(e) {
+    as.data.frame(fit_results_with_prior$posterior_weights)[["posterior_weight"]]
+  })
+
   # Sample indices of the fit results based on posterior weights
   sampled_indices <- sample(seq_along(fit_results), size = 8000, replace = TRUE, prob = posterior_weights)
 

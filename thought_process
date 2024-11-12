@@ -28,7 +28,7 @@ Answer: Let's see through an experiment: first we estimate the psd for each data
 For both the high noise (sd = 1) and the low noise (sd = 0), the EB method improves the estimation of the psd compared to the ML method.
 The improvement is largest for the high noise case.
 What if we have a larger number of datasets? (N = 1000 -> N = 3000) Well, there are more datasets to share information with, I believe it will further improve the performance of EB.
-Let's see the result: Suprisingly, the result does not become significantly better for EB at the largest two values of the psd. My intuition is that these two groups have too small proportions, so their results are kind of pulling down by the other groups with larger proportions, and could not receive as much beneifts from the pooling information.
+Let's see the result: Surprisingly, the result does not become significantly better for EB at the largest two values of the psd. My intuition is that these two groups have too small proportions, so their results are kind of pulling down by the other groups with larger proportions, and could not receive as much benefits from the pooling information.
 We can check again when we increase their proportions: wow.. it actually makes the difference between EB and MLE smaller.. I think the reason is that the two largest psd are at the boundary of the search space, so the EB method could not estimate them well.
 What if we increase the limit of the grid that we are searching (so the two largest psd are no longer at the boundary of the search space): The EB approach is almost always better at different true psd values, only except the largest psd value when SD is very high.
 
@@ -217,7 +217,317 @@ Let's pick the case when sd = 0.1, and see if the result will change once we all
 Answer: If this is the reason, then we should see their likelihood vectors differ in structure to the likelihood vectors of the other two groups.
 Let's check how does the structure of the likelihood varies as the noise level changes, for each of the three groups. 
 When sigma = 1, many linear models penalize the null case significant with very small likelihood. Many of the linear models penalizes the null case more severely than the many of the true alternative.
-If we decrease sigma to 0.3, 
+If we decrease sigma to 0.3, the shape between likelihood curves becomes much closer between the two groups (false alternative vs true alternative). They both decay very fast in terms of the derivative when PSD is close to zero. This is obvious looking from the derivative of the median likelihood curves for these two groups, and compare with the previous case when sigma = 1. This leads to more accurate estimate of pi_0 hence good calibration of FDR rate.
+
+
+
+
+
+
+
+----------------------------------------------
+----------------------------------------------
+Thu, Sept 19th:
+----------------------------------------------
+----------------------------------------------
+
+Today, I will revisit the circadian simulation, and review the main lessons from that simulation example. After that, I will give another try on the real data application.
+
+(a): Some main lessons learned from the simulation example includes xxx. Will these issues affect the validity of the real data application? How should we prevent them?
+
+Answer: First, when we are dealing with Poisson data and using Laplace approximation to compute the marginal likelihood, the number of counts greatly determines the approximation accuracy hence the calibration of the FDR given by FAHS. Second, we need to choose a large number of grid points for the null (IWP) /alternative (sGP) hypothesis, in order to make sure the misspecification error is small for both the null and the alternative space. Finally, it is important to ensure that all the mixture components being considered have the same number of diffuse terms.
+
+(b): What does the result look like when we apply similar sGP vs IWP argument to the real data? 
+
+Answer: It does not work quite in the way that I am hoping... Although I have fixed the de-trending part so it is not considered as prior, the result still quite sensitive to the choice of the null space. If the null space is specified as IWP2, it almost always pick the sGP as the model. If the null space is specified as IWP1, it then almost always pick the IWP1 as the model (which is not quite un-expected, as it contains one less diffuse term than sGP)...
+My guess is that just 12 observations, the likelihood cannot really tell us much about the function's periodicity behaviour...
+Or maybe it is the de-trending part that makes the IWP2 method at disadvantage, since its diffuse terms are kind of taken out from the data by nature of the procedure.
+Hmm.. Perhaps there was some error in my code. The comparison seems to work now.
+
+(c): Let's make sure the two types of de-trending give the similar result: whether keep them fixed at their ML estimate or give them diffuse priors.
+
+Answer: For the first method, we get sGP and IWP almost agree on the initial value (-134.8622 vs -134.1790).
+Now let us try the second method using the same dataset: the shapes are mostly the same.. But the sGP curve seems to be shifted lower a bit.
+So the two methods are similar, but not the same.
+Anyway they give reasonable result now, let's try them on the real data.
+
+
+
+
+
+
+----------------------------------------------
+----------------------------------------------
+Fri, Sept 20th:
+----------------------------------------------
+----------------------------------------------
+
+Let's summarize the performance of the circadian detection problem with real data.
+
+(a): What are the typical features of the sGP group genes? What about the IWP groups?
+
+Answer: For the sGP group: their sign of changes aligns quite well, almost symmetric. For the IWP groups: their sign of changes is less obvious from eyes.
+Just looking from the expression level is hard to interpret, as the model also contains different offset and de-trend component..
+We should take a look at their smoothed value (f) after de-trending and considering offsets.
+
+(b): How should we estimate the frequency?
+
+Answer: The previous frequency estimation method is not ideal, as it might be mis-lead by extreme frequencies, and hence being forced to 1.
+The current method is improved, in the sense that it will only search for a best frequency that satisfies the range requirement.
+Let's rerun the experiment with the new periodicity/frequency estimation approach.
+
+
+
+
+----------------------------------------------
+----------------------------------------------
+Sat, Sept 21th:
+----------------------------------------------
+----------------------------------------------
+
+After checking the result from the updated frequency estimation, there still seems to be some mismatch between the two periods estimated by the method...
+
+(a): What are some reflections from this exercise:
+
+Answer: I still believe the updated frequency estimation method is ideal, provided we have enough data. The problem here is the time series is too short,
+There are only 12 observations, which makes it very hard to both estimate the frequency and estimate the quasi-periodicity...
+Considering the lack of details in this (specific) dataset, let's just assume frequency = periodicity = 1 (24 hrs) in our example.
+Let's rerun the example again!
+
+
+
+
+----------------------------------------------
+----------------------------------------------
+Sun, Sept 22th:
+----------------------------------------------
+----------------------------------------------
+
+Today, let's finalize the real data application of FASH on the circadian detection problem.
+
+(a): For the re-analyzed results using fixed periodicity of 24 hrs, what is the conclusion?
+
+Answer: The result still does not look very convincing. The difference between sGP and IWP group is not extremely informative nor interpretable. 
+
+(b): Also, try examine the genes likely in the exact periodic group.
+
+Answer: There is no such gene in this example.. Every gene is almost guaranteed to be either non-periodic or quasi-periodic.
+
+
+
+
+
+----------------------------------------------
+----------------------------------------------
+Monday, Sept 30th:
+----------------------------------------------
+----------------------------------------------
+
+This week, let's get back in pushing forward the FASH project. We are looking for an informative example where the use of FASH can lead novel discovery or insight. Here are some possibilities:
+
+(a): Considering the eQTL analysis in Strober et al (2020). In the second stage of the analysis of Strober et al, they test for eQTL-gene pairs and then identify eQTLs into non-dynamic eQTLs, linear dynamic eQTLs and non-linear dynamic eQTLs. Can we do something similar using FASH, and see if we can conclude more dynamic eQTLs or non-linear dynamic eQTLs? Maybe even starting with the genes on which they have reported dynamic eQTLs or non-linear dynamic eQTLs to simplify the example?
+
+Answer: That sounds a good plan, and we have their gene-expression data. Let's see if we can find their genotyping data for those variants (aka potential eQTLs).
+First, take a look at their shared eQTL summary --> for linear-dynamic eQTL, they only shared p-values and FDR. --> same for non-dynamic eQTLs --> same for non-linear dynamic eQTLs.
+So we cannot make use of their current version of the eQTL summary.
+Ask Matthew later if it worths contacting the authors for the genotype data or the summary data of eQTL effect size estimate and standard error at each time point.
+
+(b): Alternatively, we could dive deeper into the first analysis of Strober et al, where they clustered genes (and cell lines) based on their expression trajectories overtime. Specifically, within a cell-line cluster, they have 20 clusters of gene with similar trajectory. For simplicity, we can focus on a particular cell-line (e.g. the cell-line 18489, which is clustered into the first, larger cell-line cluster in Strober et al), and then see how the clustering from fash differs from their result.
+
+Answer: Sure, let's try that as well. In their figure 1B, they showed the overall trajectories of the 20 gene clusters identified in each of the cluster (we can focus on cluster 1).  
+Do they provide specific information on each gene cluster? --> On table S3, they show the result of Hallmark gene set enrichment for each of their gene cluster. Perhaps we could do something similar?
+Let's see what can we get from enrichment analysis of our clusters! --> A lot of genes are significantly enriched in the last cluster, some genes are enriched in the first few clusters.
+
+
+
+
+----------------------------------------------
+----------------------------------------------
+Tuesday, Oct 1st:
+----------------------------------------------
+----------------------------------------------
+
+Today, I will continue yesterday's direction to explore the clustering of gene expressions in Strober's example. For simplicity, I will continue to focus on one specific cell-line.
+
+(a): Our current way to define the clusters based on the quantile of the mean PSD may not be ideal. If we try a bunch of other ways to cluster these genes, do they end up with more homogenous clusters?
+
+Answer: I tried manually cluster to 9 clusters, based on the homogeneity. It indeed identified two more gene sets being enriched in some gene clusters. The main problem is still most of gene sets are enriched only in the very non-linear group. 
+
+
+(b): Given an optimal way to form the clusters using FASH, what type of genes are enriched in non-linear clusters, and what are enriched in the linear clusters?
+
+Answer: Currently, when we use the quantile method to form 6 clusters, a lot of genes are only enriched in the last cluster. This could indicate two issues: (1) a lot of genes are non-linearly in their expression trajectories and (2) we may need to set a large value of the upper bound for sigma, so not all the genes are entered in the boundary.
+Let's try push the boundary of psd a little bit --> trying max psd being 3 --> this indeed reduces the number of genes with psd centred on the boundary.
+If we choose a specific way to define the cluster based on the structure plot, we can obtain more enriched gene sets than Strober's analysis.
+
+
+
+
+
+
+----------------------------------------------
+----------------------------------------------
+Wed, Oct 2nd:
+----------------------------------------------
+----------------------------------------------
+
+Today, I will try to confirm the gene-enrichment analysis in the expression example. If it is indeed interpretable, I will try to ask Matthew's input on this.
+
+(a): The last table on the p-values of the gene enrichment cannot be correct. For example, if UV is only enriched in the last cluster, how can its p-values be that small in other clusters? What is wrong with this result?
+
+Answer: Problem fixed! The issue was that melted_data refers to another object in the global environment and I forget to change the name. So it ended up selecting repeated genes when computing the enrichment score for each cluster. Now the result is correct.
+
+
+
+(b): For the current clustering enrichment analysis with 6 clusters, what are the main interpretations?
+
+Answer: Based on the current results, BILE_ACID_METABOLISM (corresponding to cholesterol and phospholipid metabolism) is enriched only in the first cluster with very small deviation from linearity. 
+MYC_TARGETS_V2, OXIDATIVE_PHOSPHORYLATION, DNA_REPAIR and MYC_TARGETS_V1 are enriched in the third cluster with median level of non-linearity. 
+MYC_TARGETS_V2, DNA_REPAIR, UNFOLDED_PROTEIN_RESPONSE and E2F_TARGETS are enriched in the fourth cluster.
+OXIDATIVE_PHOSPHORYLATION and MYC_TARGETS_V1 are enriched in the fifth cluster.
+EPITHELIAL_MESENCHYMAL_TRANSITION, MYOGENESIS, HYPOXIA, TNFA_SIGNALING_VIA_NFKB, UV_RESPONSE_DN, COAGULATION, MTORC1_SIGNALING, ANGIOGENESIS, IL2_STAT5_SIGNALING, APICAL_JUNCTION, CHOLESTEROL_HOMEOSTASIS, NOTCH_SIGNALING, ESTROGEN_RESPONSE_LATE, INFLAMMATORY_RESPONSE, ESTROGEN_RESPONSE_EARLY, G2M_CHECKPOINT, ANDROGEN_RESPONSE, APOPTOSIS and UV_RESPONSE_UP are all only enriched in the last cluster.
+I asked from ChatGPT for some suggested biological interpretations on these clusters: 
+"Cluster 1 is focused on cholesterol and lipid metabolism, indicating stable metabolic regulation, likely without much stress or cellular proliferation.
+Cluster 3 involves proliferation and metabolism (MYC, oxidative phosphorylation), indicating cells undergoing growth, repair, and energy production, possibly under some metabolic stress.
+Cluster 4 adds stress response (unfolded protein response) and cell cycle control (E2F targets), suggesting cells under stress, especially related to protein folding and replication.
+Cluster 5 is similar to Cluster 3 but is more specifically focused on energy production and proliferation.
+Cluster 6 is the most complex, involving stress responses, immune signalling, inflammation, tissue remodelling, hormonal regulation, and apoptosis, reflecting cells under significant environmental stress, immune regulation, and tissue differentiation or repair processes. This cluster might be most relevant in conditions involving inflammation, cancer metastasis, or tissue injury."
+
+
+
+(c): If we mimic the clustering granularity from Strober et al, to partition the genes into more homogeneous clusters, can we find more specific interpretation on each cluster?
+
+Answer: Yes, by cutting them into more pieces with smaller number of members, we can get more specific gene set annotations in each cluster of the genes. The total number of enriched gene sets becomes smaller, but we have more specific enrichment in each cluster. 
+When I ask ChatGPT on interpretation on these clusters based on their enriched gene sets, in terms of linearity of their gene expression trajectories overtime (I didn't tell GPT how I ordered these clusters based on the nonlinearity):
+"
+Clusters 6-9 are likely to show non-linear gene expression trajectories, as they involve dynamic, adaptive processes such as tissue remodeling, immune responses, and hypoxia.
+Clusters 3-5 will likely exhibit moderate non-linearity, driven by cell cycle regulation, growth, and stress responses, but with more predictable cyclical patterns compared to Clusters 6-9.
+Clusters 1-2 are expected to have linear or constant trajectories, focusing on steady metabolic processes like bile acid metabolism.
+"
+Keep in mind that GPT may not give accurate biological interpretation neither, should double check these with Matthew.
+
+
+
+
+
+
+----------------------------------------------
+----------------------------------------------
+Mon, Oct 7nd:
+----------------------------------------------
+----------------------------------------------
+
+Today, I will focus on organizing the result from the expression analysis, especially on the enrichment analysis.
+
+(a): Which of the final clustering method should we use? What are the final characterization of the enrichment analysis in the identified clusters?
+
+Answer: We are clustering the genes into the nine clusters based on the visualization of their structure plots. For 8 out of the 9 clusters, we find enriched gene sets. For cluster 1, 4, 6, 7 and 9, we found gene sets that are distinctively enriched in the corresponding cluster.
+
+
+(b): How to incorporate our specific background in this case? Will the result change significantly?
+
+Answer: Yes! I have figured out how to use them. To specify `universe`, we need to find the Entrez IDs of the genes in our study. The final background will be the intersection of our provided IDs and the IDs that are existing in the annotation library. So it typically be much smaller than the number of genes we specify in the universe option.
+After specifying the universe, our result is not changed significantly. All the enrichment results seem to be unaffected.
+
+
+(c): What are some gene sets that are identified in both FASH and Strober's analysis? 
+
+Answer: Bile acid metabolism is enriched in both method. For FASH, it is enriched in the first cluster with smallest non-linearity. For Strober, it is enriched in the same cluster where Coagulation and Epithelial mesenchymal transition are enriched. In FASH, the cluster where both Coagulation and Epithelial mesenchymal transition are enriched is the last cluster with largest evidence of non-linearity.
+DNA repair is enriched in Cluster 5 and 13 based on Strober's analysis, together enriched with GM2 checkpoint, E2F and MYC targets, MTORC1 signaling and unfolded protein response and Spermatogenesis. Whereas in FASH, it is enriched also in two clusters (3 and 4) together with those other genes, except for MTORC1 and Spermatogenesis.
+
+
+(d): What are the gene sets that are missed by Strober but identified in FASH?
+
+Answer: For example, Hypoxia and UV_RESPONSE_DN is enriched in FASH's cluster 6 and 9, but not enriched in any cluster from Strober. 
+For cluster 9 specifically, there are several gene sets including IL2_STAT5_SIGNALING, INFLAMMATORY_RESPONSE and ANGIOGENESIS that are enriched in FASH, but they are not enriched in any cluster from Strober.
+These gene sets are very interesting. Hypoxia (low oxygen condition) and ANGIOGENESIS (formation of new vessels) are related to how tissues and cells evolve/reform to adapt to different conditions. IL2_STAT5_SIGNALING, INFLAMMATORY_RESPONSE and UV_RESPONSE_DN are more like protective features to prevent external damage due to environment or pathogen.
+
+
+
+
+
+
+----------------------------------------------
+----------------------------------------------
+Mon, Oct 14th:
+----------------------------------------------
+----------------------------------------------
+
+
+Today, the main task is to show some visualizations of representative genes from a gene-set that is enriched in a certain cluster. 
+
+(a): Show the typical enriched gene expression trajectories from `UV_RESPONSE_DN`, `HYPOXIA` and `ANGIOGENESIS`.
+
+Answer: Most of these genes trajectories appear to have slow oscillation in the first 11 days, and afterward start to have fast oscillations, which will be viewed by the model as strong non-linearity.
+
+
+(b): Compare with cluster 9, what are the main features in cluster 8 and 7?
+
+Answer: Seems like these kind of "tail oscillation" can also be found (though must be zoomed in carefully) in many genes from cluster 7&8, but the size of the oscillation is smaller compared to genes in cluster 9.  
+
+
+(c): Compare with `IL2_STAT5_SIGNALING` in cluster 6 and `MYC_TARGETS_V2` from cluster 3? 
+
+Answer: No such tail oscillations can be easily found in this gene-set from cluster 6. Some common types of nonlinearity observed in this set of genes include a Vally (convex) at day 2 or 3, and sometimes peak (concave) at day 2 or 3.
+These oscillations behaviours are neither found in this gene-set enriched from cluster 3. The only type of non-linearity that is commonly observed for these genes is the peak (concave) at day 2 or 3.
+
+
+(d): Compare with `BILE_ACID_METABOLISM` from cluster 1?
+
+Answer: Those gene trajectories in this set do not seem to have very strong deviation from linearity. In particular, most of their expression interval admits a linear line to be inscribed.
+
+
+(e): Some clusters like `IL2_STAT5_SIGNALING` and `HYPOXIA` were missed in the clustering approach in Strober's analysis. What is my intuition behind this, based on the visualizations we have?
+
+Answer: These gene trajectories although have similar level of non-linearity, they do not seem to be observations of the same curve!
+For example, in HYPOXIA and UV_RESPONSE_DN, the overall levels of these curves are not exactly the same. 
+Furthermore, there are multiple patterns of the trends of the trajectories (some monotone, some with peak or valley) before they start the "tail oscillation" in the last few days. 
+Therefore, the method based on finding the same underlying curve of all trajectories in the same cluster used in Strober's analysis will likely miss the common level of nonlinearity shared between these curves.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
