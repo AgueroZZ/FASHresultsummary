@@ -1333,8 +1333,8 @@ plot1 <- ggplot(long_data, aes(x = CellLine, y = SigmaMean, fill = CellLine)) +
   ylim(c(0,3)) + 
   theme(
     axis.text.x = element_text(angle = 40, hjust = 1),
-    plot.title = element_text(size = 12, face = "bold"),
-    axis.title = element_text(size = 12),
+    plot.title = element_text(size = 10, face = "bold"),
+    axis.title = element_text(size = 10),
     legend.position = "none"
   )
 
