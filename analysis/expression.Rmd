@@ -47,6 +47,7 @@ $$f_i(t) = \sum_{k=0}^K \pi_k \text{GP}_k(t).$$
 For each $k$, the mixture component has the prior: $$Lf(t) = \sigma_k W(t), $$ with $W(t)$ being a Gaussian white noise process and $\sigma_k$ being the smoothness. 
 Choosing $L = \frac{\partial^2}{\partial t^2}$, the base model that each $f_i$ being shrunk to is therefore $\text{Null}\{L\} = \text{span}\{1,t\}$.
 
+
 ### **Processing the expression data**
 
 ```{r}
@@ -84,11 +85,16 @@ Compute the library sizes:
 ```{r}
 size_vec <- numeric(length = nrow(datasets[[1]]))
 for (i in 1:length(size_vec)) {
-  all_counts <- unlist(lapply(datasets, function(x) {x$y[x$Day == (i-1)]}))
+  Day <- datasets[[1]]$Day[i]
+  all_counts <-
+    unlist(lapply(datasets, function(x) {
+      x$y[x$Day == Day]
+    }))
   size_vec[i] <- sum(all_counts)
 }
 log_size_vec <- log(size_vec)
 ```
+
 
 
 
@@ -139,6 +145,7 @@ for(i in 1:nrow(L_matrix)){
 colnames(posterior_matrix) <- paste0(p,"_",psd_vec)
 posterior_weights_matrix <- posterior_matrix
 ```
+
 
 ### **Obtaining posteriors**
 
@@ -209,6 +216,7 @@ ggplot(melted_data_sorted, aes(x = factor(id, levels = sorted_posterior_weights_
 ```
 
 
+
 ### **Clustering based on posterior weights**
 
 Let's group them into `num_clusters` groups, based on the quantiles of the mean PSD:
@@ -251,111 +259,6 @@ ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weigh
   )
 ```
 
-
-```{r echo=FALSE}
-plot_gene_expression <- function(gene) {
-  agg_result <- fitted_datasets[[gene]]
-  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
-       main = paste0(gene), xlab = "Day", ylab = "Expression", col = "blue",
-       cex = 0.5, ylim = c(0, max(datasets[[gene]]$y) * 1.2),
-       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
-  points(datasets[[gene]]$Day, datasets[[gene]]$y, col = "black", cex = 0.5)
-  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
-          c(agg_result$lower, rev(agg_result$upper)),
-          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
-}
-
-plot_gene_expression_log <- function(gene) {
-  agg_result <- fitted_datasets[[gene]]
-  data_points <- datasets[[gene]]$y
-  positive_points <- data_points[data_points > 0]  # Filter out non-positive values
-
-  if (length(positive_points) == 0) {
-    stop("No positive data points available for logarithmic plotting.")
-  }
-
-  min_y <- min(positive_points)
-  max_y <- max(agg_result$upper)  # Assuming this is positive and makes sense in your context
-
-  # Set the limits for the y-axis
-  log_min_y <- min_y / 2  # Just a simple heuristic, can adjust based on your data's distribution
-  log_max_y <- max_y * 1.2
-
-  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
-       main = paste0(gene), xlab = "Day", ylab = "Expression", col = "blue",
-       cex = 0.5, 
-       log = "y", ylim = c(log_min_y, log_max_y),
-       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
-  points(datasets[[gene]]$Day, data_points, col = "black", cex = 0.5)
-  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
-          c(agg_result$lower, rev(agg_result$upper)),
-          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
-}
-
-plot_gene_expression_log_just_f <- function(gene, log_size_vec) {
-  agg_result <- fitted_datasets[[gene]]
-  agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
-  min_y <- min(agg_result$lower)
-  max_y <- max(agg_result$upper)  # Assuming this is positive and makes sense in your context
-
-  # Set the limits for the y-axis
-  log_min_y <- min_y / 2  # Just a simple heuristic, can adjust based on your data's distribution
-  log_max_y <- max_y * 1.2
-
-  plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
-       main = paste0(gene), xlab = "Day", ylab = "Expression", col = "blue",
-       cex = 0.5, 
-       # log = "y", 
-       # ylim = c(log_min_y, log_max_y),
-       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
-  polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
-          c(agg_result$lower, rev(agg_result$upper)),
-          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
-}
-
-
-# plot_gene_expression(gene)
-plot_cluster_genes <- function(genes) {
-  if(length(genes) < 16){
-        plot_gene_expression(genes[1])
-  }
-  else{
-      par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
-      for (gene in genes[1:16]) {
-        plot_gene_expression(gene)
-      }
-      par(mfrow = c(1, 1))
-  }
-}
-
-plot_cluster_genes_log <- function(genes) {
-  if(length(genes) < 16) {
-      plot_gene_expression_log(genes[1])
-  }
-  else{
-      par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
-  for (gene in genes[1:16]) {
-    plot_gene_expression_log(gene)
-  }
-  par(mfrow = c(1, 1))
-  }
-}
-plot_cluster_genes_log_just_f <- function(genes, log_size_vec){
-  if(length(genes) < 16) {
-      plot_gene_expression_log_just_f(genes[1], log_size_vec)
-  }
-  else{
-      par(mfrow = c(4, 4), mar = c(4, 4, 2, 1))  # Adjust margins if necessary
-  for (gene in genes[1:16]) {
-    plot_gene_expression_log_just_f(gene, log_size_vec)
-  }
-  par(mfrow = c(1, 1))
-  }
-}
-# plot_cluster_genes(genes_cluster1)
-```
-
-
 ```{r setup, include=FALSE}
 # Define the number of genes and clusters
 num_genes_per_cluster <- 16
@@ -367,27 +270,6 @@ for (i in 1:num_clusters) {
 }
 ```
 
-<!-- ### **Smoothing result for each cluster (Overall expression level $o_j\exp(f_i(t_j))$** {.tabset .tabset-pills} -->
-
-<!-- ```{r, results='asis'} -->
-<!-- for (i in 1:num_clusters) { -->
-<!--   cat(paste0("#### For cluster ", i, ":\n")) -->
-<!--   # Dynamically evaluate the plotting function for each cluster -->
-<!--   plot_cluster_genes(genes_per_cluster[[i]], log_size_vec) -->
-<!-- } -->
-<!-- ``` -->
-
-<!-- ### **Smoothing result for each cluster (Just the function $f_i$ after Log)** {.tabset .tabset-pills} -->
-
-<!-- ```{r} -->
-<!-- for (i in 1:num_clusters) { -->
-<!--   # Header for each cluster -->
-<!--   cat(paste0("#### For cluster ", i, ":\n")) -->
-
-<!--   # Dynamically evaluate the plotting function for each cluster -->
-<!--   plot_cluster_genes_log_just_f(genes_per_cluster[[i]], log_size_vec) -->
-<!-- } -->
-<!-- ``` -->
 
 
 ### **Question: What genes are enriched in each of the cluster? **
@@ -567,6 +449,7 @@ print(enrichment_table)
 ```
 
 
+
 ### **Question: What enriched gene sets were not enriched in Strober's analysis? **
 
 Here are the enrichment result from Strober's analysis for comparison:
@@ -652,7 +535,14 @@ A few interesting observations:
 
 
 
+
 ### **Question: What are the main features of gene-expression trajectories identified in each cluster? **
+
+```{r}
+load(paste0(result_dir, "/fitted_pos_results1.rda"))
+load(paste0(result_dir, "/datasets_1.rda"))
+```
+
 
 #### From cluster 9:
 
@@ -674,45 +564,20 @@ cluster9_genes_entrez <- cluster9_genes_converted$entrezgene_id
 overlap_genes_entrez <- intersect(ANGIOGENESIS_genes_entrez, cluster9_genes_entrez)
 overlap_genes <- cluster9_genes_converted$ensembl_gene_id[cluster9_genes_converted$entrezgene_id %in% overlap_genes_entrez]
 
-fitted_datasets <- list()
-# pb <- txtProgressBar(min = 0, max = length(overlap_genes), style = 3)
-for (i in 1:length(overlap_genes)) {
-  gene <- overlap_genes[i]
-  # setTxtProgressBar(pb, i)
-  dataset <- datasets[[gene]]
-  fit_result_final <- fit_ospline_with_prior2(
-    num_cores = 1,
-    dataset = dataset,
-    num_knots = num_knots,
-    prior_weight = prior_weight,
-    betaprec = betaprec,
-    pred_step = 1,
-    log_lib_size = log_size_vec
-  )
-  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
-}
-names(fitted_datasets) <- overlap_genes
-
 sample_index <- 1:length(overlap_genes)
-
-plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
-plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+fitted_datasets_selected <- fitted_datasets[overlap_genes]
+plot_min <- fitted_datasets_selected %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets_selected %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
 
 par(mfrow = c(2,4))
 for (i in 1:length(overlap_genes)) {
   gene = overlap_genes[sample_index[i]]
-  agg_result <- fitted_datasets[[gene]]
+  agg_result <- fitted_datasets_selected[[gene]]
   agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
-  # min_y <- min(agg_result$lower)
-  # max_y <- max(agg_result$upper)  
-  min_y <- plot_min
-  max_y <- plot_max
-  log_min_y <- min_y   
-  log_max_y <- max_y 
 
   plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
        main = paste0(gene), xlab = "Day", ylab = "Expression", 
-       ylim = c(log_min_y, log_max_y),
+       ylim = c(plot_min, plot_max),
        log = "y",
        col = "blue",
        cex = 0.5, 
@@ -742,42 +607,20 @@ cluster9_genes_entrez <- cluster9_genes_converted$entrezgene_id
 overlap_genes_entrez <- intersect(UV_RESPONSE_DN_genes_entrez, cluster9_genes_entrez)
 overlap_genes <- cluster9_genes_converted$ensembl_gene_id[cluster9_genes_converted$entrezgene_id %in% overlap_genes_entrez]
 
-fitted_datasets <- list()
-# pb <- txtProgressBar(min = 0, max = length(overlap_genes), style = 3)
-for (i in 1:length(overlap_genes)) {
-  gene <- overlap_genes[i]
-  # setTxtProgressBar(pb, i)
-  dataset <- datasets[[gene]]
-  fit_result_final <- fit_ospline_with_prior2(
-    num_cores = 1,
-    dataset = dataset,
-    num_knots = num_knots,
-    prior_weight = prior_weight,
-    betaprec = betaprec,
-    pred_step = 1,
-    log_lib_size = log_size_vec
-  )
-  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
-}
-names(fitted_datasets) <- overlap_genes
-
 sample_index <- 1:length(overlap_genes)
-plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
-plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+fitted_datasets_selected <- fitted_datasets[overlap_genes]
+plot_min <- fitted_datasets_selected %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets_selected %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
 
 par(mfrow = c(3,4))
 for (i in 1:length(overlap_genes)) {
   gene = overlap_genes[sample_index[i]]
-  agg_result <- fitted_datasets[[gene]]
+  agg_result <- fitted_datasets_selected[[gene]]
   agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
-  min_y <- plot_min
-  max_y <- plot_max
-  log_min_y <- min_y   
-  log_max_y <- max_y 
 
   plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
        main = paste0(gene), xlab = "Day", ylab = "Expression", 
-       ylim = c(log_min_y, log_max_y),
+       ylim = c(plot_min, plot_max),
        log = "y",
        col = "blue",
        cex = 0.5, 
@@ -807,42 +650,20 @@ cluster9_genes_entrez <- cluster9_genes_converted$entrezgene_id
 overlap_genes_entrez <- intersect(HYPOXIA_genes_entrez, cluster9_genes_entrez)
 overlap_genes <- cluster9_genes_converted$ensembl_gene_id[cluster9_genes_converted$entrezgene_id %in% overlap_genes_entrez]
 
-fitted_datasets <- list()
-# pb <- txtProgressBar(min = 0, max = length(overlap_genes), style = 3)
-for (i in 1:length(overlap_genes)) {
-  gene <- overlap_genes[i]
-  # setTxtProgressBar(pb, i)
-  dataset <- datasets[[gene]]
-  fit_result_final <- fit_ospline_with_prior2(
-    num_cores = 1,
-    dataset = dataset,
-    num_knots = num_knots,
-    prior_weight = prior_weight,
-    betaprec = betaprec,
-    pred_step = 1,
-    log_lib_size = log_size_vec
-  )
-  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
-}
-names(fitted_datasets) <- overlap_genes
-
 sample_index <- 1:length(overlap_genes)
-plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
-plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+fitted_datasets_selected <- fitted_datasets[overlap_genes]
+plot_min <- fitted_datasets_selected %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets_selected %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
 
 par(mfrow = c(3,4))
 for (i in 1:12) {
   gene = overlap_genes[sample_index[i]]
-  agg_result <- fitted_datasets[[gene]]
+  agg_result <- fitted_datasets_selected[[gene]]
   agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
-  min_y <- plot_min
-  max_y <- plot_max
-  log_min_y <- min_y   
-  log_max_y <- max_y 
-
+  
   plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
        main = paste0(gene), xlab = "Day", ylab = "Expression", 
-       ylim = c(log_min_y, log_max_y),
+       ylim = c(plot_min, plot_max),
        log = "y",
        col = "blue",
        cex = 0.5, 
@@ -872,52 +693,30 @@ cluster8_genes_entrez <- cluster8_genes_converted$entrezgene_id
 overlap_genes_entrez <- intersect(EPITHELIAL_MESENCHYMAL_TRANSITION_genes_entrez, cluster8_genes_entrez)
 overlap_genes <- cluster8_genes_converted$ensembl_gene_id[cluster8_genes_converted$entrezgene_id %in% overlap_genes_entrez]
 
-fitted_datasets <- list()
-# pb <- txtProgressBar(min = 0, max = length(overlap_genes), style = 3)
-for (i in 1:length(overlap_genes)) {
-  gene <- overlap_genes[i]
-  # setTxtProgressBar(pb, i)
-  dataset <- datasets[[gene]]
-  fit_result_final <- fit_ospline_with_prior2(
-    num_cores = 1,
-    dataset = dataset,
-    num_knots = num_knots,
-    prior_weight = prior_weight,
-    betaprec = betaprec,
-    pred_step = 1,
-    log_lib_size = log_size_vec
-  )
-  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
-}
-names(fitted_datasets) <- overlap_genes
-
 sample_index <- 1:length(overlap_genes)
-plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
-plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+fitted_datasets_selected <- fitted_datasets[overlap_genes]
+plot_min <- fitted_datasets_selected %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets_selected %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
 
 par(mfrow = c(3,4))
 for (i in 1:12) {
   gene = overlap_genes[sample_index[i]]
-  agg_result <- fitted_datasets[[gene]]
+  agg_result <- fitted_datasets_selected[[gene]]
   agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
-  min_y <- plot_min
-  max_y <- plot_max
-  log_min_y <- min_y   
-  log_max_y <- max_y 
-
+  
   plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
        main = paste0(gene), xlab = "Day", ylab = "Expression", 
-       ylim = c(log_min_y, log_max_y),
+       ylim = c(plot_min, plot_max),
        log = "y",
        col = "blue",
        cex = 0.5, 
        cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)
+    
   polygon(c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
           c(agg_result$lower, rev(agg_result$upper)),
           col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
 }
 par(mfrow = c(1, 1))
-
 ```
 
 
@@ -938,41 +737,20 @@ cluster7_genes_entrez <- cluster7_genes_converted$entrezgene_id
 overlap_genes_entrez <- intersect(INFLAMMATORY_RESPONSE_genes_entrez, cluster7_genes_entrez)
 overlap_genes <- cluster7_genes_converted$ensembl_gene_id[cluster7_genes_converted$entrezgene_id %in% overlap_genes_entrez]
 
-fitted_datasets <- list()
-# pb <- txtProgressBar(min = 0, max = length(overlap_genes), style = 3)
-for (i in 1:length(overlap_genes)) {
-  gene <- overlap_genes[i]
-  # setTxtProgressBar(pb, i)
-  dataset <- datasets[[gene]]
-  fit_result_final <- fit_ospline_with_prior2(
-    num_cores = 1,
-    dataset = dataset,
-    num_knots = num_knots,
-    prior_weight = prior_weight,
-    betaprec = betaprec,
-    pred_step = 1,
-    log_lib_size = log_size_vec
-  )
-  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
-}
-names(fitted_datasets) <- overlap_genes
 sample_index <- 1:length(overlap_genes)
-plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
-plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+fitted_datasets_selected <- fitted_datasets[overlap_genes]
+plot_min <- fitted_datasets_selected %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets_selected %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
 
 par(mfrow = c(3,4))
 for (i in 1:12) {
   gene = overlap_genes[sample_index[i]]
-  agg_result <- fitted_datasets[[gene]]
+  agg_result <- fitted_datasets_selected[[gene]]
   agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
-  min_y <- plot_min
-  max_y <- plot_max
-  log_min_y <- min_y   
-  log_max_y <- max_y 
-
+  
   plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
        main = paste0(gene), xlab = "Day", ylab = "Expression", 
-       ylim = c(log_min_y, log_max_y),
+       ylim = c(plot_min, plot_max),
        log = "y",
        col = "blue",
        cex = 0.5, 
@@ -982,7 +760,6 @@ for (i in 1:12) {
           col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
 }
 par(mfrow = c(1, 1))
-
 ```
 
 
@@ -1002,40 +779,20 @@ cluster6_genes_converted <- getBM(
 cluster6_genes_entrez <- cluster6_genes_converted$entrezgene_id
 overlap_genes_entrez <- intersect(IL2_STAT5_SIGNALING_genes_entrez, cluster6_genes_entrez)
 overlap_genes <- cluster6_genes_converted$ensembl_gene_id[cluster6_genes_converted$entrezgene_id %in% overlap_genes_entrez]
-
-fitted_datasets <- list()
-for (i in 1:length(overlap_genes)) {
-  gene <- overlap_genes[i]
-  dataset <- datasets[[gene]]
-  fit_result_final <- fit_ospline_with_prior2(
-    num_cores = 1,
-    dataset = dataset,
-    num_knots = num_knots,
-    prior_weight = prior_weight,
-    betaprec = betaprec,
-    pred_step = 1,
-    log_lib_size = log_size_vec
-  )
-  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
-}
-names(fitted_datasets) <- overlap_genes
 sample_index <- 1:length(overlap_genes)
-plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
-plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+fitted_datasets_selected <- fitted_datasets[overlap_genes]
+plot_min <- fitted_datasets_selected %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets_selected %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
 
 par(mfrow = c(3,4))
 for (i in 1:12) {
   gene = overlap_genes[sample_index[i]]
-  agg_result <- fitted_datasets[[gene]]
+  agg_result <- fitted_datasets_selected[[gene]]
   agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
-  min_y <- plot_min
-  max_y <- plot_max
-  log_min_y <- min_y   
-  log_max_y <- max_y 
-
+  
   plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
        main = paste0(gene), xlab = "Day", ylab = "Expression", 
-       ylim = c(log_min_y, log_max_y),
+       ylim = c(plot_min, plot_max),
        log = "y",
        col = "blue",
        cex = 0.5, 
@@ -1045,7 +802,6 @@ for (i in 1:12) {
           col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
 }
 par(mfrow = c(1, 1))
-
 ```
 
 
@@ -1067,39 +823,20 @@ cluster3_genes_entrez <- cluster3_genes_converted$entrezgene_id
 overlap_genes_entrez <- intersect(MYC_TARGETS_V2_genes_entrez, cluster3_genes_entrez)
 overlap_genes <- cluster3_genes_converted$ensembl_gene_id[cluster3_genes_converted$entrezgene_id %in% overlap_genes_entrez]
 
-fitted_datasets <- list()
-for (i in 1:length(overlap_genes)) {
-  gene <- overlap_genes[i]
-  dataset <- datasets[[gene]]
-  fit_result_final <- fit_ospline_with_prior2(
-    num_cores = 1,
-    dataset = dataset,
-    num_knots = num_knots,
-    prior_weight = prior_weight,
-    betaprec = betaprec,
-    pred_step = 1,
-    log_lib_size = log_size_vec
-  )
-  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
-}
-names(fitted_datasets) <- overlap_genes
-sample_index <- 1:length(overlap_genes)
-plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
-plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+sample_index <- 1:12
+fitted_datasets_selected <- fitted_datasets[overlap_genes]
+plot_min <- fitted_datasets_selected %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets_selected %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
 
 par(mfrow = c(3,4))
 for (i in 1:12) {
   gene = overlap_genes[sample_index[i]]
-  agg_result <- fitted_datasets[[gene]]
+  agg_result <- fitted_datasets_selected[[gene]]
   agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
-  min_y <- plot_min
-  max_y <- plot_max
-  log_min_y <- min_y   
-  log_max_y <- max_y 
 
   plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
        main = paste0(gene), xlab = "Day", ylab = "Expression", 
-       ylim = c(log_min_y, log_max_y),
+       ylim = c(plot_min, plot_max),
        log = "y",
        col = "blue",
        cex = 0.5, 
@@ -1129,39 +866,20 @@ cluster1_genes_entrez <- cluster1_genes_converted$entrezgene_id
 overlap_genes_entrez <- intersect(BILE_ACID_METABOLISM_genes_entrez, cluster1_genes_entrez)
 overlap_genes <- cluster1_genes_converted$ensembl_gene_id[cluster1_genes_converted$entrezgene_id %in% overlap_genes_entrez]
 
-fitted_datasets <- list()
-for (i in 1:length(overlap_genes)) {
-  gene <- overlap_genes[i]
-  dataset <- datasets[[gene]]
-  fit_result_final <- fit_ospline_with_prior2(
-    num_cores = 1,
-    dataset = dataset,
-    num_knots = num_knots,
-    prior_weight = prior_weight,
-    betaprec = betaprec,
-    pred_step = 1,
-    log_lib_size = log_size_vec
-  )
-  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
-}
-names(fitted_datasets) <- overlap_genes
 sample_index <- 1:length(overlap_genes)
-plot_min <- fitted_datasets %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
-plot_max <- fitted_datasets %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
+fitted_datasets_selected <- fitted_datasets[overlap_genes]
+plot_min <- fitted_datasets_selected %>% lapply(function(x) min(x$median/exp(log_size_vec))) %>% unlist() %>% min()
+plot_max <- fitted_datasets_selected %>% lapply(function(x) max(x$median/exp(log_size_vec))) %>% unlist() %>% max()
 
 par(mfrow = c(2,3))
 for (i in 1:5) {
   gene = overlap_genes[sample_index[i]]
-  agg_result <- fitted_datasets[[gene]]
+  agg_result <- fitted_datasets_selected[[gene]]
   agg_result[,c(2,3,4)] <-  agg_result[,c(2,3,4)]/exp(log_size_vec)
-  min_y <- plot_min
-  max_y <- plot_max
-  log_min_y <- min_y   
-  log_max_y <- max_y 
 
   plot(datasets[[gene]]$Day, agg_result$median, type = 'l', 
        main = paste0(gene), xlab = "Day", ylab = "Expression", 
-       ylim = c(log_min_y, log_max_y),
+       ylim = c(plot_min, plot_max),
        log = "y",
        col = "blue",
        cex = 0.5, 
@@ -1171,8 +889,496 @@ for (i in 1:5) {
           col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
 }
 par(mfrow = c(1, 1))
-
 ```
+
+
+
+
+
+### **Analysis Across Cell-lines**
+
+```{r echo=FALSE}
+library(gridExtra)
+
+plot_gene_expression <- function(gene, cell_line_index) {
+  load(paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda"))
+  load(paste0(result_dir, "/datasets_", cell_line_index, ".rda"))
+  agg_result <- fitted_datasets[[gene]]
+  plot(
+    datasets[[gene]]$Day,
+    agg_result$median,
+    type = 'l',
+    main = paste0(gene),
+    xlab = "Day",
+    ylab = "Expression",
+    col = "blue",
+    cex = 0.5,
+    ylim = c(0, max(datasets[[gene]]$y) * 1.2),
+    cex.main = 0.8,
+    cex.lab = 0.7,
+    cex.axis = 0.7
+  )
+  points(datasets[[gene]]$Day,
+         datasets[[gene]]$y,
+         col = "black",
+         cex = 0.5)
+  polygon(
+    c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
+    c(agg_result$lower, rev(agg_result$upper)),
+    col = rgb(0.6, 0.8, 1, alpha = 0.3),
+    border = NA
+  )
+}
+
+plot_gene_expression_across_cell_lines <-
+  function(gene, cell_line_indices) {
+    # Initialize an empty list to store data for plotting
+    plot_data <- list()
+    
+    # Loop over each cell line index
+    for (cell_line_index in cell_line_indices) {
+      # Load results and datasets for the current cell line
+      result_file <-
+        paste0(result_dir,
+               "/fitted_pos_results",
+               cell_line_index,
+               ".rda")
+      dataset_file <-
+        paste0(result_dir, "/datasets_", cell_line_index, ".rda")
+      
+      if (file.exists(result_file) && file.exists(dataset_file)) {
+        load(result_file)
+        load(dataset_file)
+        
+        # Extract aggregated results and days for the specified gene
+        if (gene %in% names(fitted_datasets) &&
+            gene %in% names(datasets)) {
+          agg_result <- fitted_datasets[[gene]]
+          day <- datasets[[gene]]$Day
+          plot_data[[cell_line_index]] <- data.frame(
+            Day = day,
+            Median = agg_result$median,
+            CellLine = paste0("Cell Line ", cell_line_index)
+          )
+        } else {
+          message(paste("Gene", gene, "not found in cell line", cell_line_index))
+        }
+      } else {
+        message(paste("Data not found for cell line", cell_line_index))
+      }
+    }
+    
+    # Combine all data into a single data frame
+    plot_data_combined <- bind_rows(plot_data)
+    
+    # Generate the plot using ggplot2
+    ggplot(plot_data_combined,
+           aes(
+             x = Day,
+             y = Median,
+             color = CellLine,
+             group = CellLine
+           )) +
+      geom_line(size = 1) +
+      labs(
+        title = paste("Posterior Median of", gene, "Across Cell Lines"),
+        x = "Day",
+        y = "Expression",
+        color = "Cell Line"
+      ) +
+      theme_minimal() +
+      theme(
+        plot.title = element_text(size = 14, face = "bold"),
+        axis.title = element_text(size = 12),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 9)
+      )
+  }
+
+plot_gene_expression_log_just_f <- function(gene, cell_line_index) {
+  load(paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda"))
+  load(paste0(result_dir, "/datasets_", cell_line_index, ".rda"))
+  size_vec <- numeric(length = nrow(datasets[[1]]))
+  for (i in 1:length(size_vec)) {
+    Day <- datasets[[1]]$Day[i]
+    all_counts <-
+      unlist(lapply(datasets, function(x) {
+        x$y[x$Day == Day]
+      }))
+    size_vec[i] <- sum(all_counts)
+  }
+  log_size_vec <- log(size_vec)
+  
+  log_size_vec <- log(size_vec)
+  agg_result <- fitted_datasets[[gene]]
+  agg_result[, c(2, 3, 4)] <-
+    agg_result[, c(2, 3, 4)] / exp(log_size_vec)
+  min_y <- min(agg_result$lower)
+  max_y <-
+    max(agg_result$upper)  # Assuming this is positive and makes sense in your context
+  
+  # Set the limits for the y-axis
+  log_min_y <- min_y / 2
+  log_max_y <- max_y * 1.2
+  
+  plot(
+    datasets[[gene]]$Day,
+    agg_result$median,
+    type = 'l',
+    main = paste0(gene),
+    xlab = "Day",
+    ylab = "Expression",
+    col = "blue",
+    cex = 0.5,
+    cex.main = 0.8,
+    cex.lab = 0.7,
+    cex.axis = 0.7
+  )
+  polygon(
+    c(datasets[[gene]]$Day, rev(datasets[[gene]]$Day)),
+    c(agg_result$lower, rev(agg_result$upper)),
+    col = rgb(0.6, 0.8, 1, alpha = 0.3),
+    border = NA
+  )
+}
+
+plot_gene_expression_log_across_cell_lines <- 
+  function(gene, cell_line_indices, color = T, CI = F) {
+  # Initialize an empty list to store data for plotting
+  plot_data <- list()
+
+  # Loop over each cell line index
+  for (cell_line_index in cell_line_indices) {
+    # Load results and datasets for the current cell line
+    result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+    dataset_file <- paste0(result_dir, "/datasets_", cell_line_index, ".rda")
+
+    if (file.exists(result_file) && file.exists(dataset_file)) {
+      load(result_file)
+      load(dataset_file)
+
+      # Calculate size vector for normalization
+      size_vec <- numeric(length = nrow(datasets[[1]]))
+      for (i in 1:length(size_vec)) {
+        Day <- datasets[[1]]$Day[i]
+        all_counts <- unlist(lapply(datasets, function(x) { x$y[x$Day == Day] }))
+        size_vec[i] <- sum(all_counts)
+      }
+      log_size_vec <- log(size_vec)
+
+      # Extract aggregated results and normalize by size vector
+      if (gene %in% names(fitted_datasets) && gene %in% names(datasets)) {
+        agg_result <- fitted_datasets[[gene]]
+        agg_result[, c("median", "lower", "upper")] <- agg_result[, c("median", "lower", "upper")] / exp(log_size_vec)
+
+        # Prepare data for plotting
+        plot_data[[cell_line_index]] <- data.frame(
+          Day = datasets[[gene]]$Day,
+          Median = agg_result$median,
+          Lower = agg_result$lower,
+          Upper = agg_result$upper,
+          CellLine = paste0("Cell Line ", cell_line_index)
+        )
+      } else {
+        message(paste("Gene", gene, "not found in cell line", cell_line_index))
+      }
+    } else {
+      message(paste("Data not found for cell line", cell_line_index))
+    }
+  }
+
+  # Combine all data into a single data frame
+  plot_data_combined <- bind_rows(plot_data)
+
+  # Base ggplot
+  p <- ggplot(plot_data_combined, aes(x = Day, y = Median, group = CellLine)) +
+    geom_line(size = 0.5, aes(color = CellLine)) +
+    labs(
+      # title = paste("Normalized Expression of", gene, "Across Cell Lines"),
+      title = gene,
+      x = "Day",
+      y = "Normalized Expression"
+    ) +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 14, face = "bold"),
+      axis.title = element_text(size = 12)
+    )
+
+  # Apply single pink color if color = FALSE
+  if (!color) {
+    pink_color <- rgb(1, 0.4, 0.6, alpha = 0.6)  # Define a pink color with transparency
+    p <- p +
+      geom_line(size = 1, color = pink_color) +  # Set line color explicitly
+      guides(color = "none")
+  }
+
+  # Add confidence intervals if CI is TRUE
+  if (CI) {
+    if (color) {
+      p <- p + geom_ribbon(aes(ymin = Lower, ymax = Upper, fill = CellLine), alpha = 0.2, color = NA)
+    } else {
+      pink_color <- rgb(1, 0.4, 0.6, alpha = 0.2)  # Transparent pink for ribbon
+      p <- p + geom_ribbon(aes(ymin = Lower, ymax = Upper), fill = pink_color, alpha = 0.2, color = NA) +
+        guides(fill = "none")
+    }
+  }
+
+  # Return the plot
+  return(p)
+}
+```
+
+Let's first look at `ANGIOGENESIS` gene set in cluster 9 across cell lines:
+
+```{r echo=FALSE, message=FALSE}
+ANGIOGENESIS_genes_entrez <- m_t2g$entrez_gene[m_t2g$gs_name == "HALLMARK_ANGIOGENESIS"]
+cluster9_genes <- sorted_posterior_weights_df %>% filter(cluster == 9) %>% pull(id)
+cluster9_genes_converted <- getBM(
+  filters = "ensembl_gene_id",
+  attributes = c("ensembl_gene_id", "entrezgene_id"),
+  values = cluster9_genes,
+  mart = mart
+)
+cluster9_genes_entrez <- cluster9_genes_converted$entrezgene_id
+overlap_genes_entrez <- intersect(ANGIOGENESIS_genes_entrez, cluster9_genes_entrez)
+overlap_genes <- cluster9_genes_converted$ensembl_gene_id[cluster9_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+sample_index <- 1:length(overlap_genes)
+plot_list_ANGIOGENESIS <- list()
+for (i in 1:length(overlap_genes)) {
+  gene = overlap_genes[sample_index[i]]
+  plot_i <- (plot_gene_expression_log_across_cell_lines(gene, cell_line_indices = 1:19, color = F, CI = F))
+  plot_list_ANGIOGENESIS[[i]] <-  plot_i
+}
+
+do.call(gridExtra::grid.arrange, c(plot_list_ANGIOGENESIS, ncol = 4))
+```
+
+
+Let's then `BILE_ACID_METABOLISM` gene set in cluster 1 across cell lines:
+
+```{r echo=FALSE, message=FALSE}
+BILE_ACID_METABOLISM_genes_entrez <- m_t2g$entrez_gene[m_t2g$gs_name == "HALLMARK_BILE_ACID_METABOLISM"]
+cluster1_genes <- sorted_posterior_weights_df %>% filter(cluster == 1) %>% pull(id)
+cluster1_genes_converted <- getBM(
+  filters = "ensembl_gene_id",
+  attributes = c("ensembl_gene_id", "entrezgene_id"),
+  values = cluster1_genes,
+  mart = mart
+)
+cluster1_genes_entrez <- cluster1_genes_converted$entrezgene_id
+overlap_genes_entrez <- intersect(BILE_ACID_METABOLISM_genes_entrez, cluster1_genes_entrez)
+overlap_genes <- cluster1_genes_converted$ensembl_gene_id[cluster1_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+sample_index <- 1:length(overlap_genes)
+plot_list_BILE_ACID_METABOLISM <- list()
+for (i in 1:length(overlap_genes)) {
+  gene = overlap_genes[sample_index[i]]
+  plot_i <- (plot_gene_expression_log_across_cell_lines(gene, cell_line_indices = 1:19, color = F, CI = F))
+  plot_list_BILE_ACID_METABOLISM[[i]] <-  plot_i
+}
+
+do.call(gridExtra::grid.arrange, c(plot_list_BILE_ACID_METABOLISM, ncol = 4))
+```
+
+Now, let's compare the distribution of $\hat{\sigma}$ across cell lines for different genes.
+
+For example, here we compare `ANGIOGENESIS` gene set in cluster 9 and `BILE_ACID_METABOLISM` gene set in cluster 1:
+
+```{r echo=FALSE}
+compute_sigma_means <- function(cell_line_indices) {
+
+  # Take out the indices that are not in the range of cell_line_indices
+  cell_line_indices <- cell_line_indices[cell_line_indices >= 1 & cell_line_indices <= 19]
+  sigma_means_list <- list()  # Initialize list to store sigma_mean vectors
+
+  # Loop over each cell line index
+  for (cell_line_index in cell_line_indices) {
+    # Construct the path to the result file
+    result_file <- paste0(result_dir, "/L_matrix_", cell_line_index, ".rda")
+    if (file.exists(result_file)) {
+      # Load the result file
+      load(result_file)
+      # print(cell_line_index)
+      fit.sqp <- mixsqp(L = L_matrix, log = TRUE, control = list(verbose = FALSE))
+      posterior_matrix <- matrix(0, nrow = nrow(L_matrix), ncol = ncol(L_matrix))
+      for(i in 1:nrow(L_matrix)){
+        posterior_matrix[i,] <- exp(L_matrix[i,] - max(L_matrix[i,]) + log(fit.sqp$x))
+        posterior_matrix[i,] <- posterior_matrix[i,]/sum(posterior_matrix[i,])
+      }
+      colnames(posterior_matrix) <- paste0(2,"_",psd_vec)
+
+      # Extract sigma_val from column names of posterior_matrix
+      sigma_val <- colnames(posterior_matrix)
+      sigma_val <- as.numeric(sub(".*_", "", sigma_val))
+
+      # Compute sigma_mean for the current cell line
+      sigma_mean <- posterior_matrix %*% sigma_val
+
+      # Add sigma_mean to the list
+      sigma_means_list[[cell_line_index]] <- sigma_mean
+    } else {
+      message(paste("Result file not found for cell line index:", cell_line_index))
+    }
+  }
+
+  # Combine sigma_mean vectors into a matrix
+  sigma_means_matrix <- do.call(cbind, sigma_means_list)
+  colnames(sigma_means_matrix) <- paste0("CellLine_", cell_line_indices)
+  rownames(sigma_means_matrix) <- all_gene
+
+  return(sigma_means_matrix)
+}
+sigma_means_matrix <- compute_sigma_means(1:19)
+```
+
+```{r echo=FALSE}
+overlap_genes_entrez <- intersect(ANGIOGENESIS_genes_entrez, cluster9_genes_entrez)
+overlap_genes <- cluster9_genes_converted$ensembl_gene_id[cluster9_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+sigma_means_matrix_AN <- sigma_means_matrix[rownames(sigma_means_matrix) %in% overlap_genes,]
+
+# Convert the sigma_means_matrix_AN data to a data frame (if not already)
+sigma_means_matrix_AN <- as.data.frame(sigma_means_matrix_AN)
+
+# Add gene names as a column
+sigma_means_matrix_AN$Gene <- rownames(sigma_means_matrix_AN)
+
+# Reshape the data into long format
+long_data <- melt(sigma_means_matrix_AN, id.vars = "Gene", 
+                  variable.name = "CellLine", 
+                  value.name = "SigmaMean")
+
+plot1 <- ggplot(long_data, aes(x = Gene, y = SigmaMean, fill = Gene)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.7) +
+  geom_jitter(width = 0.2, size = 1, alpha = 0.5) +
+  labs(
+    title = "Angiogenesis Gene Set in Cluster 9",
+    x = "Gene",
+    y = "Sigma Mean",
+    fill = "Gene"
+  ) +
+  theme_minimal() +
+  ylim(c(0,3)) + 
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 14, face = "bold"),
+    axis.title = element_text(size = 12),
+    legend.position = "none"
+  )
+
+overlap_genes_entrez <- intersect(BILE_ACID_METABOLISM_genes_entrez, cluster1_genes_entrez)
+overlap_genes <- cluster1_genes_converted$ensembl_gene_id[cluster1_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+sigma_means_matrix_BAM <- sigma_means_matrix[rownames(sigma_means_matrix) %in% overlap_genes,]
+
+# Convert the sigma_means_matrix_BAM data to a data frame (if not already)
+sigma_means_matrix_BAM <- as.data.frame(sigma_means_matrix_BAM)
+
+# Add gene names as a column
+sigma_means_matrix_BAM$Gene <- rownames(sigma_means_matrix_BAM)
+
+# Reshape the data into long format
+long_data <- melt(sigma_means_matrix_BAM, id.vars = "Gene", 
+                  variable.name = "CellLine", 
+                  value.name = "SigmaMean")
+
+plot2 <- ggplot(long_data, aes(x = Gene, y = SigmaMean, fill = Gene)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.7) +
+  geom_jitter(width = 0.2, size = 1, alpha = 0.5) +
+  labs(
+    title = "Bile Acid Metabolism Gene Set in Cluster 1",
+    x = "Gene",
+    y = "Sigma Mean",
+    fill = "Gene"
+  ) +
+  theme_minimal() +
+  ylim(c(0,3)) + 
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 14, face = "bold"),
+    axis.title = element_text(size = 12),
+    legend.position = "none"
+  )
+
+grid.arrange(plot1, plot2, ncol = 2)
+```
+
+
+Alternatively, we could also check how the distribution of $\hat{\sigma}$ changes across cell lines for a specific set of genes:
+
+```{r echo=FALSE}
+overlap_genes_entrez <- intersect(ANGIOGENESIS_genes_entrez, cluster9_genes_entrez)
+overlap_genes <- cluster9_genes_converted$ensembl_gene_id[cluster9_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+sigma_means_matrix_AN <- sigma_means_matrix[rownames(sigma_means_matrix) %in% overlap_genes,]
+
+# Convert the sigma_means_matrix_AN data to a data frame (if not already)
+sigma_means_matrix_AN <- as.data.frame(sigma_means_matrix_AN)
+
+# Add gene names as a column
+sigma_means_matrix_AN$Gene <- rownames(sigma_means_matrix_AN)
+
+# Reshape the data into long format
+long_data <- melt(sigma_means_matrix_AN, id.vars = "Gene", 
+                  variable.name = "CellLine", 
+                  value.name = "SigmaMean")
+
+plot1 <- ggplot(long_data, aes(x = CellLine, y = SigmaMean, fill = CellLine)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.7) +
+  geom_jitter(width = 0.2, size = 1, alpha = 0.5) +
+  labs(
+    title = "Angiogenesis Gene Set in Cluster 9",
+    x = "Cell Lines",
+    y = "Sigma Mean",
+    fill = "Cell Lines"
+  ) +
+  theme_minimal() +
+  ylim(c(0,3)) + 
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 14, face = "bold"),
+    axis.title = element_text(size = 12),
+    legend.position = "none"
+  )
+
+overlap_genes_entrez <- intersect(BILE_ACID_METABOLISM_genes_entrez, cluster1_genes_entrez)
+overlap_genes <- cluster1_genes_converted$ensembl_gene_id[cluster1_genes_converted$entrezgene_id %in% overlap_genes_entrez]
+sigma_means_matrix_BAM <- sigma_means_matrix[rownames(sigma_means_matrix) %in% overlap_genes,]
+
+# Convert the sigma_means_matrix_BAM data to a data frame (if not already)
+sigma_means_matrix_BAM <- as.data.frame(sigma_means_matrix_BAM)
+
+# Add gene names as a column
+sigma_means_matrix_BAM$Gene <- rownames(sigma_means_matrix_BAM)
+
+# Reshape the data into long format
+long_data <- melt(sigma_means_matrix_BAM, id.vars = "Gene", 
+                  variable.name = "CellLine", 
+                  value.name = "SigmaMean")
+
+plot2 <- ggplot(long_data, aes(x = CellLine, y = SigmaMean, fill = CellLine)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.7) +
+  geom_jitter(width = 0.2, size = 1, alpha = 0.5) +
+  labs(
+    title = "Bile Acid Metabolism Gene Set in Cluster 1",
+    x = "Cell Line",
+    y = "Sigma Mean",
+    fill = "Cell Line"
+  ) +
+  theme_minimal() +
+  ylim(c(0,3)) + 
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 14, face = "bold"),
+    axis.title = element_text(size = 12),
+    legend.position = "none"
+  )
+
+grid.arrange(plot1, plot2, ncol = 2)  
+```
+
+
+
+
+
+
 
 
 
