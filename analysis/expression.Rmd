@@ -988,8 +988,8 @@ plot_gene_expression_across_cell_lines <-
       ) +
       theme_minimal() +
       theme(
-        plot.title = element_text(size = 14, face = "bold"),
-        axis.title = element_text(size = 12),
+        plot.title = element_text(size = 10, face = "bold"),
+        axis.title = element_text(size = 10),
         legend.title = element_text(size = 10),
         legend.text = element_text(size = 9)
       )
@@ -1251,7 +1251,7 @@ plot1 <- ggplot(long_data, aes(x = Gene, y = SigmaMean, fill = Gene)) +
   geom_boxplot(outlier.shape = NA, alpha = 0.7) +
   geom_jitter(width = 0.2, size = 1, alpha = 0.5) +
   labs(
-    title = "Angiogenesis Gene Set in Cluster 9",
+    title = "Angiogenesis: Cluster 9",
     x = "Gene",
     y = "Sigma Mean",
     fill = "Gene"
@@ -1259,9 +1259,9 @@ plot1 <- ggplot(long_data, aes(x = Gene, y = SigmaMean, fill = Gene)) +
   theme_minimal() +
   ylim(c(0,3)) + 
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.title = element_text(size = 14, face = "bold"),
-    axis.title = element_text(size = 12),
+    axis.text.x = element_text(angle = 40, hjust = 1),
+    plot.title = element_text(size = 10, face = "bold"),
+    axis.title = element_text(size = 10),
     legend.position = "none"
   )
 
@@ -1284,7 +1284,7 @@ plot2 <- ggplot(long_data, aes(x = Gene, y = SigmaMean, fill = Gene)) +
   geom_boxplot(outlier.shape = NA, alpha = 0.7) +
   geom_jitter(width = 0.2, size = 1, alpha = 0.5) +
   labs(
-    title = "Bile Acid Metabolism Gene Set in Cluster 1",
+    title = "Bile Acid Metabolism: Cluster 1",
     x = "Gene",
     y = "Sigma Mean",
     fill = "Gene"
@@ -1293,8 +1293,8 @@ plot2 <- ggplot(long_data, aes(x = Gene, y = SigmaMean, fill = Gene)) +
   ylim(c(0,3)) + 
   theme(
     axis.text.x = element_text(angle = 40, hjust = 1),
-    plot.title = element_text(size = 12, face = "bold"),
-    axis.title = element_text(size = 12),
+    plot.title = element_text(size = 10, face = "bold"),
+    axis.title = element_text(size = 10),
     legend.position = "none"
   )
 
@@ -1324,7 +1324,7 @@ plot1 <- ggplot(long_data, aes(x = CellLine, y = SigmaMean, fill = CellLine)) +
   geom_boxplot(outlier.shape = NA, alpha = 0.7) +
   geom_jitter(width = 0.2, size = 1, alpha = 0.5) +
   labs(
-    title = "Angiogenesis Gene Set in Cluster 9",
+    title = "Angiogenesis: Cluster 9",
     x = "Cell Lines",
     y = "Sigma Mean",
     fill = "Cell Lines"
@@ -1357,7 +1357,7 @@ plot2 <- ggplot(long_data, aes(x = CellLine, y = SigmaMean, fill = CellLine)) +
   geom_boxplot(outlier.shape = NA, alpha = 0.7) +
   geom_jitter(width = 0.2, size = 1, alpha = 0.5) +
   labs(
-    title = "Bile Acid Metabolism Gene Set in Cluster 1",
+    title = "Bile Acid Metabolism: Cluster 1",
     x = "Cell Line",
     y = "Sigma Mean",
     fill = "Cell Line"
@@ -1365,9 +1365,9 @@ plot2 <- ggplot(long_data, aes(x = CellLine, y = SigmaMean, fill = CellLine)) +
   theme_minimal() +
   ylim(c(0,3)) + 
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.title = element_text(size = 14, face = "bold"),
-    axis.title = element_text(size = 12),
+    axis.text.x = element_text(angle = 10, hjust = 1),
+    plot.title = element_text(size = 10, face = "bold"),
+    axis.title = element_text(size = 10),
     legend.position = "none"
   )
 
