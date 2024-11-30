@@ -13,10 +13,10 @@ We consider the (raw) gene expression data measured over 16 days as studied in [
 For simplicity of the presentation, we consider only one cell-line in this example. 
 The dataset contains the raw expression counts of 16319 genes.
 
-To model the true (log) expression level $f_i(t_j)$ of the $i$th gene at day $t_j$, we assume that the expression count $y_{i}(t_j)$ is Poisson distributed with mean $o_j\exp \left(f_i\left(t_j\right)\right)$, where $o_j$ is the library size at day $t_j$.
+For each of the cell-line indexed by $l$, to model the true (log) expression level $f_i^{(l)}(t_j)$ of the $i$th gene at day $t_j$, we assume that the expression count $y_{i}^{(l)}(t_j)$ is Poisson distributed with mean $o^{(l)}_j\exp \left(f^{(l)}_i\left(t_j\right)\right)$, where $o^{(l)}_j$ is the library size at day $t_j$.
 
-
-```{r include=FALSE}
+```{r include=FALSE, warning=FALSE, results='hide'}
+options(warn = -1) # Suppress warnings
 library(BayesGP)
 library(TMB)
 library(Matrix)
@@ -40,12 +40,16 @@ num_cores <- 4
 betaprec <- 1e-6
 ```
 
+
 ### **Model**
+
+For now, let's focus just on the largest cell-line and drop the index $l$ for simplicity.
 
 Assume most of the gene expression trajectories are expected to be linear, we therefore consider the following finite mixture prior for each gene expression level $f_i(t_j)$:
 $$f_i(t) = \sum_{k=0}^K \pi_k \text{GP}_k(t).$$
 For each $k$, the mixture component has the prior: $$Lf(t) = \sigma_k W(t), $$ with $W(t)$ being a Gaussian white noise process and $\sigma_k$ being the smoothness. 
 Choosing $L = \frac{\partial^2}{\partial t^2}$, the base model that each $f_i$ being shrunk to is therefore $\text{Null}\{L\} = \text{span}\{1,t\}$.
+
 
 
 ### **Processing the expression data**
@@ -99,6 +103,7 @@ log_size_vec <- log(size_vec)
 
 
 
+
 ### **Applying empirical Bayes**
 
 ```{r eval = FALSE}
@@ -145,6 +150,7 @@ for(i in 1:nrow(L_matrix)){
 colnames(posterior_matrix) <- paste0(p,"_",psd_vec)
 posterior_weights_matrix <- posterior_matrix
 ```
+
 
 
 ### **Obtaining posteriors**
@@ -220,7 +226,7 @@ ggplot(melted_data_sorted, aes(x = factor(id, levels = sorted_posterior_weights_
 ### **Clustering based on posterior weights**
 
 Let's group them into `num_clusters` groups, based on the quantiles of the mean PSD:
-```{r}
+```{r message=FALSE, warning=FALSE}
 mean_psd_ordered <- mean_psd[sorted_index]
 # num_clusters <- 22
 # quantiles <- quantile(mean_psd_ordered, probs = seq(0, 1, 1/num_clusters))
@@ -259,7 +265,7 @@ ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weigh
   )
 ```
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
 # Define the number of genes and clusters
 num_genes_per_cluster <- 16
 
@@ -269,6 +275,7 @@ for (i in 1:num_clusters) {
   genes_per_cluster[[i]] <- sorted_posterior_weights_df$id[sorted_posterior_weights_df$cluster == i][1:num_genes_per_cluster]
 }
 ```
+
 
 
 
@@ -895,7 +902,15 @@ par(mfrow = c(1, 1))
 
 
 
+
 ### **Analysis Across Cell-lines**
+
+Now, we will replicate the above analysis for each cell line, and see if we observe similar patterns across different cell lines.
+
+
+#### **Difference in Gene Expression Trajectories Across Cell Lines**
+
+First, let's take a look at the inferred $f_i^{(l)}(t)$ for each gene (indexed by $i$) in each cell line (indexed by $l$).
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(gridExtra)
@@ -1092,7 +1107,6 @@ plot_gene_expression_log_across_cell_lines <-
 
   # Base ggplot
   p <- ggplot(plot_data_combined, aes(x = Day, y = Median, group = CellLine)) +
-    geom_line(size = 0.5, aes(color = CellLine)) +
     labs(
       # title = paste("Normalized Expression of", gene, "Across Cell Lines"),
       title = gene,
@@ -1101,16 +1115,18 @@ plot_gene_expression_log_across_cell_lines <-
     ) +
     theme_minimal() +
     theme(
-      plot.title = element_text(size = 14, face = "bold"),
-      axis.title = element_text(size = 12)
+      plot.title = element_text(size = 8, face = "bold"),
+      axis.title = element_text(size = 10)
     )
 
   # Apply single pink color if color = FALSE
   if (!color) {
-    pink_color <- rgb(1, 0.4, 0.6, alpha = 0.6)  # Define a pink color with transparency
+    pink_color <- rgb(1, 0.4, 0.6, alpha = 0.2)  # Define a pink color with transparency
     p <- p +
-      geom_line(size = 1, color = pink_color) +  # Set line color explicitly
+      geom_line(size = 0.5, color = pink_color) +  # Set line color explicitly
       guides(color = "none")
+  }else{
+    p <- p + geom_line(size = 0.5, aes(color = CellLine))
   }
 
   # Add confidence intervals if CI is TRUE
@@ -1129,9 +1145,9 @@ plot_gene_expression_log_across_cell_lines <-
 }
 ```
 
-Let's first look at `ANGIOGENESIS` gene set in cluster 9 across cell lines:
+Let's first look at `ANGIOGENESIS` gene set that is enriched in cluster 9 (identified from our previous clustering result based on the largest cell-line) across cell lines. There are 8 genes in the `ANGIOGENESIS` gene set that are also in cluster 9.
 
-```{r echo=FALSE, message=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ANGIOGENESIS_genes_entrez <- m_t2g$entrez_gene[m_t2g$gs_name == "HALLMARK_ANGIOGENESIS"]
 cluster9_genes <- sorted_posterior_weights_df %>% filter(cluster == 9) %>% pull(id)
 cluster9_genes_converted <- getBM(
@@ -1151,13 +1167,24 @@ for (i in 1:length(overlap_genes)) {
   plot_list_ANGIOGENESIS[[i]] <-  plot_i
 }
 
+# modify the figure so they all have the same y_lim:
+# range_choice <- range(unlist(lapply(plot_list_ANGIOGENESIS, function(x) range(x$data$Median))))
+# log_range_choice <- log10(range_choice)
+log_range_choice <- c(-8,-1.5)
+for (i in 1:length(plot_list_ANGIOGENESIS)) {
+plot_list_ANGIOGENESIS[[i]] <- plot_list_ANGIOGENESIS[[i]] +
+    scale_y_log10(limits = 10^log_range_choice)  # Specify limits on the transformed scale
+}
+
 do.call(gridExtra::grid.arrange, c(plot_list_ANGIOGENESIS, ncol = 4))
 ```
 
+Note that for each gene, the inferred trajectory $f_i^{(l)}(t)$ shows variation across cell lines. 
+However, they all show similar types of non-linearity especially in the early time points and in the late times with the "tail oscillation".
 
-Let's then `BILE_ACID_METABOLISM` gene set in cluster 1 across cell lines:
+Let's then compare that with the results of the gene set `BILE_ACID_METABOLISM` that is enriched in cluster 1. There are 6 genes overlapping between the `BILE_ACID_METABOLISM` gene set and cluster 1.
 
-```{r echo=FALSE, message=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 BILE_ACID_METABOLISM_genes_entrez <- m_t2g$entrez_gene[m_t2g$gs_name == "HALLMARK_BILE_ACID_METABOLISM"]
 cluster1_genes <- sorted_posterior_weights_df %>% filter(cluster == 1) %>% pull(id)
 cluster1_genes_converted <- getBM(
@@ -1177,14 +1204,28 @@ for (i in 1:length(overlap_genes)) {
   plot_list_BILE_ACID_METABOLISM[[i]] <-  plot_i
 }
 
+# modify the figure so they all have the same y_lim:
+# range_choice <- range(unlist(lapply(plot_list_BILE_ACID_METABOLISM, function(x) range(x$data$Median))))
+# log_range_choice <- log10(range_choice)
+log_range_choice <- c(-8,-1.5)
+for (i in 1:length(plot_list_BILE_ACID_METABOLISM)) {
+plot_list_BILE_ACID_METABOLISM[[i]] <- plot_list_BILE_ACID_METABOLISM[[i]] +
+    scale_y_log10(limits = 10^log_range_choice)  # Specify limits on the transformed scale
+}
+
 do.call(gridExtra::grid.arrange, c(plot_list_BILE_ACID_METABOLISM, ncol = 4))
 ```
 
-Now, let's compare the distribution of $\hat{\sigma}$ across cell lines for different genes.
+The result is by large consistent with what we observed for the `ANGIOGENESIS` gene set. 
+Although the inferred trajectory $f_i^{(l)}(t)$ shows variation across cell lines, but they are all much more "linear" than what we observed in the `ANGIOGENESIS` gene set.
 
-For example, here we compare `ANGIOGENESIS` gene set in cluster 9 and `BILE_ACID_METABOLISM` gene set in cluster 1:
+#### **Comparing Smoothness Across Cell Lines**
 
-```{r echo=FALSE}
+To more quantitatively compare the smoothness of the inferred trajectories across cell lines, we can compute the expected value of the smoothing parameter ${\sigma}_i^{(l)}$ for the $i$th gene in the $l$th cell line, which will be denoted as ${\hat{\sigma}}_i^{(l)} = \mathbb{E}[\sigma_i^{(l)}|\mathbf{y}^{(l)}]$.
+
+First, let's see how the distribution of ${\hat{\sigma}}_i^{(l)}$ will differ between the `ANGIOGENESIS` gene set in cluster 9 and the `BILE_ACID_METABOLISM` gene set in cluster 1.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 compute_sigma_means <- function(cell_line_indices) {
 
   # Take out the indices that are not in the range of cell_line_indices
@@ -1231,7 +1272,7 @@ compute_sigma_means <- function(cell_line_indices) {
 sigma_means_matrix <- compute_sigma_means(1:19)
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 overlap_genes_entrez <- intersect(ANGIOGENESIS_genes_entrez, cluster9_genes_entrez)
 overlap_genes <- cluster9_genes_converted$ensembl_gene_id[cluster9_genes_converted$entrezgene_id %in% overlap_genes_entrez]
 sigma_means_matrix_AN <- sigma_means_matrix[rownames(sigma_means_matrix) %in% overlap_genes,]
@@ -1259,7 +1300,7 @@ plot1 <- ggplot(long_data, aes(x = Gene, y = SigmaMean, fill = Gene)) +
   theme_minimal() +
   ylim(c(0,3)) + 
   theme(
-    axis.text.x = element_text(angle = 40, hjust = 1),
+    axis.text.x = element_text(size = 6, angle = 40, hjust = 1),
     plot.title = element_text(size = 10, face = "bold"),
     axis.title = element_text(size = 10),
     legend.position = "none"
@@ -1292,7 +1333,7 @@ plot2 <- ggplot(long_data, aes(x = Gene, y = SigmaMean, fill = Gene)) +
   theme_minimal() +
   ylim(c(0,3)) + 
   theme(
-    axis.text.x = element_text(angle = 40, hjust = 1),
+    axis.text.x = element_text(size = 6, angle = 40, hjust = 1),
     plot.title = element_text(size = 10, face = "bold"),
     axis.title = element_text(size = 10),
     legend.position = "none"
@@ -1301,10 +1342,13 @@ plot2 <- ggplot(long_data, aes(x = Gene, y = SigmaMean, fill = Gene)) +
 grid.arrange(plot1, plot2, ncol = 2)
 ```
 
+Based on the above figure, even when we consider different cell-lines, the genes in the `ANGIOGENESIS` gene set in cluster 9 tend to have much higher values of ${\hat{\sigma}}_i^{(l)}$ compared to the genes in the `BILE_ACID_METABOLISM` gene set in cluster 1. 
+This confirms our previous observation that the inferred trajectories for the `ANGIOGENESIS` gene set tend to be more non-linear compared to the `BILE_ACID_METABOLISM` gene set.
 
-Alternatively, we could also check how the distribution of $\hat{\sigma}$ changes across cell lines for a specific set of genes:
 
-```{r echo=FALSE}
+Then, let's check how the distribution of ${\hat{\sigma}}_i^{(l)}$ changes across cell lines for a specific set of genes:
+
+```{r echo=FALSE, warning=FALSE, results='hide'}
 overlap_genes_entrez <- intersect(ANGIOGENESIS_genes_entrez, cluster9_genes_entrez)
 overlap_genes <- cluster9_genes_converted$ensembl_gene_id[cluster9_genes_converted$entrezgene_id %in% overlap_genes_entrez]
 sigma_means_matrix_AN <- sigma_means_matrix[rownames(sigma_means_matrix) %in% overlap_genes,]
@@ -1332,7 +1376,7 @@ plot1 <- ggplot(long_data, aes(x = CellLine, y = SigmaMean, fill = CellLine)) +
   theme_minimal() +
   ylim(c(0,3)) + 
   theme(
-    axis.text.x = element_text(angle = 40, hjust = 1),
+    axis.text.x = element_text(size = 6, angle = 40, hjust = 1),
     plot.title = element_text(size = 10, face = "bold"),
     axis.title = element_text(size = 10),
     legend.position = "none"
@@ -1365,7 +1409,7 @@ plot2 <- ggplot(long_data, aes(x = CellLine, y = SigmaMean, fill = CellLine)) +
   theme_minimal() +
   ylim(c(0,3)) + 
   theme(
-    axis.text.x = element_text(angle = 40, hjust = 1),
+    axis.text.x = element_text(size = 6, angle = 40, hjust = 1),
     plot.title = element_text(size = 10, face = "bold"),
     axis.title = element_text(size = 10),
     legend.position = "none"
@@ -1374,13 +1418,1169 @@ plot2 <- ggplot(long_data, aes(x = CellLine, y = SigmaMean, fill = CellLine)) +
 grid.arrange(plot1, plot2, ncol = 2)  
 ```
 
+Indeed, there appears to be strong cell-line effects on the smoothness of the inferred trajectories.
+For example in the `ANGIOGENESIS` gene set in cluster 9, the genes tend to have much higher values of ${\hat{\sigma}}_i^{(l)}$ in cell-line 8, but much lower values in cell-line 12.
+
+One conjecture is that this might be due to some dynamic eQTLs which modify the expression trajectories of the genes in the `ANGIOGENESIS` gene set in cluster 9 across different cell lines.
+
+
+
+#### **Comparing Structure Plots Across Cell Lines** {.tabset .tabset-pills}
+
+In our above comparisons, we have been using the clustering results from the largest cell-line (cell-line 1) to construct various plots across cell lines.
+Now, let's confirm that the clustering results are mostly consistent across different cell lines by comparing the structure plots across different cell lines.
+
+##### Cell Line Index  1
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 1
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  2
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 2
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  3
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 3
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  4
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 4
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  5
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 5
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  6
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 6
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  7
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 7
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  8
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 8
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  9
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 9
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+
+##### Cell Line Index  10
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 10
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  11
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 11
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  12
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 12
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+
+
+##### Cell Line Index  13
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 13
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  14
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 14
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  15
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 15
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+
+##### Cell Line Index  16
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 16
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  17
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 17
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+##### Cell Line Index  18
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 18
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+
+
+##### Cell Line Index  19
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+cell_line_index <- 19
+all_gene <- unique(names(fitted_datasets))
+
+result_file <- paste0(result_dir, "/fitted_pos_results", cell_line_index, ".rda")
+load(result_file)
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- all_gene
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+mean_psd <- apply(posterior_weights_matrix, 1, function(x) {
+  weighted_psd <- as.numeric(sub("*._", "", colnames(posterior_weights_matrix)))
+  sum(x * weighted_psd)
+})
+sorted_index <- order(mean_psd)
+sorted_posterior_weights_matrix <- posterior_weights_matrix[sorted_index, ]
+sorted_posterior_weights_df <- as.data.frame(sorted_posterior_weights_matrix)
+sorted_posterior_weights_df$id <- all_gene[sorted_index]
+melted_data_sorted <- melt(sorted_posterior_weights_df, id.vars = "id")
+melted_data_sorted$variable2 <- sub("_.*", "", melted_data_sorted$variable)
+melted_data_sorted$variable3 <- (round(as.numeric(sub("*._", "", melted_data_sorted$variable)), 3))
+
+mean_psd_ordered <- mean_psd[sorted_index]
+quantiles <- c(0, 0.1, 0.2, 0.35, 0.5, 1, 1.7, 2.5, 2.95, 3)
+quantile_groups <- cut(mean_psd_ordered, breaks = quantiles, 
+                       include.lowest = TRUE, labels = FALSE)
+num_clusters <- length(unique(quantile_groups))
+
+sorted_posterior_weights_df$cluster <- quantile_groups
+melted_data_quantiles <- melt(sorted_posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data_quantiles$variable2 <- sub("_.*", "", melted_data_quantiles$variable)
+melted_data_quantiles$variable3 <- round(as.numeric(sub(".*_", "", melted_data_quantiles$variable)), 3)
+melted_data_quantiles <- melted_data_quantiles %>% arrange(cluster)
+
+# Ensure the 'id' factor is ordered according to the sorted mean_psd
+melted_data_quantiles$id <- factor(melted_data_quantiles$id, levels = sorted_posterior_weights_df$id)
+
+# Plotting with facets by cluster and proper sorting of 'id'
+ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Gene", y = "Weight", fill = "PSD Level") +
+  ggtitle("Structure Plot of Posterior Weights by Quantile Group") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  facet_wrap(~cluster, scales = "free_y") +  # Faceting by cluster while keeping order
+  theme_minimal() +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA),
+    strip.background = element_rect(fill = "lightblue", colour = "deepskyblue", size = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
 
 
 
 
+#### Conclusion
 
-
-
-
-
-
+Based on the above results, the smoothness of $f_i^{(l)}(t)$ is mostly consistent across all cell lines ($\forall l\in[19]$). 
+The gene-set showing larger non-linearity in the first cell-line such as Angiogenesis, still tends to show similar level of non-linearity in other cell lines.
+However, the exact trajectories of the gene-set still vary across cell lines, which could indicate the existence of certain dynamic eQTLs effects.
