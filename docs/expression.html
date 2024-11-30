@@ -322,7 +322,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-11-15
+<strong>Last updated:</strong> 2024-11-29
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -453,15 +453,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreec02f2fe8dce6c18f280633d431f734a9bf3aa347targetblankc02f2fea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree38095e88eac3113676dcbe660516548c653a8ba7targetblank38095e8a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/c02f2fe8dce6c18f280633d431f734a9bf3aa347" target="_blank">c02f2fe</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/38095e88eac3113676dcbe660516548c653a8ba7" target="_blank">38095e8</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreec02f2fe8dce6c18f280633d431f734a9bf3aa347targetblankc02f2fea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree38095e88eac3113676dcbe660516548c653a8ba7targetblank38095e8a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -471,7 +471,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/c02f2fe8dce6c18f280633d431f734a9bf3aa347" target="_blank">c02f2fe</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/38095e88eac3113676dcbe660516548c653a8ba7" target="_blank">38095e8</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -611,6 +611,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/38095e88eac3113676dcbe660516548c653a8ba7/analysis/expression.Rmd" target="_blank">38095e8</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-11-29
+</td>
+<td>
+workflowr::wflow_publish("analysis/expression.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/db0b793a607a429fa1069fd2c2b3c9938d8a2ad9/docs/expression.html" target="_blank">db0b793</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-11-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1325,18 +1359,21 @@ href="https://www.science.org/doi/10.1126/science.aaw0040">Strober et
 al, 2019</a>. For simplicity of the presentation, we consider only one
 cell-line in this example. The dataset contains the raw expression
 counts of 16319 genes.</p>
-<p>To model the true (log) expression level <span
-class="math inline">\(f_i(t_j)\)</span> of the <span
+<p>For each of the cell-line indexed by <span
+class="math inline">\(l\)</span>, to model the true (log) expression
+level <span class="math inline">\(f_i^{(l)}(t_j)\)</span> of the <span
 class="math inline">\(i\)</span>th gene at day <span
 class="math inline">\(t_j\)</span>, we assume that the expression count
-<span class="math inline">\(y_{i}(t_j)\)</span> is Poisson distributed
-with mean <span class="math inline">\(o_j\exp
-\left(f_i\left(t_j\right)\right)\)</span>, where <span
-class="math inline">\(o_j\)</span> is the library size at day <span
-class="math inline">\(t_j\)</span>.</p>
+<span class="math inline">\(y_{i}^{(l)}(t_j)\)</span> is Poisson
+distributed with mean <span class="math inline">\(o^{(l)}_j\exp
+\left(f^{(l)}_i\left(t_j\right)\right)\)</span>, where <span
+class="math inline">\(o^{(l)}_j\)</span> is the library size at day
+<span class="math inline">\(t_j\)</span>.</p>
 </div>
 <div id="model" class="section level3">
 <h3><strong>Model</strong></h3>
+<p>For now, let’s focus just on the largest cell-line and drop the index
+<span class="math inline">\(l\)</span> for simplicity.</p>
 <p>Assume most of the gene expression trajectories are expected to be
 linear, we therefore consider the following finite mixture prior for
 each gene expression level <span
@@ -1713,11 +1750,6 @@ ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weigh
     strip.background = element_rect(fill = &quot;lightblue&quot;, colour = &quot;deepskyblue&quot;, size = 1),
     strip.text = element_text(face = &quot;bold&quot;)
   )</code></pre>
-<pre><code>Warning: The `size` argument of `element_rect()` is deprecated as of ggplot2 3.4.0.
-ℹ Please use the `linewidth` argument instead.
-This warning is displayed once every 8 hours.
-Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-generated.</code></pre>
 <p><img src="figure/expression.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
@@ -2993,13 +3025,20 @@ Ziang Zhang
 </div>
 <div id="analysis-across-cell-lines" class="section level3">
 <h3><strong>Analysis Across Cell-lines</strong></h3>
-<p>Let’s first look at <code>ANGIOGENESIS</code> gene set in cluster 9
-across cell lines:</p>
-<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-ℹ Please use `linewidth` instead.
-This warning is displayed once every 8 hours.
-Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-generated.</code></pre>
+<p>Now, we will replicate the above analysis for each cell line, and see
+if we observe similar patterns across different cell lines.</p>
+<div id="difference-in-gene-expression-trajectories-across-cell-lines"
+class="section level4">
+<h4><strong>Difference in Gene Expression Trajectories Across Cell
+Lines</strong></h4>
+<p>First, let’s take a look at the inferred <span
+class="math inline">\(f_i^{(l)}(t)\)</span> for each gene (indexed by
+<span class="math inline">\(i\)</span>) in each cell line (indexed by
+<span class="math inline">\(l\)</span>).</p>
+<p>Let’s first look at <code>ANGIOGENESIS</code> gene set that is
+enriched in cluster 9 (identified from our previous clustering result
+based on the largest cell-line) across cell lines. There are 8 genes in
+the <code>ANGIOGENESIS</code> gene set that are also in cluster 9.</p>
 <p><img src="figure/expression.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-27-1">
@@ -3104,8 +3143,15 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<p>Let’s then <code>BILE_ACID_METABOLISM</code> gene set in cluster 1
-across cell lines:</p>
+<p>Note that for each gene, the inferred trajectory <span
+class="math inline">\(f_i^{(l)}(t)\)</span> shows variation across cell
+lines. However, they all show similar types of non-linearity especially
+in the early time points and in the late times with the “tail
+oscillation”.</p>
+<p>Let’s then compare that with the results of the gene set
+<code>BILE_ACID_METABOLISM</code> that is enriched in cluster 1. There
+are 6 genes overlapping between the <code>BILE_ACID_METABOLISM</code>
+gene set and cluster 1.</p>
 <p><img src="figure/expression.Rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-28-1">
@@ -3166,14 +3212,26 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<p>Now, let’s compare the distribution of <span
-class="math inline">\(\hat{\sigma}\)</span> across cell lines for
-different genes.</p>
-<p>For example, here we compare <code>ANGIOGENESIS</code> gene set in
-cluster 9 and <code>BILE_ACID_METABOLISM</code> gene set in cluster
-1:</p>
-<pre><code>Warning: Removed 6 rows containing missing values or values outside the scale range
-(`geom_point()`).</code></pre>
+<p>The result is by large consistent with what we observed for the
+<code>ANGIOGENESIS</code> gene set. Although the inferred trajectory
+<span class="math inline">\(f_i^{(l)}(t)\)</span> shows variation across
+cell lines, but they are all much more “linear” than what we observed in
+the <code>ANGIOGENESIS</code> gene set.</p>
+</div>
+<div id="comparing-smoothness-across-cell-lines" class="section level4">
+<h4><strong>Comparing Smoothness Across Cell Lines</strong></h4>
+<p>To more quantitatively compare the smoothness of the inferred
+trajectories across cell lines, we can compute the expected value of the
+smoothing parameter <span
+class="math inline">\({\sigma}_i^{(l)}\)</span> for the <span
+class="math inline">\(i\)</span>th gene in the <span
+class="math inline">\(l\)</span>th cell line, which will be denoted as
+<span class="math inline">\({\hat{\sigma}}_i^{(l)} =
+\mathbb{E}[\sigma_i^{(l)}|\mathbf{y}^{(l)}]\)</span>.</p>
+<p>First, let’s see how the distribution of <span
+class="math inline">\({\hat{\sigma}}_i^{(l)}\)</span> will differ
+between the <code>ANGIOGENESIS</code> gene set in cluster 9 and the
+<code>BILE_ACID_METABOLISM</code> gene set in cluster 1.</p>
 <p><img src="figure/expression.Rmd/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-30-1">
@@ -3256,11 +3314,17 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<p>Alternatively, we could also check how the distribution of <span
-class="math inline">\(\hat{\sigma}\)</span> changes across cell lines
-for a specific set of genes:</p>
-<pre><code>Warning: Removed 4 rows containing missing values or values outside the scale range
-(`geom_point()`).</code></pre>
+<p>Based on the above figure, even when we consider different
+cell-lines, the genes in the <code>ANGIOGENESIS</code> gene set in
+cluster 9 tend to have much higher values of <span
+class="math inline">\({\hat{\sigma}}_i^{(l)}\)</span> compared to the
+genes in the <code>BILE_ACID_METABOLISM</code> gene set in cluster 1.
+This confirms our previous observation that the inferred trajectories
+for the <code>ANGIOGENESIS</code> gene set tend to be more non-linear
+compared to the <code>BILE_ACID_METABOLISM</code> gene set.</p>
+<p>Then, let’s check how the distribution of <span
+class="math inline">\({\hat{\sigma}}_i^{(l)}\)</span> changes across
+cell lines for a specific set of genes:</p>
 <p><img src="figure/expression.Rmd/unnamed-chunk-31-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-31-1">
@@ -3284,6 +3348,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/db0b793a607a429fa1069fd2c2b3c9938d8a2ad9/docs/figure/expression.Rmd/unnamed-chunk-31-1.png" target="_blank">db0b793</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3b702d4f64aa0e0812a37c7e1ba520f5399aef00/docs/figure/expression.Rmd/unnamed-chunk-31-1.png" target="_blank">3b702d4</a>
@@ -3354,6 +3429,264 @@ Ziang Zhang
 </table>
 </div>
 </div>
+<p>Indeed, there appears to be strong cell-line effects on the
+smoothness of the inferred trajectories. For example in the
+<code>ANGIOGENESIS</code> gene set in cluster 9, the genes tend to have
+much higher values of <span
+class="math inline">\({\hat{\sigma}}_i^{(l)}\)</span> in cell-line 8,
+but much lower values in cell-line 12.</p>
+<p>One conjecture is that this might be due to some dynamic eQTLs which
+modify the expression trajectories of the genes in the
+<code>ANGIOGENESIS</code> gene set in cluster 9 across different cell
+lines.</p>
+</div>
+<div id="comparing-structure-plots-across-cell-lines"
+class="section level4 tabset tabset-pills">
+<h4 class="tabset tabset-pills"><strong>Comparing Structure Plots Across
+Cell Lines</strong></h4>
+<p>In our above comparisons, we have been using the clustering results
+from the largest cell-line (cell-line 1) to construct various plots
+across cell lines. Now, let’s confirm that the clustering results are
+mostly consistent across different cell lines by comparing the structure
+plots across different cell lines.</p>
+<div id="cell-line-index-1" class="section level5">
+<h5>Cell Line Index 1</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-32-1">
+Past versions of unnamed-chunk-32-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-32-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ec579c2dfa555a1289dbd88d16fa8a6475ce0632/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">ec579c2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-10-01
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/ad988fcf8567dbcc95a1673c376253076d7a23a5/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">ad988fc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a22557d0109871a2740522e971cb8f72c87ac72b/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">a22557d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-09-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">bf7911a</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-31
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/00d489f81ae68aabc7c4692348649dcdde6dcaae/docs/figure/expression.Rmd/unnamed-chunk-32-1.png" target="_blank">00d489f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-27
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="cell-line-index-2" class="section level5">
+<h5>Cell Line Index 2</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-33-1">
+Past versions of unnamed-chunk-33-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-33-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b729c3febd0f9dc9309871c6d9ce8544ecff7d5e/docs/figure/expression.Rmd/unnamed-chunk-33-1.png" target="_blank">b729c3f</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-06-10
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/fb94e2d4da03316e6e8a5dc0c16e25808d539482/docs/figure/expression.Rmd/unnamed-chunk-33-1.png" target="_blank">fb94e2d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-31
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/bf7911aace86fe5070c0698f4e741784617c7b50/docs/figure/expression.Rmd/unnamed-chunk-33-1.png" target="_blank">bf7911a</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-05-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="cell-line-index-3" class="section level5">
+<h5>Cell Line Index 3</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-34-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-4" class="section level5">
+<h5>Cell Line Index 4</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-35-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-5" class="section level5">
+<h5>Cell Line Index 5</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-36-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-6" class="section level5">
+<h5>Cell Line Index 6</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-37-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-7" class="section level5">
+<h5>Cell Line Index 7</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-38-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-8" class="section level5">
+<h5>Cell Line Index 8</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-39-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-9" class="section level5">
+<h5>Cell Line Index 9</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-40-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-10" class="section level5">
+<h5>Cell Line Index 10</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-41-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-11" class="section level5">
+<h5>Cell Line Index 11</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-42-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-12" class="section level5">
+<h5>Cell Line Index 12</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-43-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-13" class="section level5">
+<h5>Cell Line Index 13</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-44-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-14" class="section level5">
+<h5>Cell Line Index 14</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-45-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-15" class="section level5">
+<h5>Cell Line Index 15</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-46-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-16" class="section level5">
+<h5>Cell Line Index 16</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-47-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-17" class="section level5">
+<h5>Cell Line Index 17</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-48-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-18" class="section level5">
+<h5>Cell Line Index 18</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-49-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-line-index-19" class="section level5">
+<h5>Cell Line Index 19</h5>
+<p><img src="figure/expression.Rmd/unnamed-chunk-50-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="conclusion" class="section level4">
+<h4>Conclusion</h4>
+<p>Based on the above results, the smoothness of <span
+class="math inline">\(f_i^{(l)}(t)\)</span> is mostly consistent across
+all cell lines (<span class="math inline">\(\forall l\in[19]\)</span>).
+The gene-set showing larger non-linearity in the first cell-line such as
+Angiogenesis, still tends to show similar level of non-linearity in
+other cell lines. However, the exact trajectories of the gene-set still
+vary across cell lines, which could indicate the existence of certain
+dynamic eQTLs effects.</p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -3408,14 +3741,14 @@ loaded via a namespace (and not attached):
  [37] RSQLite_2.3.7           filelock_1.0.3          labeling_0.4.3         
  [40] fansi_1.0.6             timechange_0.3.0        httr_1.4.7             
  [43] polyclip_1.10-7         compiler_4.3.1          bit64_4.5.2            
- [46] withr_3.0.1             BiocParallel_1.36.0     viridis_0.6.5          
+ [46] withr_3.0.2             BiocParallel_1.36.0     viridis_0.6.5          
  [49] DBI_1.2.3               highr_0.11              ggforce_0.4.2          
  [52] MASS_7.3-60             rappdirs_0.3.3          HDO.db_0.99.1          
  [55] tools_4.3.1             scatterpie_0.2.4        ape_5.8                
  [58] httpuv_1.6.15           glue_1.8.0              callr_3.7.6            
  [61] nlme_3.1-166            GOSemSim_2.28.1         promises_1.3.0         
  [64] shadowtext_0.1.4        grid_4.3.1              getPass_0.2-4          
- [67] fgsea_1.28.0            generics_0.1.3          gtable_0.3.5           
+ [67] fgsea_1.28.0            generics_0.1.3          gtable_0.3.6           
  [70] tzdb_0.4.0              data.table_1.16.2       hms_1.1.3              
  [73] xml2_1.3.6              tidygraph_1.3.1         utf8_1.2.4             
  [76] XVector_0.42.0          ggrepel_0.9.6           pillar_1.9.0           
@@ -3428,12 +3761,13 @@ loaded via a namespace (and not attached):
  [97] yaml_2.3.10             evaluate_1.0.1          codetools_0.2-20       
 [100] ggraph_2.2.1            qvalue_2.34.0           ggplotify_0.1.2        
 [103] cli_3.6.3               munsell_0.5.1           processx_3.8.4         
-[106] jquerylib_0.1.4         Rcpp_1.0.13             GenomeInfoDb_1.38.8    
+[106] jquerylib_0.1.4         Rcpp_1.0.13-1           GenomeInfoDb_1.38.8    
 [109] dbplyr_2.5.0            png_0.1-8               XML_3.99-0.17          
 [112] blob_1.2.4              prettyunits_1.2.0       DOSE_3.28.2            
 [115] bitops_1.0-9            tidytree_0.4.6          viridisLite_0.4.2      
 [118] scales_1.3.0            crayon_1.5.3            rlang_1.1.4            
 [121] fastmatch_1.1-4         KEGGREST_1.42.0        </code></pre>
+</div>
 </div>
 </div>
 </div>
