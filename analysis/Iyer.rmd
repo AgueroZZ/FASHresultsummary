@@ -9,7 +9,7 @@ editor_options:
 
 ## Introduction
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(BayesGP)
 library(TMB)
 library(Matrix)
