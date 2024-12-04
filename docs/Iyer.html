@@ -533,15 +533,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreed1c8c95ed7952c92a4c5ae3412ce6bf0443dd496targetblankd1c8c95a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreefa695038a3151c563d14dbd1f4768f5c988b2a0atargetblankfa69503a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/d1c8c95ed7952c92a4c5ae3412ce6bf0443dd496" target="_blank">d1c8c95</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/fa695038a3151c563d14dbd1f4768f5c988b2a0a" target="_blank">fa69503</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreed1c8c95ed7952c92a4c5ae3412ce6bf0443dd496targetblankd1c8c95a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreefa695038a3151c563d14dbd1f4768f5c988b2a0atargetblankfa69503a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -551,7 +551,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/d1c8c95ed7952c92a4c5ae3412ce6bf0443dd496" target="_blank">d1c8c95</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/fa695038a3151c563d14dbd1f4768f5c988b2a0a" target="_blank">fa69503</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -571,7 +571,6 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    analysis/.DS_Store
     Ignored:    analysis/.Rhistory
-    Ignored:    analysis/figure/
     Ignored:    code/.DS_Store
     Ignored:    code/.Rhistory
     Ignored:    code/cpp/.DS_Store
@@ -698,6 +697,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/fa695038a3151c563d14dbd1f4768f5c988b2a0a/analysis/Iyer.rmd" target="_blank">fa69503</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-12-04
+</td>
+<td>
+workflowr::wflow_publish("analysis/Iyer.rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/4409862af9273ec30dc0a9b27ed53d319f076efa/docs/Iyer.html" target="_blank">4409862</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-12-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d1c8c95ed7952c92a4c5ae3412ce6bf0443dd496/analysis/Iyer.rmd" target="_blank">d1c8c95</a>
 </td>
 <td>
@@ -720,30 +753,16 @@ workflowr::wflow_publish("analysis/Iyer.rmd")
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <pre class="r"><code>library(BayesGP)
-library(TMB)</code></pre>
-<pre><code>Warning: package &#39;TMB&#39; was built under R version 4.3.3</code></pre>
-<pre class="r"><code>library(Matrix)
+library(TMB)
+library(Matrix)
 library(splines)
 library(parallel)
 library(ggplot2)
 library(reshape2)
 library(mixsqp)
-library(tidyverse)</code></pre>
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.5
-✔ forcats   1.0.0     ✔ stringr   1.5.1
-✔ lubridate 1.9.3     ✔ tibble    3.2.1
-✔ purrr     1.0.2     ✔ tidyr     1.3.1
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ tidyr::expand() masks Matrix::expand()
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-✖ tidyr::pack()   masks Matrix::pack()
-✖ tidyr::unpack() masks Matrix::unpack()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>library(mashr)</code></pre>
-<pre><code>Loading required package: ashr</code></pre>
-<pre class="r"><code>cpp_dir &lt;- paste0(getwd(), &quot;/code/cpp&quot;)
+library(tidyverse)
+library(mashr)
+cpp_dir &lt;- paste0(getwd(), &quot;/code/cpp&quot;)
 function_dir &lt;- paste0(getwd(), &quot;/code/function&quot;)
 result_dir &lt;- paste0(getwd(), &quot;/output/Iyer&quot;)
 data_dir &lt;- paste0(getwd(), &quot;/data/Iyer&quot;)
@@ -821,6 +840,43 @@ plot(1:numiter,fit.sqp$progress$objective,type = &quot;b&quot;,
      pch = 20,lwd = 2,xlab = &quot;SQP iteration&quot;,
      ylab = &quot;objective&quot;,xaxp = c(1,numiter,numiter - 1))</code></pre>
 <p><img src="figure/Iyer.rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
+Past versions of unnamed-chunk-5-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4409862af9273ec30dc0a9b27ed53d319f076efa/docs/figure/Iyer.rmd/unnamed-chunk-5-1.png" target="_blank">4409862</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>prior_weight &lt;- data.frame(p = rep(p_vec, each = length(psd_vec)), psd_iwp = psd_vec, prior_weight = fit.sqp$x)
 
 posterior_matrix &lt;- matrix(0, nrow = nrow(L_matrix), ncol = ncol(L_matrix))
@@ -857,6 +913,43 @@ ggplot(melted_data_sorted, aes(x = factor(id, levels = sorted_posterior_weights_
     plot.background = element_rect(fill = &quot;white&quot;, colour = NA) 
   )</code></pre>
 <p><img src="figure/Iyer.rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4409862af9273ec30dc0a9b27ed53d319f076efa/docs/figure/Iyer.rmd/unnamed-chunk-6-1.png" target="_blank">4409862</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Let’s group them into <code>num_clusters</code> groups, based on the
 quantiles of the mean PSD:</p>
 <pre class="r"><code>mean_psd_ordered &lt;- mean_psd[sorted_index]
@@ -896,6 +989,43 @@ ggplot(melted_data_quantiles, aes(x = factor(id, levels = sorted_posterior_weigh
     strip.text = element_text(face = &quot;bold&quot;)
   )</code></pre>
 <p><img src="figure/Iyer.rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4409862af9273ec30dc0a9b27ed53d319f076efa/docs/figure/Iyer.rmd/unnamed-chunk-7-1.png" target="_blank">4409862</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># Automatically extract gene IDs for each cluster
 num_genes_per_cluster &lt;- 6
 genes_per_cluster &lt;- list()
@@ -954,6 +1084,43 @@ for (i in genes_per_cluster[[1]]) {
   )
 }</code></pre>
 <p><img src="figure/Iyer.rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4409862af9273ec30dc0a9b27ed53d319f076efa/docs/figure/Iyer.rmd/unnamed-chunk-11-1.png" target="_blank">4409862</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow = c(1, 1))</code></pre>
 <pre class="r"><code>par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))  
 for (i in genes_per_cluster[[2]]) {
@@ -982,6 +1149,43 @@ for (i in genes_per_cluster[[2]]) {
   )
 }</code></pre>
 <p><img src="figure/Iyer.rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4409862af9273ec30dc0a9b27ed53d319f076efa/docs/figure/Iyer.rmd/unnamed-chunk-12-1.png" target="_blank">4409862</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow = c(1, 1))</code></pre>
 <pre class="r"><code>par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))
 for (i in genes_per_cluster[[3]]) {
@@ -1010,6 +1214,43 @@ for (i in genes_per_cluster[[3]]) {
   )
 }</code></pre>
 <p><img src="figure/Iyer.rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4409862af9273ec30dc0a9b27ed53d319f076efa/docs/figure/Iyer.rmd/unnamed-chunk-13-1.png" target="_blank">4409862</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow = c(1, 1))</code></pre>
 <pre class="r"><code>par(mfrow = c(3, 2), mar = c(2, 2, 1, 1))
 for (i in genes_per_cluster[[4]]) {
@@ -1038,6 +1279,43 @@ for (i in genes_per_cluster[[4]]) {
   )
 }</code></pre>
 <p><img src="figure/Iyer.rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4409862af9273ec30dc0a9b27ed53d319f076efa/docs/figure/Iyer.rmd/unnamed-chunk-14-1.png" target="_blank">4409862</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow = c(1, 1))</code></pre>
 <p>Produce a plot where the posterior mean of each gene from the given
 cluster is plotted:</p>
@@ -1071,6 +1349,43 @@ for (i in all_genes_per_cluster[[1]]) {
   )
 }</code></pre>
 <p><img src="figure/Iyer.rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
+Past versions of unnamed-chunk-16-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4409862af9273ec30dc0a9b27ed53d319f076efa/docs/figure/Iyer.rmd/unnamed-chunk-16-1.png" target="_blank">4409862</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># for cluster 2
 par(mfrow = c(1, 1), mar = c(5, 4, 4, 2))
 # initialize the plot
@@ -1097,6 +1412,43 @@ for (i in all_genes_per_cluster[[2]]) {
   )
 }</code></pre>
 <p><img src="figure/Iyer.rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-17-1">
+Past versions of unnamed-chunk-17-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-17-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4409862af9273ec30dc0a9b27ed53d319f076efa/docs/figure/Iyer.rmd/unnamed-chunk-17-1.png" target="_blank">4409862</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># for cluster 3
 par(mfrow = c(1, 1), mar = c(5, 4, 4, 2))
 # initialize the plot
@@ -1123,6 +1475,43 @@ for (i in all_genes_per_cluster[[3]]) {
   )
 }</code></pre>
 <p><img src="figure/Iyer.rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
+Past versions of unnamed-chunk-18-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-18-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4409862af9273ec30dc0a9b27ed53d319f076efa/docs/figure/Iyer.rmd/unnamed-chunk-18-1.png" target="_blank">4409862</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># for cluster 4
 par(mfrow = c(1, 1), mar = c(5, 4, 4, 2))
 # initialize the plot
@@ -1149,6 +1538,43 @@ for (i in all_genes_per_cluster[[4]]) {
   )
 }</code></pre>
 <p><img src="figure/Iyer.rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-19-1">
+Past versions of unnamed-chunk-19-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-19-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4409862af9273ec30dc0a9b27ed53d319f076efa/docs/figure/Iyer.rmd/unnamed-chunk-19-1.png" target="_blank">4409862</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2024-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
