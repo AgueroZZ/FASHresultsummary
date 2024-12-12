@@ -74,13 +74,13 @@ Today, I am revisiting the previous examples, with the updated cpp code for the 
 
 (a): For the Simulation 1 (Pollutant) example, what would happen with this code change?
 
-Answer: Not any significant change, except that the PSD that was estimated to be zero now becomes some non-zero small value. 
+Answer: Not any significant change, except that the PSD that was estimated to be zero now becomes some non-zero small value.
 No more prior weight is assigned to the zero case now.
 
 (b): For the original Simulation 2 (testing eQTL), what would happen?
 
 Answer: First, the power of the FASH approach is significantly boosted, and it seems like the inference no longer being sensitive to the choice of beta_prec.
-However, the estimation of pi_0 seems to be consistently lower than the true, causing the FDR calibration to be non-accurate. 
+However, the estimation of pi_0 seems to be consistently lower than the true, causing the FDR calibration to be non-accurate.
 I am investigating if this is something wrong in my code or this is something for real...
 This problem does not occur when the model is correct... (see the new version of Simulation 2 when there is no model-misspecification).
 Would this problem still occur if we only compare linear vs non-dynamic eQTLs? ---> Still underestimate by the same amount (0.65 where the truth is 0.7).
@@ -128,11 +128,11 @@ Answer: The result basically does not change.
 (c): For detecting periodicity: can we try (i): mixture of sGP, and then test for sigma = 0, if beta_s is significantly nonzero?
 					or (ii): mixture of sGP and mixture of IWP? Then test sGP vs IWP?
 
-Answer: My feeling is both approaches could be used. For approach (i): directly testing sigma = 0 should give the FDR on detecting 
+Answer: My feeling is both approaches could be used. For approach (i): directly testing sigma = 0 should give the FDR on detecting
 Exact periodicity. Further including the FSR based on the joint distribution of \beta_sin and \beta_cos can make the inference more
 Robust.
 For approach (ii): the question becomes detecting periodic or quasi-periodic behavior...
-Let's focus on the second approach for now. The important lesson, to make the result invariant to diffuse beta_prec, each model should have the same 
+Let's focus on the second approach for now. The important lesson, to make the result invariant to diffuse beta_prec, each model should have the same
 Number of diffuse terms.
 
 
@@ -153,17 +153,17 @@ Answer: The estimated prior proportions are still not accurate.. and the FDR is 
 Maybe the problem is due to the approximation error of Laplace approximation? Or is it just some coding issue..
 Let me check again once we increase the number of counts in each x value. This should reduce the approximation error of the Laplace approximation to the marginal likelihood.
 The result indeed seems to be slightly better when the number of counts increases. Let's increase the number of measurement from 50 to 100 to check its behaviour as well. Indeed, the result is further improved a little.
-Another check, if the approximation error is the problem, then it should also affect the oracle Bayes procedure. 
+Another check, if the approximation error is the problem, then it should also affect the oracle Bayes procedure.
 Let's check the oracle Bayes: Indeed.. Even the oracle result has similar calibration issue...
 If we significantly increase the count numbers, can we reduce the approximation effect to practically zero?
 Indeed, the FASH approach then has result very close to the true FDR curve. The oracle Bayes is closer to the truth, almost indistinguishable.
 So the issue is indeed the Laplace approximation accuracy when the count number is low. Both methods have satisfactory FDR calibration when the number of count is high.
 Wait!!! I just notice that there was an issue with the posterior matrix computation! The prior was mis-treated as the log-prior!! Let's update and retry it.
-Wow!! The result is perfect now!!!! (Also needs to expand the grid of the PSD too) 
+Wow!! The result is perfect now!!!! (Also needs to expand the grid of the PSD too)
 
 (B): When there are model-misspecification, can we consider more robust multiple hypothesis controlling method than FDR? How about max-lfdr?
 
-Answer: Actually even for the model-misspecification case, if we increase the number of count to reduce the Laplace approximation error, the FDR becomes quite well calibrated. 
+Answer: Actually even for the model-misspecification case, if we increase the number of count to reduce the Laplace approximation error, the FDR becomes quite well calibrated.
 To double check this, let me rerun the misspecified case with ten times of the datasets (N1 = 1000 and N2 = 2000 now). The calibration of FASH's FDR does not change by much.
 If we still care about the non-preciseness of the calibration, how about we increase the possibility of the null-hypothesis (considering a wider range of psd for IWP) --> This helps a lot too!!
 
@@ -175,12 +175,12 @@ When the null hypothesis is wrongly specified (for example, the non-quasi-period
 To check if this is true, let's consider the following experiment:
 (i): If the alternative hypothesis (quasi-periodicity) is simulated from the sGP. But the null hypothesis is not simulated from the IWP2.
 (ii): Vice versa, if the null is correctly simulated from IWP2, but the alternative hypothesis is not from sGP.
-I expect to see (ii) to cause lower power and (i) to cause incorrect calibration. 
+I expect to see (ii) to cause lower power and (i) to cause incorrect calibration.
 Let's try (i) first: For the circadian detection example, when alternative is mis-specified, pi_0 is over-estimated, leading to lower power.
 Then try (ii): For the circadian detection example, mis-specification of the null hypothesis under-estimates pi_0 leading to incorrect (inflated) FDR calibration.
-Note that although this phenomenon happens most often, this is not an absolute result. We could come up with example where significant mis-specification of the alternative model could lead to under-estimate of pi_0. 
-For example, if the null is constant, the true alternative is linear function, but the fitted alternative is IWP1. 
-Introducing those linear functions may lead to underestimation of pi_0. Why? Let's explore this tomorrow! 
+Note that although this phenomenon happens most often, this is not an absolute result. We could come up with example where significant mis-specification of the alternative model could lead to under-estimate of pi_0.
+For example, if the null is constant, the true alternative is linear function, but the fitted alternative is IWP1.
+Introducing those linear functions may lead to underestimation of pi_0. Why? Let's explore this tomorrow!
 
 
 
@@ -207,7 +207,7 @@ Answer: Let's take a look at the likelihood matrix for the true alternative and 
 
 (c): Let's further simplify the context, consider equal standard deviation, and assuming the slope is fixed at beta = 0.5. See if it changes anything.
 
-Answer: Based on the controlled experiment, it seems like the main factor that affects the performance is the value of the noise in the dataset. 
+Answer: Based on the controlled experiment, it seems like the main factor that affects the performance is the value of the noise in the dataset.
 When the datasets are quite noisy (for example sd = 1 or 5), the pi_0 could be severely underestimated.
 But when the dataset has small noise (for example sd = 0.1 or 0.3), the estimate of pi_0 is fairly accurate.
 Let's pick the case when sd = 0.1, and see if the result will change once we allow the slope to be random --> still works fairly well...
@@ -215,7 +215,7 @@ Let's pick the case when sd = 0.1, and see if the result will change once we all
 (d): Here is one possible explanation based on the experiment result today: When the noise level is high (high standard deviation), the likelihoods for observations from the constant or the IWP group are very flat. However, the likelihoods for the observations from the linear group with larger slope are not flat. So they dominate the estimation of pi_0 and break the equilibrium created by those correct flat likelihoods...
 
 Answer: If this is the reason, then we should see their likelihood vectors differ in structure to the likelihood vectors of the other two groups.
-Let's check how does the structure of the likelihood varies as the noise level changes, for each of the three groups. 
+Let's check how does the structure of the likelihood varies as the noise level changes, for each of the three groups.
 When sigma = 1, many linear models penalize the null case significant with very small likelihood. Many of the linear models penalizes the null case more severely than the many of the true alternative.
 If we decrease sigma to 0.3, the shape between likelihood curves becomes much closer between the two groups (false alternative vs true alternative). They both decay very fast in terms of the derivative when PSD is close to zero. This is obvious looking from the derivative of the median likelihood curves for these two groups, and compare with the previous case when sigma = 1. This leads to more accurate estimate of pi_0 hence good calibration of FDR rate.
 
@@ -237,7 +237,7 @@ Today, I will revisit the circadian simulation, and review the main lessons from
 
 Answer: First, when we are dealing with Poisson data and using Laplace approximation to compute the marginal likelihood, the number of counts greatly determines the approximation accuracy hence the calibration of the FDR given by FAHS. Second, we need to choose a large number of grid points for the null (IWP) /alternative (sGP) hypothesis, in order to make sure the misspecification error is small for both the null and the alternative space. Finally, it is important to ensure that all the mixture components being considered have the same number of diffuse terms.
 
-(b): What does the result look like when we apply similar sGP vs IWP argument to the real data? 
+(b): What does the result look like when we apply similar sGP vs IWP argument to the real data?
 
 Answer: It does not work quite in the way that I am hoping... Although I have fixed the de-trending part so it is not considered as prior, the result still quite sensitive to the choice of the null space. If the null space is specified as IWP2, it almost always pick the sGP as the model. If the null space is specified as IWP1, it then almost always pick the IWP1 as the model (which is not quite un-expected, as it contains one less diffuse term than sGP)...
 My guess is that just 12 observations, the likelihood cannot really tell us much about the function's periodicity behaviour...
@@ -307,7 +307,7 @@ Today, let's finalize the real data application of FASH on the circadian detecti
 
 (a): For the re-analyzed results using fixed periodicity of 24 hrs, what is the conclusion?
 
-Answer: The result still does not look very convincing. The difference between sGP and IWP group is not extremely informative nor interpretable. 
+Answer: The result still does not look very convincing. The difference between sGP and IWP group is not extremely informative nor interpretable.
 
 (b): Also, try examine the genes likely in the exact periodic group.
 
@@ -334,7 +334,7 @@ Ask Matthew later if it worths contacting the authors for the genotype data or t
 
 (b): Alternatively, we could dive deeper into the first analysis of Strober et al, where they clustered genes (and cell lines) based on their expression trajectories overtime. Specifically, within a cell-line cluster, they have 20 clusters of gene with similar trajectory. For simplicity, we can focus on a particular cell-line (e.g. the cell-line 18489, which is clustered into the first, larger cell-line cluster in Strober et al), and then see how the clustering from fash differs from their result.
 
-Answer: Sure, let's try that as well. In their figure 1B, they showed the overall trajectories of the 20 gene clusters identified in each of the cluster (we can focus on cluster 1).  
+Answer: Sure, let's try that as well. In their figure 1B, they showed the overall trajectories of the 20 gene clusters identified in each of the cluster (we can focus on cluster 1).
 Do they provide specific information on each gene cluster? --> On table S3, they show the result of Hallmark gene set enrichment for each of their gene cluster. Perhaps we could do something similar?
 Let's see what can we get from enrichment analysis of our clusters! --> A lot of genes are significantly enriched in the last cluster, some genes are enriched in the first few clusters.
 
@@ -351,7 +351,7 @@ Today, I will continue yesterday's direction to explore the clustering of gene e
 
 (a): Our current way to define the clusters based on the quantile of the mean PSD may not be ideal. If we try a bunch of other ways to cluster these genes, do they end up with more homogenous clusters?
 
-Answer: I tried manually cluster to 9 clusters, based on the homogeneity. It indeed identified two more gene sets being enriched in some gene clusters. The main problem is still most of gene sets are enriched only in the very non-linear group. 
+Answer: I tried manually cluster to 9 clusters, based on the homogeneity. It indeed identified two more gene sets being enriched in some gene clusters. The main problem is still most of gene sets are enriched only in the very non-linear group.
 
 
 (b): Given an optimal way to form the clusters using FASH, what type of genes are enriched in non-linear clusters, and what are enriched in the linear clusters?
@@ -381,12 +381,12 @@ Answer: Problem fixed! The issue was that melted_data refers to another object i
 
 (b): For the current clustering enrichment analysis with 6 clusters, what are the main interpretations?
 
-Answer: Based on the current results, BILE_ACID_METABOLISM (corresponding to cholesterol and phospholipid metabolism) is enriched only in the first cluster with very small deviation from linearity. 
-MYC_TARGETS_V2, OXIDATIVE_PHOSPHORYLATION, DNA_REPAIR and MYC_TARGETS_V1 are enriched in the third cluster with median level of non-linearity. 
+Answer: Based on the current results, BILE_ACID_METABOLISM (corresponding to cholesterol and phospholipid metabolism) is enriched only in the first cluster with very small deviation from linearity.
+MYC_TARGETS_V2, OXIDATIVE_PHOSPHORYLATION, DNA_REPAIR and MYC_TARGETS_V1 are enriched in the third cluster with median level of non-linearity.
 MYC_TARGETS_V2, DNA_REPAIR, UNFOLDED_PROTEIN_RESPONSE and E2F_TARGETS are enriched in the fourth cluster.
 OXIDATIVE_PHOSPHORYLATION and MYC_TARGETS_V1 are enriched in the fifth cluster.
 EPITHELIAL_MESENCHYMAL_TRANSITION, MYOGENESIS, HYPOXIA, TNFA_SIGNALING_VIA_NFKB, UV_RESPONSE_DN, COAGULATION, MTORC1_SIGNALING, ANGIOGENESIS, IL2_STAT5_SIGNALING, APICAL_JUNCTION, CHOLESTEROL_HOMEOSTASIS, NOTCH_SIGNALING, ESTROGEN_RESPONSE_LATE, INFLAMMATORY_RESPONSE, ESTROGEN_RESPONSE_EARLY, G2M_CHECKPOINT, ANDROGEN_RESPONSE, APOPTOSIS and UV_RESPONSE_UP are all only enriched in the last cluster.
-I asked from ChatGPT for some suggested biological interpretations on these clusters: 
+I asked from ChatGPT for some suggested biological interpretations on these clusters:
 "Cluster 1 is focused on cholesterol and lipid metabolism, indicating stable metabolic regulation, likely without much stress or cellular proliferation.
 Cluster 3 involves proliferation and metabolism (MYC, oxidative phosphorylation), indicating cells undergoing growth, repair, and energy production, possibly under some metabolic stress.
 Cluster 4 adds stress response (unfolded protein response) and cell cycle control (E2F targets), suggesting cells under stress, especially related to protein folding and replication.
@@ -397,7 +397,7 @@ Cluster 6 is the most complex, involving stress responses, immune signalling, in
 
 (c): If we mimic the clustering granularity from Strober et al, to partition the genes into more homogeneous clusters, can we find more specific interpretation on each cluster?
 
-Answer: Yes, by cutting them into more pieces with smaller number of members, we can get more specific gene set annotations in each cluster of the genes. The total number of enriched gene sets becomes smaller, but we have more specific enrichment in each cluster. 
+Answer: Yes, by cutting them into more pieces with smaller number of members, we can get more specific gene set annotations in each cluster of the genes. The total number of enriched gene sets becomes smaller, but we have more specific enrichment in each cluster.
 When I ask ChatGPT on interpretation on these clusters based on their enriched gene sets, in terms of linearity of their gene expression trajectories overtime (I didn't tell GPT how I ordered these clusters based on the nonlinearity):
 "
 Clusters 6-9 are likely to show non-linear gene expression trajectories, as they involve dynamic, adaptive processes such as tissue remodeling, immune responses, and hypoxia.
@@ -430,7 +430,7 @@ Answer: Yes! I have figured out how to use them. To specify `universe`, we need 
 After specifying the universe, our result is not changed significantly. All the enrichment results seem to be unaffected.
 
 
-(c): What are some gene sets that are identified in both FASH and Strober's analysis? 
+(c): What are some gene sets that are identified in both FASH and Strober's analysis?
 
 Answer: Bile acid metabolism is enriched in both method. For FASH, it is enriched in the first cluster with smallest non-linearity. For Strober, it is enriched in the same cluster where Coagulation and Epithelial mesenchymal transition are enriched. In FASH, the cluster where both Coagulation and Epithelial mesenchymal transition are enriched is the last cluster with largest evidence of non-linearity.
 DNA repair is enriched in Cluster 5 and 13 based on Strober's analysis, together enriched with GM2 checkpoint, E2F and MYC targets, MTORC1 signaling and unfolded protein response and Spermatogenesis. Whereas in FASH, it is enriched also in two clusters (3 and 4) together with those other genes, except for MTORC1 and Spermatogenesis.
@@ -438,7 +438,7 @@ DNA repair is enriched in Cluster 5 and 13 based on Strober's analysis, together
 
 (d): What are the gene sets that are missed by Strober but identified in FASH?
 
-Answer: For example, Hypoxia and UV_RESPONSE_DN is enriched in FASH's cluster 6 and 9, but not enriched in any cluster from Strober. 
+Answer: For example, Hypoxia and UV_RESPONSE_DN is enriched in FASH's cluster 6 and 9, but not enriched in any cluster from Strober.
 For cluster 9 specifically, there are several gene sets including IL2_STAT5_SIGNALING, INFLAMMATORY_RESPONSE and ANGIOGENESIS that are enriched in FASH, but they are not enriched in any cluster from Strober.
 These gene sets are very interesting. Hypoxia (low oxygen condition) and ANGIOGENESIS (formation of new vessels) are related to how tissues and cells evolve/reform to adapt to different conditions. IL2_STAT5_SIGNALING, INFLAMMATORY_RESPONSE and UV_RESPONSE_DN are more like protective features to prevent external damage due to environment or pathogen.
 
@@ -454,7 +454,7 @@ Mon, Oct 14th:
 ----------------------------------------------
 
 
-Today, the main task is to show some visualizations of representative genes from a gene-set that is enriched in a certain cluster. 
+Today, the main task is to show some visualizations of representative genes from a gene-set that is enriched in a certain cluster.
 
 (a): Show the typical enriched gene expression trajectories from `UV_RESPONSE_DN`, `HYPOXIA` and `ANGIOGENESIS`.
 
@@ -463,10 +463,10 @@ Answer: Most of these genes trajectories appear to have slow oscillation in the 
 
 (b): Compare with cluster 9, what are the main features in cluster 8 and 7?
 
-Answer: Seems like these kind of "tail oscillation" can also be found (though must be zoomed in carefully) in many genes from cluster 7&8, but the size of the oscillation is smaller compared to genes in cluster 9.  
+Answer: Seems like these kind of "tail oscillation" can also be found (though must be zoomed in carefully) in many genes from cluster 7&8, but the size of the oscillation is smaller compared to genes in cluster 9.
 
 
-(c): Compare with `IL2_STAT5_SIGNALING` in cluster 6 and `MYC_TARGETS_V2` from cluster 3? 
+(c): Compare with `IL2_STAT5_SIGNALING` in cluster 6 and `MYC_TARGETS_V2` from cluster 3?
 
 Answer: No such tail oscillations can be easily found in this gene-set from cluster 6. Some common types of nonlinearity observed in this set of genes include a Vally (convex) at day 2 or 3, and sometimes peak (concave) at day 2 or 3.
 These oscillations behaviours are neither found in this gene-set enriched from cluster 3. The only type of non-linearity that is commonly observed for these genes is the peak (concave) at day 2 or 3.
@@ -480,28 +480,82 @@ Answer: Those gene trajectories in this set do not seem to have very strong devi
 (e): Some clusters like `IL2_STAT5_SIGNALING` and `HYPOXIA` were missed in the clustering approach in Strober's analysis. What is my intuition behind this, based on the visualizations we have?
 
 Answer: These gene trajectories although have similar level of non-linearity, they do not seem to be observations of the same curve!
-For example, in HYPOXIA and UV_RESPONSE_DN, the overall levels of these curves are not exactly the same. 
-Furthermore, there are multiple patterns of the trends of the trajectories (some monotone, some with peak or valley) before they start the "tail oscillation" in the last few days. 
+For example, in HYPOXIA and UV_RESPONSE_DN, the overall levels of these curves are not exactly the same.
+Furthermore, there are multiple patterns of the trends of the trajectories (some monotone, some with peak or valley) before they start the "tail oscillation" in the last few days.
 Therefore, the method based on finding the same underlying curve of all trajectories in the same cluster used in Strober's analysis will likely miss the common level of nonlinearity shared between these curves.
 
 
 
 
 
+----------------------------------------------
+----------------------------------------------
+Sat, Dec 7th:
+----------------------------------------------
+----------------------------------------------
+
+Today, I like to summarize some experimental results from the quantile regression simulation.
+So far we have seen the following:
+(i): The FDR control of FASH depends on the number of samples used to estimate the quantile regression at each tau.
+When the number of samples is small, the FDR is not well controlled, because likely the estimated beta is not normally
+distributed with the estimated standard error.
+(ii): The FDR control of FASH also depends on how many mixture components we considered in the FASH prior. This corresponds
+to the model-misspecification of the "prior".
+
+Below are some questions that I would like to explore further:
+
+(a): Taking these two considerations together, do we need to worry too much about the FDR calibration of FASH in practice? Even
+if we have a large sample size like UKB?
+Answer: Let me try increasing n = 20000 to n = 50000, and see the FDR plot again.
+The FDR indeed looks more calibrated, but still not fully calibrated. The FDR is still inflated overall.
+
+(b): If the sample size is the key of the problem, can we relieve this issue by bootstrapping the samples to estimate the quantile
+regression at each tau?
+Answer: Let's now try when n = 50000 and for each tau, we consider bootstrapping with a sample of size n = 10000 of the samples to estimate the quantile regression.
+No.. the inflation of FDR becomes even worse... This is likely because the bootstrapped samples are not independent.
+
+
+(c): If having a large sample size is not enough to solve the problem, will this problem get mitigated if the effect of beta is smaller
+in the simulation?
+Answer: While when we try this (chaning a fixed beta to beta simulated from some normal distribution), let's also increase the number of datasets (from 1000 to 5000).
+Currently all the datsets under the alternative hypothesis are picked up even with a small fdr threshold.
+Take a look at the power curve, it is actually not very interesting... The power is almost 1 for any non-zero FDR.
+The new result looks better in terms of the power curve, but the FDR curve is still inflated...
+
+
+(d): Overall, we could say correctly specifying a model for random functions is almost impossible (with thoretical explanation) so we should
+add some penalty to encourage overestimation of pi_0, similar to the one used in ASH?
+Answer: Yes, we could if we put enough penalty... But hard to say if we are penalizing too much...
+
+
+(e): Another thought, when the alternative is misspecified, their fdr could be distorted to be extremely small, and might make the cumulative fdr
+behave badly. Would it be better if we take a look at the max_fdr?
+Answer: We could... but the interpretation is a bit different. Harder to evaluate its calibration using one replication of the process.
 
 
 
 
 
 
+----------------------------------------------
+----------------------------------------------
+Wed, Dec 11th:
+----------------------------------------------
+----------------------------------------------
+
+Today, I want to use the vQTL example with quantile regression, to compare the performance between FASH and MASH.
+
+(a): How do these two methods compare in terms of power?
+Answer: FASH appears to have much higher power than MASH, both with and without the additional penalty term.
 
 
+(b): How do these two methods compare in terms of FDR control?
+Answer: Without the penalty term, FASH and MASH both have inflated FDR, but MASH is worse.
+With the penalty term on FASH, the inflation of FDR of FASH could be cured.
 
 
-
-
-
-
+(c): How do the above results change when MASH is used without the empirical covariance matrix?
+Answer: No visible difference in terms of power and FDR control.
 
 
 
