@@ -72,10 +72,12 @@ The weight $\pi_0$ corresponds to the base model where $\sigma_0 = 0$ and $\beta
 ## *Simulation Setup*
 
 To assess the performance of FASH, we simulate $N = 10000$ datasets of G and Y.
-In the first $N_A = 1000$ datasets, the G is assumed to affect Y on its variance level (vQTLs).
-In the next $N_B = 1000$ datasets, the G is assumed to affect Y on its mean lev (not vQTLs).
-In the next $N_C = 1000$ datasets, the G is assumed to affect Y on its mean and variance levels (vQTLs).
-For the other $N_D = 7000$ datasets, the G is assumed to have no effect on Y (not vQTLs).
+
+- In the first $N_A = 1000$ datasets, the G is assumed to affect Y on its variance level (vQTLs).
+- In the next $N_B = 1000$ datasets, the G is assumed to affect Y on its mean lev (not vQTLs).
+- In the next $N_C = 1000$ datasets, the G is assumed to affect Y on its mean and variance levels (vQTLs).
+- For the other $N_D = 7000$ datasets, the G is assumed to have no effect on Y (not vQTLs).
+
 The true effect, if exists, is assumed to be normally distributed with mean 0 and standard deviation `beta_sd`.
 
 Once the data is simulated, we can perform quantile regression on each dataset to obtain the estimates $\hat{\beta}(\tau)$ and standard errors $SE(\hat{\beta}(\tau))$.
