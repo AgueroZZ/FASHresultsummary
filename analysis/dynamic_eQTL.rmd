@@ -23,7 +23,7 @@ simulate_data <- function(g, sd=0.1){
   return(data.frame(x = x, y = y, truef = g(x), sd = sd))
 }
 
-### Write a function, to simulate a random function as g using cubic B-spline basis representation with random basis weights:
+### Write a function, to simulate a random function from IWP
 simulate_nonlinear_function <- function(n_basis = 20, sd_function = 1, sd_poly = 0.1, p = 1, pred_step = 16) {
   if(n_basis < 3) stop("n_basis must be greater than 3")
   # Define the range and knots for the B-spline basis
