@@ -142,6 +142,51 @@ calibration_fdr <- function(fdr_result, true_indices, fdr_vec = seq(0.01,0.99,by
   }
   return(result)
 }
+
+
+visualize_penalty <- function(fash, penalty_size, plot = TRUE){
+  L_matrix <- fash$L_matrix
+  pi_0_int <- mean(apply(L_matrix, 1, which.max) == 1)
+  fine_grid <- seq(0, (ncol(L_matrix) - 1), length.out = ncol(L_matrix))
+  initial_pi <- c(pi_0_int, rep((1 - pi_0_int) / (length(fine_grid) - 1), (length(fine_grid) - 1)))
+  pi0 <- numeric(length(penalty_size))
+  pi0_pmom <- numeric(length(penalty_size))
+  for (i in 1:length(penalty_size)) {
+    if(penalty_size[i] > 1){
+      prior_null <- matrix(0,
+                           nrow = (penalty_size[i] - 1),
+                           ncol = ncol(L_matrix))
+      prior_null[, 1] <- 1  # Prior mass on the first grid point
+      L_matrix_original <- rbind(exp(L_matrix), prior_null)
+    }
+    else{
+      L_matrix_original <- exp(L_matrix)
+    }
+    fit.sqp <- mixsqp::mixsqp(
+      L = L_matrix_original,
+      log = FALSE,
+      control = list(tol.svd = 0, verbose = FALSE)
+    )
+    pi0[i] <- fit.sqp$x[1]
+    pi0_pmom[i] <- mean(apply(L_matrix_original, 1, which.max) == 1)
+  }
+  if (plot) {
+    plot(
+      penalty_size,
+      pi0,
+      type = "o",
+      xlab = "Penalty size",
+      ylab = "Estimated pi_0",
+      main = "Order = 1",
+      ylim = c(0, 1)
+    )
+    abline(h = pi_0_int, col = "red", lty = 2)
+  }
+  return(list(pio_pmle = data.frame(penalty_size = penalty_size, pi0 = pi0),
+              pio_mom = data.frame(penalty_size = penalty_size, pi0_pmom = pi0_pmom),
+              pio_mom = pi_0_int
+              ))
+}
 ```
 
 
@@ -217,9 +262,9 @@ The computation could be paralleled by specifying the number of cores (`num_core
 To test which eQTLs are dynamic in their effects (i.e., Categories B and C), we can specify the order of the IWP model to be 1, which will setup a base model $S_0$ as the space of constant functions.
 
 ```{r eval=FALSE}
-fash_fit_1 <- fashr(Y = "y", smooth_var = "x", S = "sd", data_list = datasets, 
+fash_fit_1 <- fash(Y = "y", smooth_var = "x", S = "sd", data_list = datasets, 
                   likelihood = "gaussian", order = 1, pred_step = 1,
-                  num_cores = 4, num_basis = 20, grid = seq(0, 2, by = 0.025),
+                  num_cores = 4, num_basis = 20, grid = seq(0, 1, by = 0.025),
                   verbose = TRUE)
 save(fash_fit_1, file = paste0(result_dir, "/fash_fit_1.RData"))
 ```
@@ -278,9 +323,9 @@ polygon(c(fitted_beta_new$x, rev(fitted_beta_new$x)), c(fitted_beta_new$lower, r
 Let's use the IWP2 model (`order = 2`), and try to detect the dynamic eQTLs with non-linear dynamics (Category C).
 
 ```{r eval=FALSE}
-fash_fit_2 <- fashr(Y = "y", smooth_var = "x", S = "sd", data_list = datasets, 
+fash_fit_2 <- fash(Y = "y", smooth_var = "x", S = "sd", data_list = datasets, 
                   likelihood = "gaussian", order = 2, pred_step = 1,
-                  num_cores = 4, num_basis = 20, grid = seq(0, 2, by = 0.025),
+                  num_cores = 4, num_basis = 20, grid = seq(0, 1, by = 0.025),
                   verbose = TRUE)
 save(fash_fit_2, file = paste0(result_dir, "/fash_fit_2.RData"))
 ```
@@ -341,7 +386,7 @@ Now assume the standard error $s_{ij}$ is fixed at $0.4$ for each time point $t 
 set.seed(1234)
 N <- 1000
 propA <- 0.5; propB <- 0.3; propC <- 0.2
-sigma_vec <- 0.4
+sigma_vec <- 0.5
 
 sizeA <- N * propA
 data_sim_list_A <- lapply(1:sizeA, function(i) simulate_process(sd_poly = 0.2, type = "nondynamic", sd = sigma_vec, normalize = TRUE))
@@ -384,9 +429,9 @@ par(mfrow = c(1, 1))
 
 
 ```{r eval=FALSE}
-fash_fit_1_noisy <- fashr(Y = "y", smooth_var = "x", S = "sd", data_list = datasets, 
+fash_fit_1_noisy <- fash(Y = "y", smooth_var = "x", S = "sd", data_list = datasets, 
                   likelihood = "gaussian", order = 1, pred_step = 1,
-                  num_cores = 4, num_basis = 20, grid = seq(0, 2, by = 0.025),
+                  num_cores = 4, num_basis = 20, grid = seq(0, 1, by = 0.025),
                   verbose = TRUE)
 save(fash_fit_1_noisy, file = paste0(result_dir, "/fash_fit_1_noisy.RData"))
 ```
@@ -394,7 +439,6 @@ save(fash_fit_1_noisy, file = paste0(result_dir, "/fash_fit_1_noisy.RData"))
 ```{r echo=FALSE}
 load(paste0(result_dir, "/fash_fit_1_noisy.RData"))
 ```
-
 
 ```{r}
 fdr_result_1_noisy <- fdr_control(fash_fit_1_noisy, alpha = 0.1, plot = F)
@@ -404,9 +448,9 @@ calibration1_noisy <- calibration_fdr(fdr_result_1_noisy$fdr_results, c(indices_
 ```
 
 ```{r eval=FALSE}
-fash_fit_2_noisy <- fashr(Y = "y", smooth_var = "x", S = "sd", data_list = datasets, 
+fash_fit_2_noisy <- fash(Y = "y", smooth_var = "x", S = "sd", data_list = datasets, 
                   likelihood = "gaussian", order = 2, pred_step = 1,
-                  num_cores = 4, num_basis = 20, grid = seq(0, 2, by = 0.025),
+                  num_cores = 4, num_basis = 20, grid = seq(0, 1, by = 0.025),
                   verbose = TRUE)
 save(fash_fit_2_noisy, file = paste0(result_dir, "/fash_fit_2_noisy.RData"))
 ```
@@ -422,11 +466,10 @@ power2_noisy <- power_versus_fdr(fdr_result_2_noisy$fdr_results, indices_C, fdr_
 calibration2_noisy <- calibration_fdr(fdr_result_2_noisy$fdr_results, indices_C, fdr_vec = seq(0, 0.99, by = 0.01))
 ```
 
-
 ```{r eval=FALSE}
-fash_fit_2_noisy_pen <- fashr(Y = "y", smooth_var = "x", S = "sd", data_list = datasets, 
+fash_fit_2_noisy_pen <- fash(Y = "y", smooth_var = "x", S = "sd", data_list = datasets, 
                   likelihood = "gaussian", order = 2, pred_step = 1, penalty = 30,
-                  num_cores = 4, num_basis = 20, grid = seq(0, 0.15, by = 0.025),
+                  num_cores = 4, num_basis = 20, grid = seq(0, 1, by = 0.025),
                   verbose = TRUE)
 save(fash_fit_2_noisy_pen, file = paste0(result_dir, "/fash_fit_2_noisy_pen.RData"))
 ```
@@ -436,7 +479,33 @@ load(paste0(result_dir, "/fash_fit_2_noisy_pen.RData"))
 ```
 
 
-## **Try adding penalty**
+## **How much penalty to be added?**
+
+Take a look at the estimated $\hat{\pi}_0$ at different penalty levels, for the order 2 model first:
+
+```{r}
+penalty_size <- seq(0, 100, by = 5)
+penalty_result <- visualize_penalty(fash_fit_2_noisy, penalty_size, plot = F)
+pmle_result <- penalty_result$pio_pmle
+pmle_result$pi0_diff <- c(NA, diff(pmle_result$pi0))
+plot(penalty_size, pmle_result$pi0_diff, type = "o", xlab = "Penalty size", ylab = "Increment of Estimated pi_0")
+
+# amount of information due to penalty (prior)
+frac_prior <- penalty_size/(length(datasets) + penalty_size)
+plot(frac_prior, pmle_result$pi0, type = "o", xlab = "Penalty frac", ylab = "Estimated pi_0")
+```
+
+
+Let's choose a penalty of 40:
+
+```{r}
+40/length(datasets) # 0.04
+fash_fit2_update <- fashr::fash_eb_est(L_matrix = fash_fit_2_noisy$L_matrix, penalty = 40, grid = seq(0, 1, by = 0.025))
+fash_fit2_update$lfdr <- fash_fit2_update$posterior_weight[,1]
+fash_fit_2_noisy_pen$prior_weights <- fash_fit2_update$prior_weight
+fash_fit_2_noisy_pen$posterior_weights <- fash_fit2_update$posterior_weight
+fash_fit_2_noisy_pen$lfdr <- fash_fit2_update$lfdr
+```
 
 
 ```{r}
@@ -447,4 +516,36 @@ calibration2_noisy_pen <- calibration_fdr(fdr_result_2_noisy_pen$fdr_results, in
 ```
 
 
+Similar analysis for the order 1 model:
+
+```{r}
+penalty_size <- seq(0, 100, by = 5)
+penalty_result <- visualize_penalty(fash_fit_1_noisy, penalty_size, plot = F)
+pmle_result <- penalty_result$pio_pmle
+pmle_result$pi0_diff <- c(NA, diff(pmle_result$pi0))
+plot(penalty_size, pmle_result$pi0_diff, type = "o", xlab = "Penalty size", ylab = "Increment of Estimated pi_0")
+
+# amount of information due to penalty (prior)
+frac_prior <- penalty_size/(length(datasets) + penalty_size)
+plot(frac_prior, pmle_result$pi0, type = "o", xlab = "Penalty frac", ylab = "Estimated pi_0")
+```
+
+Let's choose a penalty of 10:
+
+```{r}
+10/length(datasets) # 0.01
+fash_fit1_update <- fashr::fash_eb_est(L_matrix = fash_fit_1_noisy$L_matrix, penalty = 10, grid = seq(0, 1, by = 0.025))
+fash_fit1_update$lfdr <- fash_fit1_update$posterior_weight[,1]
+fash_fit_1_noisy_pen <- fash_fit_1_noisy
+fash_fit_1_noisy_pen$prior_weights <- fash_fit1_update$prior_weight
+fash_fit_1_noisy_pen$posterior_weights <- fash_fit1_update$posterior_weight
+fash_fit_1_noisy_pen$lfdr <- fash_fit1_update$lfdr
+```
+
+```{r}
+fdr_result_1_noisy_pen <- fdr_control(fash_fit_1_noisy_pen, alpha = 0.1, plot = F)
+detected_indices_1_noisy_pen <- fdr_result_1_noisy_pen$fdr_results$index[fdr_result_1_noisy_pen$fdr_results$FDR < 0.1]
+power1_noisy_pen <- power_versus_fdr(fdr_result_1_noisy_pen$fdr_results, c(indices_B, indices_C), fdr_vec = seq(0, 0.99, by = 0.01))
+calibration1_noisy_pen <- calibration_fdr(fdr_result_1_noisy_pen$fdr_results, c(indices_B, indices_C), fdr_vec = seq(0, 0.99, by = 0.01))
+```
 
