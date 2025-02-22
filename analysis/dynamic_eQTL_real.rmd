@@ -1,0 +1,866 @@
+---
+title: "Dynamic eQTL analysis on real data"
+author: "Ziang Zhang"
+date: "2025-02-21"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+```{r echo=FALSE}
+visualize_penalty <- function(fash, penalty_size, plot = TRUE){
+  L_matrix <- fash$L_matrix
+  pi_0_int <- mean(apply(L_matrix, 1, which.max) == 1)
+  fine_grid <- seq(0, (ncol(L_matrix) - 1), length.out = ncol(L_matrix))
+  initial_pi <- c(pi_0_int, rep((1 - pi_0_int) / (length(fine_grid) - 1), (length(fine_grid) - 1)))
+  pi0 <- numeric(length(penalty_size))
+  pi0_pmom <- numeric(length(penalty_size))
+  for (i in 1:length(penalty_size)) {
+    if(penalty_size[i] > 1){
+      prior_null <- matrix(0,
+                           nrow = (penalty_size[i] - 1),
+                           ncol = ncol(L_matrix))
+      prior_null[, 1] <- 1  # Prior mass on the first grid point
+      L_matrix_original <- rbind(exp(L_matrix), prior_null)
+    }
+    else{
+      L_matrix_original <- exp(L_matrix)
+    }
+    fit.sqp <- mixsqp::mixsqp(
+      L = L_matrix_original,
+      log = FALSE,
+      control = list(tol.svd = 0, verbose = FALSE)
+    )
+    pi0[i] <- fit.sqp$x[1]
+    pi0_pmom[i] <- mean(apply(L_matrix_original, 1, which.max) == 1)
+  }
+  if (plot) {
+    plot(
+      penalty_size,
+      pi0,
+      type = "o",
+      xlab = "Penalty size",
+      ylab = "Estimated pi_0",
+      main = "Order = 1",
+      ylim = c(0, 1)
+    )
+    abline(h = pi_0_int, col = "red", lty = 2)
+  }
+  return(list(pio_pmle = data.frame(penalty_size = penalty_size, pi0 = pi0),
+              pio_mom = data.frame(penalty_size = penalty_size, pi0_pmom = pi0_pmom),
+              pio_mom = pi_0_int
+              ))
+}
+```
+
+
+```{r setup}
+knitr::opts_chunk$set(fig.width = 8, fig.height = 6)
+library(fashr)
+result_dir <- paste0(getwd(), "/output/dynamic_eQTL_real")
+data_dir <- paste0(getwd(), "/data/dynamic_eQTL_real")
+code_dir <- paste0(getwd(), "/code/dynamic_eQTL_real")
+log_prec <- seq(0,10, by = 0.2)
+fine_grid <- sort(c(0, exp(-0.5*log_prec)))
+```
+
+## Obtain the effect size of eQTLs
+
+We use the processed (expression \& genotype) data of [Strober et.al, 2019](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6623972/) to perform the eQTL analysis.
+
+For the association testing, we use a linear regression model for each gene-variant pair at each time point.
+Following the practice in Strober et.al, we adjust for the first three genetic PCs.
+
+The code to perform this step can be found in the script `dynamic_eQTL_real/00_eQTLs.R` from the code directory.
+
+After this step, we have the effect size of eQTLs for each gene-variant pair at each time point, as well as its standard error.
+
+## Fitting FASH
+
+To fit the FASH model on $\{\beta_i(t_j), s_{ij}\}_{i\in N,j \in [16]}$, we consider fitting two FASH models:
+
+- A FASH model based on first order IWP (testing for dynamic eQTLs: $H_0: \beta_i(t)=c$).
+
+- A FASH model based on second order IWP (testing for nonlinear-dynamic eQTLs: $H_0: \beta_i(t)=c_1+c_2t$).
+
+The code to perform this step can be found in the script `dynamic_eQTL_real/01_fash.R` from the code directory.
+
+We will directly load the fitted FASH models from the output directory.
+
+```{r}
+load(paste0(result_dir, "/fash_fit1_all.Rdata"))
+load(paste0(result_dir, "/fash_fit2_all.Rdata"))
+```
+
+Let's take a quick overview of the two fitted FASH models
+
+```{r}
+fash_fit1
+fash_fit2
+```
+
+As well as their estimated priors:
+```{r}
+fash_fit1$prior_weights
+fash_fit2$prior_weights
+```
+
+
+We will load the datasets from the fitted FASH object:
+
+```{r}
+datasets <- fash_fit1$fash_data$data_list
+for (i in 1:length(datasets)) {
+  datasets[[i]]$SE <- fash_fit1$fash_data$S[[i]]
+}
+all_genes <- unique(sapply(strsplit(names(datasets), "_"), "[[", 1))
+```
+
+The default models do not make use of any penalty when estimating $\pi_0$, so might be vulnerable to model-misspecification.
+
+We can take a look at how the estimated $\pi_0$ changes with different penalty values.
+
+First, for model with order 1:
+
+```{r}
+load(paste0(result_dir, "/penalty_size.Rdata"))
+pio_mom_1 <- mean(apply(fash_fit1$L_matrix, 1, which.max) == 1)
+plot(penalty_size[-1], pi0[-1], type = "o", xlab = "Penalty size", ylab = "Estimated pi_0",
+     main = "Order = 1", ylim = c(0,1))
+abline(h = pio_mom_1, col = "red", lty = 2)
+```
+
+The red dashed line represents the estimated $\pi_0$ based on the MoM estimator, which is biased but more robust to model-misspecification.
+Let's choose a penalty parameter that is not too large (relative to the sample size), but could produce a penalized MLE estimator that is close to the MoM estimator.
+
+```{r}
+selected_penalty <- 20000
+selected_penalty/length(datasets) # 0.01981821 percent of the data
+```
+
+Based on the selected penalty, we can update the FASH model:
+
+```{r eval=FALSE}
+fash_fit1_update <- fashr::fash_eb_est(L_matrix = fash_fit1$L_matrix, penalty = selected_penalty, grid = fine_grid)
+fash_fit1_update$lfdr <- fash_fit1_update$posterior_weight[,1]
+
+fash_fit1$prior_weights <- fash_fit1_update$prior_weight
+fash_fit1$posterior_weights <- fash_fit1_update$posterior_weight
+fash_fit1$lfdr <- fash_fit1_update$lfdr
+```
+
+```{r}
+load(paste0(result_dir, "/fash_fit_all_updated.RData"))
+fash_fit1_update$prior_weight
+```
+
+Similarly, for model with order 2:
+
+```{r}
+pio_mom_2 <- mean(apply(fash_fit2$L_matrix, 1, which.max) == 1)
+plot(penalty_size2, pi02, type = "o", 
+     xlab = "Penalty size", ylab = "Estimated pi_0",
+     main = "Order = 2")
+abline(h = pio_mom_2, col = "red", lty = 2)
+selected_penalty2 <- 5000
+selected_penalty2/length(datasets) # 0.004954552
+```
+
+Update the FASH model:
+
+```{r eval=FALSE}
+fash_fit2_update <- fashr::fash_eb_est(L_matrix = fash_fit2$L_matrix, penalty = selected_penalty2, grid = fine_grid)
+fash_fit2_update$lfdr <- fash_fit2_update$posterior_weight[,1]
+
+fash_fit2$prior_weights <- fash_fit2_update$prior_weight
+fash_fit2$posterior_weights <- fash_fit2_update$posterior_weight
+fash_fit2$lfdr <- fash_fit2_update$lfdr
+```
+
+```{r}
+fash_fit2_update$prior_weight
+```
+
+
+## Detecting dynamic eQTLs
+
+We will use the updated FASH model (1) to detect dynamic eQTLs.
+
+```{r}
+alpha <- 0.05
+test1 <- fdr_control(fash_fit1_update, alpha = alpha, plot = F)
+fash_highlighted1 <- test1$fdr_results$index[test1$fdr_results$FDR <= alpha]
+```
+
+How many pairs are detected as dynamic eQTLs?
+
+```{r}
+pairs_highlighted1 <- names(datasets)[fash_highlighted1]
+length(pairs_highlighted1)
+length(pairs_highlighted1)/length(datasets)
+```
+
+How many unique genes are detected?
+
+```{r}
+genes_highlighted1 <- unique(sapply(strsplit(pairs_highlighted1, "_"), "[[", 1))
+length(genes_highlighted1)
+length(genes_highlighted1)/length(all_genes)
+```
+
+Visualize top-ranked pairs:
+
+```{r echo=FALSE}
+par(mfrow = c(2,2))
+for (i in 1:4) {
+  selected_gene <- (genes_highlighted1)[i] #sample(genes_highlighted1, 1)
+  pairs_of_selected_gene <- grep(selected_gene, pairs_highlighted1, value = T)
+  selected_indices <- which(names(datasets) %in% pairs_of_selected_gene)
+  selected_index <- selected_indices[which(fash_fit1$lfdr[selected_indices] == min(fash_fit1$lfdr[selected_indices]))][1]
+  fitted_result <- predict(fash_fit1,
+                           index = selected_index,
+                           smooth_var = seq(0, 15, by = 0.1))
+  plot(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y,
+    pch = 20,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = paste0(names(datasets)[selected_index]),
+    ylim = c(
+      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
+      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
+    )
+  )
+  arrows(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 2)
+  abline(h = mean(datasets[[selected_index]]$y), col = "blue", lty = 2)
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.3),
+    border = NA
+  )
+}
+par(mfrow = c(1,1))
+```
+
+
+## Detecting nonlinear dynamic eQTLs
+
+We will use the updated FASH model (2) to detect nonlinear dynamic eQTLs.
+
+```{r}
+test2 <- fdr_control(fash_fit2_update, alpha = alpha, plot = F)
+fash_highlighted2 <- test2$fdr_results$index[test2$fdr_results$FDR <= alpha]
+```
+
+How many pairs are detected as nonlinear dynamic eQTLs?
+
+```{r}
+pairs_highlighted2 <- names(datasets)[fash_highlighted2]
+length(pairs_highlighted2)
+length(pairs_highlighted2)/length(datasets)
+```
+
+How many unique genes are detected?
+
+```{r}
+genes_highlighted2 <- unique(sapply(strsplit(pairs_highlighted2, "_"), "[[", 1))
+length(genes_highlighted2)
+length(genes_highlighted2)/length(all_genes)
+```
+
+Visualize top-ranked pairs:
+
+```{r echo=FALSE}
+par(mfrow = c(2,2))
+for (i in 1:4) {
+  selected_gene <- genes_highlighted2[i] #sample(genes_highlighted2, 1)
+  pairs_of_selected_gene <- grep(selected_gene, pairs_highlighted2, value = T)
+  selected_indices <- which(names(datasets) %in% pairs_of_selected_gene)
+  selected_index <- selected_indices[which(fash_fit2$lfdr[selected_indices] == min(fash_fit2$lfdr[selected_indices]))][1]
+  fitted_result <- predict(fash_fit2,
+                           index = selected_index,
+                           smooth_var = seq(0, 15, by = 0.1))
+  plot(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y,
+    pch = 20,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = paste0(names(datasets)[selected_index]),
+    ylim = c(
+      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
+      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
+    )
+  )
+  arrows(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 2)
+  abline(h = mean(datasets[[selected_index]]$y), col = "blue", lty = 2)
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.3),
+    border = NA
+  )
+}
+par(mfrow = c(1,1))
+```
+
+
+
+## Comparing with Strober et.al
+
+We will compare the detected dynamic eQTLs with the results from Strober et.al.
+
+```{r echo=FALSE}
+library(ggVennDiagram)
+library(tidyverse)
+strober_nonlinear <- read.delim(paste0(data_dir, "/strober_nonlinear/non_linear_dynamic_eqtls_5_pc.txt"))
+strober_nonlinear$key <- paste0(strober_nonlinear$ensamble_id, "_", strober_nonlinear$rs_id)
+strober_nonlinear_highlighted <- strober_nonlinear %>% filter(eFDR <= alpha)
+pairs_highlighted_strober_nonlinear <- strober_nonlinear_highlighted$key
+genes_highlighted_strober_nonlinear <- unique(sapply(strsplit(pairs_highlighted_strober_nonlinear, "_"), "[[", 1))
+strober_linear <- read.delim(paste0(data_dir, "/strober_linear/linear_dynamic_eqtls_5_pc.txt"))
+strober_linear$key <- paste0(strober_linear$ensamble_id, "_", strober_linear$rs_id)
+strober_linear_highlighted <- strober_linear %>% filter(eFDR <= alpha)
+pairs_highlighted_strober_linear <- strober_linear_highlighted$key
+genes_highlighted_strober_linear <- unique(sapply(strsplit(pairs_highlighted_strober_linear, "_"), "[[", 1))
+```
+
+Let's take a look at the overlap between the two methods used in Strober et.al and FASH (order 1):
+
+```{r}
+gene_sets <- list(
+  "Strober (Nonlinear)" = genes_highlighted_strober_nonlinear,
+  "Strober (Linear)" = genes_highlighted_strober_linear,
+  "FASH (1)" = genes_highlighted1
+)
+ggVennDiagram(gene_sets, label = "both") +
+  scale_fill_gradient(low="grey90",high = "red") +
+  theme(legend.position = "right")  # Move legend to the right
+```
+
+There is a large number of genes only detected by FASH (order 1). 
+Let's take a look at the 4 pairs that are least significant from FASH:
+
+```{r}
+gene_fashr_only <- setdiff(genes_highlighted1, union(genes_highlighted_strober_nonlinear, genes_highlighted_strober_linear))
+## produce four plots for four genes
+par(mfrow = c(2,2))
+for (i in 1:4) {
+  selected_gene <- gene_fashr_only[i]
+  pairs_of_selected_gene <- grep(selected_gene, pairs_highlighted1, value = T)
+  selected_indices <- which(names(datasets) %in% pairs_of_selected_gene)
+  selected_index <- selected_indices[which(fash_fit1$lfdr[selected_indices] == min(fash_fit1$lfdr[selected_indices]))][1]
+  fitted_result <- predict(fash_fit1,
+                           index = selected_index,
+                           smooth_var = seq(0, 15, by = 0.1))
+  plot(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y,
+    pch = 20,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = paste0(names(datasets)[selected_index]),
+    ylim = c(
+      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
+      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
+    )
+  )
+  arrows(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 2)
+  abline(h = mean(datasets[[selected_index]]$y), col = "blue", lty = 2)
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.3),
+    border = NA
+  )
+}
+par(mfrow = c(1,1))
+```
+
+Let's also look at the genes that were missed by FASH, but detected by Strober et.al.
+In this case, we will pick the most significant pair for each gene in FASH:
+
+```{r}
+gene_missed <- setdiff(union(genes_highlighted_strober_nonlinear, genes_highlighted_strober_linear), genes_highlighted1)
+## produce four plots for four genes
+par(mfrow = c(2,2))
+for (i in 1:4) {
+  selected_gene <- gene_missed[i]
+  pairs_of_selected_gene <- grep(selected_gene, names(datasets), value = T)
+  selected_indices <- which(names(datasets) %in% pairs_of_selected_gene)
+  selected_index <- selected_indices[which(fash_fit1$lfdr[selected_indices] == min(fash_fit1$lfdr[selected_indices]))][1]
+  fitted_result <- predict(fash_fit1,
+                           index = selected_index,
+                           smooth_var = seq(0, 15, by = 0.1))
+  plot(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y,
+    pch = 20,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = paste0(names(datasets)[selected_index]),
+    ylim = c(
+      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
+      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
+    )
+  )
+  arrows(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 2)
+  abline(h = mean(datasets[[selected_index]]$y), col = "blue", lty = 2)
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.3),
+    border = NA
+  )
+}
+par(mfrow = c(1,1))
+```
+
+Even the most significant pairs from FASH for each gene do not show a clear pattern of dynamic eQTLs. 
+It is kind of expected that FASH won't conclude with high confidence that these genes have dynamic eQTLs.
+
+Finally, let's take a look how these pairs with significant non-linear dynamic effects identified by FASH (order = 2) fit into the Venn diagram:
+
+```{r}
+gene_sets <- list(
+  "Strober (Nonlinear)" = genes_highlighted_strober_nonlinear,
+  "Strober (Linear)" = genes_highlighted_strober_linear,
+  "FASH (1)" = genes_highlighted1,
+  "FASH (2)" = genes_highlighted2
+)
+ggVennDiagram(gene_sets, label = "both") +
+  scale_fill_gradient(low="grey90",high = "red") +
+  theme(legend.position = "right")  # Move legend to the right
+```
+
+There is a large number of genes that were identified in FASH(1) or in Strober et.al, but not in FASH(2). 
+
+Let's look at some examples:
+
+```{r}
+# genes that are only missed by FASH(2)
+gene_missed_by_fash2_only <- setdiff(intersect(intersect(genes_highlighted1, genes_highlighted_strober_linear), genes_highlighted_strober_nonlinear), genes_highlighted2)
+## produce four plots for four genes
+par(mfrow = c(2,2))
+for (i in 1:4) {
+  selected_gene <- gene_missed_by_fash2_only[i]
+  pairs_of_selected_gene <- grep(selected_gene, pairs_highlighted1, value = T)
+  selected_indices <- which(names(datasets) %in% pairs_of_selected_gene)
+  selected_index <- selected_indices[which(fash_fit2$lfdr[selected_indices] == min(fash_fit2$lfdr[selected_indices]))][1]
+  fitted_result <- predict(fash_fit2,
+                           index = selected_index,
+                           smooth_var = seq(0, 15, by = 0.1))
+  plot(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y,
+    pch = 20,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = paste0(names(datasets)[selected_index]),
+    ylim = c(
+      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
+      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
+    )
+  )
+  arrows(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 2)
+  # add regression line
+  abline(lm(datasets[[selected_index]]$y ~ datasets[[selected_index]]$x, weights = 1/datasets[[selected_index]]$SE), col = "blue", lty = 2)
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.3),
+    border = NA
+  )
+}
+par(mfrow = c(1,1))
+```
+
+
+Again, even the most significant pairs for each gene do not show a clear pattern of nonlinear effects. 
+So it is not surprising that FASH(2) did not detect these genes as having nonlinear dynamic eQTLs.
+
+
+
+## Classifying dynamic eQTLs
+
+Following the definition in Strober et.al, we will classify the detected dynamic eQTLs into different categories:
+
+- *Early*: eQTLs with strongest effect during the first three days: $\max_{t\leq3} |\beta(t)| - \max_{t> 3} |\beta(t)| > 0$.
+
+- *Late*: eQTLs with strongest effect during the last four days: $\max_{t\geq 12} |\beta(t)| - \max_{t< 12} |\beta(t)| > 0$.
+
+- *Middle*: eQTLs with strongest effect during days 4-11: $\max_{4\leq t\leq 11} |\beta(t)| - \max_{t> 11 | t< 4} |\beta(t)| > 0$.
+
+- *Switch*: eQTLs with effect sign switch during the time course: $\min\{\max\beta(t)^+,\max\beta(t)^-\}-c $ where $c$ is a threshold that we set to 0.25 (which means with two alleles, the maximal difference of effect size is at least $\geq 2\times\min\{\max\beta(t)^+,\max\beta(t)^-\}\times2 \geq  2 \times 0.25  \times 2 = 1$).
+
+
+We first take a look at the significant pairs detected by FASH (order 1), and classify them based on the false sign rate (lfsr):
+
+```{r eval=FALSE}
+smooth_var_refined = seq(0,15, by = 0.1)
+functional_early <- function(x){
+  max(abs(x[smooth_var_refined <= 3])) - max(abs(x[smooth_var_refined > 3]))
+}
+testing_early_dyn <- testing_functional(functional_early,
+                                              lfsr_cal = function(x){mean(x <= 0)},
+                                              fash = fash_fit1,
+                                              indices = fash_highlighted1,
+                                              smooth_var = smooth_var_refined)
+```
+
+How many pairs are classified as early dynamic eQTLs?
+
+```{r}
+load(paste0(result_dir, "/classify_dyn_eQTLs.RData"))
+early_indices <- testing_early_dyn$indices[testing_early_dyn$cfsr <= alpha]
+length(early_indices)
+```
+
+How many unique genes?
+
+```{r}
+early_genes <- unique(sapply(strsplit(names(datasets)[early_indices], "_"), "[[", 1))
+length(early_genes)
+```
+
+Let's take a look at the top-ranked early dynamic eQTLs:
+
+```{r echo=FALSE}
+par(mfrow = c(2,2))
+for (i in 1:4) {
+  selected_index <- early_indices[i]
+  fitted_result <- predict(fash_fit1,
+                           index = selected_index,
+                           smooth_var = seq(0, 15, by = 0.1))
+  plot(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y,
+    pch = 20,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = paste0(names(datasets)[selected_index]),
+    ylim = c(
+      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
+      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
+    )
+  )
+  arrows(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 2)
+  abline(h = 0, lty = 2, col = "blue")
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.3),
+    border = NA
+  )
+}
+par(mfrow = c(1,1))
+```
+
+It is evident that these variants have largest $|\beta(t)|$ during the first three days.
+
+How many pairs are classified as middle dynamic eQTLs?
+
+```{r eval=FALSE}
+functional_middle <- function(x){
+  max(abs(x[smooth_var_refined <= 11 & smooth_var_refined >= 4])) - max(abs(x[smooth_var_refined > 11]), abs(x[smooth_var_refined < 4]))
+}
+testing_middle_dyn <- testing_functional(functional_middle, 
+                                               lfsr_cal = function(x){mean(x <= 0)},
+                                               fash = fash_fit1, 
+                                               indices = fash_highlighted1, 
+                                               num_cores = num_cores,
+                                               smooth_var = smooth_var_refined)
+```
+
+```{r}
+middle_indices <- testing_middle_dyn$indices[testing_middle_dyn$cfsr <= alpha]
+length(middle_indices)
+```
+
+How many unique genes?
+
+```{r}
+middle_genes <- unique(sapply(strsplit(names(datasets)[middle_indices], "_"), "[[", 1))
+length(middle_genes)
+```
+
+Take a look at their results:
+
+```{r}
+par(mfrow = c(2,2))
+for (i in 1:4) {
+  selected_index <- sample(middle_indices, 1)
+  fitted_result <- predict(fash_fit1,
+                           index = selected_index,
+                           smooth_var = seq(0, 15, by = 0.1))
+  plot(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y,
+    pch = 20,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = paste0(names(datasets)[selected_index]),
+    ylim = c(
+      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
+      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
+    )
+  )
+  arrows(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 2)
+  abline(h = 0, lty = 2, col = "blue")
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.3),
+    border = NA
+  )
+}
+par(mfrow = c(1,1))
+```
+
+
+How many pairs are classified as late dynamic eQTLs?
+
+```{r eval=FALSE}
+functional_late <- function(x){
+  max(abs(x[smooth_var_refined >= 12])) - max(abs(x[smooth_var_refined < 12]))
+}
+testing_late_dyn <- testing_functional(functional_late, 
+                                             lfsr_cal = function(x){mean(x <= 0)},
+                                             fash = fash_fit1, 
+                                             indices = fash_highlighted1, 
+                                             num_cores = num_cores,
+                                             smooth_var = smooth_var_refined)
+```
+
+How many pairs and how many unique genes are classified as late dynamic eQTLs?
+
+```{r}
+late_indices <- testing_late_dyn$indices[testing_late_dyn$cfsr <= alpha]
+length(late_indices)
+late_genes <- unique(sapply(strsplit(names(datasets)[late_indices], "_"), "[[", 1))
+length(late_genes)
+```
+
+Let's take a look at the top-ranked late dynamic eQTLs:
+
+```{r echo=FALSE}
+par(mfrow = c(2,2))
+for (i in 1:4) {
+  selected_index <- late_indices[i]
+  fitted_result <- predict(fash_fit1,
+                           index = selected_index,
+                           smooth_var = seq(0, 15, by = 0.1))
+  plot(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y,
+    pch = 20,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = paste0(names(datasets)[selected_index]),
+    ylim = c(
+      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
+      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
+    )
+  )
+  arrows(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 2)
+  abline(h = 0, lty = 2, col = "blue")
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.3),
+    border = NA
+  )
+}
+par(mfrow = c(1,1))
+```
+
+How many pairs are classified as switch dynamic eQTLs?
+
+```{r eval=FALSE}
+switch_threshold <- 0.25
+functional_switch <- function(x){
+  # compute the radius of x, measured by deviation from 0 from below and from above
+  x_pos <- x[x > 0]
+  x_neg <- x[x < 0]
+  if(length(x_pos) == 0 || length(x_neg) == 0){
+    return(0)
+  }
+  min(max(abs(x_pos)), max(abs(x_neg))) - switch_threshold
+}
+testing_switch_dyn <- testing_functional(functional_switch, 
+                                               lfsr_cal = function(x){mean(x <= 0)},
+                                               fash = fash_fit1, 
+                                               indices = fash_highlighted1, 
+                                               num_cores = num_cores,
+                                               smooth_var = smooth_var_refined)
+```
+
+How many pairs and how many unique genes are classified as switch dynamic eQTLs?
+
+```{r}
+switch_indices <- testing_switch_dyn$indices[testing_switch_dyn$cfsr <= alpha]
+length(switch_indices)
+switch_genes <- unique(sapply(strsplit(names(datasets)[switch_indices], "_"), "[[", 1))
+length(switch_genes)
+```
+
+Let's take a look at the top-ranked switch dynamic eQTLs:
+
+```{r echo=FALSE}
+par(mfrow = c(2,2))
+for (i in 1:4) {
+  selected_index <- switch_indices[i]
+  fitted_result <- predict(fash_fit1,
+                           index = selected_index,
+                           smooth_var = seq(0, 15, by = 0.1))
+  plot(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y,
+    pch = 20,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = paste0(names(datasets)[selected_index]),
+    ylim = c(
+      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
+      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
+    )
+  )
+  arrows(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 2)
+  abline(h = 0, lty = 2, col = "blue")
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.3),
+    border = NA
+  )
+}
+par(mfrow = c(1,1))
+```
+
