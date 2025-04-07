@@ -1,0 +1,104 @@
+---
+title: "Overview of the **F**unction **A**daptive **SH**rinkage (FASH)"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: true
+editor_options:
+  chunk_output_type: console
+---
+
+### **Introduction**
+
+The **F**unction **A**daptive **SH**rinkage (FASH) project considers the following scenarios:
+
+- There are $N$ sets of series data: $\boldsymbol{y} = \{y_i(t_j): j\in[n_i]\}_{i=1}^{N}$, where $n_i$ is the length of the $i$-th series.
+- For each series $y_i(t)$, we assume it relates to a smooth function $f_i(t)$.
+- For example, $y_i(t) = f_i(t) + \epsilon_i(t)$, where $\epsilon_i(t)$ is the noise term.
+
+The goal of FASH is to infer the smooth function $f_i(t)$ for each series $y_i(t)$, by providing its posterior distribution $p(f_i(t)|\boldsymbol{y})$.
+
+Some examples of this setting are described below.
+
+#### *Example: Gene Expression Level*
+
+In gene expression data, each series $y_i(t_j)$ represents the mRNA count transcripted by a gene $i$ at different time points $t_j$.
+The goal is to infer the smooth function $f_i(t)$ that represents the gene expression level over time.
+
+#### *Example: Dynamic eQTL Analysis*
+
+In dynamic eQTL analysis, each series $y_i(t_j)$ represents the effect size estimate of a genetic variant $i$ on the gene expression level, at different levels of the continuous condition $t_j$. 
+The goal is to infer the smooth function $f_i(t)$ that represents the effect size over the continuous condition.
+
+
+### **Finite Mixture of GP**
+
+To make inference of each $f_i(t)$, we consider a finite mixture of $K$ Gaussian processes (GP) prior, as motivated in [Urbut et al, 2018](https://www.nature.com/articles/s41588-018-0268-8).
+The prior is defined as follows:
+$$f_i|\pi_0,...,\pi_K \overset{iid}{\sim} \sum_{k=0}^{K} \pi_k\text{GP}(m_k,C_k),$$
+where $\pi_k$ is the prior mixing weight, $m_k$ is the mean function, and $C_k$ is the covariance function of the $k$-th GP. 
+
+For now, let's assume the mean function $m_k$ is zero, and each GP component is defined through the following ordinary differential equation (ODE):
+$$Lf(t) = \sigma_k W(t),$$
+where $W(t)$ is a Gaussian white noise process and $L$ is a known $p$th order linear differential operator. 
+Given the $L$ operator, the covariance function $C_k$ is completely specified by the single standard deviation parameter $\sigma_k$. 
+
+This prior **shrinks** the function $g$ toward the **base model** $\text{Null}\{L\}$, which is the set of functions that satisfy $Lf = 0$.
+The smaller $\sigma_k$ is, the stronger the shrinkage is.
+By choosing different $L$ operator, this one-parameter GP family can produce prior that encodes different kinds of shapes. Some examples are discussed in [Zhang et.al 2023](https://www.tandfonline.com/doi/full/10.1080/10618600.2023.2289532) and [Zhang et.al 2024](https://arxiv.org/abs/2305.09914).
+
+The above one-parameter family of GP priors is flexible and interpretable. 
+By choosing the $L$ operator, we can choose different types of base model to shrink the function toward. 
+Therefore, **the base model can be interpreted as an analogy to the unimodal assumption (UA)** in [Stephens, 2017](https://academic.oup.com/biostatistics/article/18/2/275/2557030?login=true), which specifies the center of the shrinkage (like the null hypothesis).
+
+#### *Example: Integrated Wiener Process*
+
+For example, when $L = \frac{d^2}{dt^2}$, the prior is called a second-order Integrated Wiener Process (IWP) prior, which shrinks the function toward the base model $\text{Null}\{L\} = \text{span}\{1,t\}$.
+
+When all the observations are Gaussian, the posterior mean $\mathbb{E}(f|\boldsymbol{y}_i)$ using the second order IWP is exactly the cubic smoothing spline estimate in [Kimeldorf and Wahba, 1970](https://www.jstor.org/stable/2239347).
+
+#### *Example: Seasonal Gaussian Process*
+
+When $L = \frac{d^2}{dt^2} + \alpha^2$, the prior is called a seasonal Gaussian process (sGP), which shrinks the function toward the base model $\text{Null}\{L\} = \text{span}\{\sin(\alpha t),\cos(\alpha t)\}$.
+
+This prior can be used to model quasi-periodic function, which has mostly periodic behavior but with amplitude slowly varying overtime.
+
+### **Empirical Bayes**
+
+For now, assume that the $L$ operator is fixed to be the $p$th order IWP, and only the standard deviation parameter $\sigma_k$ is varying across different GP components.
+Following the practice of [Stehpens, 2017](https://academic.oup.com/biostatistics/article/18/2/275/2557030?login=true) and [Urbut et al, 2018](https://www.nature.com/articles/s41588-018-0268-8), we use a dense grid of $\{\sigma_k:k\in[K]\}$, and use empirical Bayes to estimate the prior mixture weights $\boldsymbol{\pi} = \{\pi_0,...,\pi_K\}$. The weight $\pi_0$ corresponds to the standard deviation parameter $\sigma_0 = 0$, which is the null model that assumes the function is in $\text{Null}\{L\}$.
+
+Let $\mathbf{L}_{ik}$ denotes the marginal likelihood of the $i$-th series data under the $k$-th GP component, the empirical Bayes estimate of $\boldsymbol{\pi}$ is obtained by maximizing the following objective function:
+$$\hat{\boldsymbol{\pi}} = \arg\max_{\boldsymbol{\pi}} \sum_{i=1}^{N} \log\left(\sum_{k=0}^{K} \pi_k \mathbf{L}_{ik}\right).$$
+This can be solved using interior point method or Sequential Quadratic Programming ($\texttt{mixqp}$) in [Kim et al, 2020](https://www.tandfonline.com/doi/full/10.1080/10618600.2019.1689985).
+
+With the estimated weights $\hat{\boldsymbol{\pi}}$, we can then obtain the posterior distribution of each $f_i(t)$ as the following mixture:
+$$p(f_i(t)|\boldsymbol{y}, \hat{\boldsymbol{\pi}}) = \sum_{k=0}^{K} \tilde{\pi}_k p(f_i(t)|\boldsymbol{y}_i,\sigma_k),$$
+where the posterior mixture weights $\tilde{\pi}_k$ is defined as $\tilde{\pi}_k = \frac{\hat{\pi}_k \mathbf{L}_{ik}}{\sum_{k=0}^{K} \hat{\pi}_k \mathbf{L}_{ik}}$.
+
+In certain application, the posterior mixture weights can be visualized through a structure plot as discussed in [Dey et al, 2017](https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006599), and observations can be grouped into similar clusters based on the structure plot. 
+
+
+### **Computation Issue**
+
+To simplify the posterior computation with each GP component, we apply the following two tricks:
+
+- **Finite Element Method**: The finite element method approximates each GP $f(t)$ as a linear combination of basis functions: $f(t) = \sum_{l=1}^{m} w_l \psi_l(t)$, where the $m$ basis functions $\psi_l(t)$ are fixed and the weights $\boldsymbol{w}$ follow Gaussian distribution. This simplifies the computation of each $p(f_i(t)|\boldsymbol{y}_i,\sigma_k)$ to $p(\boldsymbol{w}|\boldsymbol{y}_i,\sigma_k)$. The weights not only have smaller dimension than the function $f(t)$, but also have a sparse precision matrix. See [Zhang et al, 2023](https://www.tandfonline.com/doi/full/10.1080/10618600.2023.2289532) and [Lindgren et.al, 2011](https://academic.oup.com/jrsssb/article/73/4/423/7034732?login=true) for more details.
+- **Laplace Approximation**: An efficient way to compute the posterior of the weights $\boldsymbol{w}$ is to use the Laplace approximation, as discussed in [Rue et al, 2009](https://rss.onlinelibrary.wiley.com/doi/full/10.1111/j.1467-9868.2008.00700.x). The Laplace approximation approximates the posterior distribution as a Gaussian distribution with the mode at the posterior mean and the covariance matrix as the inverse of the Hessian matrix at the mode: $p_G(\boldsymbol{w}|\boldsymbol{y}, \sigma_k) = \mathcal{N}(\hat{\boldsymbol{w}}, \hat{V})$.
+
+In this way, the complicated integration required in the posterior computation is replaced by a simpler optimization task with sparse matrices.
+When the observations are Gaussian, the Laplace approximation is exact.
+When the observations are not Gaussian, the Laplace approximation provides reasonable approximation with very small amount of computation cost.
+
+
+### **Why is it interesting?**
+
+This approach of adaptive shrinkage method becomes useful when we are dealing with a good number of series data, with some hidden structure among them. For example:
+
+- **Gene Expression Data**: FASH can be used to identify and group dynamic eQTLs that react differently to different (continuous) conditions, such as differentiation time ([Strober et.al, 2019](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6623972/)) or oxygen level ([Ward et.al, 2021](https://elifesciences.org/articles/57345)).
+- **COVID Mortality Data**: FASH can be used to infer and group the COVID mortality rate at different countries (or states), and identify the countries (states) with similar mortality trends. See *[this](covid_example.html)* for an example.
+- **Environmental Data**: FASH can be used to model the concentration of different pollutants overtime, and identify type of pollutants that have similar behavior. See *[this simulation](simulation.html)* for an example.
+
+
+In some applications above, when each series has a same number of observations that are equally spaced, it is possible to directly apply the $\texttt{mash}$ approach in Urbut et al, 2018.
+However, when the observations are not equally spaced or when each series has a different number of observations, the $\texttt{mash}$ approach is not directly applicable.
