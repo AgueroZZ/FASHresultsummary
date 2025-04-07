@@ -15,6 +15,8 @@ The tutorial makes use of the software `fashr`, available on [github](https://gi
 
 + [Overview of FASH](overview.html)
 
++ [Overview of BF-based correction](BF_based_control.html)
+
 
 **Examples:**
 
