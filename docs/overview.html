@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Overview of the Function Adaptive SHrinkage (FASH)</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">FASH Tutorial</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/AgueroZZ/resultsummary">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Overview of the <strong>F</strong>unction
+<strong>A</strong>daptive <strong>SH</strong>rinkage (FASH)</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-04-07
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>FASHresultsummary/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree7ee9f5dadf558ec26d7b8e23d5fcb2ac2876a6a0targetblank7ee9f5da">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/7ee9f5dadf558ec26d7b8e23d5fcb2ac2876a6a0" target="_blank">7ee9f5d</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree7ee9f5dadf558ec26d7b8e23d5fcb2ac2876a6a0targetblank7ee9f5da"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/7ee9f5dadf558ec26d7b8e23d5fcb2ac2876a6a0" target="_blank">7ee9f5d</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.Rhistory
+    Ignored:    code/.DS_Store
+    Ignored:    code/.Rhistory
+    Ignored:    code/cpp/.DS_Store
+    Ignored:    code/function/.DS_Store
+    Ignored:    data/.DS_Store
+    Ignored:    data/Iyer/.DS_Store
+    Ignored:    data/expression_data/.DS_Store
+    Ignored:    output/.DS_Store
+    Ignored:    output/Iyer/.DS_Store
+    Ignored:    output/example/.DS_Store
+    Ignored:    output/example/figure/
+    Ignored:    output/expression/.DS_Store
+    Ignored:    output/simulation_pollution/.DS_Store
+    Ignored:    output/simulation_pollution/figure/
+    Ignored:    output/vQTL_correlated/
+    Ignored:    thought_process
+
+Untracked files:
+    Untracked:  analysis/BF_based_control.rmd
+    Untracked:  analysis/explore_mom_mle.Rmd
+    Untracked:  code/dynamic_eQTL_real/
+    Untracked:  data/dynamic_eQTL_real/
+    Untracked:  lfsr_most_robust.R
+    Untracked:  mle_favor_alternative.R
+    Untracked:  output/dynamic_eQTL_real/
+    Untracked:  output/simulation_dynamic_eQTL/classify_dyn_eQTLs_early.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_dyn_eQTLs_late.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_dyn_eQTLs_middle.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_dyn_eQTLs_switch.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_nonlin_dyn_eQTLs_early.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_nonlin_dyn_eQTLs_late.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_nonlin_dyn_eQTLs_middle.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_nonlin_dyn_eQTLs_switch.RData
+    Untracked:  output/simulation_dynamic_eQTL/min_lfsr_summary2.RData
+    Untracked:  overdispersion_is_important.R
+    Untracked:  pi0est.R
+    Untracked:  study_BF.R
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
+    Modified:   analysis/index.Rmd
+    Modified:   code/function/functions_simulating.R
+    Modified:   code/function/functions_simulation.R
+    Modified:   code/function/functions_simulation_eQTL_test.R
+    Modified:   output/simulation_dynamic_eQTL/fash_fit_1.RData
+    Modified:   output/simulation_dynamic_eQTL/fash_fit_1_noisy.RData
+    Modified:   output/simulation_dynamic_eQTL/fash_fit_2.RData
+    Modified:   output/simulation_dynamic_eQTL/fash_fit_2_noisy.RData
+    Modified:   output/simulation_dynamic_eQTL/fash_fit_2_noisy_pen.RData
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/overview.Rmd</code>) and HTML
+(<code>docs/overview.html</code>) files. If you’ve configured a remote
+Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/7ee9f5dadf558ec26d7b8e23d5fcb2ac2876a6a0/analysis/overview.Rmd" target="_blank">7ee9f5d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-07
+</td>
+<td>
+workflowr::wflow_publish("analysis/overview.rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level3">
+<h3><strong>Introduction</strong></h3>
+<p>The <strong>F</strong>unction <strong>A</strong>daptive
+<strong>SH</strong>rinkage (FASH) project considers the following
+scenarios:</p>
+<ul>
+<li>There are <span class="math inline">\(N\)</span> sets of series
+data: <span class="math inline">\(\boldsymbol{y} = \{y_i(t_j):
+j\in[n_i]\}_{i=1}^{N}\)</span>, where <span
+class="math inline">\(n_i\)</span> is the length of the <span
+class="math inline">\(i\)</span>-th series.</li>
+<li>For each series <span class="math inline">\(y_i(t)\)</span>, we
+assume it relates to a smooth function <span
+class="math inline">\(f_i(t)\)</span>.</li>
+<li>For example, <span class="math inline">\(y_i(t) = f_i(t) +
+\epsilon_i(t)\)</span>, where <span
+class="math inline">\(\epsilon_i(t)\)</span> is the noise term.</li>
+</ul>
+<p>The goal of FASH is to infer the smooth function <span
+class="math inline">\(f_i(t)\)</span> for each series <span
+class="math inline">\(y_i(t)\)</span>, by providing its posterior
+distribution <span
+class="math inline">\(p(f_i(t)|\boldsymbol{y})\)</span>.</p>
+<p>Some examples of this setting are described below.</p>
+<div id="example-gene-expression-level" class="section level4">
+<h4><em>Example: Gene Expression Level</em></h4>
+<p>In gene expression data, each series <span
+class="math inline">\(y_i(t_j)\)</span> represents the mRNA count
+transcripted by a gene <span class="math inline">\(i\)</span> at
+different time points <span class="math inline">\(t_j\)</span>. The goal
+is to infer the smooth function <span
+class="math inline">\(f_i(t)\)</span> that represents the gene
+expression level over time.</p>
+</div>
+<div id="example-dynamic-eqtl-analysis" class="section level4">
+<h4><em>Example: Dynamic eQTL Analysis</em></h4>
+<p>In dynamic eQTL analysis, each series <span
+class="math inline">\(y_i(t_j)\)</span> represents the effect size
+estimate of a genetic variant <span class="math inline">\(i\)</span> on
+the gene expression level, at different levels of the continuous
+condition <span class="math inline">\(t_j\)</span>. The goal is to infer
+the smooth function <span class="math inline">\(f_i(t)\)</span> that
+represents the effect size over the continuous condition.</p>
+</div>
+</div>
+<div id="finite-mixture-of-gp" class="section level3">
+<h3><strong>Finite Mixture of GP</strong></h3>
+<p>To make inference of each <span
+class="math inline">\(f_i(t)\)</span>, we consider a finite mixture of
+<span class="math inline">\(K\)</span> Gaussian processes (GP) prior, as
+motivated in <a
+href="https://www.nature.com/articles/s41588-018-0268-8">Urbut et al,
+2018</a>. The prior is defined as follows: <span
+class="math display">\[f_i|\pi_0,...,\pi_K \overset{iid}{\sim}
+\sum_{k=0}^{K} \pi_k\text{GP}(m_k,C_k),\]</span> where <span
+class="math inline">\(\pi_k\)</span> is the prior mixing weight, <span
+class="math inline">\(m_k\)</span> is the mean function, and <span
+class="math inline">\(C_k\)</span> is the covariance function of the
+<span class="math inline">\(k\)</span>-th GP.</p>
+<p>For now, let’s assume the mean function <span
+class="math inline">\(m_k\)</span> is zero, and each GP component is
+defined through the following ordinary differential equation (ODE):
+<span class="math display">\[Lf(t) = \sigma_k W(t),\]</span> where <span
+class="math inline">\(W(t)\)</span> is a Gaussian white noise process
+and <span class="math inline">\(L\)</span> is a known <span
+class="math inline">\(p\)</span>th order linear differential operator.
+Given the <span class="math inline">\(L\)</span> operator, the
+covariance function <span class="math inline">\(C_k\)</span> is
+completely specified by the single standard deviation parameter <span
+class="math inline">\(\sigma_k\)</span>.</p>
+<p>This prior <strong>shrinks</strong> the function <span
+class="math inline">\(g\)</span> toward the <strong>base model</strong>
+<span class="math inline">\(\text{Null}\{L\}\)</span>, which is the set
+of functions that satisfy <span class="math inline">\(Lf = 0\)</span>.
+The smaller <span class="math inline">\(\sigma_k\)</span> is, the
+stronger the shrinkage is. By choosing different <span
+class="math inline">\(L\)</span> operator, this one-parameter GP family
+can produce prior that encodes different kinds of shapes. Some examples
+are discussed in <a
+href="https://www.tandfonline.com/doi/full/10.1080/10618600.2023.2289532">Zhang
+et.al 2023</a> and <a href="https://arxiv.org/abs/2305.09914">Zhang
+et.al 2024</a>.</p>
+<p>The above one-parameter family of GP priors is flexible and
+interpretable. By choosing the <span class="math inline">\(L\)</span>
+operator, we can choose different types of base model to shrink the
+function toward. Therefore, <strong>the base model can be interpreted as
+an analogy to the unimodal assumption (UA)</strong> in <a
+href="https://academic.oup.com/biostatistics/article/18/2/275/2557030?login=true">Stephens,
+2017</a>, which specifies the center of the shrinkage (like the null
+hypothesis).</p>
+<div id="example-integrated-wiener-process" class="section level4">
+<h4><em>Example: Integrated Wiener Process</em></h4>
+<p>For example, when <span class="math inline">\(L =
+\frac{d^2}{dt^2}\)</span>, the prior is called a second-order Integrated
+Wiener Process (IWP) prior, which shrinks the function toward the base
+model <span class="math inline">\(\text{Null}\{L\} =
+\text{span}\{1,t\}\)</span>.</p>
+<p>When all the observations are Gaussian, the posterior mean <span
+class="math inline">\(\mathbb{E}(f|\boldsymbol{y}_i)\)</span> using the
+second order IWP is exactly the cubic smoothing spline estimate in <a
+href="https://www.jstor.org/stable/2239347">Kimeldorf and Wahba,
+1970</a>.</p>
+</div>
+<div id="example-seasonal-gaussian-process" class="section level4">
+<h4><em>Example: Seasonal Gaussian Process</em></h4>
+<p>When <span class="math inline">\(L = \frac{d^2}{dt^2} +
+\alpha^2\)</span>, the prior is called a seasonal Gaussian process
+(sGP), which shrinks the function toward the base model <span
+class="math inline">\(\text{Null}\{L\} = \text{span}\{\sin(\alpha
+t),\cos(\alpha t)\}\)</span>.</p>
+<p>This prior can be used to model quasi-periodic function, which has
+mostly periodic behavior but with amplitude slowly varying overtime.</p>
+</div>
+</div>
+<div id="empirical-bayes" class="section level3">
+<h3><strong>Empirical Bayes</strong></h3>
+<p>For now, assume that the <span class="math inline">\(L\)</span>
+operator is fixed to be the <span class="math inline">\(p\)</span>th
+order IWP, and only the standard deviation parameter <span
+class="math inline">\(\sigma_k\)</span> is varying across different GP
+components. Following the practice of <a
+href="https://academic.oup.com/biostatistics/article/18/2/275/2557030?login=true">Stehpens,
+2017</a> and <a
+href="https://www.nature.com/articles/s41588-018-0268-8">Urbut et al,
+2018</a>, we use a dense grid of <span
+class="math inline">\(\{\sigma_k:k\in[K]\}\)</span>, and use empirical
+Bayes to estimate the prior mixture weights <span
+class="math inline">\(\boldsymbol{\pi} = \{\pi_0,...,\pi_K\}\)</span>.
+The weight <span class="math inline">\(\pi_0\)</span> corresponds to the
+standard deviation parameter <span class="math inline">\(\sigma_0 =
+0\)</span>, which is the null model that assumes the function is in
+<span class="math inline">\(\text{Null}\{L\}\)</span>.</p>
+<p>Let <span class="math inline">\(\mathbf{L}_{ik}\)</span> denotes the
+marginal likelihood of the <span class="math inline">\(i\)</span>-th
+series data under the <span class="math inline">\(k\)</span>-th GP
+component, the empirical Bayes estimate of <span
+class="math inline">\(\boldsymbol{\pi}\)</span> is obtained by
+maximizing the following objective function: <span
+class="math display">\[\hat{\boldsymbol{\pi}} =
+\arg\max_{\boldsymbol{\pi}} \sum_{i=1}^{N} \log\left(\sum_{k=0}^{K}
+\pi_k \mathbf{L}_{ik}\right).\]</span> This can be solved using interior
+point method or Sequential Quadratic Programming (<span
+class="math inline">\(\texttt{mixqp}\)</span>) in <a
+href="https://www.tandfonline.com/doi/full/10.1080/10618600.2019.1689985">Kim
+et al, 2020</a>.</p>
+<p>With the estimated weights <span
+class="math inline">\(\hat{\boldsymbol{\pi}}\)</span>, we can then
+obtain the posterior distribution of each <span
+class="math inline">\(f_i(t)\)</span> as the following mixture: <span
+class="math display">\[p(f_i(t)|\boldsymbol{y}, \hat{\boldsymbol{\pi}})
+= \sum_{k=0}^{K} \tilde{\pi}_k
+p(f_i(t)|\boldsymbol{y}_i,\sigma_k),\]</span> where the posterior
+mixture weights <span class="math inline">\(\tilde{\pi}_k\)</span> is
+defined as <span class="math inline">\(\tilde{\pi}_k = \frac{\hat{\pi}_k
+\mathbf{L}_{ik}}{\sum_{k=0}^{K} \hat{\pi}_k
+\mathbf{L}_{ik}}\)</span>.</p>
+<p>In certain application, the posterior mixture weights can be
+visualized through a structure plot as discussed in <a
+href="https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006599">Dey
+et al, 2017</a>, and observations can be grouped into similar clusters
+based on the structure plot.</p>
+</div>
+<div id="computation-issue" class="section level3">
+<h3><strong>Computation Issue</strong></h3>
+<p>To simplify the posterior computation with each GP component, we
+apply the following two tricks:</p>
+<ul>
+<li><strong>Finite Element Method</strong>: The finite element method
+approximates each GP <span class="math inline">\(f(t)\)</span> as a
+linear combination of basis functions: <span class="math inline">\(f(t)
+= \sum_{l=1}^{m} w_l \psi_l(t)\)</span>, where the <span
+class="math inline">\(m\)</span> basis functions <span
+class="math inline">\(\psi_l(t)\)</span> are fixed and the weights <span
+class="math inline">\(\boldsymbol{w}\)</span> follow Gaussian
+distribution. This simplifies the computation of each <span
+class="math inline">\(p(f_i(t)|\boldsymbol{y}_i,\sigma_k)\)</span> to
+<span
+class="math inline">\(p(\boldsymbol{w}|\boldsymbol{y}_i,\sigma_k)\)</span>.
+The weights not only have smaller dimension than the function <span
+class="math inline">\(f(t)\)</span>, but also have a sparse precision
+matrix. See <a
+href="https://www.tandfonline.com/doi/full/10.1080/10618600.2023.2289532">Zhang
+et al, 2023</a> and <a
+href="https://academic.oup.com/jrsssb/article/73/4/423/7034732?login=true">Lindgren
+et.al, 2011</a> for more details.</li>
+<li><strong>Laplace Approximation</strong>: An efficient way to compute
+the posterior of the weights <span
+class="math inline">\(\boldsymbol{w}\)</span> is to use the Laplace
+approximation, as discussed in <a
+href="https://rss.onlinelibrary.wiley.com/doi/full/10.1111/j.1467-9868.2008.00700.x">Rue
+et al, 2009</a>. The Laplace approximation approximates the posterior
+distribution as a Gaussian distribution with the mode at the posterior
+mean and the covariance matrix as the inverse of the Hessian matrix at
+the mode: <span class="math inline">\(p_G(\boldsymbol{w}|\boldsymbol{y},
+\sigma_k) = \mathcal{N}(\hat{\boldsymbol{w}}, \hat{V})\)</span>.</li>
+</ul>
+<p>In this way, the complicated integration required in the posterior
+computation is replaced by a simpler optimization task with sparse
+matrices. When the observations are Gaussian, the Laplace approximation
+is exact. When the observations are not Gaussian, the Laplace
+approximation provides reasonable approximation with very small amount
+of computation cost.</p>
+</div>
+<div id="why-is-it-interesting" class="section level3">
+<h3><strong>Why is it interesting?</strong></h3>
+<p>This approach of adaptive shrinkage method becomes useful when we are
+dealing with a good number of series data, with some hidden structure
+among them. For example:</p>
+<ul>
+<li><strong>Gene Expression Data</strong>: FASH can be used to identify
+and group dynamic eQTLs that react differently to different (continuous)
+conditions, such as differentiation time (<a
+href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6623972/">Strober
+et.al, 2019</a>) or oxygen level (<a
+href="https://elifesciences.org/articles/57345">Ward et.al,
+2021</a>).</li>
+<li><strong>COVID Mortality Data</strong>: FASH can be used to infer and
+group the COVID mortality rate at different countries (or states), and
+identify the countries (states) with similar mortality trends. See
+<em><a href="covid_example.html">this</a></em> for an example.</li>
+<li><strong>Environmental Data</strong>: FASH can be used to model the
+concentration of different pollutants overtime, and identify type of
+pollutants that have similar behavior. See <em><a
+href="simulation.html">this simulation</a></em> for an example.</li>
+</ul>
+<p>In some applications above, when each series has a same number of
+observations that are equally spaced, it is possible to directly apply
+the <span class="math inline">\(\texttt{mash}\)</span> approach in Urbut
+et al, 2018. However, when the observations are not equally spaced or
+when each series has a different number of observations, the <span
+class="math inline">\(\texttt{mash}\)</span> approach is not directly
+applicable.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
