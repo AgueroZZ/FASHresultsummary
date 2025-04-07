@@ -13,7 +13,7 @@
 
 <meta name="date" content="2025-02-21" />
 
-<title>Dynamic eQTL analysis on real data</title>
+<title>Dynamic eQTL analysis on iPSC</title>
 
 <script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -35,6 +35,7 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
@@ -233,6 +234,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -336,16 +340,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li>
-  <a href="about.html">About</a>
-</li>
-<li>
-  <a href="simulation_pollution.html">Simulation 1</a>
-</li>
-<li>
-  <a href="eQTL_sim.html">Simulation 2</a>
-</li>
-<li>
-  <a href="simulation_vQTL.html">Simulation 3</a>
+  <a href="dynamic_eQTL.html">Simulation</a>
 </li>
 <li>
   <a href="covid_example.html">COVID-19 Example</a>
@@ -354,7 +349,7 @@ div.tocify {
   <a href="expression.html">Gene Expression Example</a>
 </li>
 <li>
-  <a href="license.html">License</a>
+  <a href="dynamic_eQTL_real.html">Dynamic eQTLs</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -372,9 +367,17 @@ div.tocify {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
-<h1 class="title toc-ignore">Dynamic eQTL analysis on real data</h1>
+
+<h1 class="title toc-ignore">Dynamic eQTL analysis on iPSC</h1>
 <h4 class="author">Ziang Zhang</h4>
 <h4 class="date">2025-02-21</h4>
 
@@ -405,7 +408,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-02-22
+<strong>Last updated:</strong> 2025-04-06
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -536,15 +539,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree4def527a944e240f18a762372c4f0f9a206e4cb9targetblank4def527a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea0a15b3aa239465e08d8f3edf22b77d4450c5b39targetblanka0a15b3a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/4def527a944e240f18a762372c4f0f9a206e4cb9" target="_blank">4def527</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a0a15b3aa239465e08d8f3edf22b77d4450c5b39" target="_blank">a0a15b3</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree4def527a944e240f18a762372c4f0f9a206e4cb9targetblank4def527a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreea0a15b3aa239465e08d8f3edf22b77d4450c5b39targetblanka0a15b3a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -554,7 +557,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/4def527a944e240f18a762372c4f0f9a206e4cb9" target="_blank">4def527</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/a0a15b3aa239465e08d8f3edf22b77d4450c5b39" target="_blank">a0a15b3</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -592,11 +595,32 @@ Ignored files:
     Ignored:    thought_process
 
 Untracked files:
+    Untracked:  analysis/BF_based_control.rmd
+    Untracked:  analysis/explore_mom_mle.Rmd
+    Untracked:  analysis/nonlinear_dynamic_eQTL_real.rmd
     Untracked:  code/dynamic_eQTL_real/
     Untracked:  data/dynamic_eQTL_real/
+    Untracked:  lfsr_most_robust.R
+    Untracked:  mle_favor_alternative.R
     Untracked:  output/dynamic_eQTL_real/
+    Untracked:  output/simulation_dynamic_eQTL/classify_dyn_eQTLs_early.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_dyn_eQTLs_late.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_dyn_eQTLs_middle.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_dyn_eQTLs_switch.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_nonlin_dyn_eQTLs_early.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_nonlin_dyn_eQTLs_late.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_nonlin_dyn_eQTLs_middle.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_nonlin_dyn_eQTLs_switch.RData
+    Untracked:  output/simulation_dynamic_eQTL/min_lfsr_summary2.RData
+    Untracked:  overdispersion_is_important.R
+    Untracked:  pi0est.R
+    Untracked:  study_BF.R
 
 Unstaged changes:
+    Modified:   analysis/_site.yml
+    Modified:   code/function/functions_simulating.R
+    Modified:   code/function/functions_simulation.R
+    Modified:   code/function/functions_simulation_eQTL_test.R
     Modified:   output/simulation_dynamic_eQTL/fash_fit_1.RData
     Modified:   output/simulation_dynamic_eQTL/fash_fit_1_noisy.RData
     Modified:   output/simulation_dynamic_eQTL/fash_fit_2.RData
@@ -651,6 +675,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/a0a15b3aa239465e08d8f3edf22b77d4450c5b39/analysis/dynamic_eQTL_real.rmd" target="_blank">a0a15b3</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-06
+</td>
+<td>
+workflowr::wflow_publish("analysis/dynamic_eQTL_real.rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/b9a862281da8b1c00a575cde1ba74a102e02dd23/docs/dynamic_eQTL_real.html" target="_blank">b9a8622</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-02-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/4def527a944e240f18a762372c4f0f9a206e4cb9/analysis/dynamic_eQTL_real.rmd" target="_blank">4def527</a>
 </td>
 <td>
@@ -684,7 +742,7 @@ href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6623972/">Strober
 et.al, 2019</a> to perform the eQTL analysis.</p>
 <p>For the association testing, we use a linear regression model for
 each gene-variant pair at each time point. Following the practice in
-Strober et.al, we adjust for the first three genetic PCs.</p>
+Strober et.al, we adjust for the first three PCs.</p>
 <p>The code to perform this step can be found in the script
 <code>dynamic_eQTL_real/00_eQTLs.R</code> from the code directory.</p>
 <p>After this step, we have the effect size of eQTLs for each
@@ -706,160 +764,191 @@ nonlinear-dynamic eQTLs: <span class="math inline">\(H_0:
 <code>dynamic_eQTL_real/01_fash.R</code> from the code directory.</p>
 <p>We will directly load the fitted FASH models from the output
 directory.</p>
-<pre class="r"><code>load(paste0(result_dir, &quot;/fash_fit1_all.Rdata&quot;))
-load(paste0(result_dir, &quot;/fash_fit2_all.Rdata&quot;))</code></pre>
-<p>Let’s take a quick overview of the two fitted FASH models</p>
-<pre class="r"><code>fash_fit1</code></pre>
-<pre><code>Fitted fash Object
--------------------
-Number of datasets: 1009173
-Likelihood: gaussian
-Number of PSD grid values: 52 (initial), 9 (non-trivial)
-Order of Integrated Wiener Process (IWP): 1</code></pre>
-<pre class="r"><code>fash_fit2</code></pre>
-<pre><code>Fitted fash Object
--------------------
-Number of datasets: 1009173
-Likelihood: gaussian
-Number of PSD grid values: 52 (initial), 8 (non-trivial)
-Order of Integrated Wiener Process (IWP): 2</code></pre>
-<p>As well as their estimated priors:</p>
-<pre class="r"><code>fash_fit1$prior_weights</code></pre>
-<pre><code>         psd prior_weight
-1 0.00000000 0.0287842263
-2 0.02732372 0.1864703745
-3 0.03337327 0.4745056157
-4 0.06081006 0.1147849517
-5 0.07427358 0.1589425113
-6 0.10025884 0.0214257159
-7 0.12245643 0.0121342052
-8 0.16529889 0.0028396357
-9 0.33287108 0.0001127636</code></pre>
-<pre class="r"><code>fash_fit2$prior_weights</code></pre>
-<pre><code>          psd prior_weight
-1 0.000000000 5.086111e-01
-2 0.006737947 4.613356e-01
-3 0.020241911 2.358783e-02
-4 0.022370772 4.911592e-03
-5 0.045049202 6.665396e-04
-6 0.049787068 7.660696e-04
-7 0.067205513 9.864533e-05
-8 0.272531793 2.261151e-05</code></pre>
+<pre class="r"><code>load(paste0(result_dir, &quot;/fash_fit1_all.RData&quot;))</code></pre>
 <p>We will load the datasets from the fitted FASH object:</p>
 <pre class="r"><code>datasets &lt;- fash_fit1$fash_data$data_list
 for (i in 1:length(datasets)) {
   datasets[[i]]$SE &lt;- fash_fit1$fash_data$S[[i]]
 }
 all_genes &lt;- unique(sapply(strsplit(names(datasets), &quot;_&quot;), &quot;[[&quot;, 1))</code></pre>
-<p>The default models do not make use of any penalty when estimating
-<span class="math inline">\(\pi_0\)</span>, so might be vulnerable to
-model-misspecification.</p>
-<p>We can take a look at how the estimated <span
-class="math inline">\(\pi_0\)</span> changes with different penalty
-values.</p>
-<p>First, for model with order 1:</p>
-<pre class="r"><code>load(paste0(result_dir, &quot;/penalty_size.Rdata&quot;))
-pio_mom_1 &lt;- mean(apply(fash_fit1$L_matrix, 1, which.max) == 1)
-plot(penalty_size[-1], pi0[-1], type = &quot;o&quot;, xlab = &quot;Penalty size&quot;, ylab = &quot;Estimated pi_0&quot;,
-     main = &quot;Order = 1&quot;, ylim = c(0,1))
-abline(h = pio_mom_1, col = &quot;red&quot;, lty = 2)</code></pre>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-6-1.png" width="768" style="display: block; margin: auto;" /></p>
-<p>The red dashed line represents the estimated <span
-class="math inline">\(\pi_0\)</span> based on the MoM estimator, which
-is biased but more robust to model-misspecification. Let’s choose a
-penalty parameter that is not too large (relative to the sample size),
-but could produce a penalized MLE estimator that is close to the MoM
-estimator.</p>
-<pre class="r"><code>selected_penalty &lt;- 20000
-selected_penalty/length(datasets) # 0.01981821 percent of the data</code></pre>
-<pre><code>[1] 0.01981821</code></pre>
-<p>Based on the selected penalty, we can update the FASH model:</p>
-<pre class="r"><code>fash_fit1_update &lt;- fashr::fash_eb_est(L_matrix = fash_fit1$L_matrix, penalty = selected_penalty, grid = fine_grid)
-fash_fit1_update$lfdr &lt;- fash_fit1_update$posterior_weight[,1]
+<p>In this analysis, we will focus on the <strong>FASH(1)</strong> model
+that assumes a <strong>first order IWP</strong> and <strong>tests for
+dynamic eQTLs</strong>.</p>
+<p>Let’s take a quick overview of the fitted FASH model:</p>
+<pre class="r"><code>log_prec &lt;- seq(0,10, by = 0.2)
+fine_grid &lt;- sort(c(0, exp(-0.5*log_prec)))
 
-fash_fit1$prior_weights &lt;- fash_fit1_update$prior_weight
-fash_fit1$posterior_weights &lt;- fash_fit1_update$posterior_weight
-fash_fit1$lfdr &lt;- fash_fit1_update$lfdr</code></pre>
-<pre class="r"><code>load(paste0(result_dir, &quot;/fash_fit_all_updated.RData&quot;))
-fash_fit1_update$prior_weight</code></pre>
-<pre><code>         psd prior_weight
-1 0.00000000 0.4157160597
-2 0.05502322 0.3851415654
-3 0.06081006 0.1581860371
-4 0.11080316 0.0182630299
-5 0.12245643 0.0223050302
-6 0.20189652 0.0002690632
-7 0.33287108 0.0001192145</code></pre>
-<p>Similarly, for model with order 2:</p>
-<pre class="r"><code>pio_mom_2 &lt;- mean(apply(fash_fit2$L_matrix, 1, which.max) == 1)
-plot(penalty_size2, pi02, type = &quot;o&quot;, 
-     xlab = &quot;Penalty size&quot;, ylab = &quot;Estimated pi_0&quot;,
-     main = &quot;Order = 2&quot;)
-abline(h = pio_mom_2, col = &quot;red&quot;, lty = 2)</code></pre>
+fash_fit1 &lt;- fash(Y = &quot;beta&quot;, smooth_var = &quot;time&quot;, S = &quot;SE&quot;, data_list = datasets,
+                  num_basis = 20, order = 1, betaprec = 0,
+                  pred_step = 1, penalty = 10, grid = fine_grid,
+                  num_cores = num_cores, verbose = TRUE)
+save(fash_fit1, file = &quot;./results/fash_fit1_all.RData&quot;)</code></pre>
+<pre class="r"><code>fash_fit1</code></pre>
+<pre><code>Fitted fash Object
+-------------------
+Number of datasets: 1009173
+Likelihood: gaussian
+Number of PSD grid values: 52 (initial), 10 (non-trivial)
+Order of Integrated Wiener Process (IWP): 1</code></pre>
+<p>As well as the estimated priors:</p>
+<pre class="r"><code>fash_fit1$prior_weights</code></pre>
+<pre><code>           psd prior_weight
+1  0.000000000   0.24356776
+2  0.006737947   0.18550222
+3  0.036883167   0.11921408
+4  0.060810063   0.06144567
+5  0.082084999   0.18619579
+6  0.110803158   0.02357473
+7  0.165298888   0.09421258
+8  0.246596964   0.02817485
+9  0.367879441   0.03810991
+10 1.000000000   0.02000241</code></pre>
+</div>
+<div id="problem-with-pi_0-estimation" class="section level2">
+<h2>Problem with <span class="math inline">\(\pi_0\)</span>
+estimation</h2>
+<p>If we measure the significance using the false discovery rate, then
+it is sensitive to the value of <span
+class="math inline">\(\pi_0\)</span>. The estimated <span
+class="math inline">\(\pi_0\)</span> is 0.2435678, which is way too
+small to be realistic.</p>
+<p>One likely reason could be due to model-misspecification under the
+alternative hypothesis. To account for this, we will consider the
+following approaches:</p>
+<p>(i): A method of moments (MOM) estimator for <span
+class="math inline">\(\pi_0\)</span> based on the rank of the likelihood
+matrix:</p>
+<pre class="r"><code>pio_mom_1 &lt;- mean(apply(fash_fit1$L_matrix, 1, which.max) == 1)
+pio_mom_1</code></pre>
+<pre><code>[1] 0.4307309</code></pre>
+<p>The MOM estimate is 0.4307309, which is much larger than the
+estimated <span class="math inline">\(\pi_0\)</span> from the model.</p>
+<p>(ii): A conservative estimate of <span
+class="math inline">\(\pi_0\)</span> based on the BF procedure:</p>
+<pre class="r"><code>fash_fit1_update &lt;- BF_update(fash_fit1, plot = FALSE)
+fash_fit1_update$prior_weights
+save(fash_fit1_update, file = paste0(result_dir, &quot;/fash_fit1_update.RData&quot;))</code></pre>
+<p>The conservative estimate is 0.8921652, which is much more
+realistic.</p>
+<p>(iii): Instead of looking at the FDR which is based on the estimated
+<span class="math inline">\(\pi_0\)</span>, we can use the minimum local
+false sign rate (<span class="math inline">\(\text{min-lfsr}_i\)</span>)
+to measure significance: <span class="math display">\[
+\text{min-lfsr}_i = \min_{t} \left\{ \text{lfsr}(W_i(t)) \right\},
+\]</span> where <span class="math inline">\(W_i(t) = \beta_i(t) -
+\beta_i(0)\)</span>.</p>
+<p>Let’s compute the significance using the minimum local false sign
+rate (<span class="math inline">\(\text{min-lfsr}_i\)</span>):</p>
+<pre class="r"><code>smooth_var_refined = seq(0,15, by = 0.1)
+min_lfsr_summary1 &lt;- min_lfsr_summary(fash_fit1, num_cores = num_cores, smooth_var = smooth_var_refined)
+save(min_lfsr_summary1, file = &quot;./results/min_lfsr_summary1.RData&quot;)
+min_lfsr_summary1_update &lt;- min_lfsr_summary(fash_fit1_update, num_cores = num_cores, smooth_var = smooth_var_refined)
+save(min_lfsr_summary1_update, file = &quot;./results/min_lfsr_summary1_update.RData&quot;)</code></pre>
+<p>Let’s visualize how the min-lfsr compares with the local false
+discovery rate (lfdr):</p>
+<pre class="r"><code>load(paste0(result_dir, &quot;/min_lfsr_summary1.RData&quot;))
+# sample some indices for easy visualization
+sample_indices &lt;- sample(1:length(min_lfsr_summary1$min_lfsr), 1e5)
+min_lfsr1_unadj &lt;- min_lfsr_summary1$min_lfsr[sample_indices]
+lfdr1_vec_unadj &lt;- fash_fit1$lfdr[min_lfsr_summary1$index][sample_indices]
+plot(lfdr1_vec_unadj, min_lfsr1_unadj, 
+     pch = 20, cex = 0.1,
+     ylim = c(0,1), xlim = c(0,1),
+     xlab = &quot;lfdr&quot;, ylab = &quot;min-lfsr&quot;, main = &quot;lfdr vs min-lfsr (Un-adjusted)&quot;)
+lines(c(0,1), c(0,1), col = &quot;red&quot;)</code></pre>
 <p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>selected_penalty2 &lt;- 5000
-selected_penalty2/length(datasets) # 0.004954552</code></pre>
-<pre><code>[1] 0.004954552</code></pre>
-<p>Update the FASH model:</p>
-<pre class="r"><code>fash_fit2_update &lt;- fashr::fash_eb_est(L_matrix = fash_fit2$L_matrix, penalty = selected_penalty2, grid = fine_grid)
-fash_fit2_update$lfdr &lt;- fash_fit2_update$posterior_weight[,1]
-
-fash_fit2$prior_weights &lt;- fash_fit2_update$prior_weight
-fash_fit2$posterior_weights &lt;- fash_fit2_update$posterior_weight
-fash_fit2$lfdr &lt;- fash_fit2_update$lfdr</code></pre>
-<pre class="r"><code>fash_fit2_update$prior_weight</code></pre>
-<pre><code>         psd prior_weight
-1 0.00000000 7.452369e-01
-2 0.01005184 1.773314e-01
-3 0.01110900 7.029841e-02
-4 0.03019738 4.379520e-03
-5 0.03688317 2.493112e-03
-6 0.06720551 2.384917e-04
-7 0.27253179 2.218742e-05</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b9a862281da8b1c00a575cde1ba74a102e02dd23/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-10-1.png" target="_blank">b9a8622</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-02-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Let’s also visualize the min-lfsr and the lfdr from the BF-updated
+model:</p>
+<pre class="r"><code>load(paste0(result_dir, &quot;/min_lfsr_summary1_update.RData&quot;))
+min_lfsr1 &lt;- min_lfsr_summary1_update$min_lfsr[sample_indices]
+lfdr1_vec &lt;- fash_fit1_update$lfdr[min_lfsr_summary1_update$index][sample_indices]
+plot(lfdr1_vec, min_lfsr1, 
+     pch = 20, cex = 0.1,
+     ylim = c(0,1), xlim = c(0,1),
+     xlab = &quot;lfdr&quot;, ylab = &quot;min-lfsr&quot;, main = &quot;lfdr vs min-lfsr (BF-adjusted)&quot;)
+lines(c(0,1), c(0,1), col = &quot;red&quot;)</code></pre>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-11-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Indeed, the min-lfsr tends to be more conservative than the lfdr.</p>
+<p>Let’s also assess how does the BF-update of <span
+class="math inline">\(\pi_0\)</span> affect the min-lfsr.</p>
+<pre class="r"><code>plot(min_lfsr1_unadj, min_lfsr1, 
+     pch = 20, cex = 0.1,
+     ylim = c(0,1), xlim = c(0,1),
+     xlab = &quot;min-lfsr (unadjusted)&quot;, ylab = &quot;min-lfsr&quot;, main = &quot;Effect of BF adjustment on min-lfsr&quot;)
+lines(c(0,1), c(0,1), col = &quot;red&quot;)</code></pre>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-12-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Let’s see how many pairs and genes remain significant after
+controlling the min-lfsr:</p>
+<pre class="r"><code>alpha &lt;- 0.05
+fash_highlighted1_lfsr &lt;- min_lfsr_summary1_update$index[min_lfsr_summary1_update$fsr &lt;= alpha]
+pairs_highlighted1_lfsr &lt;- names(datasets)[fash_highlighted1_lfsr]
+length(pairs_highlighted1_lfsr)</code></pre>
+<pre><code>[1] 28011</code></pre>
+<pre class="r"><code>length(pairs_highlighted1_lfsr)/length(datasets)</code></pre>
+<pre><code>[1] 0.02775639</code></pre>
+<pre class="r"><code>genes_highlighted1_lfsr &lt;- unique(sapply(strsplit(pairs_highlighted1_lfsr, &quot;_&quot;), &quot;[[&quot;, 1))
+length(genes_highlighted1_lfsr)</code></pre>
+<pre><code>[1] 2572</code></pre>
+<pre class="r"><code>length(genes_highlighted1_lfsr)/length(all_genes)</code></pre>
+<pre><code>[1] 0.4042754</code></pre>
 </div>
 <div id="detecting-dynamic-eqtls" class="section level2">
 <h2>Detecting dynamic eQTLs</h2>
 <p>We will use the updated FASH model (1) to detect dynamic eQTLs.</p>
-<pre class="r"><code>alpha &lt;- 0.05
-test1 &lt;- fdr_control(fash_fit1_update, alpha = alpha, plot = F)</code></pre>
-<pre><code>137573 datasets are significant at alpha level 0.05. Total datasets tested: 1009173. </code></pre>
+<pre class="r"><code>test1 &lt;- fdr_control(fash_fit1_update, alpha = alpha, plot = F)</code></pre>
+<pre><code>28961 datasets are significant at alpha level 0.05. Total datasets tested: 1009173. </code></pre>
 <pre class="r"><code>fash_highlighted1 &lt;- test1$fdr_results$index[test1$fdr_results$FDR &lt;= alpha]</code></pre>
 <p>How many pairs are detected as dynamic eQTLs?</p>
 <pre class="r"><code>pairs_highlighted1 &lt;- names(datasets)[fash_highlighted1]
 length(pairs_highlighted1)</code></pre>
-<pre><code>[1] 137573</code></pre>
+<pre><code>[1] 28961</code></pre>
 <pre class="r"><code>length(pairs_highlighted1)/length(datasets)</code></pre>
-<pre><code>[1] 0.1363225</code></pre>
+<pre><code>[1] 0.02869776</code></pre>
 <p>How many unique genes are detected?</p>
 <pre class="r"><code>genes_highlighted1 &lt;- unique(sapply(strsplit(pairs_highlighted1, &quot;_&quot;), &quot;[[&quot;, 1))
 length(genes_highlighted1)</code></pre>
-<pre><code>[1] 5315</code></pre>
+<pre><code>[1] 2630</code></pre>
 <pre class="r"><code>length(genes_highlighted1)/length(all_genes)</code></pre>
-<pre><code>[1] 0.8354291</code></pre>
+<pre><code>[1] 0.413392</code></pre>
 <p>Visualize top-ranked pairs:</p>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-16-1.png" width="768" style="display: block; margin: auto;" /></p>
-</div>
-<div id="detecting-nonlinear-dynamic-eqtls" class="section level2">
-<h2>Detecting nonlinear dynamic eQTLs</h2>
-<p>We will use the updated FASH model (2) to detect nonlinear dynamic
-eQTLs.</p>
-<pre class="r"><code>test2 &lt;- fdr_control(fash_fit2_update, alpha = alpha, plot = F)</code></pre>
-<pre><code>4428 datasets are significant at alpha level 0.05. Total datasets tested: 1009173. </code></pre>
-<pre class="r"><code>fash_highlighted2 &lt;- test2$fdr_results$index[test2$fdr_results$FDR &lt;= alpha]</code></pre>
-<p>How many pairs are detected as nonlinear dynamic eQTLs?</p>
-<pre class="r"><code>pairs_highlighted2 &lt;- names(datasets)[fash_highlighted2]
-length(pairs_highlighted2)</code></pre>
-<pre><code>[1] 4428</code></pre>
-<pre class="r"><code>length(pairs_highlighted2)/length(datasets)</code></pre>
-<pre><code>[1] 0.004387751</code></pre>
-<p>How many unique genes are detected?</p>
-<pre class="r"><code>genes_highlighted2 &lt;- unique(sapply(strsplit(pairs_highlighted2, &quot;_&quot;), &quot;[[&quot;, 1))
-length(genes_highlighted2)</code></pre>
-<pre><code>[1] 648</code></pre>
-<pre class="r"><code>length(genes_highlighted2)/length(all_genes)</code></pre>
-<pre><code>[1] 0.1018548</code></pre>
-<p>Visualize top-ranked pairs:</p>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-20-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-18-1.png" width="768" style="display: block; margin: auto;" /></p>
 </div>
 <div id="comparing-with-strober-et.al" class="section level2">
 <h2>Comparing with Strober et.al</h2>
@@ -886,181 +975,368 @@ Strober et.al and FASH (order 1):</p>
 ggVennDiagram(gene_sets, label = &quot;both&quot;) +
   scale_fill_gradient(low=&quot;grey90&quot;,high = &quot;red&quot;) +
   theme(legend.position = &quot;right&quot;)  # Move legend to the right</code></pre>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-22-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-20-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b9a862281da8b1c00a575cde1ba74a102e02dd23/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-20-1.png" target="_blank">b9a8622</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-02-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>There is a large number of genes only detected by FASH (order 1).
 Let’s take a look at the 4 pairs that are least significant from
 FASH:</p>
-<pre class="r"><code>gene_fashr_only &lt;- setdiff(genes_highlighted1, union(genes_highlighted_strober_nonlinear, genes_highlighted_strober_linear))
-## produce four plots for four genes
-par(mfrow = c(2,2))
-for (i in 1:4) {
-  selected_gene &lt;- gene_fashr_only[i]
-  pairs_of_selected_gene &lt;- grep(selected_gene, pairs_highlighted1, value = T)
-  selected_indices &lt;- which(names(datasets) %in% pairs_of_selected_gene)
-  selected_index &lt;- selected_indices[which(fash_fit1$lfdr[selected_indices] == min(fash_fit1$lfdr[selected_indices]))][1]
-  fitted_result &lt;- predict(fash_fit1,
-                           index = selected_index,
-                           smooth_var = seq(0, 15, by = 0.1))
-  plot(
-    datasets[[selected_index]]$x,
-    datasets[[selected_index]]$y,
-    pch = 20,
-    col = &quot;black&quot;,
-    xlab = &quot;Time&quot;,
-    ylab = &quot;Effect Est&quot;,
-    main = paste0(names(datasets)[selected_index]),
-    ylim = c(
-      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
-      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
-    )
-  )
-  arrows(
-    datasets[[selected_index]]$x,
-    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
-    datasets[[selected_index]]$x,
-    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
-    length = 0.05,
-    angle = 90,
-    code = 3,
-    col = &quot;black&quot;
-  )
-  lines(fitted_result$x,
-        fitted_result$mean,
-        col = &quot;red&quot;,
-        lwd = 2)
-  abline(h = mean(datasets[[selected_index]]$y), col = &quot;blue&quot;, lty = 2)
-  polygon(
-    c(fitted_result$x, rev(fitted_result$x)),
-    c(fitted_result$lower, rev(fitted_result$upper)),
-    col = rgb(1, 0, 0, 0.3),
-    border = NA
-  )
-}</code></pre>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-23-1.png" width="768" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>par(mfrow = c(1,1))</code></pre>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-21-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>Let’s also look at the genes that were missed by FASH, but detected
 by Strober et.al. In this case, we will pick the most significant pair
 for each gene in FASH:</p>
-<pre class="r"><code>gene_missed &lt;- setdiff(union(genes_highlighted_strober_nonlinear, genes_highlighted_strober_linear), genes_highlighted1)
-## produce four plots for four genes
-par(mfrow = c(2,2))
-for (i in 1:4) {
-  selected_gene &lt;- gene_missed[i]
-  pairs_of_selected_gene &lt;- grep(selected_gene, names(datasets), value = T)
-  selected_indices &lt;- which(names(datasets) %in% pairs_of_selected_gene)
-  selected_index &lt;- selected_indices[which(fash_fit1$lfdr[selected_indices] == min(fash_fit1$lfdr[selected_indices]))][1]
-  fitted_result &lt;- predict(fash_fit1,
-                           index = selected_index,
-                           smooth_var = seq(0, 15, by = 0.1))
-  plot(
-    datasets[[selected_index]]$x,
-    datasets[[selected_index]]$y,
-    pch = 20,
-    col = &quot;black&quot;,
-    xlab = &quot;Time&quot;,
-    ylab = &quot;Effect Est&quot;,
-    main = paste0(names(datasets)[selected_index]),
-    ylim = c(
-      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
-      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
-    )
-  )
-  arrows(
-    datasets[[selected_index]]$x,
-    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
-    datasets[[selected_index]]$x,
-    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
-    length = 0.05,
-    angle = 90,
-    code = 3,
-    col = &quot;black&quot;
-  )
-  lines(fitted_result$x,
-        fitted_result$mean,
-        col = &quot;red&quot;,
-        lwd = 2)
-  abline(h = mean(datasets[[selected_index]]$y), col = &quot;blue&quot;, lty = 2)
-  polygon(
-    c(fitted_result$x, rev(fitted_result$x)),
-    c(fitted_result$lower, rev(fitted_result$upper)),
-    col = rgb(1, 0, 0, 0.3),
-    border = NA
-  )
-}</code></pre>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-24-1.png" width="768" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>par(mfrow = c(1,1))</code></pre>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-22-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
+Past versions of unnamed-chunk-22-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b9a862281da8b1c00a575cde1ba74a102e02dd23/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-22-1.png" target="_blank">b9a8622</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-02-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Even the most significant pairs from FASH for each gene do not show a
 clear pattern of dynamic eQTLs. It is kind of expected that FASH won’t
 conclude with high confidence that these genes have dynamic eQTLs.</p>
-<p>Finally, let’s take a look how these pairs with significant
-non-linear dynamic effects identified by FASH (order = 2) fit into the
-Venn diagram:</p>
-<pre class="r"><code>gene_sets &lt;- list(
-  &quot;Strober (Nonlinear)&quot; = genes_highlighted_strober_nonlinear,
-  &quot;Strober (Linear)&quot; = genes_highlighted_strober_linear,
-  &quot;FASH (1)&quot; = genes_highlighted1,
-  &quot;FASH (2)&quot; = genes_highlighted2
-)
-ggVennDiagram(gene_sets, label = &quot;both&quot;) +
-  scale_fill_gradient(low=&quot;grey90&quot;,high = &quot;red&quot;) +
-  theme(legend.position = &quot;right&quot;)  # Move legend to the right</code></pre>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-25-1.png" width="768" style="display: block; margin: auto;" /></p>
-<p>There is a large number of genes that were identified in FASH(1) or
-in Strober et.al, but not in FASH(2).</p>
-<p>Let’s look at some examples:</p>
-<pre class="r"><code># genes that are only missed by FASH(2)
-gene_missed_by_fash2_only &lt;- setdiff(intersect(intersect(genes_highlighted1, genes_highlighted_strober_linear), genes_highlighted_strober_nonlinear), genes_highlighted2)
-## produce four plots for four genes
-par(mfrow = c(2,2))
-for (i in 1:4) {
-  selected_gene &lt;- gene_missed_by_fash2_only[i]
-  pairs_of_selected_gene &lt;- grep(selected_gene, pairs_highlighted1, value = T)
-  selected_indices &lt;- which(names(datasets) %in% pairs_of_selected_gene)
-  selected_index &lt;- selected_indices[which(fash_fit2$lfdr[selected_indices] == min(fash_fit2$lfdr[selected_indices]))][1]
-  fitted_result &lt;- predict(fash_fit2,
-                           index = selected_index,
-                           smooth_var = seq(0, 15, by = 0.1))
-  plot(
-    datasets[[selected_index]]$x,
-    datasets[[selected_index]]$y,
-    pch = 20,
-    col = &quot;black&quot;,
-    xlab = &quot;Time&quot;,
-    ylab = &quot;Effect Est&quot;,
-    main = paste0(names(datasets)[selected_index]),
-    ylim = c(
-      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
-      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
-    )
-  )
-  arrows(
-    datasets[[selected_index]]$x,
-    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
-    datasets[[selected_index]]$x,
-    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
-    length = 0.05,
-    angle = 90,
-    code = 3,
-    col = &quot;black&quot;
-  )
-  lines(fitted_result$x,
-        fitted_result$mean,
-        col = &quot;red&quot;,
-        lwd = 2)
-  # add regression line
-  abline(lm(datasets[[selected_index]]$y ~ datasets[[selected_index]]$x, weights = 1/datasets[[selected_index]]$SE), col = &quot;blue&quot;, lty = 2)
-  polygon(
-    c(fitted_result$x, rev(fitted_result$x)),
-    c(fitted_result$lower, rev(fitted_result$upper)),
-    col = rgb(1, 0, 0, 0.3),
-    border = NA
-  )
-}</code></pre>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-26-1.png" width="768" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>par(mfrow = c(1,1))</code></pre>
-<p>Again, even the most significant pairs for each gene do not show a
-clear pattern of nonlinear effects. So it is not surprising that FASH(2)
-did not detect these genes as having nonlinear dynamic eQTLs.</p>
+<!-- ## Classifying dynamic eQTLs (To be rerun...) -->
+<!-- Following the definition in Strober et.al, we will classify the detected dynamic eQTLs into different categories: -->
+<!-- - *Early*: eQTLs with strongest effect during the first three days: $\max_{t\leq3} |\beta(t)| - \max_{t> 3} |\beta(t)| > 0$. -->
+<!-- - *Late*: eQTLs with strongest effect during the last four days: $\max_{t\geq 12} |\beta(t)| - \max_{t< 12} |\beta(t)| > 0$. -->
+<!-- - *Middle*: eQTLs with strongest effect during days 4-11: $\max_{4\leq t\leq 11} |\beta(t)| - \max_{t> 11 | t< 4} |\beta(t)| > 0$. -->
+<!-- - *Switch*: eQTLs with effect sign switch during the time course: $\min\{\max\beta(t)^+,\max\beta(t)^-\}-c $ where $c$ is a threshold that we set to 0.25 (which means with two alleles, the maximal difference of effect size is at least $\geq 2\times\min\{\max\beta(t)^+,\max\beta(t)^-\}\times2 \geq  2 \times 0.25  \times 2 = 1$). -->
+<!-- We first take a look at the significant pairs detected by FASH (order 1), and classify them based on the false sign rate (lfsr): -->
+<!-- ```{r eval=FALSE} -->
+<!-- smooth_var_refined = seq(0,15, by = 0.1) -->
+<!-- functional_early <- function(x){ -->
+<!--   max(abs(x[smooth_var_refined <= 3])) - max(abs(x[smooth_var_refined > 3])) -->
+<!-- } -->
+<!-- testing_early_dyn <- testing_functional(functional_early, -->
+<!--                                               lfsr_cal = function(x){mean(x <= 0)}, -->
+<!--                                               fash = fash_fit1_update, -->
+<!--                                               indices = fash_highlighted1, -->
+<!--                                               smooth_var = smooth_var_refined) -->
+<!-- ``` -->
+<!-- How many pairs are classified as early dynamic eQTLs? -->
+<!-- ```{r} -->
+<!-- load(paste0(result_dir, "/classify_dyn_eQTLs.RData")) -->
+<!-- early_indices <- testing_early_dyn$indices[testing_early_dyn$cfsr <= alpha] -->
+<!-- length(early_indices) -->
+<!-- ``` -->
+<!-- How many unique genes? -->
+<!-- ```{r} -->
+<!-- early_genes <- unique(sapply(strsplit(names(datasets)[early_indices], "_"), "[[", 1)) -->
+<!-- length(early_genes) -->
+<!-- ``` -->
+<!-- Let's take a look at the top-ranked early dynamic eQTLs: -->
+<!-- ```{r echo=FALSE} -->
+<!-- par(mfrow = c(2,2)) -->
+<!-- for (i in 1:4) { -->
+<!--   selected_index <- early_indices[i] -->
+<!--   fitted_result <- predict(fash_fit1_update, -->
+<!--                            index = selected_index, -->
+<!--                            smooth_var = seq(0, 15, by = 0.1)) -->
+<!--   plot( -->
+<!--     datasets[[selected_index]]$x, -->
+<!--     datasets[[selected_index]]$y, -->
+<!--     pch = 20, -->
+<!--     col = "black", -->
+<!--     xlab = "Time", -->
+<!--     ylab = "Effect Est", -->
+<!--     main = paste0(names(datasets)[selected_index]), -->
+<!--     ylim = c( -->
+<!--       min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE), -->
+<!--       max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE) -->
+<!--     ) -->
+<!--   ) -->
+<!--   arrows( -->
+<!--     datasets[[selected_index]]$x, -->
+<!--     datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE, -->
+<!--     datasets[[selected_index]]$x, -->
+<!--     datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE, -->
+<!--     length = 0.05, -->
+<!--     angle = 90, -->
+<!--     code = 3, -->
+<!--     col = "black" -->
+<!--   ) -->
+<!--   lines(fitted_result$x, -->
+<!--         fitted_result$mean, -->
+<!--         col = "red", -->
+<!--         lwd = 2) -->
+<!--   abline(h = 0, lty = 2, col = "blue") -->
+<!--   polygon( -->
+<!--     c(fitted_result$x, rev(fitted_result$x)), -->
+<!--     c(fitted_result$lower, rev(fitted_result$upper)), -->
+<!--     col = rgb(1, 0, 0, 0.3), -->
+<!--     border = NA -->
+<!--   ) -->
+<!-- } -->
+<!-- par(mfrow = c(1,1)) -->
+<!-- ``` -->
+<!-- It is evident that these variants have largest $|\beta(t)|$ during the first three days. -->
+<!-- How many pairs are classified as middle dynamic eQTLs? -->
+<!-- ```{r eval=FALSE} -->
+<!-- functional_middle <- function(x){ -->
+<!--   max(abs(x[smooth_var_refined <= 11 & smooth_var_refined >= 4])) - max(abs(x[smooth_var_refined > 11]), abs(x[smooth_var_refined < 4])) -->
+<!-- } -->
+<!-- testing_middle_dyn <- testing_functional(functional_middle,  -->
+<!--                                                lfsr_cal = function(x){mean(x <= 0)}, -->
+<!--                                                fash = fash_fit1_update,  -->
+<!--                                                indices = fash_highlighted1,  -->
+<!--                                                num_cores = num_cores, -->
+<!--                                                smooth_var = smooth_var_refined) -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!-- middle_indices <- testing_middle_dyn$indices[testing_middle_dyn$cfsr <= alpha] -->
+<!-- length(middle_indices) -->
+<!-- ``` -->
+<!-- How many unique genes? -->
+<!-- ```{r} -->
+<!-- middle_genes <- unique(sapply(strsplit(names(datasets)[middle_indices], "_"), "[[", 1)) -->
+<!-- length(middle_genes) -->
+<!-- ``` -->
+<!-- Take a look at their results: -->
+<!-- ```{r} -->
+<!-- par(mfrow = c(2,2)) -->
+<!-- for (i in 1:4) { -->
+<!--   selected_index <- sample(middle_indices, 1) -->
+<!--   fitted_result <- predict(fash_fit1_update, -->
+<!--                            index = selected_index, -->
+<!--                            smooth_var = seq(0, 15, by = 0.1)) -->
+<!--   plot( -->
+<!--     datasets[[selected_index]]$x, -->
+<!--     datasets[[selected_index]]$y, -->
+<!--     pch = 20, -->
+<!--     col = "black", -->
+<!--     xlab = "Time", -->
+<!--     ylab = "Effect Est", -->
+<!--     main = paste0(names(datasets)[selected_index]), -->
+<!--     ylim = c( -->
+<!--       min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE), -->
+<!--       max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE) -->
+<!--     ) -->
+<!--   ) -->
+<!--   arrows( -->
+<!--     datasets[[selected_index]]$x, -->
+<!--     datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE, -->
+<!--     datasets[[selected_index]]$x, -->
+<!--     datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE, -->
+<!--     length = 0.05, -->
+<!--     angle = 90, -->
+<!--     code = 3, -->
+<!--     col = "black" -->
+<!--   ) -->
+<!--   lines(fitted_result$x, -->
+<!--         fitted_result$mean, -->
+<!--         col = "red", -->
+<!--         lwd = 2) -->
+<!--   abline(h = 0, lty = 2, col = "blue") -->
+<!--   polygon( -->
+<!--     c(fitted_result$x, rev(fitted_result$x)), -->
+<!--     c(fitted_result$lower, rev(fitted_result$upper)), -->
+<!--     col = rgb(1, 0, 0, 0.3), -->
+<!--     border = NA -->
+<!--   ) -->
+<!-- } -->
+<!-- par(mfrow = c(1,1)) -->
+<!-- ``` -->
+<!-- How many pairs are classified as late dynamic eQTLs? -->
+<!-- ```{r eval=FALSE} -->
+<!-- functional_late <- function(x){ -->
+<!--   max(abs(x[smooth_var_refined >= 12])) - max(abs(x[smooth_var_refined < 12])) -->
+<!-- } -->
+<!-- testing_late_dyn <- testing_functional(functional_late,  -->
+<!--                                              lfsr_cal = function(x){mean(x <= 0)}, -->
+<!--                                              fash = fash_fit1_update,  -->
+<!--                                              indices = fash_highlighted1,  -->
+<!--                                              num_cores = num_cores, -->
+<!--                                              smooth_var = smooth_var_refined) -->
+<!-- ``` -->
+<!-- How many pairs and how many unique genes are classified as late dynamic eQTLs? -->
+<!-- ```{r} -->
+<!-- late_indices <- testing_late_dyn$indices[testing_late_dyn$cfsr <= alpha] -->
+<!-- length(late_indices) -->
+<!-- late_genes <- unique(sapply(strsplit(names(datasets)[late_indices], "_"), "[[", 1)) -->
+<!-- length(late_genes) -->
+<!-- ``` -->
+<!-- Let's take a look at the top-ranked late dynamic eQTLs: -->
+<!-- ```{r echo=FALSE} -->
+<!-- par(mfrow = c(2,2)) -->
+<!-- for (i in 1:4) { -->
+<!--   selected_index <- late_indices[i] -->
+<!--   fitted_result <- predict(fash_fit1_update, -->
+<!--                            index = selected_index, -->
+<!--                            smooth_var = seq(0, 15, by = 0.1)) -->
+<!--   plot( -->
+<!--     datasets[[selected_index]]$x, -->
+<!--     datasets[[selected_index]]$y, -->
+<!--     pch = 20, -->
+<!--     col = "black", -->
+<!--     xlab = "Time", -->
+<!--     ylab = "Effect Est", -->
+<!--     main = paste0(names(datasets)[selected_index]), -->
+<!--     ylim = c( -->
+<!--       min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE), -->
+<!--       max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE) -->
+<!--     ) -->
+<!--   ) -->
+<!--   arrows( -->
+<!--     datasets[[selected_index]]$x, -->
+<!--     datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE, -->
+<!--     datasets[[selected_index]]$x, -->
+<!--     datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE, -->
+<!--     length = 0.05, -->
+<!--     angle = 90, -->
+<!--     code = 3, -->
+<!--     col = "black" -->
+<!--   ) -->
+<!--   lines(fitted_result$x, -->
+<!--         fitted_result$mean, -->
+<!--         col = "red", -->
+<!--         lwd = 2) -->
+<!--   abline(h = 0, lty = 2, col = "blue") -->
+<!--   polygon( -->
+<!--     c(fitted_result$x, rev(fitted_result$x)), -->
+<!--     c(fitted_result$lower, rev(fitted_result$upper)), -->
+<!--     col = rgb(1, 0, 0, 0.3), -->
+<!--     border = NA -->
+<!--   ) -->
+<!-- } -->
+<!-- par(mfrow = c(1,1)) -->
+<!-- ``` -->
+<!-- How many pairs are classified as switch dynamic eQTLs? -->
+<!-- ```{r eval=FALSE} -->
+<!-- switch_threshold <- 0.25 -->
+<!-- functional_switch <- function(x){ -->
+<!--   # compute the radius of x, measured by deviation from 0 from below and from above -->
+<!--   x_pos <- x[x > 0] -->
+<!--   x_neg <- x[x < 0] -->
+<!--   if(length(x_pos) == 0 || length(x_neg) == 0){ -->
+<!--     return(0) -->
+<!--   } -->
+<!--   min(max(abs(x_pos)), max(abs(x_neg))) - switch_threshold -->
+<!-- } -->
+<!-- testing_switch_dyn <- testing_functional(functional_switch,  -->
+<!--                                                lfsr_cal = function(x){mean(x <= 0)}, -->
+<!--                                                fash = fash_fit1_update,  -->
+<!--                                                indices = fash_highlighted1,  -->
+<!--                                                num_cores = num_cores, -->
+<!--                                                smooth_var = smooth_var_refined) -->
+<!-- ``` -->
+<!-- How many pairs and how many unique genes are classified as switch dynamic eQTLs? -->
+<!-- ```{r} -->
+<!-- switch_indices <- testing_switch_dyn$indices[testing_switch_dyn$cfsr <= alpha] -->
+<!-- length(switch_indices) -->
+<!-- switch_genes <- unique(sapply(strsplit(names(datasets)[switch_indices], "_"), "[[", 1)) -->
+<!-- length(switch_genes) -->
+<!-- ``` -->
+<!-- Let's take a look at the top-ranked switch dynamic eQTLs: -->
+<!-- ```{r echo=FALSE} -->
+<!-- par(mfrow = c(2,2)) -->
+<!-- for (i in 1:4) { -->
+<!--   selected_index <- switch_indices[i] -->
+<!--   fitted_result <- predict(fash_fit1_update, -->
+<!--                            index = selected_index, -->
+<!--                            smooth_var = seq(0, 15, by = 0.1)) -->
+<!--   plot( -->
+<!--     datasets[[selected_index]]$x, -->
+<!--     datasets[[selected_index]]$y, -->
+<!--     pch = 20, -->
+<!--     col = "black", -->
+<!--     xlab = "Time", -->
+<!--     ylab = "Effect Est", -->
+<!--     main = paste0(names(datasets)[selected_index]), -->
+<!--     ylim = c( -->
+<!--       min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE), -->
+<!--       max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE) -->
+<!--     ) -->
+<!--   ) -->
+<!--   arrows( -->
+<!--     datasets[[selected_index]]$x, -->
+<!--     datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE, -->
+<!--     datasets[[selected_index]]$x, -->
+<!--     datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE, -->
+<!--     length = 0.05, -->
+<!--     angle = 90, -->
+<!--     code = 3, -->
+<!--     col = "black" -->
+<!--   ) -->
+<!--   lines(fitted_result$x, -->
+<!--         fitted_result$mean, -->
+<!--         col = "red", -->
+<!--         lwd = 2) -->
+<!--   abline(h = 0, lty = 2, col = "blue") -->
+<!--   polygon( -->
+<!--     c(fitted_result$x, rev(fitted_result$x)), -->
+<!--     c(fitted_result$lower, rev(fitted_result$upper)), -->
+<!--     col = rgb(1, 0, 0, 0.3), -->
+<!--     border = NA -->
+<!--   ) -->
+<!-- } -->
+<!-- par(mfrow = c(1,1)) -->
+<!-- ``` -->
 </div>
 <div id="classifying-dynamic-eqtls" class="section level2">
 <h2>Classifying dynamic eQTLs</h2>
@@ -1095,17 +1371,54 @@ testing_early_dyn &lt;- testing_functional(functional_early,
                                               fash = fash_fit1,
                                               indices = fash_highlighted1,
                                               smooth_var = smooth_var_refined)</code></pre>
-<p>How many pairs are classified as early dynamic eQTLs?</p>
-<pre class="r"><code>load(paste0(result_dir, &quot;/classify_dyn_eQTLs.RData&quot;))
+<p>How many pairs and how many unique genes are classified as early
+dynamic eQTLs?</p>
+<pre class="r"><code>load(paste0(result_dir, &quot;/classify_dyn_eQTLs_early.RData&quot;))
 early_indices &lt;- testing_early_dyn$indices[testing_early_dyn$cfsr &lt;= alpha]
 length(early_indices)</code></pre>
-<pre><code>[1] 758</code></pre>
-<p>How many unique genes?</p>
+<pre><code>[1] 584</code></pre>
 <pre class="r"><code>early_genes &lt;- unique(sapply(strsplit(names(datasets)[early_indices], &quot;_&quot;), &quot;[[&quot;, 1))
 length(early_genes)</code></pre>
-<pre><code>[1] 130</code></pre>
+<pre><code>[1] 73</code></pre>
 <p>Let’s take a look at the top-ranked early dynamic eQTLs:</p>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-30-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-25-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-25-1">
+Past versions of unnamed-chunk-25-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-25-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b9a862281da8b1c00a575cde1ba74a102e02dd23/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-25-1.png" target="_blank">b9a8622</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-02-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>It is evident that these variants have largest <span
 class="math inline">\(|\beta(t)|\)</span> during the first three
 days.</p>
@@ -1119,13 +1432,15 @@ testing_middle_dyn &lt;- testing_functional(functional_middle,
                                                indices = fash_highlighted1, 
                                                num_cores = num_cores,
                                                smooth_var = smooth_var_refined)</code></pre>
-<pre class="r"><code>middle_indices &lt;- testing_middle_dyn$indices[testing_middle_dyn$cfsr &lt;= alpha]
+<p>How many pairs and how many unique genes are classified as middle
+dynamic eQTLs?</p>
+<pre class="r"><code>load(paste0(result_dir, &quot;/classify_dyn_eQTLs_middle.RData&quot;))
+middle_indices &lt;- testing_middle_dyn$indices[testing_middle_dyn$cfsr &lt;= alpha]
 length(middle_indices)</code></pre>
-<pre><code>[1] 421</code></pre>
-<p>How many unique genes?</p>
+<pre><code>[1] 316</code></pre>
 <pre class="r"><code>middle_genes &lt;- unique(sapply(strsplit(names(datasets)[middle_indices], &quot;_&quot;), &quot;[[&quot;, 1))
 length(middle_genes)</code></pre>
-<pre><code>[1] 86</code></pre>
+<pre><code>[1] 69</code></pre>
 <p>Take a look at their results:</p>
 <pre class="r"><code>par(mfrow = c(2,2))
 for (i in 1:4) {
@@ -1168,7 +1483,7 @@ for (i in 1:4) {
     border = NA
   )
 }</code></pre>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-34-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-28-1.png" width="768" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>par(mfrow = c(1,1))</code></pre>
 <p>How many pairs are classified as late dynamic eQTLs?</p>
 <pre class="r"><code>functional_late &lt;- function(x){
@@ -1182,15 +1497,17 @@ testing_late_dyn &lt;- testing_functional(functional_late,
                                              smooth_var = smooth_var_refined)</code></pre>
 <p>How many pairs and how many unique genes are classified as late
 dynamic eQTLs?</p>
-<pre class="r"><code>late_indices &lt;- testing_late_dyn$indices[testing_late_dyn$cfsr &lt;= alpha]
+<pre class="r"><code>load(paste0(result_dir, &quot;/classify_dyn_eQTLs_late.RData&quot;))
+late_indices &lt;- testing_late_dyn$indices[testing_late_dyn$cfsr &lt;= alpha]
 length(late_indices)</code></pre>
-<pre><code>[1] 905</code></pre>
+<pre><code>[1] 635</code></pre>
 <pre class="r"><code>late_genes &lt;- unique(sapply(strsplit(names(datasets)[late_indices], &quot;_&quot;), &quot;[[&quot;, 1))
 length(late_genes)</code></pre>
-<pre><code>[1] 263</code></pre>
+<pre><code>[1] 168</code></pre>
 <p>Let’s take a look at the top-ranked late dynamic eQTLs:</p>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-37-1.png" width="768" style="display: block; margin: auto;" /></p>
-<p>How many pairs are classified as switch dynamic eQTLs?</p>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-31-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>How many pairs and how many unique genes are classified as switch
+dynamic eQTLs?</p>
 <pre class="r"><code>switch_threshold &lt;- 0.25
 functional_switch &lt;- function(x){
   # compute the radius of x, measured by deviation from 0 from below and from above
@@ -1207,16 +1524,155 @@ testing_switch_dyn &lt;- testing_functional(functional_switch,
                                                indices = fash_highlighted1, 
                                                num_cores = num_cores,
                                                smooth_var = smooth_var_refined)</code></pre>
-<p>How many pairs and how many unique genes are classified as switch
-dynamic eQTLs?</p>
-<pre class="r"><code>switch_indices &lt;- testing_switch_dyn$indices[testing_switch_dyn$cfsr &lt;= alpha]
+<pre class="r"><code>load(paste0(result_dir, &quot;/classify_dyn_eQTLs_switch.RData&quot;))
+switch_indices &lt;- testing_switch_dyn$indices[testing_switch_dyn$cfsr &lt;= alpha]
 length(switch_indices)</code></pre>
-<pre><code>[1] 156</code></pre>
+<pre><code>[1] 4532</code></pre>
 <pre class="r"><code>switch_genes &lt;- unique(sapply(strsplit(names(datasets)[switch_indices], &quot;_&quot;), &quot;[[&quot;, 1))
 length(switch_genes)</code></pre>
-<pre><code>[1] 53</code></pre>
+<pre><code>[1] 831</code></pre>
 <p>Let’s take a look at the top-ranked switch dynamic eQTLs:</p>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-40-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-34-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-34-1">
+Past versions of unnamed-chunk-34-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-34-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b9a862281da8b1c00a575cde1ba74a102e02dd23/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-34-1.png" target="_blank">b9a8622</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-02-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="gene-set-enrichment-analysis" class="section level2">
+<h2>Gene Set Enrichment Analysis</h2>
+<pre class="r"><code>library(clusterProfiler)
+library(tidyverse)
+library(msigdbr)
+library(org.Hs.eg.db)  # Assuming human genes
+library(biomaRt)
+library(clusterProfiler)
+library(cowplot)
+# Retrieve Hallmark gene sets for Homo sapiens
+m_t2g &lt;- msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;H&quot;) %&gt;% 
+  dplyr::select(gs_name, entrez_gene)
+mart &lt;- useMart(&quot;ensembl&quot;, dataset = &quot;hsapiens_gene_ensembl&quot;)
+
+## A function to check gene-enrichment
+enrich_set &lt;- function(genes_selected, background_gene, q_val_cutoff = 0.05, pvalueCutoff = 0.05) {
+  
+  genes_converted &lt;- getBM(
+    filters = &quot;ensembl_gene_id&quot;, 
+    attributes = c(&quot;ensembl_gene_id&quot;, &quot;entrezgene_id&quot;), 
+    values = genes_selected, 
+    mart = mart
+  )
+  
+  # Extract Entrez IDs from the converted data
+  entrez_gene_list &lt;- genes_converted$entrezgene_id
+  
+  genes_converted_all &lt;- getBM(
+    filters = &quot;ensembl_gene_id&quot;, 
+    attributes = c(&quot;ensembl_gene_id&quot;, &quot;entrezgene_id&quot;), 
+    values = background_gene, 
+    mart = mart
+  )
+  entrez_universe &lt;- as.character(genes_converted_all$entrezgene_id)
+  entrez_universe &lt;- entrez_universe[!is.na(entrez_universe)]
+  
+  # Perform enrichment analysis using Hallmark gene sets
+  enrich_res &lt;- enricher(pAdjustMethod = &quot;BH&quot;, 
+                         entrez_gene_list, 
+                         TERM2GENE = m_t2g, 
+                         qvalueCutoff = q_val_cutoff, 
+                         pvalueCutoff = pvalueCutoff, 
+                         universe = entrez_universe)
+  enrich_res
+}</code></pre>
+<p>Among all the genes highlighted by FASH:</p>
+<pre class="r"><code>result &lt;- enrich_set(genes_selected = genes_highlighted1, background_gene = all_genes)
+result@result %&gt;% 
+  filter(pvalue &lt; 0.05) %&gt;%
+  dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
+<pre><code>                                    GeneRatio BgRatio       pvalue      qvalue
+HALLMARK_HYPOXIA                       54/768 89/1837 0.0001845515 0.008353385
+HALLMARK_WNT_BETA_CATENIN_SIGNALING    16/768 21/1837 0.0013970284 0.031616958
+HALLMARK_TNFA_SIGNALING_VIA_NFKB       35/768 58/1837 0.0029586491 0.044639267
+HALLMARK_ESTROGEN_RESPONSE_LATE        42/768 79/1837 0.0247451694 0.280011127
+HALLMARK_KRAS_SIGNALING_UP             26/768 47/1837 0.0406685607 0.333326688
+HALLMARK_NOTCH_SIGNALING               10/768 15/1837 0.0457213030 0.333326688</code></pre>
+<p>Among the genes highlighted by FASH that are classified as early
+dynamic eQTLs:</p>
+<pre class="r"><code>result &lt;- enrich_set(genes_selected = early_genes, background_gene = all_genes)
+result@result %&gt;% 
+  filter(pvalue &lt; 0.05) %&gt;%
+  dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
+<pre><code>                                           GeneRatio BgRatio       pvalue
+HALLMARK_ALLOGRAFT_REJECTION                    4/17 36/1837 0.0002469376
+HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION      3/17 84/1837 0.0394345646
+HALLMARK_HYPOXIA                                3/17 89/1837 0.0456688085
+                                                qvalue
+HALLMARK_ALLOGRAFT_REJECTION               0.005198687
+HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION 0.320482867
+HALLMARK_HYPOXIA                           0.320482867</code></pre>
+<p>Among the genes highlighted by FASH that are classified as middle
+dynamic eQTLs:</p>
+<pre class="r"><code>result &lt;- enrich_set(genes_selected = middle_genes, background_gene = all_genes)
+result@result %&gt;% 
+  filter(pvalue &lt; 0.05) %&gt;%
+  dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
+<pre><code>                            GeneRatio BgRatio       pvalue     qvalue
+HALLMARK_HEDGEHOG_SIGNALING      3/23 15/1837 0.0007079331 0.02123799</code></pre>
+<p>Among the genes highlighted by FASH that are classified as late
+dynamic eQTLs:</p>
+<pre class="r"><code>result &lt;- enrich_set(genes_selected = late_genes, background_gene = all_genes)
+result@result %&gt;% 
+  filter(pvalue &lt; 0.05) %&gt;%
+  dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
+<pre><code>                              GeneRatio BgRatio       pvalue     qvalue
+HALLMARK_KRAS_SIGNALING_DN         5/50 28/1837 0.0007470012 0.02909373
+HALLMARK_ANDROGEN_RESPONSE         5/50 57/1837 0.0175497472 0.34175823
+HALLMARK_BILE_ACID_METABOLISM      3/50 28/1837 0.0385309690 0.50022661</code></pre>
+<p>Among the genes highlighted by FASH that are classified as switch
+dynamic eQTLs:</p>
+<pre class="r"><code>result &lt;- enrich_set(genes_selected = switch_genes, background_gene = all_genes)
+result@result %&gt;% 
+  filter(pvalue &lt; 0.05) %&gt;%
+  dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
+<pre><code>                                   GeneRatio  BgRatio       pvalue     qvalue
+HALLMARK_HYPOXIA                      26/291  89/1837 0.0007928897 0.03588869
+HALLMARK_GLYCOLYSIS                   27/291 100/1837 0.0023419464 0.05300194
+HALLMARK_ESTROGEN_RESPONSE_LATE       20/291  79/1837 0.0177788501 0.26824230
+HALLMARK_TNFA_SIGNALING_VIA_NFKB      15/291  58/1837 0.0315473291 0.30843118
+HALLMARK_XENOBIOTIC_METABOLISM        17/291  71/1837 0.0459708237 0.30843118
+HALLMARK_INTERFERON_GAMMA_RESPONSE    14/291  56/1837 0.0484128174 0.30843118</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1241,37 +1697,64 @@ time zone: America/Chicago
 tzcode source: internal
 
 attached base packages:
-[1] stats     graphics  grDevices utils     datasets  methods   base     
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
 
 other attached packages:
- [1] lubridate_1.9.3     forcats_1.0.0       stringr_1.5.1      
- [4] dplyr_1.1.4         purrr_1.0.2         readr_2.1.5        
- [7] tidyr_1.3.1         tibble_3.2.1        ggplot2_3.5.1      
-[10] tidyverse_2.0.0     ggVennDiagram_1.5.2 fashr_0.1.1        
-[13] workflowr_1.7.1    
+ [1] cowplot_1.1.3          biomaRt_2.58.2         org.Hs.eg.db_3.18.0   
+ [4] AnnotationDbi_1.64.1   IRanges_2.36.0         S4Vectors_0.40.2      
+ [7] Biobase_2.62.0         BiocGenerics_0.48.1    msigdbr_7.5.1         
+[10] clusterProfiler_4.10.1 lubridate_1.9.3        forcats_1.0.0         
+[13] stringr_1.5.1          dplyr_1.1.4            purrr_1.0.2           
+[16] readr_2.1.5            tidyr_1.3.1            tibble_3.2.1          
+[19] ggplot2_3.5.1          tidyverse_2.0.0        ggVennDiagram_1.5.2   
+[22] fashr_0.1.1            workflowr_1.7.1       
 
 loaded via a namespace (and not attached):
- [1] gtable_0.3.6         TMB_1.9.15           xfun_0.48           
- [4] bslib_0.8.0          processx_3.8.4       lattice_0.22-6      
- [7] callr_3.7.6          tzdb_0.4.0           numDeriv_2016.8-1.1 
-[10] vctrs_0.6.5          tools_4.3.1          ps_1.8.0            
-[13] generics_0.1.3       parallel_4.3.1       fansi_1.0.6         
-[16] highr_0.11           pkgconfig_2.0.3      Matrix_1.6-4        
-[19] lifecycle_1.0.4      farver_2.1.2         compiler_4.3.1      
-[22] git2r_0.33.0         munsell_0.5.1        getPass_0.2-4       
-[25] httpuv_1.6.15        htmltools_0.5.8.1    sass_0.4.9          
-[28] yaml_2.3.10          later_1.3.2          pillar_1.9.0        
-[31] jquerylib_0.1.4      whisker_0.4.1        cachem_1.1.0        
-[34] tidyselect_1.2.1     digest_0.6.37        stringi_1.8.4       
-[37] LaplacesDemon_16.1.6 labeling_0.4.3       rprojroot_2.0.4     
-[40] fastmap_1.2.0        grid_4.3.1           colorspace_2.1-1    
-[43] cli_3.6.3            magrittr_2.0.3       utf8_1.2.4          
-[46] withr_3.0.2          scales_1.3.0         promises_1.3.0      
-[49] timechange_0.3.0     rmarkdown_2.28       httr_1.4.7          
-[52] hms_1.1.3            evaluate_1.0.1       knitr_1.48          
-[55] rlang_1.1.4          Rcpp_1.0.13-1        BayesGP_0.1.3       
-[58] glue_1.8.0           rstudioapi_0.16.0    jsonlite_1.8.9      
-[61] R6_2.5.1             fs_1.6.4            </code></pre>
+  [1] RColorBrewer_1.1-3      rstudioapi_0.16.0       jsonlite_1.8.9         
+  [4] magrittr_2.0.3          farver_2.1.2            rmarkdown_2.28         
+  [7] fs_1.6.4                zlibbioc_1.48.2         vctrs_0.6.5            
+ [10] memoise_2.0.1           RCurl_1.98-1.16         ggtree_3.10.1          
+ [13] progress_1.2.3          htmltools_0.5.8.1       curl_5.2.3             
+ [16] gridGraphics_0.5-1      sass_0.4.9              bslib_0.8.0            
+ [19] plyr_1.8.9              cachem_1.1.0            TMB_1.9.15             
+ [22] whisker_0.4.1           igraph_2.1.2            lifecycle_1.0.4        
+ [25] pkgconfig_2.0.3         gson_0.1.0              Matrix_1.6-4           
+ [28] R6_2.5.1                fastmap_1.2.0           GenomeInfoDbData_1.2.11
+ [31] digest_0.6.37           numDeriv_2016.8-1.1     aplot_0.2.3            
+ [34] enrichplot_1.22.0       colorspace_2.1-1        patchwork_1.3.0        
+ [37] ps_1.8.0                rprojroot_2.0.4         RSQLite_2.3.7          
+ [40] filelock_1.0.3          labeling_0.4.3          fansi_1.0.6            
+ [43] timechange_0.3.0        httr_1.4.7              polyclip_1.10-7        
+ [46] compiler_4.3.1          bit64_4.5.2             withr_3.0.2            
+ [49] BiocParallel_1.36.0     viridis_0.6.5           DBI_1.2.3              
+ [52] highr_0.11              ggforce_0.4.2           MASS_7.3-60            
+ [55] rappdirs_0.3.3          HDO.db_0.99.1           tools_4.3.1            
+ [58] scatterpie_0.2.4        ape_5.8                 httpuv_1.6.15          
+ [61] glue_1.8.0              callr_3.7.6             nlme_3.1-166           
+ [64] GOSemSim_2.28.1         promises_1.3.0          shadowtext_0.1.4       
+ [67] grid_4.3.1              getPass_0.2-4           reshape2_1.4.4         
+ [70] fgsea_1.28.0            generics_0.1.3          gtable_0.3.6           
+ [73] tzdb_0.4.0              data.table_1.16.2       hms_1.1.3              
+ [76] xml2_1.3.6              tidygraph_1.3.1         utf8_1.2.4             
+ [79] XVector_0.42.0          ggrepel_0.9.6           pillar_1.9.0           
+ [82] babelgene_22.9          yulab.utils_0.1.7       later_1.3.2            
+ [85] splines_4.3.1           tweenr_2.0.3            BiocFileCache_2.10.2   
+ [88] treeio_1.26.0           lattice_0.22-6          bit_4.5.0              
+ [91] tidyselect_1.2.1        BayesGP_0.1.3           GO.db_3.18.0           
+ [94] Biostrings_2.70.3       knitr_1.48              git2r_0.33.0           
+ [97] gridExtra_2.3           xfun_0.48               graphlayouts_1.2.0     
+[100] LaplacesDemon_16.1.6    stringi_1.8.4           lazyeval_0.2.2         
+[103] ggfun_0.1.6             yaml_2.3.10             evaluate_1.0.1         
+[106] codetools_0.2-20        ggraph_2.2.1            qvalue_2.34.0          
+[109] ggplotify_0.1.2         cli_3.6.3               munsell_0.5.1          
+[112] processx_3.8.4          jquerylib_0.1.4         Rcpp_1.0.13-1          
+[115] GenomeInfoDb_1.38.8     dbplyr_2.5.0            png_0.1-8              
+[118] XML_3.99-0.17           parallel_4.3.1          blob_1.2.4             
+[121] prettyunits_1.2.0       DOSE_3.28.2             bitops_1.0-9           
+[124] tidytree_0.4.6          viridisLite_0.4.2       scales_1.3.0           
+[127] crayon_1.5.3            rlang_1.1.4             fastmatch_1.1-4        
+[130] KEGGREST_1.42.0        </code></pre>
 </div>
 </div>
 </div>
@@ -1329,6 +1812,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 <script>
 $(document).ready(function ()  {
