@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ziang Zhang" />
+
+<meta name="date" content="2025-02-21" />
+
+<title>Nonlinear Dynamic eQTL analysis on iPSC</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">resultsummary</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="dynamic_eQTL.html">Simulation</a>
+</li>
+<li>
+  <a href="covid_example.html">COVID-19 Example</a>
+</li>
+<li>
+  <a href="expression.html">Gene Expression Example</a>
+</li>
+<li>
+  <a href="dynamic_eQTL_real.html">Dynamic eQTLs</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/AgueroZZ/resultsummary">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Nonlinear Dynamic eQTL analysis on
+iPSC</h1>
+<h4 class="author">Ziang Zhang</h4>
+<h4 class="date">2025-02-21</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-04-06
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>FASHresultsummary/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240507code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240507)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240507code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240507)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree23585add8f964c1f2db9b8f6310e92b60fd50dbbtargetblank23585ada">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/23585add8f964c1f2db9b8f6310e92b60fd50dbb" target="_blank">23585ad</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree23585add8f964c1f2db9b8f6310e92b60fd50dbbtargetblank23585ada"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/23585add8f964c1f2db9b8f6310e92b60fd50dbb" target="_blank">23585ad</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    analysis/.Rhistory
+    Ignored:    code/.DS_Store
+    Ignored:    code/.Rhistory
+    Ignored:    code/cpp/.DS_Store
+    Ignored:    code/function/.DS_Store
+    Ignored:    data/.DS_Store
+    Ignored:    data/Iyer/.DS_Store
+    Ignored:    data/expression_data/.DS_Store
+    Ignored:    output/.DS_Store
+    Ignored:    output/Iyer/.DS_Store
+    Ignored:    output/example/.DS_Store
+    Ignored:    output/example/figure/
+    Ignored:    output/expression/.DS_Store
+    Ignored:    output/simulation_pollution/.DS_Store
+    Ignored:    output/simulation_pollution/figure/
+    Ignored:    output/vQTL_correlated/
+    Ignored:    thought_process
+
+Untracked files:
+    Untracked:  analysis/BF_based_control.rmd
+    Untracked:  analysis/explore_mom_mle.Rmd
+    Untracked:  code/dynamic_eQTL_real/
+    Untracked:  data/dynamic_eQTL_real/
+    Untracked:  lfsr_most_robust.R
+    Untracked:  mle_favor_alternative.R
+    Untracked:  output/dynamic_eQTL_real/
+    Untracked:  output/simulation_dynamic_eQTL/classify_dyn_eQTLs_early.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_dyn_eQTLs_late.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_dyn_eQTLs_middle.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_dyn_eQTLs_switch.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_nonlin_dyn_eQTLs_early.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_nonlin_dyn_eQTLs_late.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_nonlin_dyn_eQTLs_middle.RData
+    Untracked:  output/simulation_dynamic_eQTL/classify_nonlin_dyn_eQTLs_switch.RData
+    Untracked:  output/simulation_dynamic_eQTL/min_lfsr_summary2.RData
+    Untracked:  overdispersion_is_important.R
+    Untracked:  pi0est.R
+    Untracked:  study_BF.R
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
+    Modified:   code/function/functions_simulating.R
+    Modified:   code/function/functions_simulation.R
+    Modified:   code/function/functions_simulation_eQTL_test.R
+    Modified:   output/simulation_dynamic_eQTL/fash_fit_1.RData
+    Modified:   output/simulation_dynamic_eQTL/fash_fit_1_noisy.RData
+    Modified:   output/simulation_dynamic_eQTL/fash_fit_2.RData
+    Modified:   output/simulation_dynamic_eQTL/fash_fit_2_noisy.RData
+    Modified:   output/simulation_dynamic_eQTL/fash_fit_2_noisy_pen.RData
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/nonlinear_dynamic_eQTL_real.rmd</code>) and HTML
+(<code>docs/nonlinear_dynamic_eQTL_real.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/23585add8f964c1f2db9b8f6310e92b60fd50dbb/analysis/nonlinear_dynamic_eQTL_real.rmd" target="_blank">23585ad</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-06
+</td>
+<td>
+workflowr::wflow_publish("analysis/nonlinear_dynamic_eQTL_real.rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<pre class="r"><code>knitr::opts_chunk$set(fig.width = 8, fig.height = 6)
+library(fashr)
+result_dir &lt;- paste0(getwd(), &quot;/output/dynamic_eQTL_real&quot;)
+data_dir &lt;- paste0(getwd(), &quot;/data/dynamic_eQTL_real&quot;)
+code_dir &lt;- paste0(getwd(), &quot;/code/dynamic_eQTL_real&quot;)
+log_prec &lt;- seq(0,10, by = 0.2)
+fine_grid &lt;- sort(c(0, exp(-0.5*log_prec)))</code></pre>
+<div id="obtain-the-effect-size-of-eqtls" class="section level2">
+<h2>Obtain the effect size of eQTLs</h2>
+<p>We use the processed (expression &amp; genotype) data of <a
+href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6623972/">Strober
+et.al, 2019</a> to perform the eQTL analysis.</p>
+<p>For the association testing, we use a linear regression model for
+each gene-variant pair at each time point. Following the practice in
+Strober et.al, we adjust for the first three PCs.</p>
+<p>The code to perform this step can be found in the script
+<code>dynamic_eQTL_real/00_eQTLs.R</code> from the code directory.</p>
+<p>After this step, we have the effect size of eQTLs for each
+gene-variant pair at each time point, as well as its standard error.</p>
+</div>
+<div id="fitting-fash" class="section level2">
+<h2>Fitting FASH</h2>
+<p>To fit the FASH model on <span class="math inline">\(\{\beta_i(t_j),
+s_{ij}\}_{i\in N,j \in [16]}\)</span>, we consider fitting two FASH
+models:</p>
+<ul>
+<li><p>A FASH model based on first order IWP (testing for dynamic eQTLs:
+<span class="math inline">\(H_0: \beta_i(t)=c\)</span>).</p></li>
+<li><p>A FASH model based on second order IWP (testing for
+nonlinear-dynamic eQTLs: <span class="math inline">\(H_0:
+\beta_i(t)=c_1+c_2t\)</span>).</p></li>
+</ul>
+<p>The code to perform this step can be found in the script
+<code>dynamic_eQTL_real/01_fash.R</code> from the code directory.</p>
+<p>We will directly load the fitted FASH models from the output
+directory.</p>
+<pre class="r"><code>load(paste0(result_dir, &quot;/fash_fit2_all.RData&quot;))</code></pre>
+<p>We will load the datasets from the fitted FASH object:</p>
+<pre class="r"><code>datasets &lt;- fash_fit2$fash_data$data_list
+for (i in 1:length(datasets)) {
+  datasets[[i]]$SE &lt;- fash_fit2$fash_data$S[[i]]
+}
+all_genes &lt;- unique(sapply(strsplit(names(datasets), &quot;_&quot;), &quot;[[&quot;, 1))</code></pre>
+<p>In this analysis, we will focus on the <strong>FASH(2)</strong> model
+that assumes a <strong>second order IWP</strong> and tests for
+<strong>nonlinear dynamic eQTLs</strong>.</p>
+<p>Let’s take a quick overview of the fitted FASH model:</p>
+<pre class="r"><code>log_prec &lt;- seq(0,10, by = 0.2)
+fine_grid &lt;- sort(c(0, exp(-0.5*log_prec)))
+
+fash_fit2 &lt;- fash(Y = &quot;beta&quot;, smooth_var = &quot;time&quot;, S = &quot;SE&quot;, data_list = datasets,
+                  num_basis = 20, order = 2, betaprec = 0,
+                  pred_step = 1, penalty = 10, grid = fine_grid,
+                  num_cores = num_cores, verbose = TRUE)
+save(fash_fit2, file = &quot;./results/fash_fit2_all.RData&quot;)</code></pre>
+<pre class="r"><code>fash_fit2</code></pre>
+<pre><code>Fitted fash Object
+-------------------
+Number of datasets: 1009173
+Likelihood: gaussian
+Number of PSD grid values: 52 (initial), 9 (non-trivial)
+Order of Integrated Wiener Process (IWP): 2</code></pre>
+<p>As well as the estimated priors:</p>
+<pre class="r"><code>fash_fit2$prior_weights</code></pre>
+<pre><code>          psd prior_weight
+1 0.000000000 0.8925989360
+2 0.006737947 0.0154818582
+3 0.020241911 0.0171917981
+4 0.022370772 0.0571520835
+5 0.060810063 0.0099906800
+6 0.100258844 0.0041024641
+7 0.110803158 0.0013253936
+8 0.332871084 0.0017551891
+9 1.000000000 0.0004015976</code></pre>
+</div>
+<div id="problem-with-pi_0-estimation" class="section level2">
+<h2>Problem with <span class="math inline">\(\pi_0\)</span>
+estimation</h2>
+<p>If we measure the significance using the false discovery rate, then
+it is sensitive to the value of <span
+class="math inline">\(\pi_0\)</span>. The estimated <span
+class="math inline">\(\pi_0\)</span> is 0.8925989, which is way too
+small to be realistic.</p>
+<p>One likely reason could be due to model-misspecification under the
+alternative hypothesis. To account for this, we will consider the
+following approaches:</p>
+<p>(i): A method of moments (MOM) estimator for <span
+class="math inline">\(\pi_0\)</span> based on the rank of the likelihood
+matrix:</p>
+<pre class="r"><code>pio_mom_2 &lt;- mean(apply(fash_fit2$L_matrix, 1, which.max) == 1)
+pio_mom_2</code></pre>
+<pre><code>[1] 0.6244063</code></pre>
+<p>The MOM estimate is 0.6244063, which is much smaller than the
+estimated <span class="math inline">\(\pi_0\)</span> from the model.</p>
+<p>(ii): A conservative estimate of <span
+class="math inline">\(\pi_0\)</span> based on the BF procedure:</p>
+<pre class="r"><code>fash_fit2_update &lt;- BF_update(fash_fit2, plot = FALSE)
+fash_fit2_update$prior_weights
+save(fash_fit2_update, file = paste0(result_dir, &quot;/fash_fit2_update.RData&quot;))</code></pre>
+<p>The conservative estimate is 0.9931845, which is much more
+realistic.</p>
+<p>(iii): Instead of looking at the FDR which is based on the estimated
+<span class="math inline">\(\pi_0\)</span>, we can use the minimum local
+false sign rate (<span class="math inline">\(\text{min-lfsr}_i\)</span>)
+to measure significance: <span class="math display">\[
+\text{min-lfsr}_i = \min_{t} \left\{ \text{lfsr}(W_i(t)) \right\},
+\]</span> where <span class="math inline">\(W_i(t) = \beta_i(t) -
+\beta_i(0)\)</span>.</p>
+</div>
+<div id="detecting-nonlinear-dynamic-eqtls" class="section level2">
+<h2>Detecting Nonlinear dynamic eQTLs</h2>
+<p>We will use the updated FASH model (2) to detect nonlinear dynamic
+eQTLs.</p>
+<pre class="r"><code>alpha &lt;- 0.05
+test2 &lt;- fdr_control(fash_fit2_update, alpha = alpha, plot = F)</code></pre>
+<pre><code>366 datasets are significant at alpha level 0.05. Total datasets tested: 1009173. </code></pre>
+<pre class="r"><code>fash_highlighted2 &lt;- test2$fdr_results$index[test2$fdr_results$FDR &lt;= alpha]</code></pre>
+<p>How many pairs are detected?</p>
+<pre class="r"><code>pairs_highlighted2 &lt;- names(datasets)[fash_highlighted2]
+length(pairs_highlighted2)</code></pre>
+<pre><code>[1] 366</code></pre>
+<pre class="r"><code>length(pairs_highlighted2)/length(datasets)</code></pre>
+<pre><code>[1] 0.0003626732</code></pre>
+<p>How many unique genes are detected?</p>
+<pre class="r"><code>genes_highlighted2 &lt;- unique(sapply(strsplit(pairs_highlighted2, &quot;_&quot;), &quot;[[&quot;, 1))
+length(genes_highlighted2)</code></pre>
+<pre><code>[1] 82</code></pre>
+<pre class="r"><code>length(genes_highlighted2)/length(all_genes)</code></pre>
+<pre><code>[1] 0.01288903</code></pre>
+<p>Visualize top-ranked pairs:</p>
+<p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-12-1.png" width="768" style="display: block; margin: auto;" /></p>
+</div>
+<div id="comparing-with-strober-et.al" class="section level2">
+<h2>Comparing with Strober et.al</h2>
+<p>We will compare the detected dynamic eQTLs with the results from
+Strober et.al.</p>
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+✖ tidyr::unite()  masks ggVennDiagram::unite()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<p>Let’s take a look at the overlap between the two methods used in
+Strober et.al and FASH (order 2):</p>
+<pre class="r"><code>gene_sets &lt;- list(
+  &quot;Strober (Nonlinear)&quot; = genes_highlighted_strober_nonlinear,
+  &quot;Strober (Linear)&quot; = genes_highlighted_strober_linear,
+  &quot;FASH (2)&quot; = genes_highlighted2
+)
+ggVennDiagram(gene_sets, label = &quot;both&quot;) +
+  scale_fill_gradient(low=&quot;grey90&quot;,high = &quot;red&quot;) +
+  theme(legend.position = &quot;right&quot;)  # Move legend to the right</code></pre>
+<p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-14-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>There is a large number of genes only detected by FASH (order 2).
+Let’s take a look at the 4 pairs that are least significant from
+FASH:</p>
+<p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-15-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Let’s also look at the genes that were missed by FASH, but detected
+by Strober et.al. In this case, we will pick the most significant pair
+for each gene in FASH:</p>
+<p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-16-1.png" width="768" style="display: block; margin: auto;" /></p>
+</div>
+<div id="classifying-nonlinear-dynamic-eqtls" class="section level2">
+<h2>Classifying nonlinear dynamic eQTLs</h2>
+<p>Following the definition in Strober et.al, we will classify the
+detected eQTLs into different categories:</p>
+<ul>
+<li><p><em>Early</em>: eQTLs with strongest effect during the first
+three days: <span class="math inline">\(\max_{t\leq3} |\beta(t)| -
+\max_{t&gt; 3} |\beta(t)| &gt; 0\)</span>.</p></li>
+<li><p><em>Late</em>: eQTLs with strongest effect during the last four
+days: <span class="math inline">\(\max_{t\geq 12} |\beta(t)| -
+\max_{t&lt; 12} |\beta(t)| &gt; 0\)</span>.</p></li>
+<li><p><em>Middle</em>: eQTLs with strongest effect during days 4-11:
+<span class="math inline">\(\max_{4\leq t\leq 11} |\beta(t)| -
+\max_{t&gt; 11 | t&lt; 4} |\beta(t)| &gt; 0\)</span>.</p></li>
+<li><p><em>Switch</em>: eQTLs with effect sign switch during the time
+course: ${(t)<sup>+,(t)</sup>-}-c $ where <span
+class="math inline">\(c\)</span> is a threshold that we set to 0.25
+(which means with two alleles, the maximal difference of effect size is
+at least <span class="math inline">\(\geq
+2\times\min\{\max\beta(t)^+,\max\beta(t)^-\}\times2 \geq  2 \times
+0.25  \times 2 = 1\)</span>).</p></li>
+</ul>
+<p>We first take a look at the significant pairs detected by FASH (order
+2), and classify them based on the false sign rate (lfsr):</p>
+<pre class="r"><code>smooth_var_refined = seq(0,15, by = 0.1)
+functional_early &lt;- function(x){
+  max(abs(x[smooth_var_refined &lt;= 3])) - max(abs(x[smooth_var_refined &gt; 3]))
+}
+testing_early_nonlin_dyn &lt;- testing_functional(functional_early,
+                                              lfsr_cal = function(x){mean(x &lt;= 0)},
+                                              fash = fash_fit2,
+                                              indices = fash_highlighted2,
+                                              smooth_var = smooth_var_refined)</code></pre>
+<p>How many pairs and how many unique genes are classified as early
+dynamic eQTLs?</p>
+<pre class="r"><code>load(paste0(result_dir, &quot;/classify_nonlin_dyn_eQTLs_early.RData&quot;))
+early_indices &lt;- testing_early_nonlin_dyn$indices[testing_early_nonlin_dyn$cfsr &lt;= alpha]
+length(early_indices)</code></pre>
+<pre><code>[1] 73</code></pre>
+<pre class="r"><code>early_genes &lt;- unique(sapply(strsplit(names(datasets)[early_indices], &quot;_&quot;), &quot;[[&quot;, 1))
+length(early_genes)</code></pre>
+<pre><code>[1] 15</code></pre>
+<p>Let’s take a look at the top-ranked early dynamic eQTLs:</p>
+<p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-19-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>It is evident that these variants have largest <span
+class="math inline">\(|\beta(t)|\)</span> during the first three
+days.</p>
+<p>How many pairs are classified as middle dynamic eQTLs?</p>
+<pre class="r"><code>functional_middle &lt;- function(x){
+  max(abs(x[smooth_var_refined &lt;= 11 &amp; smooth_var_refined &gt;= 4])) - max(abs(x[smooth_var_refined &gt; 11]), abs(x[smooth_var_refined &lt; 4]))
+}
+testing_middle_nonlin_dyn &lt;- testing_functional(functional_middle, 
+                                               lfsr_cal = function(x){mean(x &lt;= 0)},
+                                               fash = fash_fit2, 
+                                               indices = fash_highlighted2, 
+                                               num_cores = num_cores,
+                                               smooth_var = smooth_var_refined)</code></pre>
+<p>How many pairs and how many unique genes are classified as middle
+dynamic eQTLs?</p>
+<pre class="r"><code>load(paste0(result_dir, &quot;/classify_nonlin_dyn_eQTLs_middle.RData&quot;))
+middle_indices &lt;- testing_middle_nonlin_dyn$indices[testing_middle_nonlin_dyn$cfsr &lt;= alpha]
+length(middle_indices)</code></pre>
+<pre><code>[1] 82</code></pre>
+<pre class="r"><code>middle_genes &lt;- unique(sapply(strsplit(names(datasets)[middle_indices], &quot;_&quot;), &quot;[[&quot;, 1))
+length(middle_genes)</code></pre>
+<pre><code>[1] 21</code></pre>
+<p>Take a look at their results:</p>
+<pre class="r"><code>par(mfrow = c(2,2))
+for (i in 1:4) {
+  selected_index &lt;- sample(middle_indices, 1)
+  fitted_result &lt;- predict(fash_fit2,
+                           index = selected_index,
+                           smooth_var = seq(0, 15, by = 0.1))
+  plot(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y,
+    pch = 20,
+    col = &quot;black&quot;,
+    xlab = &quot;Time&quot;,
+    ylab = &quot;Effect Est&quot;,
+    main = paste0(names(datasets)[selected_index]),
+    ylim = c(
+      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
+      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
+    )
+  )
+  arrows(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = &quot;black&quot;
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = &quot;red&quot;,
+        lwd = 2)
+  abline(h = 0, lty = 2, col = &quot;blue&quot;)
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.3),
+    border = NA
+  )
+}</code></pre>
+<p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-22-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow = c(1,1))</code></pre>
+<p>How many pairs are classified as late dynamic eQTLs?</p>
+<pre class="r"><code>functional_late &lt;- function(x){
+  max(abs(x[smooth_var_refined &gt;= 12])) - max(abs(x[smooth_var_refined &lt; 12]))
+}
+testing_late_nonlin_dyn &lt;- testing_functional(functional_late, 
+                                             lfsr_cal = function(x){mean(x &lt;= 0)},
+                                             fash = fash_fit2, 
+                                             indices = fash_highlighted2, 
+                                             num_cores = num_cores,
+                                             smooth_var = smooth_var_refined)</code></pre>
+<p>How many pairs and how many unique genes are classified as late
+dynamic eQTLs?</p>
+<pre class="r"><code>load(paste0(result_dir, &quot;/classify_nonlin_dyn_eQTLs_late.RData&quot;))
+late_indices &lt;- testing_late_nonlin_dyn$indices[testing_late_nonlin_dyn$cfsr &lt;= alpha]
+length(late_indices)</code></pre>
+<pre><code>[1] 109</code></pre>
+<pre class="r"><code>late_genes &lt;- unique(sapply(strsplit(names(datasets)[late_indices], &quot;_&quot;), &quot;[[&quot;, 1))
+length(late_genes)</code></pre>
+<pre><code>[1] 30</code></pre>
+<p>Let’s take a look at the top-ranked late dynamic eQTLs:</p>
+<p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-25-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>How many pairs and how many unique genes are classified as switch
+dynamic eQTLs?</p>
+<pre class="r"><code>switch_threshold &lt;- 0.25
+functional_switch &lt;- function(x){
+  # compute the radius of x, measured by deviation from 0 from below and from above
+  x_pos &lt;- x[x &gt; 0]
+  x_neg &lt;- x[x &lt; 0]
+  if(length(x_pos) == 0 || length(x_neg) == 0){
+    return(0)
+  }
+  min(max(abs(x_pos)), max(abs(x_neg))) - switch_threshold
+}
+testing_switch_nonlin_dyn &lt;- testing_functional(functional_switch, 
+                                               lfsr_cal = function(x){mean(x &lt;= 0)},
+                                               fash = fash_fit2, 
+                                               indices = fash_highlighted2, 
+                                               num_cores = num_cores,
+                                               smooth_var = smooth_var_refined)</code></pre>
+<pre class="r"><code>load(paste0(result_dir, &quot;/classify_nonlin_dyn_eQTLs_switch.RData&quot;))
+switch_indices &lt;- testing_switch_nonlin_dyn$indices[testing_switch_nonlin_dyn$cfsr &lt;= alpha]
+length(switch_indices)</code></pre>
+<pre><code>[1] 138</code></pre>
+<pre class="r"><code>switch_genes &lt;- unique(sapply(strsplit(names(datasets)[switch_indices], &quot;_&quot;), &quot;[[&quot;, 1))
+length(switch_genes)</code></pre>
+<pre><code>[1] 44</code></pre>
+<p>Let’s take a look at the top-ranked switch dynamic eQTLs:</p>
+<p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-28-1.png" width="768" style="display: block; margin: auto;" /></p>
+</div>
+<div id="gene-set-enrichment-analysis" class="section level2">
+<h2>Gene Set Enrichment Analysis</h2>
+<pre class="r"><code>library(clusterProfiler)
+library(tidyverse)
+library(msigdbr)
+library(org.Hs.eg.db)  # Assuming human genes
+library(biomaRt)
+library(clusterProfiler)
+library(cowplot)
+# Retrieve Hallmark gene sets for Homo sapiens
+m_t2g &lt;- msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;H&quot;) %&gt;% 
+  dplyr::select(gs_name, entrez_gene)
+mart &lt;- useMart(&quot;ensembl&quot;, dataset = &quot;hsapiens_gene_ensembl&quot;)
+
+## A function to check gene-enrichment
+enrich_set &lt;- function(genes_selected, background_gene, q_val_cutoff = 0.05, pvalueCutoff = 0.05) {
+  
+  genes_converted &lt;- getBM(
+    filters = &quot;ensembl_gene_id&quot;, 
+    attributes = c(&quot;ensembl_gene_id&quot;, &quot;entrezgene_id&quot;), 
+    values = genes_selected, 
+    mart = mart
+  )
+  
+  # Extract Entrez IDs from the converted data
+  entrez_gene_list &lt;- genes_converted$entrezgene_id
+  
+  genes_converted_all &lt;- getBM(
+    filters = &quot;ensembl_gene_id&quot;, 
+    attributes = c(&quot;ensembl_gene_id&quot;, &quot;entrezgene_id&quot;), 
+    values = background_gene, 
+    mart = mart
+  )
+  entrez_universe &lt;- as.character(genes_converted_all$entrezgene_id)
+  entrez_universe &lt;- entrez_universe[!is.na(entrez_universe)]
+  
+  # Perform enrichment analysis using Hallmark gene sets
+  enrich_res &lt;- enricher(pAdjustMethod = &quot;BH&quot;, 
+                         entrez_gene_list, 
+                         TERM2GENE = m_t2g, 
+                         qvalueCutoff = q_val_cutoff, 
+                         pvalueCutoff = pvalueCutoff, 
+                         universe = entrez_universe)
+  enrich_res
+}</code></pre>
+<p>Among all the genes highlighted by FASH:</p>
+<pre class="r"><code>result &lt;- enrich_set(genes_selected = genes_highlighted2, background_gene = all_genes)
+result@result %&gt;% 
+  filter(pvalue &lt; 0.05) %&gt;%
+  dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
+<pre><code>                                 GeneRatio BgRatio     pvalue    qvalue
+HALLMARK_HEDGEHOG_SIGNALING           2/25 15/1837 0.01675606 0.2641951
+HALLMARK_ESTROGEN_RESPONSE_LATE       4/25 79/1837 0.02012762 0.2641951
+HALLMARK_IL6_JAK_STAT3_SIGNALING      2/25 21/1837 0.03188343 0.2641951
+HALLMARK_COMPLEMENT                   3/25 57/1837 0.04015766 0.2641951</code></pre>
+<p>Among the genes highlighted by FASH that are classified as early
+dynamic eQTLs:</p>
+<pre class="r"><code>result &lt;- enrich_set(genes_selected = early_genes, background_gene = all_genes)
+result@result %&gt;% 
+  filter(pvalue &lt; 0.05) %&gt;%
+  dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
+<pre><code>                        GeneRatio BgRatio     pvalue     qvalue
+HALLMARK_COAGULATION          1/2 31/1837 0.03347494 0.04647552
+HALLMARK_MYC_TARGETS_V2       1/2 41/1837 0.04415174 0.04647552</code></pre>
+<p>Among the genes highlighted by FASH that are classified as middle
+dynamic eQTLs:</p>
+<pre class="r"><code>result &lt;- enrich_set(genes_selected = middle_genes, background_gene = all_genes)
+result@result %&gt;% 
+  filter(pvalue &lt; 0.05) %&gt;%
+  dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
+<pre><code>                    GeneRatio BgRatio     pvalue    qvalue
+HALLMARK_COMPLEMENT       2/7 57/1837 0.01797472 0.2648906</code></pre>
+<p>Among the genes highlighted by FASH that are classified as late
+dynamic eQTLs:</p>
+<pre class="r"><code>result &lt;- enrich_set(genes_selected = late_genes, background_gene = all_genes)
+result@result %&gt;% 
+  filter(pvalue &lt; 0.05) %&gt;%
+  dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
+<pre><code>                                GeneRatio BgRatio     pvalue    qvalue
+HALLMARK_ESTROGEN_RESPONSE_LATE      3/12 79/1837 0.01272004 0.1740637</code></pre>
+<p>Among the genes highlighted by FASH that are classified as switch
+dynamic eQTLs:</p>
+<pre class="r"><code>result &lt;- enrich_set(genes_selected = switch_genes, background_gene = all_genes)
+result@result %&gt;% 
+  filter(pvalue &lt; 0.05) %&gt;%
+  dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
+<pre><code>                                 GeneRatio BgRatio     pvalue    qvalue
+HALLMARK_COMPLEMENT                   3/17 57/1837 0.01414293 0.1687711
+HALLMARK_IL6_JAK_STAT3_SIGNALING      2/17 21/1837 0.01526977 0.1687711
+HALLMARK_ESTROGEN_RESPONSE_LATE       3/17 79/1837 0.03368204 0.2481834</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS Monterey 12.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] cowplot_1.1.3          biomaRt_2.58.2         org.Hs.eg.db_3.18.0   
+ [4] AnnotationDbi_1.64.1   IRanges_2.36.0         S4Vectors_0.40.2      
+ [7] Biobase_2.62.0         BiocGenerics_0.48.1    msigdbr_7.5.1         
+[10] clusterProfiler_4.10.1 lubridate_1.9.3        forcats_1.0.0         
+[13] stringr_1.5.1          dplyr_1.1.4            purrr_1.0.2           
+[16] readr_2.1.5            tidyr_1.3.1            tibble_3.2.1          
+[19] ggplot2_3.5.1          tidyverse_2.0.0        ggVennDiagram_1.5.2   
+[22] fashr_0.1.1            workflowr_1.7.1       
+
+loaded via a namespace (and not attached):
+  [1] RColorBrewer_1.1-3      rstudioapi_0.16.0       jsonlite_1.8.9         
+  [4] magrittr_2.0.3          farver_2.1.2            rmarkdown_2.28         
+  [7] fs_1.6.4                zlibbioc_1.48.2         vctrs_0.6.5            
+ [10] memoise_2.0.1           RCurl_1.98-1.16         ggtree_3.10.1          
+ [13] progress_1.2.3          htmltools_0.5.8.1       curl_5.2.3             
+ [16] gridGraphics_0.5-1      sass_0.4.9              bslib_0.8.0            
+ [19] plyr_1.8.9              cachem_1.1.0            TMB_1.9.15             
+ [22] whisker_0.4.1           igraph_2.1.2            lifecycle_1.0.4        
+ [25] pkgconfig_2.0.3         gson_0.1.0              Matrix_1.6-4           
+ [28] R6_2.5.1                fastmap_1.2.0           GenomeInfoDbData_1.2.11
+ [31] digest_0.6.37           numDeriv_2016.8-1.1     aplot_0.2.3            
+ [34] enrichplot_1.22.0       colorspace_2.1-1        patchwork_1.3.0        
+ [37] ps_1.8.0                rprojroot_2.0.4         RSQLite_2.3.7          
+ [40] filelock_1.0.3          labeling_0.4.3          fansi_1.0.6            
+ [43] timechange_0.3.0        httr_1.4.7              polyclip_1.10-7        
+ [46] compiler_4.3.1          bit64_4.5.2             withr_3.0.2            
+ [49] BiocParallel_1.36.0     viridis_0.6.5           DBI_1.2.3              
+ [52] highr_0.11              ggforce_0.4.2           MASS_7.3-60            
+ [55] rappdirs_0.3.3          HDO.db_0.99.1           tools_4.3.1            
+ [58] scatterpie_0.2.4        ape_5.8                 httpuv_1.6.15          
+ [61] glue_1.8.0              callr_3.7.6             nlme_3.1-166           
+ [64] GOSemSim_2.28.1         promises_1.3.0          shadowtext_0.1.4       
+ [67] grid_4.3.1              getPass_0.2-4           reshape2_1.4.4         
+ [70] fgsea_1.28.0            generics_0.1.3          gtable_0.3.6           
+ [73] tzdb_0.4.0              data.table_1.16.2       hms_1.1.3              
+ [76] xml2_1.3.6              tidygraph_1.3.1         utf8_1.2.4             
+ [79] XVector_0.42.0          ggrepel_0.9.6           pillar_1.9.0           
+ [82] babelgene_22.9          yulab.utils_0.1.7       later_1.3.2            
+ [85] splines_4.3.1           tweenr_2.0.3            BiocFileCache_2.10.2   
+ [88] treeio_1.26.0           lattice_0.22-6          bit_4.5.0              
+ [91] tidyselect_1.2.1        BayesGP_0.1.3           GO.db_3.18.0           
+ [94] Biostrings_2.70.3       knitr_1.48              git2r_0.33.0           
+ [97] gridExtra_2.3           xfun_0.48               graphlayouts_1.2.0     
+[100] LaplacesDemon_16.1.6    stringi_1.8.4           lazyeval_0.2.2         
+[103] ggfun_0.1.6             yaml_2.3.10             evaluate_1.0.1         
+[106] codetools_0.2-20        ggraph_2.2.1            qvalue_2.34.0          
+[109] ggplotify_0.1.2         cli_3.6.3               munsell_0.5.1          
+[112] processx_3.8.4          jquerylib_0.1.4         Rcpp_1.0.13-1          
+[115] GenomeInfoDb_1.38.8     dbplyr_2.5.0            png_0.1-8              
+[118] XML_3.99-0.17           parallel_4.3.1          blob_1.2.4             
+[121] prettyunits_1.2.0       DOSE_3.28.2             bitops_1.0-9           
+[124] tidytree_0.4.6          viridisLite_0.4.2       scales_1.3.0           
+[127] crayon_1.5.3            rlang_1.1.4             fastmatch_1.1-4        
+[130] KEGGREST_1.42.0        </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
