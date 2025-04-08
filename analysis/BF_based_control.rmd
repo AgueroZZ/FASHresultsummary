@@ -1,0 +1,212 @@
+---
+title: "Controlling based on BF"
+author: "Ziang Zhang"
+date: "2025-03-07"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Preprocessing $L$ matrix
+
+Given a $L$ matrix of size $N \times (K + 1)$, we first collapse this matrix into a $N \times 2$ matrix $L^c$ through the following procedure:
+
+- Compute the maximum likelihood estimate $\hat{\pi} = (\hat{\pi}_0, \hat{\pi}_1,..., \hat{\pi}_K)$.
+- Reweight the alternative hypothesis weights $\hat{\pi}_1,..., \hat{\pi}_K$ into $\hat{\pi}_1^* = \hat{\pi}_1 / \sum_{k=1}^K \hat{\pi}_k$,..., $\hat{\pi}_K^* = \hat{\pi}_K / \sum_{k=1}^K \hat{\pi}_k$.
+- Define $L^c_{i0} = L_{i0}$ and $L^c_{i1} = \sum_{k=1}^K L_{ik} \hat{\pi}_k^*$.
+
+Then, we can compute the Bayes factor for each row of $L^c$ as:
+$$\text{BF}_i = L^c_{i0}/L^c_{i1}.$$
+
+Write a function for this:
+
+```{r}
+collapse_L <- function(L, log = F) {
+  if (ncol(L) > 1) {
+    pi_hat_star <- mixsqp::mixsqp(L = L[, -1, drop = FALSE],
+                             log = log,
+                             control = list(verbose = FALSE))$x
+  } else{
+    pi_hat_star <- rep(1, nrows(L))
+  }
+  L_c <- matrix(0, nrow = nrow(L), ncol = 2)
+  L_c[, 1] <- L[, 1]
+  L_c[, 2] <- (L[, -1, drop = FALSE] %*% pi_hat_star)
+  return(L_c)
+}
+```
+
+## Bayes factor based control
+
+The BF based control procedure is as follows:
+
+- For each cutoff $c$, compute $\mu(c) = \mathbb{E}(\text{BF} | \text{BF} \leq c) \approx \frac{\sum_{i=1}^N \mathbb{I}(\text{BF}_i \leq c)\text{BF}_i}{\sum_{i=1}^N \mathbb{I}(\text{BF}_i \leq c)}$, as well as $\hat{\pi}_0(c) = \frac{\sum_{i=1}^N \mathbb{I}(\text{BF}_i \leq c)}{N}$.
+- Find $c^*$ such that $\mu(c^*) = 1$, return $\hat{\pi}_0(c^*)$ as the estimated for $\pi_0$.
+
+
+Let's write a function for this:
+
+```{r}
+BF_control <- function(BF, plot = T) {
+  BF_sorted <- sort(BF, decreasing = F)
+  mu <- numeric(length(BF_sorted))
+  pi0_hat <- numeric(length(BF_sorted))
+  
+  mu <- cumsum(BF_sorted) / seq_along(BF_sorted)
+  pi0_hat <- seq_along(BF_sorted) / length(BF_sorted)
+  
+  if (max(mu) < 1) {
+    pi0_hat_star <- 1
+    return(list(mu = mu, pi0_hat = pi0_hat, pi0_hat_star = pi0_hat_star))
+  }else{
+    pi0_hat_star <- pi0_hat[mu >= 1][1]
+  }
+  
+  if (plot) {
+    
+    par(mfrow = c(1, 2))
+    
+    hist(log(BF_sorted), breaks = 100, freq = T, xlab = "log-BF", main = "Histogram of log-BF")
+    abline(v = log(BF_sorted)[mu >= 1][1], col = "red")
+    
+    plot(pi0_hat, mu, type = "l", xlab = "est pi0", ylab = "E(BF | BF <= c)", xlim=c(0,1), ylim = c(0,3))
+    abline(h = 1, col = "red")
+
+    par(mfrow = c(1, 1))
+    
+  }
+  
+  return(list(mu = mu, pi0_hat = pi0_hat, pi0_hat_star = pi0_hat_star))
+  
+}
+```
+
+
+## Example
+
+```{r}
+## simulate n observation from mixture of two normal distributions
+n <- 30000
+# Specify the true alternative hypothesis of N(0, true_sd)
+true_sd <- 1
+pi0_true <- 0.1
+x <- c(rep(0, ceiling(n*pi0_true)), rnorm(n = ceiling(n*(1-pi0_true)), mean = 0, sd = true_sd))
+## simulate y based on x
+sebetahat <- 1
+y <- x + rnorm(n, mean = 0, sd = sebetahat)
+hist(y, breaks = 50)
+## fit ash with a fitted alternative hypothesis of N(0, fit_sd)
+fit_sd <- c(0.1,0.3,0.5)
+ash_fit <- ashr::ash(betahat = y, sebetahat = sebetahat, mixcompdist = "normal", mixsd = fit_sd, nullweight = 1, outputlevel = 3)
+ash_fit$fitted_g$pi[1]
+L_mat <- ash_fit$fit_details$matrix_lik
+## fit biased MoM
+mean(apply(ash_fit$fit_details$matrix_lik, 1, which.max) == 1)
+```
+
+
+```{r}
+L_c <- collapse_L(L_mat)
+BF <- L_c[, 2] / L_c[, 1]
+pi0_hat_star <- BF_control(BF)
+# tail(pi0_hat_star$mu)
+pi0_hat_star$pi0_hat_star
+```
+
+```{r}
+BF1 <- BF[1:(pi0_true*n)]
+BF2 <- BF[(pi0_true*n+1):n]
+
+mean(BF1)
+mean(BF2^(-1))
+
+var(BF1) + (mean(BF1)^2)
+
+mean(BF1^2)
+mean(BF2)
+
+mean(BF1^(-1))
+mean(BF2^(-2))
+
+par(mfrow = c(2, 2))
+hist(log(BF1), breaks = 100, freq = F, xlab = "log-BF", main = "Histogram of log-BF: H0")
+hist(log(BF2), breaks = 100, freq = F, xlab = "log-BF", main = "Histogram of log-BF: H1")
+hist((BF1), breaks = 100, freq = F, xlab = "BF", main = "Histogram of BF: H0")
+hist((BF2), breaks = 100, freq = F, xlab = "BF", main = "Histogram of BF: H1")
+par(mfrow = c(1, 1))
+```
+
+```{r}
+# ECDF of BF1
+plot(ecdf(BF1), xlab = "BF", ylab = "F(BF)", main = "ECDF of BF: H0")
+# Plot Markov Bound
+markov_bound <- 1 - 1/seq(0, max(BF), by = 0.01)
+lines(y = markov_bound, x = seq(0, max(BF), by = 0.01), col = "red")
+
+# ECDF of BF2
+plot(ecdf(BF2), xlab = "BF", ylab = "F(BF)", main = "ECDF of BF: H1")
+```
+
+
+## Why this procedure is conservative?
+
+Let's see why the BF-based control gives conservative estimate of $\pi_0$.
+
+Assume we have $N$ independent observations, with $N_0$ null hypotheses and $N_1$ alternative hypotheses. 
+
+We say $i\in H_0$, if the $i$th observation is null, and $i\in H_1$, if the $i$th observation is alternative.
+
+If $N$ is large, we know approximately that:
+$$\pi_0 \approx N_0/N.$$
+We also know that if $H_0$ is correctly specified,
+$$\frac{\sum_{i \in H_0} \text{BF}_i}{N_0} \approx 1.$$
+
+Suppose we define $\tilde{H}_0 = \{i\in[N]:\text{BF}_i\leq c^*\}$, where $c^*$ is the cutoff we found in the BF-based control procedure such that
+$$\frac{\sum_{i \in \tilde{H}_0} \text{BF}_i}{\tilde{N}_0} \geq 1.$$
+
+Then we claim:
+$$\tilde{N}_0 \geq N_0.$$
+
+To see this, assume that $|H_0 \cap \tilde{H}_0^C|= N_{0,1}$ and $|H_0 \cap \tilde{H}_0|= N_{0,0}$.
+It is clear that $N_{0,1} + N_{0,0} = N_0$.
+
+Further denote $|H_0^C \cap \tilde{H}_0|= N_{1,0}$, we know that $\hat{\pi}_0 = \frac{N_{0,0} + N_{1,0}}{N}$ and $\pi_0 \approx \frac{N_{0,0} + N_{0,1}}{N}$.
+
+Therefore, we just need to show that $N_{1,0} \geq N_{0,1}$.
+
+Using the fact that $\frac{\sum_{i \in H_0} \text{BF}_i}{N_0} = 1$, it is clear that:
+\[
+\frac{c^* N_{0,1} + \sum_{i \in H_0 \cap \tilde{H}_0} \text{BF}_i}{N_{0,1} + N_{0,0}} 
+\leq 
+\frac{\sum_{i \in H_0 \cap \tilde{H}_0^C} \text{BF}_i + \sum_{i \in H_0 \cap \tilde{H}_0} \text{BF}_i}{N_{0,1} + N_{0,0}} 
+= 
+\frac{\sum_{i \in H_0} \text{BF}_i}{N_{0,1} + N_{0,0}} 
+= 1.
+\]
+
+
+Then using the fact that $\frac{\sum_{i \in \tilde{H}_0} \text{BF}_i}{\tilde{N}_0} \geq 1$, we can also show that:
+\[
+1 \leq \frac{\sum_{i\in H_0^C \cap \tilde{H}_0} \text{BF}_i + \sum_{i\in H_0 \cap \tilde{H}_0} \text{BF}_i}{N_{1,0} + N_{0,0}}
+\leq \frac{c^* N_{1,0} + \sum_{i\in H_0 \cap \tilde{H}_0} \text{BF}_i}{N_{1,0} + N_{0,0}}
+.
+\]
+
+
+Therefore, we know:
+\[
+\frac{c^* N_{0,1} + \sum_{i \in H_0 \cap \tilde{H}_0} \text{BF}_i}{N_{0,1} + N_{0,0}} 
+\leq 
+\frac{c^* N_{1,0} + \sum_{i\in H_0 \cap \tilde{H}_0} \text{BF}_i}{N_{1,0} + N_{0,0}}.
+\]
+
+
+Define a function $$f(x) = \frac{c^*x + \sum_{i \in H_0 \cap \tilde{H}_0} \text{BF}_i}{x + N_{0,0}}.$$
+
+It is clear that $$f'(x) = \frac{c^* N_{0,0} - \sum_{i \in H_0 \cap \tilde{H}_0} \text{BF}_i}{(x + N_{0,0})^2}.$$
+
+Since $\sum_{i \in H_0 \cap \tilde{H}_0} \text{BF}_i \leq c^* N_{0,0}$, we know that $f'(x) \geq 0$ for all $x\geq 0$.
+
+Therefore, we know that $f(x)$ is increasing in $x$. Hence $N_{1,0} \geq N_{0,1}$, and $\hat{\pi}_0 = (N_{1,0} + N_{0,0})/N  \geq (N_{0,1} + N_{0,0})/N =\pi_0$.
+
+
