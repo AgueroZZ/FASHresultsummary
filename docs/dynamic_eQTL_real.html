@@ -399,7 +399,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-04-07
+<strong>Last updated:</strong> 2025-04-22
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -530,15 +530,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeb6b76db6885ff7fa9b3f13bcd8ae6927976490f3targetblankb6b76dba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree77adab2c59a8d44a27bdf8bbc47f1454dfb4aadctargetblank77adab2a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/b6b76db6885ff7fa9b3f13bcd8ae6927976490f3" target="_blank">b6b76db</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/77adab2c59a8d44a27bdf8bbc47f1454dfb4aadc" target="_blank">77adab2</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreeb6b76db6885ff7fa9b3f13bcd8ae6927976490f3targetblankb6b76dba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree77adab2c59a8d44a27bdf8bbc47f1454dfb4aadctargetblank77adab2a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -548,7 +548,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/b6b76db6885ff7fa9b3f13bcd8ae6927976490f3" target="_blank">b6b76db</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/77adab2c59a8d44a27bdf8bbc47f1454dfb4aadc" target="_blank">77adab2</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -568,6 +568,7 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    analysis/.DS_Store
     Ignored:    analysis/.Rhistory
+    Ignored:    analysis/figure/
     Ignored:    code/.DS_Store
     Ignored:    code/.Rhistory
     Ignored:    code/cpp/.DS_Store
@@ -586,7 +587,6 @@ Ignored files:
     Ignored:    thought_process
 
 Untracked files:
-    Untracked:  analysis/BF_based_control.rmd
     Untracked:  analysis/explore_mom_mle.Rmd
     Untracked:  code/dynamic_eQTL_real/
     Untracked:  data/dynamic_eQTL_real/
@@ -608,7 +608,7 @@ Untracked files:
 
 Unstaged changes:
     Modified:   analysis/_site.yml
-    Modified:   analysis/index.Rmd
+    Modified:   analysis/nonlinear_dynamic_eQTL_real.rmd
     Modified:   code/function/functions_simulating.R
     Modified:   code/function/functions_simulation.R
     Modified:   code/function/functions_simulation_eQTL_test.R
@@ -661,6 +661,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/77adab2c59a8d44a27bdf8bbc47f1454dfb4aadc/analysis/dynamic_eQTL_real.rmd" target="_blank">77adab2</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-22
+</td>
+<td>
+workflowr::wflow_publish("analysis/dynamic_eQTL_real.rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/87bd2a6a528a8863f5735f0c4e51d8550b3d7e6d/docs/dynamic_eQTL_real.html" target="_blank">87bd2a6</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -796,21 +830,22 @@ save(fash_fit1, file = &quot;./results/fash_fit1_all.RData&quot;)</code></pre>
 -------------------
 Number of datasets: 1009173
 Likelihood: gaussian
-Number of PSD grid values: 52 (initial), 10 (non-trivial)
+Number of PSD grid values: 52 (initial), 11 (non-trivial)
 Order of Integrated Wiener Process (IWP): 1</code></pre>
 <p>As well as the estimated priors:</p>
 <pre class="r"><code>fash_fit1$prior_weights</code></pre>
 <pre><code>           psd prior_weight
-1  0.000000000   0.24356776
-2  0.006737947   0.18550222
-3  0.036883167   0.11921408
-4  0.060810063   0.06144567
-5  0.082084999   0.18619579
-6  0.110803158   0.02357473
-7  0.165298888   0.09421258
-8  0.246596964   0.02817485
-9  0.367879441   0.03810991
-10 1.000000000   0.02000241</code></pre>
+1  0.000000000  0.410663695
+2  0.006737947  0.141127785
+3  0.016572675  0.012015292
+4  0.049787068  0.178001757
+5  0.074273578  0.071560569
+6  0.110803158  0.098258453
+7  0.182683524  0.037970329
+8  0.246596964  0.021572272
+9  0.367879441  0.007501801
+10 0.406569660  0.011455909
+11 1.000000000  0.009872138</code></pre>
 </div>
 <div id="problem-with-pi_0-estimation" class="section level2">
 <h2>Problem with <span class="math inline">\(\pi_0\)</span>
@@ -818,27 +853,19 @@ estimation</h2>
 <p>If we measure the significance using the false discovery rate, then
 it is sensitive to the value of <span
 class="math inline">\(\pi_0\)</span>. The estimated <span
-class="math inline">\(\pi_0\)</span> is 0.2435678, which is way too
+class="math inline">\(\pi_0\)</span> is 0.4106637, which is way too
 small to be realistic.</p>
 <p>One likely reason could be due to model-misspecification under the
 alternative hypothesis. To account for this, we will consider the
 following approaches:</p>
-<p>(i): A method of moments (MOM) estimator for <span
-class="math inline">\(\pi_0\)</span> based on the rank of the likelihood
-matrix:</p>
-<pre class="r"><code>pio_mom_1 &lt;- mean(apply(fash_fit1$L_matrix, 1, which.max) == 1)
-pio_mom_1</code></pre>
-<pre><code>[1] 0.4307309</code></pre>
-<p>The MOM estimate is 0.4307309, which is much larger than the
-estimated <span class="math inline">\(\pi_0\)</span> from the model.</p>
-<p>(ii): A conservative estimate of <span
+<p>(i): Computing a conservative estimate of <span
 class="math inline">\(\pi_0\)</span> based on the BF procedure:</p>
 <pre class="r"><code>fash_fit1_update &lt;- BF_update(fash_fit1, plot = FALSE)
 fash_fit1_update$prior_weights
 save(fash_fit1_update, file = paste0(result_dir, &quot;/fash_fit1_update.RData&quot;))</code></pre>
-<p>The conservative estimate is 0.8921652, which is much more
+<p>The conservative estimate is 0.9354303, which is much more
 realistic.</p>
-<p>(iii): Instead of looking at the FDR which is based on the estimated
+<p>(ii): Instead of looking at the FDR which is based on the estimated
 <span class="math inline">\(\pi_0\)</span>, we can use the minimum local
 false sign rate (<span class="math inline">\(\text{min-lfsr}_i\)</span>)
 to measure significance: <span class="math display">\[
@@ -863,6 +890,17 @@ plot(lfdr1_vec_unadj, min_lfsr1_unadj,
      pch = 20, cex = 0.1,
      ylim = c(0,1), xlim = c(0,1),
      xlab = &quot;lfdr&quot;, ylab = &quot;min-lfsr&quot;, main = &quot;lfdr vs min-lfsr (Un-adjusted)&quot;)
+lines(c(0,1), c(0,1), col = &quot;red&quot;)</code></pre>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-9-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Let’s also visualize the min-lfsr and the lfdr from the BF-updated
+model:</p>
+<pre class="r"><code>load(paste0(result_dir, &quot;/min_lfsr_summary1_update.RData&quot;))
+min_lfsr1 &lt;- min_lfsr_summary1_update$min_lfsr[sample_indices]
+lfdr1_vec &lt;- fash_fit1_update$lfdr[min_lfsr_summary1_update$index][sample_indices]
+plot(lfdr1_vec, min_lfsr1, 
+     pch = 20, cex = 0.1,
+     ylim = c(0,1), xlim = c(0,1),
+     xlab = &quot;lfdr&quot;, ylab = &quot;min-lfsr&quot;, main = &quot;lfdr vs min-lfsr (BF-adjusted)&quot;)
 lines(c(0,1), c(0,1), col = &quot;red&quot;)</code></pre>
 <p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
@@ -913,15 +951,15 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<p>Let’s also visualize the min-lfsr and the lfdr from the BF-updated
-model:</p>
-<pre class="r"><code>load(paste0(result_dir, &quot;/min_lfsr_summary1_update.RData&quot;))
-min_lfsr1 &lt;- min_lfsr_summary1_update$min_lfsr[sample_indices]
-lfdr1_vec &lt;- fash_fit1_update$lfdr[min_lfsr_summary1_update$index][sample_indices]
-plot(lfdr1_vec, min_lfsr1, 
+<p>Indeed, the min-lfsr tends to be more conservative than the lfdr,
+especially when <span class="math inline">\(\hat{\pi_0}\)</span> has not
+been adjusted using the BF procedure.</p>
+<p>Let’s also assess how does the BF-update of <span
+class="math inline">\(\pi_0\)</span> affect the min-lfsr.</p>
+<pre class="r"><code>plot(min_lfsr1_unadj, min_lfsr1, 
      pch = 20, cex = 0.1,
      ylim = c(0,1), xlim = c(0,1),
-     xlab = &quot;lfdr&quot;, ylab = &quot;min-lfsr&quot;, main = &quot;lfdr vs min-lfsr (BF-adjusted)&quot;)
+     xlab = &quot;min-lfsr (unadjusted)&quot;, ylab = &quot;min-lfsr&quot;, main = &quot;Effect of BF adjustment on min-lfsr&quot;)
 lines(c(0,1), c(0,1), col = &quot;red&quot;)</code></pre>
 <p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-11-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
@@ -961,124 +999,45 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<p>Indeed, the min-lfsr tends to be more conservative than the lfdr.</p>
-<p>Let’s also assess how does the BF-update of <span
-class="math inline">\(\pi_0\)</span> affect the min-lfsr.</p>
-<pre class="r"><code>plot(min_lfsr1_unadj, min_lfsr1, 
-     pch = 20, cex = 0.1,
-     ylim = c(0,1), xlim = c(0,1),
-     xlab = &quot;min-lfsr (unadjusted)&quot;, ylab = &quot;min-lfsr&quot;, main = &quot;Effect of BF adjustment on min-lfsr&quot;)
-lines(c(0,1), c(0,1), col = &quot;red&quot;)</code></pre>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-12-1.png" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
-Past versions of unnamed-chunk-12-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-12-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/80c71ccd7345d4a836c2ef1af2d4062b4ee84b54/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-12-1.png" target="_blank">80c71cc</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2025-04-06
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Let’s see how many pairs and genes remain significant after
-controlling the min-lfsr:</p>
-<pre class="r"><code>alpha &lt;- 0.05
-fash_highlighted1_lfsr &lt;- min_lfsr_summary1_update$index[min_lfsr_summary1_update$fsr &lt;= alpha]
-pairs_highlighted1_lfsr &lt;- names(datasets)[fash_highlighted1_lfsr]
-length(pairs_highlighted1_lfsr)</code></pre>
-<pre><code>[1] 28011</code></pre>
-<pre class="r"><code>length(pairs_highlighted1_lfsr)/length(datasets)</code></pre>
-<pre><code>[1] 0.02775639</code></pre>
-<pre class="r"><code>genes_highlighted1_lfsr &lt;- unique(sapply(strsplit(pairs_highlighted1_lfsr, &quot;_&quot;), &quot;[[&quot;, 1))
-length(genes_highlighted1_lfsr)</code></pre>
-<pre><code>[1] 2572</code></pre>
-<pre class="r"><code>length(genes_highlighted1_lfsr)/length(all_genes)</code></pre>
-<pre><code>[1] 0.4042754</code></pre>
 </div>
 <div id="detecting-dynamic-eqtls" class="section level2">
 <h2>Detecting dynamic eQTLs</h2>
 <p>We will use the updated FASH model (1) to detect dynamic eQTLs.</p>
-<pre class="r"><code>test1 &lt;- fdr_control(fash_fit1_update, alpha = alpha, plot = F)</code></pre>
-<pre><code>28961 datasets are significant at alpha level 0.05. Total datasets tested: 1009173. </code></pre>
+<pre class="r"><code>alpha &lt;- 0.05
+test1 &lt;- fdr_control(fash_fit1_update, alpha = alpha, plot = F)</code></pre>
+<pre><code>8165 datasets are significant at alpha level 0.05. Total datasets tested: 1009173. </code></pre>
 <pre class="r"><code>fash_highlighted1 &lt;- test1$fdr_results$index[test1$fdr_results$FDR &lt;= alpha]</code></pre>
 <p>How many pairs are detected as dynamic eQTLs?</p>
 <pre class="r"><code>pairs_highlighted1 &lt;- names(datasets)[fash_highlighted1]
 length(pairs_highlighted1)</code></pre>
-<pre><code>[1] 28961</code></pre>
+<pre><code>[1] 8165</code></pre>
 <pre class="r"><code>length(pairs_highlighted1)/length(datasets)</code></pre>
-<pre><code>[1] 0.02869776</code></pre>
+<pre><code>[1] 0.008090783</code></pre>
 <p>How many unique genes are detected?</p>
 <pre class="r"><code>genes_highlighted1 &lt;- unique(sapply(strsplit(pairs_highlighted1, &quot;_&quot;), &quot;[[&quot;, 1))
 length(genes_highlighted1)</code></pre>
-<pre><code>[1] 2630</code></pre>
+<pre><code>[1] 1105</code></pre>
 <pre class="r"><code>length(genes_highlighted1)/length(all_genes)</code></pre>
-<pre><code>[1] 0.413392</code></pre>
+<pre><code>[1] 0.1736875</code></pre>
+<p>Let’s see how many pairs and genes remain significant after
+controlling the min-lfsr:</p>
+<pre class="r"><code>fash_highlighted1_lfsr &lt;- min_lfsr_summary1_update$index[min_lfsr_summary1_update$fsr &lt;= alpha]
+pairs_highlighted1_lfsr &lt;- names(datasets)[fash_highlighted1_lfsr]
+length(pairs_highlighted1_lfsr)</code></pre>
+<pre><code>[1] 7988</code></pre>
+<pre class="r"><code>length(pairs_highlighted1_lfsr)/length(datasets)</code></pre>
+<pre><code>[1] 0.007915392</code></pre>
+<pre class="r"><code>genes_highlighted1_lfsr &lt;- unique(sapply(strsplit(pairs_highlighted1_lfsr, &quot;_&quot;), &quot;[[&quot;, 1))
+length(genes_highlighted1_lfsr)</code></pre>
+<pre><code>[1] 1088</code></pre>
+<pre class="r"><code>length(genes_highlighted1_lfsr)/length(all_genes)</code></pre>
+<pre><code>[1] 0.1710154</code></pre>
+<p>It seems like once <span class="math inline">\(\hat{\pi_0}\)</span>
+is adjusted, there is not much difference between measuring significance
+using the min-lfsr or the lfdr. From now on, we will consider the pairs
+that are significant using the lfdr.</p>
 <p>Visualize top-ranked pairs:</p>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-18-1.png" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
-Past versions of unnamed-chunk-18-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-18-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/80c71ccd7345d4a836c2ef1af2d4062b4ee84b54/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-18-1.png" target="_blank">80c71cc</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2025-04-06
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-17-1.png" width="768" style="display: block; margin: auto;" /></p>
 </div>
 <div id="comparing-with-strober-et.al" class="section level2">
 <h2>Comparing with Strober et.al</h2>
@@ -1105,6 +1064,10 @@ Strober et.al and FASH (order 1):</p>
 ggVennDiagram(gene_sets, label = &quot;both&quot;) +
   scale_fill_gradient(low=&quot;grey90&quot;,high = &quot;red&quot;) +
   theme(legend.position = &quot;right&quot;)  # Move legend to the right</code></pre>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-19-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>There is a large number of genes only detected by FASH (order 1).
+Let’s take a look at the 4 pairs that are least significant from
+FASH:</p>
 <p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-20-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
@@ -1154,9 +1117,9 @@ Ziang Zhang
 </table>
 </div>
 </div>
-<p>There is a large number of genes only detected by FASH (order 1).
-Let’s take a look at the 4 pairs that are least significant from
-FASH:</p>
+<p>Let’s also look at the genes that were missed by FASH, but detected
+by Strober et.al. In this case, we will pick the most significant pair
+for each gene in FASH:</p>
 <p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-21-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
@@ -1189,58 +1152,6 @@ Ziang Zhang
 </td>
 <td>
 2025-04-06
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Let’s also look at the genes that were missed by FASH, but detected
-by Strober et.al. In this case, we will pick the most significant pair
-for each gene in FASH:</p>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-22-1.png" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
-Past versions of unnamed-chunk-22-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-22-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/80c71ccd7345d4a836c2ef1af2d4062b4ee84b54/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-22-1.png" target="_blank">80c71cc</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2025-04-06
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b9a862281da8b1c00a575cde1ba74a102e02dd23/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-22-1.png" target="_blank">b9a8622</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2025-02-22
 </td>
 </tr>
 </tbody>
@@ -1549,8 +1460,10 @@ at least <span class="math inline">\(\geq
 2\times\min\{\max\beta(t)^+,\max\beta(t)^-\}\times2 \geq  2 \times
 0.25  \times 2 = 1\)</span>).</p></li>
 </ul>
-<p>We first take a look at the significant pairs detected by FASH (order
-1), and classify them based on the false sign rate (lfsr):</p>
+<p>We will take a look at the significant pairs detected by FASH (order
+1), and classify them based on the false sign rate (lfsr).</p>
+<div id="early-dynamic-eqtls" class="section level3">
+<h3>Early dynamic eQTLs</h3>
 <pre class="r"><code>smooth_var_refined = seq(0,15, by = 0.1)
 functional_early &lt;- function(x){
   max(abs(x[smooth_var_refined &lt;= 3])) - max(abs(x[smooth_var_refined &gt; 3]))
@@ -1565,18 +1478,18 @@ dynamic eQTLs?</p>
 <pre class="r"><code>load(paste0(result_dir, &quot;/classify_dyn_eQTLs_early.RData&quot;))
 early_indices &lt;- testing_early_dyn$indices[testing_early_dyn$cfsr &lt;= alpha]
 length(early_indices)</code></pre>
-<pre><code>[1] 584</code></pre>
+<pre><code>[1] 123</code></pre>
 <pre class="r"><code>early_genes &lt;- unique(sapply(strsplit(names(datasets)[early_indices], &quot;_&quot;), &quot;[[&quot;, 1))
 length(early_genes)</code></pre>
-<pre><code>[1] 73</code></pre>
+<pre><code>[1] 17</code></pre>
 <p>Let’s take a look at the top-ranked early dynamic eQTLs:</p>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-25-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-24-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-25-1">
-Past versions of unnamed-chunk-25-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
 </button>
 </p>
-<div id="fig-unnamed-chunk-25-1" class="collapse">
+<div id="fig-unnamed-chunk-24-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1595,7 +1508,7 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/80c71ccd7345d4a836c2ef1af2d4062b4ee84b54/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-25-1.png" target="_blank">80c71cc</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/80c71ccd7345d4a836c2ef1af2d4062b4ee84b54/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-24-1.png" target="_blank">80c71cc</a>
 </td>
 <td>
 Ziang Zhang
@@ -1606,7 +1519,7 @@ Ziang Zhang
 </tr>
 <tr>
 <td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b9a862281da8b1c00a575cde1ba74a102e02dd23/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-25-1.png" target="_blank">b9a8622</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b9a862281da8b1c00a575cde1ba74a102e02dd23/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-24-1.png" target="_blank">b9a8622</a>
 </td>
 <td>
 Ziang Zhang
@@ -1622,7 +1535,9 @@ Ziang Zhang
 <p>It is evident that these variants have largest <span
 class="math inline">\(|\beta(t)|\)</span> during the first three
 days.</p>
-<p>How many pairs are classified as middle dynamic eQTLs?</p>
+</div>
+<div id="middle-dynamic-eqtls" class="section level3">
+<h3>Middle dynamic eQTLs</h3>
 <pre class="r"><code>functional_middle &lt;- function(x){
   max(abs(x[smooth_var_refined &lt;= 11 &amp; smooth_var_refined &gt;= 4])) - max(abs(x[smooth_var_refined &gt; 11]), abs(x[smooth_var_refined &lt; 4]))
 }
@@ -1637,10 +1552,10 @@ dynamic eQTLs?</p>
 <pre class="r"><code>load(paste0(result_dir, &quot;/classify_dyn_eQTLs_middle.RData&quot;))
 middle_indices &lt;- testing_middle_dyn$indices[testing_middle_dyn$cfsr &lt;= alpha]
 length(middle_indices)</code></pre>
-<pre><code>[1] 316</code></pre>
+<pre><code>[1] 46</code></pre>
 <pre class="r"><code>middle_genes &lt;- unique(sapply(strsplit(names(datasets)[middle_indices], &quot;_&quot;), &quot;[[&quot;, 1))
 length(middle_genes)</code></pre>
-<pre><code>[1] 69</code></pre>
+<pre><code>[1] 13</code></pre>
 <p>Take a look at their results:</p>
 <pre class="r"><code>par(mfrow = c(2,2))
 for (i in 1:4) {
@@ -1683,46 +1598,11 @@ for (i in 1:4) {
     border = NA
   )
 }</code></pre>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-28-1.png" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-28-1">
-Past versions of unnamed-chunk-28-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-28-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/80c71ccd7345d4a836c2ef1af2d4062b4ee84b54/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-28-1.png" target="_blank">80c71cc</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2025-04-06
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-27-1.png" width="768" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>par(mfrow = c(1,1))</code></pre>
-<p>How many pairs are classified as late dynamic eQTLs?</p>
+</div>
+<div id="late-dynamic-eqtls" class="section level3">
+<h3>Late dynamic eQTLs</h3>
 <pre class="r"><code>functional_late &lt;- function(x){
   max(abs(x[smooth_var_refined &gt;= 12])) - max(abs(x[smooth_var_refined &lt; 12]))
 }
@@ -1737,18 +1617,18 @@ dynamic eQTLs?</p>
 <pre class="r"><code>load(paste0(result_dir, &quot;/classify_dyn_eQTLs_late.RData&quot;))
 late_indices &lt;- testing_late_dyn$indices[testing_late_dyn$cfsr &lt;= alpha]
 length(late_indices)</code></pre>
-<pre><code>[1] 635</code></pre>
+<pre><code>[1] 39</code></pre>
 <pre class="r"><code>late_genes &lt;- unique(sapply(strsplit(names(datasets)[late_indices], &quot;_&quot;), &quot;[[&quot;, 1))
 length(late_genes)</code></pre>
-<pre><code>[1] 168</code></pre>
+<pre><code>[1] 14</code></pre>
 <p>Let’s take a look at the top-ranked late dynamic eQTLs:</p>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-31-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-30-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-31-1">
-Past versions of unnamed-chunk-31-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-30-1">
+Past versions of unnamed-chunk-30-1.png
 </button>
 </p>
-<div id="fig-unnamed-chunk-31-1" class="collapse">
+<div id="fig-unnamed-chunk-30-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1767,7 +1647,7 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/80c71ccd7345d4a836c2ef1af2d4062b4ee84b54/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-31-1.png" target="_blank">80c71cc</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/80c71ccd7345d4a836c2ef1af2d4062b4ee84b54/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-30-1.png" target="_blank">80c71cc</a>
 </td>
 <td>
 Ziang Zhang
@@ -1776,10 +1656,24 @@ Ziang Zhang
 2025-04-06
 </td>
 </tr>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b9a862281da8b1c00a575cde1ba74a102e02dd23/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-30-1.png" target="_blank">b9a8622</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-02-22
+</td>
+</tr>
 </tbody>
 </table>
 </div>
 </div>
+</div>
+<div id="switch-dynamic-eqtls" class="section level3">
+<h3>Switch dynamic eQTLs</h3>
 <p>How many pairs and how many unique genes are classified as switch
 dynamic eQTLs?</p>
 <pre class="r"><code>switch_threshold &lt;- 0.25
@@ -1801,59 +1695,12 @@ testing_switch_dyn &lt;- testing_functional(functional_switch,
 <pre class="r"><code>load(paste0(result_dir, &quot;/classify_dyn_eQTLs_switch.RData&quot;))
 switch_indices &lt;- testing_switch_dyn$indices[testing_switch_dyn$cfsr &lt;= alpha]
 length(switch_indices)</code></pre>
-<pre><code>[1] 4532</code></pre>
+<pre><code>[1] 1097</code></pre>
 <pre class="r"><code>switch_genes &lt;- unique(sapply(strsplit(names(datasets)[switch_indices], &quot;_&quot;), &quot;[[&quot;, 1))
 length(switch_genes)</code></pre>
-<pre><code>[1] 831</code></pre>
+<pre><code>[1] 259</code></pre>
 <p>Let’s take a look at the top-ranked switch dynamic eQTLs:</p>
-<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-34-1.png" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-34-1">
-Past versions of unnamed-chunk-34-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-34-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/80c71ccd7345d4a836c2ef1af2d4062b4ee84b54/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-34-1.png" target="_blank">80c71cc</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2025-04-06
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/b9a862281da8b1c00a575cde1ba74a102e02dd23/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-34-1.png" target="_blank">b9a8622</a>
-</td>
-<td>
-Ziang Zhang
-</td>
-<td>
-2025-02-22
-</td>
-</tr>
-</tbody>
-</table>
-</div>
+<p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-33-1.png" width="768" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="gene-set-enrichment-analysis" class="section level2">
@@ -1906,58 +1753,51 @@ enrich_set &lt;- function(genes_selected, background_gene, q_val_cutoff = 0.05, 
 result@result %&gt;% 
   filter(pvalue &lt; 0.05) %&gt;%
   dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
-<pre><code>                                    GeneRatio BgRatio       pvalue      qvalue
-HALLMARK_HYPOXIA                       54/768 89/1837 0.0001845515 0.008353385
-HALLMARK_WNT_BETA_CATENIN_SIGNALING    16/768 21/1837 0.0013970284 0.031616958
-HALLMARK_TNFA_SIGNALING_VIA_NFKB       35/768 58/1837 0.0029586491 0.044639267
-HALLMARK_ESTROGEN_RESPONSE_LATE        42/768 79/1837 0.0247451694 0.280011127
-HALLMARK_KRAS_SIGNALING_UP             26/768 47/1837 0.0406685607 0.333326688
-HALLMARK_NOTCH_SIGNALING               10/768 15/1837 0.0457213030 0.333326688</code></pre>
+<pre><code>                                 GeneRatio BgRatio      pvalue    qvalue
+HALLMARK_MYOGENESIS                 19/304 67/1837 0.009445571 0.2791442
+HALLMARK_APICAL_JUNCTION            21/304 82/1837 0.021548302 0.2791442
+HALLMARK_ESTROGEN_RESPONSE_EARLY    21/304 82/1837 0.021548302 0.2791442
+HALLMARK_HYPOXIA                    22/304 89/1837 0.028013370 0.2791442
+HALLMARK_KRAS_SIGNALING_DN           9/304 28/1837 0.030835698 0.2791442
+HALLMARK_UV_RESPONSE_DN             17/304 68/1837 0.045593563 0.3277177</code></pre>
 <p>Among the genes highlighted by FASH that are classified as early
 dynamic eQTLs:</p>
 <pre class="r"><code>result &lt;- enrich_set(genes_selected = early_genes, background_gene = all_genes)
 result@result %&gt;% 
   filter(pvalue &lt; 0.05) %&gt;%
   dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
-<pre><code>                                           GeneRatio BgRatio       pvalue
-HALLMARK_ALLOGRAFT_REJECTION                    4/17 36/1837 0.0002469376
-HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION      3/17 84/1837 0.0394345646
-HALLMARK_HYPOXIA                                3/17 89/1837 0.0456688085
-                                                qvalue
-HALLMARK_ALLOGRAFT_REJECTION               0.005198687
-HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION 0.320482867
-HALLMARK_HYPOXIA                           0.320482867</code></pre>
+<pre><code>                     GeneRatio BgRatio     pvalue     qvalue
+HALLMARK_P53_PATHWAY       2/4 83/1837 0.01140674 0.04802839</code></pre>
 <p>Among the genes highlighted by FASH that are classified as middle
 dynamic eQTLs:</p>
 <pre class="r"><code>result &lt;- enrich_set(genes_selected = middle_genes, background_gene = all_genes)
 result@result %&gt;% 
   filter(pvalue &lt; 0.05) %&gt;%
   dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
-<pre><code>                            GeneRatio BgRatio       pvalue     qvalue
-HALLMARK_HEDGEHOG_SIGNALING      3/23 15/1837 0.0007079331 0.02123799</code></pre>
+<pre><code>                    GeneRatio BgRatio      pvalue    qvalue
+HALLMARK_COMPLEMENT       2/5 57/1837 0.008909237 0.0844033</code></pre>
 <p>Among the genes highlighted by FASH that are classified as late
 dynamic eQTLs:</p>
 <pre class="r"><code>result &lt;- enrich_set(genes_selected = late_genes, background_gene = all_genes)
 result@result %&gt;% 
   filter(pvalue &lt; 0.05) %&gt;%
   dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
-<pre><code>                              GeneRatio BgRatio       pvalue     qvalue
-HALLMARK_KRAS_SIGNALING_DN         5/50 28/1837 0.0007470012 0.02909373
-HALLMARK_ANDROGEN_RESPONSE         5/50 57/1837 0.0175497472 0.34175823
-HALLMARK_BILE_ACID_METABOLISM      3/50 28/1837 0.0385309690 0.50022661</code></pre>
+<pre><code>                           GeneRatio BgRatio     pvalue      qvalue
+HALLMARK_ANDROGEN_RESPONSE       3/6 57/1837 0.00053061 0.004468295</code></pre>
 <p>Among the genes highlighted by FASH that are classified as switch
 dynamic eQTLs:</p>
 <pre class="r"><code>result &lt;- enrich_set(genes_selected = switch_genes, background_gene = all_genes)
 result@result %&gt;% 
   filter(pvalue &lt; 0.05) %&gt;%
   dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
-<pre><code>                                   GeneRatio  BgRatio       pvalue     qvalue
-HALLMARK_HYPOXIA                      26/291  89/1837 0.0007928897 0.03588869
-HALLMARK_GLYCOLYSIS                   27/291 100/1837 0.0023419464 0.05300194
-HALLMARK_ESTROGEN_RESPONSE_LATE       20/291  79/1837 0.0177788501 0.26824230
-HALLMARK_TNFA_SIGNALING_VIA_NFKB      15/291  58/1837 0.0315473291 0.30843118
-HALLMARK_XENOBIOTIC_METABOLISM        17/291  71/1837 0.0459708237 0.30843118
-HALLMARK_INTERFERON_GAMMA_RESPONSE    14/291  56/1837 0.0484128174 0.30843118</code></pre>
+<pre><code>                                 GeneRatio BgRatio      pvalue    qvalue
+HALLMARK_HYPOXIA                     11/94 89/1837 0.004584478 0.1774655
+HALLMARK_P53_PATHWAY                 10/94 83/1837 0.008224012 0.1774655
+HALLMARK_MYOGENESIS                   8/94 67/1837 0.018684791 0.1864330
+HALLMARK_PI3K_AKT_MTOR_SIGNALING      7/94 55/1837 0.019821609 0.1864330
+HALLMARK_XENOBIOTIC_METABOLISM        8/94 71/1837 0.025756165 0.1864330
+HALLMARK_TNFA_SIGNALING_VIA_NFKB      7/94 58/1837 0.025918736 0.1864330
+HALLMARK_NOTCH_SIGNALING              3/94 15/1837 0.037724861 0.2325894</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
