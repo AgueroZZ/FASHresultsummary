@@ -91,30 +91,21 @@ The estimated $\pi_0$ is `r fash_fit1$prior_weights$prior_weight[1]`, which is w
 One likely reason could be due to model-misspecification under the alternative hypothesis.
 To account for this, we will consider the following approaches:
 
-(i): A method of moments (MOM) estimator for $\pi_0$ based on the rank of the likelihood matrix:
-
-```{r}
-pio_mom_1 <- mean(apply(fash_fit1$L_matrix, 1, which.max) == 1)
-pio_mom_1
-```
-
-The MOM estimate is `r pio_mom_1`, which is much larger than the estimated $\pi_0$ from the model.
-
-
-(ii): A conservative estimate of $\pi_0$ based on the BF procedure:
+(i): Computing a conservative estimate of $\pi_0$ based on the BF procedure:
 
 ```{r eval=FALSE}
 fash_fit1_update <- BF_update(fash_fit1, plot = FALSE)
 fash_fit1_update$prior_weights
 save(fash_fit1_update, file = paste0(result_dir, "/fash_fit1_update.RData"))
 ```
+
 ```{r echo=FALSE}
 load(paste0(result_dir, "/fash_fit1_update.RData"))
 ```
 
 The conservative estimate is `r fash_fit1_update$prior_weights$prior_weight[1]`, which is much more realistic.
 
-(iii): Instead of looking at the FDR which is based on the estimated $\pi_0$, we can use the minimum local false sign rate ($\text{min-lfsr}_i$) to measure significance:
+(ii): Instead of looking at the FDR which is based on the estimated $\pi_0$, we can use the minimum local false sign rate ($\text{min-lfsr}_i$) to measure significance:
 $$
 \text{min-lfsr}_i = \min_{t} \left\{ \text{lfsr}(W_i(t)) \right\},
 $$
@@ -159,7 +150,7 @@ lines(c(0,1), c(0,1), col = "red")
 ```
 
 
-Indeed, the min-lfsr tends to be more conservative than the lfdr.
+Indeed, the min-lfsr tends to be more conservative than the lfdr, especially when $\hat{\pi_0}$ has not been adjusted using the BF procedure.
 
 Let's also assess how does the BF-update of $\pi_0$ affect the min-lfsr.
 
@@ -172,29 +163,13 @@ lines(c(0,1), c(0,1), col = "red")
 ```
 
 
-Let's see how many pairs and genes remain significant after controlling the min-lfsr:
-
-```{r}
-alpha <- 0.05
-fash_highlighted1_lfsr <- min_lfsr_summary1_update$index[min_lfsr_summary1_update$fsr <= alpha]
-pairs_highlighted1_lfsr <- names(datasets)[fash_highlighted1_lfsr]
-length(pairs_highlighted1_lfsr)
-length(pairs_highlighted1_lfsr)/length(datasets)
-```
-
-```{r}
-genes_highlighted1_lfsr <- unique(sapply(strsplit(pairs_highlighted1_lfsr, "_"), "[[", 1))
-length(genes_highlighted1_lfsr)
-length(genes_highlighted1_lfsr)/length(all_genes)
-```
-
-
 
 ## Detecting dynamic eQTLs
 
 We will use the updated FASH model (1) to detect dynamic eQTLs.
 
 ```{r}
+alpha <- 0.05
 test1 <- fdr_control(fash_fit1_update, alpha = alpha, plot = F)
 fash_highlighted1 <- test1$fdr_results$index[test1$fdr_results$FDR <= alpha]
 ```
@@ -214,6 +189,26 @@ genes_highlighted1 <- unique(sapply(strsplit(pairs_highlighted1, "_"), "[[", 1))
 length(genes_highlighted1)
 length(genes_highlighted1)/length(all_genes)
 ```
+
+
+Let's see how many pairs and genes remain significant after controlling the min-lfsr:
+
+```{r}
+fash_highlighted1_lfsr <- min_lfsr_summary1_update$index[min_lfsr_summary1_update$fsr <= alpha]
+pairs_highlighted1_lfsr <- names(datasets)[fash_highlighted1_lfsr]
+length(pairs_highlighted1_lfsr)
+length(pairs_highlighted1_lfsr)/length(datasets)
+```
+
+```{r}
+genes_highlighted1_lfsr <- unique(sapply(strsplit(pairs_highlighted1_lfsr, "_"), "[[", 1))
+length(genes_highlighted1_lfsr)
+length(genes_highlighted1_lfsr)/length(all_genes)
+```
+
+It seems like once $\hat{\pi_0}$ is adjusted, there is not much difference between measuring significance using the min-lfsr or the lfdr.
+From now on, we will consider the pairs that are significant using the lfdr.
+
 
 Visualize top-ranked pairs:
 
@@ -340,7 +335,8 @@ for (i in 1:4) {
         fitted_result$mean,
         col = "red",
         lwd = 2)
-  abline(h = mean(datasets[[selected_index]]$y), col = "blue", lty = 2)
+  inv_weights <- (1/datasets[[selected_index]]$SE)/sum(1/datasets[[selected_index]]$SE)
+  abline(h = sum(datasets[[selected_index]]$y*inv_weights), col = "blue", lty = 2)
   polygon(
     c(fitted_result$x, rev(fitted_result$x)),
     c(fitted_result$lower, rev(fitted_result$upper)),
@@ -393,7 +389,8 @@ for (i in 1:4) {
         fitted_result$mean,
         col = "red",
         lwd = 2)
-  abline(h = mean(datasets[[selected_index]]$y), col = "blue", lty = 2)
+  inv_weights <- (1/datasets[[selected_index]]$SE)/sum(1/datasets[[selected_index]]$SE)
+  abline(h = sum(datasets[[selected_index]]$y*inv_weights), col = "blue", lty = 2)
   polygon(
     c(fitted_result$x, rev(fitted_result$x)),
     c(fitted_result$lower, rev(fitted_result$upper)),
@@ -735,7 +732,9 @@ Following the definition in Strober et.al, we will classify the detected dynamic
 
 - *Switch*: eQTLs with effect sign switch during the time course: $\min\{\max\beta(t)^+,\max\beta(t)^-\}-c $ where $c$ is a threshold that we set to 0.25 (which means with two alleles, the maximal difference of effect size is at least $\geq 2\times\min\{\max\beta(t)^+,\max\beta(t)^-\}\times2 \geq  2 \times 0.25  \times 2 = 1$).
 
-We first take a look at the significant pairs detected by FASH (order 1), and classify them based on the false sign rate (lfsr):
+We will take a look at the significant pairs detected by FASH (order 1), and classify them based on the false sign rate (lfsr).
+
+### Early dynamic eQTLs
 
 ```{r eval=FALSE}
 smooth_var_refined = seq(0,15, by = 0.1)
@@ -808,7 +807,8 @@ par(mfrow = c(1,1))
 
 It is evident that these variants have largest $|\beta(t)|$ during the first three days.
 
-How many pairs are classified as middle dynamic eQTLs?
+
+### Middle dynamic eQTLs
 
 ```{r eval=FALSE}
 functional_middle <- function(x){
@@ -880,7 +880,7 @@ par(mfrow = c(1,1))
 ```
 
 
-How many pairs are classified as late dynamic eQTLs?
+### Late dynamic eQTLs
 
 ```{r eval=FALSE}
 functional_late <- function(x){
@@ -950,6 +950,9 @@ for (i in 1:4) {
 }
 par(mfrow = c(1,1))
 ```
+
+
+### Switch dynamic eQTLs
 
 How many pairs and how many unique genes are classified as switch dynamic eQTLs?
 
