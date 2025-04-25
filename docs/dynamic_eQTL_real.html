@@ -530,15 +530,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree3517a02404f98aa83be2c027dddb0bac4d345358targetblank3517a02a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreefe55c6d9763b35fb1e41904dde48ff9a8bbf156ctargetblankfe55c6da">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/3517a02404f98aa83be2c027dddb0bac4d345358" target="_blank">3517a02</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/fe55c6d9763b35fb1e41904dde48ff9a8bbf156c" target="_blank">fe55c6d</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree3517a02404f98aa83be2c027dddb0bac4d345358targetblank3517a02a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreefe55c6d9763b35fb1e41904dde48ff9a8bbf156ctargetblankfe55c6da"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -548,7 +548,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/3517a02404f98aa83be2c027dddb0bac4d345358" target="_blank">3517a02</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/fe55c6d9763b35fb1e41904dde48ff9a8bbf156c" target="_blank">fe55c6d</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -607,7 +607,6 @@ Untracked files:
 
 Unstaged changes:
     Modified:   analysis/_site.yml
-    Modified:   analysis/nonlinear_dynamic_eQTL_real.rmd
     Modified:   code/function/functions_simulating.R
     Modified:   code/function/functions_simulation.R
     Modified:   code/function/functions_simulation_eQTL_test.R
@@ -660,6 +659,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/fe55c6d9763b35fb1e41904dde48ff9a8bbf156c/analysis/dynamic_eQTL_real.rmd" target="_blank">fe55c6d</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+<td>
+workflowr::wflow_publish("analysis/dynamic_eQTL_real.rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/ab145b3e2d899811e49d8d9868b9c427969cf7ed/docs/dynamic_eQTL_real.html" target="_blank">ab145b3</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -913,7 +946,7 @@ class="math inline">\(\pi_0\)</span> based on the BF procedure:</p>
 <pre class="r"><code>fash_fit1_update &lt;- BF_update(fash_fit1, plot = FALSE)
 fash_fit1_update$prior_weights
 save(fash_fit1_update, file = paste0(result_dir, &quot;/fash_fit1_update.RData&quot;))</code></pre>
-<p>The conservative estimate is 0.9354303, which is much more
+<p>The conservative estimate is 0.93568, which is much more
 realistic.</p>
 <p>(ii): Instead of looking at the FDR which is based on the estimated
 <span class="math inline">\(\pi_0\)</span>, we can use the minimum local
@@ -1114,20 +1147,20 @@ Ziang Zhang
 <p>We will use the updated FASH model (1) to detect dynamic eQTLs.</p>
 <pre class="r"><code>alpha &lt;- 0.05
 test1 &lt;- fdr_control(fash_fit1_update, alpha = alpha, plot = F)</code></pre>
-<pre><code>8165 datasets are significant at alpha level 0.05. Total datasets tested: 1009173. </code></pre>
+<pre><code>10290 datasets are significant at alpha level 0.05. Total datasets tested: 1009173. </code></pre>
 <pre class="r"><code>fash_highlighted1 &lt;- test1$fdr_results$index[test1$fdr_results$FDR &lt;= alpha]</code></pre>
 <p>How many pairs are detected as dynamic eQTLs?</p>
 <pre class="r"><code>pairs_highlighted1 &lt;- names(datasets)[fash_highlighted1]
 length(pairs_highlighted1)</code></pre>
-<pre><code>[1] 8165</code></pre>
+<pre><code>[1] 10290</code></pre>
 <pre class="r"><code>length(pairs_highlighted1)/length(datasets)</code></pre>
-<pre><code>[1] 0.008090783</code></pre>
+<pre><code>[1] 0.01019647</code></pre>
 <p>How many unique genes are detected?</p>
 <pre class="r"><code>genes_highlighted1 &lt;- unique(sapply(strsplit(pairs_highlighted1, &quot;_&quot;), &quot;[[&quot;, 1))
 length(genes_highlighted1)</code></pre>
-<pre><code>[1] 1105</code></pre>
+<pre><code>[1] 1295</code></pre>
 <pre class="r"><code>length(genes_highlighted1)/length(all_genes)</code></pre>
-<pre><code>[1] 0.1736875</code></pre>
+<pre><code>[1] 0.2035523</code></pre>
 <p>Let’s see how many pairs and genes remain significant after
 controlling the min-lfsr:</p>
 <pre class="r"><code>fash_highlighted1_lfsr &lt;- min_lfsr_summary1_update$index[min_lfsr_summary1_update$fsr &lt;= alpha]
@@ -1366,282 +1399,6 @@ Ziang Zhang
 <p>Even the most significant pairs from FASH for each gene do not show a
 clear pattern of dynamic eQTLs. It is kind of expected that FASH won’t
 conclude with high confidence that these genes have dynamic eQTLs.</p>
-<!-- ## Classifying dynamic eQTLs (To be rerun...) -->
-<!-- Following the definition in Strober et.al, we will classify the detected dynamic eQTLs into different categories: -->
-<!-- - *Early*: eQTLs with strongest effect during the first three days: $\max_{t\leq3} |\beta(t)| - \max_{t> 3} |\beta(t)| > 0$. -->
-<!-- - *Late*: eQTLs with strongest effect during the last four days: $\max_{t\geq 12} |\beta(t)| - \max_{t< 12} |\beta(t)| > 0$. -->
-<!-- - *Middle*: eQTLs with strongest effect during days 4-11: $\max_{4\leq t\leq 11} |\beta(t)| - \max_{t> 11 | t< 4} |\beta(t)| > 0$. -->
-<!-- - *Switch*: eQTLs with effect sign switch during the time course: $\min\{\max\beta(t)^+,\max\beta(t)^-\}-c $ where $c$ is a threshold that we set to 0.25 (which means with two alleles, the maximal difference of effect size is at least $\geq 2\times\min\{\max\beta(t)^+,\max\beta(t)^-\}\times2 \geq  2 \times 0.25  \times 2 = 1$). -->
-<!-- We first take a look at the significant pairs detected by FASH (order 1), and classify them based on the false sign rate (lfsr): -->
-<!-- ```{r eval=FALSE} -->
-<!-- smooth_var_refined = seq(0,15, by = 0.1) -->
-<!-- functional_early <- function(x){ -->
-<!--   max(abs(x[smooth_var_refined <= 3])) - max(abs(x[smooth_var_refined > 3])) -->
-<!-- } -->
-<!-- testing_early_dyn <- testing_functional(functional_early, -->
-<!--                                               lfsr_cal = function(x){mean(x <= 0)}, -->
-<!--                                               fash = fash_fit1_update, -->
-<!--                                               indices = fash_highlighted1, -->
-<!--                                               smooth_var = smooth_var_refined) -->
-<!-- ``` -->
-<!-- How many pairs are classified as early dynamic eQTLs? -->
-<!-- ```{r} -->
-<!-- load(paste0(result_dir, "/classify_dyn_eQTLs.RData")) -->
-<!-- early_indices <- testing_early_dyn$indices[testing_early_dyn$cfsr <= alpha] -->
-<!-- length(early_indices) -->
-<!-- ``` -->
-<!-- How many unique genes? -->
-<!-- ```{r} -->
-<!-- early_genes <- unique(sapply(strsplit(names(datasets)[early_indices], "_"), "[[", 1)) -->
-<!-- length(early_genes) -->
-<!-- ``` -->
-<!-- Let's take a look at the top-ranked early dynamic eQTLs: -->
-<!-- ```{r echo=FALSE} -->
-<!-- par(mfrow = c(2,2)) -->
-<!-- for (i in 1:4) { -->
-<!--   selected_index <- early_indices[i] -->
-<!--   fitted_result <- predict(fash_fit1_update, -->
-<!--                            index = selected_index, -->
-<!--                            smooth_var = seq(0, 15, by = 0.1)) -->
-<!--   plot( -->
-<!--     datasets[[selected_index]]$x, -->
-<!--     datasets[[selected_index]]$y, -->
-<!--     pch = 20, -->
-<!--     col = "black", -->
-<!--     xlab = "Time", -->
-<!--     ylab = "Effect Est", -->
-<!--     main = paste0(names(datasets)[selected_index]), -->
-<!--     ylim = c( -->
-<!--       min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE), -->
-<!--       max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE) -->
-<!--     ) -->
-<!--   ) -->
-<!--   arrows( -->
-<!--     datasets[[selected_index]]$x, -->
-<!--     datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE, -->
-<!--     datasets[[selected_index]]$x, -->
-<!--     datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE, -->
-<!--     length = 0.05, -->
-<!--     angle = 90, -->
-<!--     code = 3, -->
-<!--     col = "black" -->
-<!--   ) -->
-<!--   lines(fitted_result$x, -->
-<!--         fitted_result$mean, -->
-<!--         col = "red", -->
-<!--         lwd = 2) -->
-<!--   abline(h = 0, lty = 2, col = "blue") -->
-<!--   polygon( -->
-<!--     c(fitted_result$x, rev(fitted_result$x)), -->
-<!--     c(fitted_result$lower, rev(fitted_result$upper)), -->
-<!--     col = rgb(1, 0, 0, 0.3), -->
-<!--     border = NA -->
-<!--   ) -->
-<!-- } -->
-<!-- par(mfrow = c(1,1)) -->
-<!-- ``` -->
-<!-- It is evident that these variants have largest $|\beta(t)|$ during the first three days. -->
-<!-- How many pairs are classified as middle dynamic eQTLs? -->
-<!-- ```{r eval=FALSE} -->
-<!-- functional_middle <- function(x){ -->
-<!--   max(abs(x[smooth_var_refined <= 11 & smooth_var_refined >= 4])) - max(abs(x[smooth_var_refined > 11]), abs(x[smooth_var_refined < 4])) -->
-<!-- } -->
-<!-- testing_middle_dyn <- testing_functional(functional_middle,  -->
-<!--                                                lfsr_cal = function(x){mean(x <= 0)}, -->
-<!--                                                fash = fash_fit1_update,  -->
-<!--                                                indices = fash_highlighted1,  -->
-<!--                                                num_cores = num_cores, -->
-<!--                                                smooth_var = smooth_var_refined) -->
-<!-- ``` -->
-<!-- ```{r} -->
-<!-- middle_indices <- testing_middle_dyn$indices[testing_middle_dyn$cfsr <= alpha] -->
-<!-- length(middle_indices) -->
-<!-- ``` -->
-<!-- How many unique genes? -->
-<!-- ```{r} -->
-<!-- middle_genes <- unique(sapply(strsplit(names(datasets)[middle_indices], "_"), "[[", 1)) -->
-<!-- length(middle_genes) -->
-<!-- ``` -->
-<!-- Take a look at their results: -->
-<!-- ```{r} -->
-<!-- par(mfrow = c(2,2)) -->
-<!-- for (i in 1:4) { -->
-<!--   selected_index <- sample(middle_indices, 1) -->
-<!--   fitted_result <- predict(fash_fit1_update, -->
-<!--                            index = selected_index, -->
-<!--                            smooth_var = seq(0, 15, by = 0.1)) -->
-<!--   plot( -->
-<!--     datasets[[selected_index]]$x, -->
-<!--     datasets[[selected_index]]$y, -->
-<!--     pch = 20, -->
-<!--     col = "black", -->
-<!--     xlab = "Time", -->
-<!--     ylab = "Effect Est", -->
-<!--     main = paste0(names(datasets)[selected_index]), -->
-<!--     ylim = c( -->
-<!--       min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE), -->
-<!--       max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE) -->
-<!--     ) -->
-<!--   ) -->
-<!--   arrows( -->
-<!--     datasets[[selected_index]]$x, -->
-<!--     datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE, -->
-<!--     datasets[[selected_index]]$x, -->
-<!--     datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE, -->
-<!--     length = 0.05, -->
-<!--     angle = 90, -->
-<!--     code = 3, -->
-<!--     col = "black" -->
-<!--   ) -->
-<!--   lines(fitted_result$x, -->
-<!--         fitted_result$mean, -->
-<!--         col = "red", -->
-<!--         lwd = 2) -->
-<!--   abline(h = 0, lty = 2, col = "blue") -->
-<!--   polygon( -->
-<!--     c(fitted_result$x, rev(fitted_result$x)), -->
-<!--     c(fitted_result$lower, rev(fitted_result$upper)), -->
-<!--     col = rgb(1, 0, 0, 0.3), -->
-<!--     border = NA -->
-<!--   ) -->
-<!-- } -->
-<!-- par(mfrow = c(1,1)) -->
-<!-- ``` -->
-<!-- How many pairs are classified as late dynamic eQTLs? -->
-<!-- ```{r eval=FALSE} -->
-<!-- functional_late <- function(x){ -->
-<!--   max(abs(x[smooth_var_refined >= 12])) - max(abs(x[smooth_var_refined < 12])) -->
-<!-- } -->
-<!-- testing_late_dyn <- testing_functional(functional_late,  -->
-<!--                                              lfsr_cal = function(x){mean(x <= 0)}, -->
-<!--                                              fash = fash_fit1_update,  -->
-<!--                                              indices = fash_highlighted1,  -->
-<!--                                              num_cores = num_cores, -->
-<!--                                              smooth_var = smooth_var_refined) -->
-<!-- ``` -->
-<!-- How many pairs and how many unique genes are classified as late dynamic eQTLs? -->
-<!-- ```{r} -->
-<!-- late_indices <- testing_late_dyn$indices[testing_late_dyn$cfsr <= alpha] -->
-<!-- length(late_indices) -->
-<!-- late_genes <- unique(sapply(strsplit(names(datasets)[late_indices], "_"), "[[", 1)) -->
-<!-- length(late_genes) -->
-<!-- ``` -->
-<!-- Let's take a look at the top-ranked late dynamic eQTLs: -->
-<!-- ```{r echo=FALSE} -->
-<!-- par(mfrow = c(2,2)) -->
-<!-- for (i in 1:4) { -->
-<!--   selected_index <- late_indices[i] -->
-<!--   fitted_result <- predict(fash_fit1_update, -->
-<!--                            index = selected_index, -->
-<!--                            smooth_var = seq(0, 15, by = 0.1)) -->
-<!--   plot( -->
-<!--     datasets[[selected_index]]$x, -->
-<!--     datasets[[selected_index]]$y, -->
-<!--     pch = 20, -->
-<!--     col = "black", -->
-<!--     xlab = "Time", -->
-<!--     ylab = "Effect Est", -->
-<!--     main = paste0(names(datasets)[selected_index]), -->
-<!--     ylim = c( -->
-<!--       min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE), -->
-<!--       max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE) -->
-<!--     ) -->
-<!--   ) -->
-<!--   arrows( -->
-<!--     datasets[[selected_index]]$x, -->
-<!--     datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE, -->
-<!--     datasets[[selected_index]]$x, -->
-<!--     datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE, -->
-<!--     length = 0.05, -->
-<!--     angle = 90, -->
-<!--     code = 3, -->
-<!--     col = "black" -->
-<!--   ) -->
-<!--   lines(fitted_result$x, -->
-<!--         fitted_result$mean, -->
-<!--         col = "red", -->
-<!--         lwd = 2) -->
-<!--   abline(h = 0, lty = 2, col = "blue") -->
-<!--   polygon( -->
-<!--     c(fitted_result$x, rev(fitted_result$x)), -->
-<!--     c(fitted_result$lower, rev(fitted_result$upper)), -->
-<!--     col = rgb(1, 0, 0, 0.3), -->
-<!--     border = NA -->
-<!--   ) -->
-<!-- } -->
-<!-- par(mfrow = c(1,1)) -->
-<!-- ``` -->
-<!-- How many pairs are classified as switch dynamic eQTLs? -->
-<!-- ```{r eval=FALSE} -->
-<!-- switch_threshold <- 0.25 -->
-<!-- functional_switch <- function(x){ -->
-<!--   # compute the radius of x, measured by deviation from 0 from below and from above -->
-<!--   x_pos <- x[x > 0] -->
-<!--   x_neg <- x[x < 0] -->
-<!--   if(length(x_pos) == 0 || length(x_neg) == 0){ -->
-<!--     return(0) -->
-<!--   } -->
-<!--   min(max(abs(x_pos)), max(abs(x_neg))) - switch_threshold -->
-<!-- } -->
-<!-- testing_switch_dyn <- testing_functional(functional_switch,  -->
-<!--                                                lfsr_cal = function(x){mean(x <= 0)}, -->
-<!--                                                fash = fash_fit1_update,  -->
-<!--                                                indices = fash_highlighted1,  -->
-<!--                                                num_cores = num_cores, -->
-<!--                                                smooth_var = smooth_var_refined) -->
-<!-- ``` -->
-<!-- How many pairs and how many unique genes are classified as switch dynamic eQTLs? -->
-<!-- ```{r} -->
-<!-- switch_indices <- testing_switch_dyn$indices[testing_switch_dyn$cfsr <= alpha] -->
-<!-- length(switch_indices) -->
-<!-- switch_genes <- unique(sapply(strsplit(names(datasets)[switch_indices], "_"), "[[", 1)) -->
-<!-- length(switch_genes) -->
-<!-- ``` -->
-<!-- Let's take a look at the top-ranked switch dynamic eQTLs: -->
-<!-- ```{r echo=FALSE} -->
-<!-- par(mfrow = c(2,2)) -->
-<!-- for (i in 1:4) { -->
-<!--   selected_index <- switch_indices[i] -->
-<!--   fitted_result <- predict(fash_fit1_update, -->
-<!--                            index = selected_index, -->
-<!--                            smooth_var = seq(0, 15, by = 0.1)) -->
-<!--   plot( -->
-<!--     datasets[[selected_index]]$x, -->
-<!--     datasets[[selected_index]]$y, -->
-<!--     pch = 20, -->
-<!--     col = "black", -->
-<!--     xlab = "Time", -->
-<!--     ylab = "Effect Est", -->
-<!--     main = paste0(names(datasets)[selected_index]), -->
-<!--     ylim = c( -->
-<!--       min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE), -->
-<!--       max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE) -->
-<!--     ) -->
-<!--   ) -->
-<!--   arrows( -->
-<!--     datasets[[selected_index]]$x, -->
-<!--     datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE, -->
-<!--     datasets[[selected_index]]$x, -->
-<!--     datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE, -->
-<!--     length = 0.05, -->
-<!--     angle = 90, -->
-<!--     code = 3, -->
-<!--     col = "black" -->
-<!--   ) -->
-<!--   lines(fitted_result$x, -->
-<!--         fitted_result$mean, -->
-<!--         col = "red", -->
-<!--         lwd = 2) -->
-<!--   abline(h = 0, lty = 2, col = "blue") -->
-<!--   polygon( -->
-<!--     c(fitted_result$x, rev(fitted_result$x)), -->
-<!--     c(fitted_result$lower, rev(fitted_result$upper)), -->
-<!--     col = rgb(1, 0, 0, 0.3), -->
-<!--     border = NA -->
-<!--   ) -->
-<!-- } -->
-<!-- par(mfrow = c(1,1)) -->
-<!-- ``` -->
 </div>
 <div id="classifying-dynamic-eqtls" class="section level2">
 <h2>Classifying dynamic eQTLs</h2>
@@ -2055,13 +1812,15 @@ enrich_set &lt;- function(genes_selected, background_gene, q_val_cutoff = 0.05, 
 result@result %&gt;% 
   filter(pvalue &lt; 0.05) %&gt;%
   dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
-<pre><code>                                 GeneRatio BgRatio      pvalue    qvalue
-HALLMARK_MYOGENESIS                 19/304 67/1837 0.009445571 0.2791442
-HALLMARK_APICAL_JUNCTION            21/304 82/1837 0.021548302 0.2791442
-HALLMARK_ESTROGEN_RESPONSE_EARLY    21/304 82/1837 0.021548302 0.2791442
-HALLMARK_HYPOXIA                    22/304 89/1837 0.028013370 0.2791442
-HALLMARK_KRAS_SIGNALING_DN           9/304 28/1837 0.030835698 0.2791442
-HALLMARK_UV_RESPONSE_DN             17/304 68/1837 0.045593563 0.3277177</code></pre>
+<pre><code>                                 GeneRatio BgRatio     pvalue    qvalue
+HALLMARK_HYPOXIA                    26/359 89/1837 0.01608981 0.2436586
+HALLMARK_MYOGENESIS                 20/359 67/1837 0.02620787 0.2436586
+HALLMARK_COAGULATION                11/359 31/1837 0.02686364 0.2436586
+HALLMARK_KRAS_SIGNALING_UP          15/359 47/1837 0.02866175 0.2436586
+HALLMARK_KRAS_SIGNALING_DN          10/359 28/1837 0.03271143 0.2436586
+HALLMARK_APICAL_JUNCTION            23/359 82/1837 0.03646503 0.2436586
+HALLMARK_TNFA_SIGNALING_VIA_NFKB    17/359 58/1837 0.04580949 0.2436586
+HALLMARK_HEME_METABOLISM            23/359 84/1837 0.04722578 0.2436586</code></pre>
 <p>Among the genes highlighted by FASH that are classified as early
 dynamic eQTLs:</p>
 <pre class="r"><code>result &lt;- enrich_set(genes_selected = early_genes, background_gene = all_genes)
