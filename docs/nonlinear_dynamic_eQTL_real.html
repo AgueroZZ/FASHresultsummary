@@ -531,15 +531,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreee9d508e6b9e6bf3187dcc22f1cd264114333efe2targetblanke9d508ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree8d0c752fd530763a2655e836a533b0fab764d66etargetblank8d0c752a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/e9d508e6b9e6bf3187dcc22f1cd264114333efe2" target="_blank">e9d508e</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/8d0c752fd530763a2655e836a533b0fab764d66e" target="_blank">8d0c752</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreee9d508e6b9e6bf3187dcc22f1cd264114333efe2targetblanke9d508ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree8d0c752fd530763a2655e836a533b0fab764d66etargetblank8d0c752a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -549,7 +549,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/e9d508e6b9e6bf3187dcc22f1cd264114333efe2" target="_blank">e9d508e</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/8d0c752fd530763a2655e836a533b0fab764d66e" target="_blank">8d0c752</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -662,6 +662,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/8d0c752fd530763a2655e836a533b0fab764d66e/docs/nonlinear_dynamic_eQTL_real.html" target="_blank">8d0c752</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -824,7 +841,7 @@ class="math inline">\(\pi_0\)</span> based on the BF procedure:</p>
 <pre class="r"><code>fash_fit2_update &lt;- BF_update(fash_fit2, plot = FALSE)
 fash_fit2_update$prior_weights
 save(fash_fit2_update, file = paste0(result_dir, &quot;/fash_fit2_update.RData&quot;))</code></pre>
-<p>The conservative estimate is 0.9998375, which is much more
+<p>The conservative estimate is 0.9992301, which is much more
 conservative.</p>
 <p>(ii): Instead of looking at the FDR which is based on the estimated
 <span class="math inline">\(\pi_0\)</span>, we can use the minimum local
@@ -840,22 +857,59 @@ to measure significance: <span class="math display">\[
 eQTLs.</p>
 <pre class="r"><code>alpha &lt;- 0.05
 test2 &lt;- fdr_control(fash_fit2_update, alpha = alpha, plot = F)</code></pre>
-<pre><code>26 datasets are significant at alpha level 0.05. Total datasets tested: 1009173. </code></pre>
+<pre><code>96 datasets are significant at alpha level 0.05. Total datasets tested: 1009173. </code></pre>
 <pre class="r"><code>fash_highlighted2 &lt;- test2$fdr_results$index[test2$fdr_results$FDR &lt;= alpha]</code></pre>
 <p>How many pairs are detected?</p>
 <pre class="r"><code>pairs_highlighted2 &lt;- names(datasets)[fash_highlighted2]
 length(pairs_highlighted2)</code></pre>
-<pre><code>[1] 26</code></pre>
+<pre><code>[1] 96</code></pre>
 <pre class="r"><code>length(pairs_highlighted2)/length(datasets)</code></pre>
-<pre><code>[1] 2.576367e-05</code></pre>
+<pre><code>[1] 9.51274e-05</code></pre>
 <p>How many unique genes are detected?</p>
 <pre class="r"><code>genes_highlighted2 &lt;- unique(sapply(strsplit(pairs_highlighted2, &quot;_&quot;), &quot;[[&quot;, 1))
 length(genes_highlighted2)</code></pre>
-<pre><code>[1] 4</code></pre>
+<pre><code>[1] 27</code></pre>
 <pre class="r"><code>length(genes_highlighted2)/length(all_genes)</code></pre>
-<pre><code>[1] 0.0006287331</code></pre>
+<pre><code>[1] 0.004243948</code></pre>
 <p>Visualize top-ranked pairs:</p>
 <p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-11-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8d0c752fd530763a2655e836a533b0fab764d66e/docs/figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-11-1.png" target="_blank">8d0c752</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="comparing-with-strober-et.al" class="section level2">
 <h2>Comparing with Strober et.al</h2>
@@ -883,6 +937,43 @@ ggVennDiagram(gene_sets, label = &quot;both&quot;) +
   scale_fill_gradient(low=&quot;grey90&quot;,high = &quot;red&quot;) +
   theme(legend.position = &quot;right&quot;)  # Move legend to the right</code></pre>
 <p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-13-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8d0c752fd530763a2655e836a533b0fab764d66e/docs/figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-13-1.png" target="_blank">8d0c752</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>There is a large number of genes only detected by FASH (order 2).
 Let’s take a look at the 4 pairs that are least significant from
 FASH:</p>
@@ -909,6 +1000,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8d0c752fd530763a2655e836a533b0fab764d66e/docs/figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-14-1.png" target="_blank">8d0c752</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/773da6d83205343d51e72f90b064a8c87e699d95/docs/figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-14-1.png" target="_blank">773da6d</a>
@@ -950,6 +1052,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8d0c752fd530763a2655e836a533b0fab764d66e/docs/figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-15-1.png" target="_blank">8d0c752</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/773da6d83205343d51e72f90b064a8c87e699d95/docs/figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-15-1.png" target="_blank">773da6d</a>
@@ -1010,6 +1123,43 @@ length(early_genes)</code></pre>
 <pre><code>[1] 15</code></pre>
 <p>Let’s take a look at the top-ranked early dynamic eQTLs:</p>
 <p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-18-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
+Past versions of unnamed-chunk-18-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-18-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8d0c752fd530763a2655e836a533b0fab764d66e/docs/figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-18-1.png" target="_blank">8d0c752</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>It is evident that these variants have largest <span
 class="math inline">\(|\beta(t)|\)</span> during the first three
 days.</p>
@@ -1075,6 +1225,43 @@ for (i in 1:4) {
   )
 }</code></pre>
 <p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-21-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
+Past versions of unnamed-chunk-21-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-21-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8d0c752fd530763a2655e836a533b0fab764d66e/docs/figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-21-1.png" target="_blank">8d0c752</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>par(mfrow = c(1,1))</code></pre>
 <p>How many pairs are classified as late dynamic eQTLs?</p>
 <pre class="r"><code>functional_late &lt;- function(x){
@@ -1097,6 +1284,43 @@ length(late_genes)</code></pre>
 <pre><code>[1] 30</code></pre>
 <p>Let’s take a look at the top-ranked late dynamic eQTLs:</p>
 <p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-24-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8d0c752fd530763a2655e836a533b0fab764d66e/docs/figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-24-1.png" target="_blank">8d0c752</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>How many pairs and how many unique genes are classified as switch
 dynamic eQTLs?</p>
 <pre class="r"><code>switch_threshold &lt;- 0.25
@@ -1124,6 +1348,43 @@ length(switch_genes)</code></pre>
 <pre><code>[1] 44</code></pre>
 <p>Let’s take a look at the top-ranked switch dynamic eQTLs:</p>
 <p><img src="figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-27-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-27-1">
+Past versions of unnamed-chunk-27-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-27-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8d0c752fd530763a2655e836a533b0fab764d66e/docs/figure/nonlinear_dynamic_eQTL_real.rmd/unnamed-chunk-27-1.png" target="_blank">8d0c752</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="gene-set-enrichment-analysis" class="section level2">
 <h2>Gene Set Enrichment Analysis</h2>
@@ -1175,10 +1436,8 @@ enrich_set &lt;- function(genes_selected, background_gene, q_val_cutoff = 0.05, 
 result@result %&gt;% 
   filter(pvalue &lt; 0.05) %&gt;%
   dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
-<pre><code>                                   GeneRatio BgRatio     pvalue     qvalue
-HALLMARK_INTERFERON_ALPHA_RESPONSE       1/2 27/1837 0.02918761 0.03926288
-HALLMARK_ALLOGRAFT_REJECTION             1/2 36/1837 0.03882075 0.03926288
-HALLMARK_INFLAMMATORY_RESPONSE           1/2 43/1837 0.04627999 0.03926288</code></pre>
+<pre><code>[1] GeneRatio BgRatio   pvalue    qvalue   
+&lt;0 rows&gt; (or 0-length row.names)</code></pre>
 <p>Among the genes highlighted by FASH that are classified as early
 dynamic eQTLs:</p>
 <pre class="r"><code>result &lt;- enrich_set(genes_selected = early_genes, background_gene = all_genes)
