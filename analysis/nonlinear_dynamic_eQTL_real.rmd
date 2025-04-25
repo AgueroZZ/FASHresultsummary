@@ -89,36 +89,25 @@ fash_fit2$prior_weights
 
 ## Problem with $\pi_0$ estimation
 
-If we measure the significance using the false discovery rate, then it is sensitive to the value of $\pi_0$.
-The estimated $\pi_0$ is `r fash_fit2$prior_weights$prior_weight[1]`, which is way too small to be realistic.
-
-One likely reason could be due to model-misspecification under the alternative hypothesis.
+The original MLE estimated $\pi_0$ is `r fash_fit2$prior_weights$prior_weight[1]`.
+This could be under-estimated due to model-misspecification under the alternative hypothesis.
 To account for this, we will consider the following approaches:
 
-(i): A method of moments (MOM) estimator for $\pi_0$ based on the rank of the likelihood matrix:
-
-```{r}
-pio_mom_2 <- mean(apply(fash_fit2$L_matrix, 1, which.max) == 1)
-pio_mom_2
-```
-
-The MOM estimate is `r pio_mom_2`, which is much smaller than the estimated $\pi_0$ from the model.
-
-
-(ii): A conservative estimate of $\pi_0$ based on the BF procedure:
+(i): A conservative estimate of $\pi_0$ based on the BF procedure:
 
 ```{r eval=FALSE}
 fash_fit2_update <- BF_update(fash_fit2, plot = FALSE)
 fash_fit2_update$prior_weights
 save(fash_fit2_update, file = paste0(result_dir, "/fash_fit2_update.RData"))
 ```
+
 ```{r echo=FALSE}
 load(paste0(result_dir, "/fash_fit2_update.RData"))
 ```
 
-The conservative estimate is `r fash_fit2_update$prior_weights$prior_weight[1]`, which is much more realistic.
+The conservative estimate is `r fash_fit2_update$prior_weights$prior_weight[1]`, which is much more conservative.
 
-(iii): Instead of looking at the FDR which is based on the estimated $\pi_0$, we can use the minimum local false sign rate ($\text{min-lfsr}_i$) to measure significance:
+(ii): Instead of looking at the FDR which is based on the estimated $\pi_0$, we can use the minimum local false sign rate ($\text{min-lfsr}_i$) to measure significance:
 $$
 \text{min-lfsr}_i = \min_{t} \left\{ \text{lfsr}(W_i(t)) \right\},
 $$
@@ -240,7 +229,7 @@ Let's take a look at the 4 pairs that are least significant from FASH:
 gene_fashr_only <- setdiff(genes_highlighted2, union(genes_highlighted_strober_nonlinear, genes_highlighted_strober_linear))
 ## produce four plots for four genes
 par(mfrow = c(2,2))
-for (i in 1:4) {
+for (i in 1:min(c(4,length(gene_fashr_only)))) {
   selected_gene <- gene_fashr_only[i]
   pairs_of_selected_gene <- grep(selected_gene, pairs_highlighted2, value = T)
   selected_indices <- which(names(datasets) %in% pairs_of_selected_gene)
@@ -293,7 +282,7 @@ In this case, we will pick the most significant pair for each gene in FASH:
 gene_missed <- setdiff(union(genes_highlighted_strober_nonlinear, genes_highlighted_strober_linear), genes_highlighted2)
 ## produce four plots for four genes
 par(mfrow = c(2,2))
-for (i in 1:4) {
+for (i in 1:min(c(4,length(gene_missed)))) {
   selected_gene <- gene_missed[i]
   pairs_of_selected_gene <- grep(selected_gene, names(datasets), value = T)
   selected_indices <- which(names(datasets) %in% pairs_of_selected_gene)
