@@ -730,7 +730,7 @@ Following the definition in Strober et.al, we will classify the detected dynamic
 
 - *Middle*: eQTLs with strongest effect during days 4-11: $\max_{4\leq t\leq 11} |\beta(t)| - \max_{t> 11 | t< 4} |\beta(t)| > 0$.
 
-- *Switch*: eQTLs with effect sign switch during the time course: $\min\{\max\beta(t)^+,\max\beta(t)^-\}-c $ where $c$ is a threshold that we set to 0.25 (which means with two alleles, the maximal difference of effect size is at least $\geq 2\times\min\{\max\beta(t)^+,\max\beta(t)^-\}\times2 \geq  2 \times 0.25  \times 2 = 1$).
+- *Switch*: eQTLs with effect sign switch during the time course such that $\min\{\max\beta(t)^+,\max\beta(t)^-\}-c>0$ where $c$ is a threshold that we set to 0.25 (which means with two alleles, the maximal difference of effect size is at least $\geq 2\times\min\{\max\beta(t)^+,\max\beta(t)^-\}\times2 \geq  2 \times 0.25  \times 2 = 1$).
 
 We will take a look at the significant pairs detected by FASH (order 1), and classify them based on the false sign rate (lfsr).
 
