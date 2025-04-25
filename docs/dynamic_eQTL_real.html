@@ -530,15 +530,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree0fc64c6e2c67e180f918d674ac1f25ade030f437targetblank0fc64c6a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree3517a02404f98aa83be2c027dddb0bac4d345358targetblank3517a02a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/0fc64c6e2c67e180f918d674ac1f25ade030f437" target="_blank">0fc64c6</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/3517a02404f98aa83be2c027dddb0bac4d345358" target="_blank">3517a02</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree0fc64c6e2c67e180f918d674ac1f25ade030f437targetblank0fc64c6a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree3517a02404f98aa83be2c027dddb0bac4d345358targetblank3517a02a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -548,7 +548,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/0fc64c6e2c67e180f918d674ac1f25ade030f437" target="_blank">0fc64c6</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/3517a02404f98aa83be2c027dddb0bac4d345358" target="_blank">3517a02</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -660,6 +660,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/3517a02404f98aa83be2c027dddb0bac4d345358/analysis/dynamic_eQTL_real.rmd" target="_blank">3517a02</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+<td>
+workflowr::wflow_publish("analysis/dynamic_eQTL_real.rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/174035a0fbab5704bc5067944f50db94cb6a51ee/docs/dynamic_eQTL_real.html" target="_blank">174035a</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1624,10 +1658,11 @@ days: <span class="math inline">\(\max_{t\geq 12} |\beta(t)| -
 <span class="math inline">\(\max_{4\leq t\leq 11} |\beta(t)| -
 \max_{t&gt; 11 | t&lt; 4} |\beta(t)| &gt; 0\)</span>.</p></li>
 <li><p><em>Switch</em>: eQTLs with effect sign switch during the time
-course: ${(t)<sup>+,(t)</sup>-}-c $ where <span
-class="math inline">\(c\)</span> is a threshold that we set to 0.25
-(which means with two alleles, the maximal difference of effect size is
-at least <span class="math inline">\(\geq
+course such that <span
+class="math inline">\(\min\{\max\beta(t)^+,\max\beta(t)^-\}-c&gt;0\)</span>
+where <span class="math inline">\(c\)</span> is a threshold that we set
+to 0.25 (which means with two alleles, the maximal difference of effect
+size is at least <span class="math inline">\(\geq
 2\times\min\{\max\beta(t)^+,\max\beta(t)^-\}\times2 \geq  2 \times
 0.25  \times 2 = 1\)</span>).</p></li>
 </ul>
