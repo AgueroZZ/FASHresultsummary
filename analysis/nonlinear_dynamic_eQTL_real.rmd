@@ -365,55 +365,6 @@ early_genes <- unique(sapply(strsplit(names(datasets)[early_indices], "_"), "[["
 length(early_genes)
 ```
 
-Let's take a look at the top-ranked early dynamic eQTLs:
-
-```{r echo=FALSE}
-par(mfrow = c(2,2))
-for (i in 1:4) {
-  selected_index <- early_indices[i]
-  fitted_result <- predict(fash_fit2,
-                           index = selected_index,
-                           smooth_var = seq(0, 15, by = 0.1))
-  plot(
-    datasets[[selected_index]]$x,
-    datasets[[selected_index]]$y,
-    pch = 20,
-    col = "black",
-    xlab = "Time",
-    ylab = "Effect Est",
-    main = paste0(names(datasets)[selected_index]),
-    ylim = c(
-      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
-      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
-    )
-  )
-  arrows(
-    datasets[[selected_index]]$x,
-    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
-    datasets[[selected_index]]$x,
-    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
-    length = 0.05,
-    angle = 90,
-    code = 3,
-    col = "black"
-  )
-  lines(fitted_result$x,
-        fitted_result$mean,
-        col = "red",
-        lwd = 2)
-  abline(h = 0, lty = 2, col = "blue")
-  polygon(
-    c(fitted_result$x, rev(fitted_result$x)),
-    c(fitted_result$lower, rev(fitted_result$upper)),
-    col = rgb(1, 0, 0, 0.3),
-    border = NA
-  )
-}
-par(mfrow = c(1,1))
-```
-
-It is evident that these variants have largest $|\beta(t)|$ during the first three days.
-
 How many pairs are classified as middle dynamic eQTLs?
 
 ```{r eval=FALSE}
@@ -429,7 +380,6 @@ testing_middle_nonlin_dyn <- testing_functional(functional_middle,
 ```
 
 
-How many pairs and how many unique genes are classified as middle dynamic eQTLs?
 ```{r}
 load(paste0(result_dir, "/classify_nonlin_dyn_eQTLs_middle.RData"))
 middle_indices <- testing_middle_nonlin_dyn$indices[testing_middle_nonlin_dyn$cfsr <= alpha]
@@ -499,8 +449,6 @@ testing_late_nonlin_dyn <- testing_functional(functional_late,
                                              num_cores = num_cores,
                                              smooth_var = smooth_var_refined)
 ```
-
-How many pairs and how many unique genes are classified as late dynamic eQTLs?
 
 ```{r}
 load(paste0(result_dir, "/classify_nonlin_dyn_eQTLs_late.RData"))
@@ -687,15 +635,6 @@ Among all the genes highlighted by FASH:
 
 ```{r}
 result <- enrich_set(genes_selected = genes_highlighted2, background_gene = all_genes)
-result@result %>% 
-  filter(pvalue < 0.05) %>%
-  dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)
-```
-
-Among the genes highlighted by FASH that are classified as early dynamic eQTLs:
-
-```{r}
-result <- enrich_set(genes_selected = early_genes, background_gene = all_genes)
 result@result %>% 
   filter(pvalue < 0.05) %>%
   dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)
