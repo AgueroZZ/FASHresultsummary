@@ -141,7 +141,7 @@ Let's also visualize the min-lfsr and the lfdr from the BF-updated model:
 ```{r}
 load(paste0(result_dir, "/min_lfsr_summary1_update.RData"))
 min_lfsr1 <- min_lfsr_summary1_update$min_lfsr[sample_indices]
-lfdr1_vec <- fash_fit1_update$lfdr[min_lfsr_summary1_update$index][sample_indices]
+lfdr1_vec <- fash_fit1_update$lfdr[min_lfsr_summary1_update$index[sample_indices]]
 plot(lfdr1_vec, min_lfsr1, 
      pch = 20, cex = 0.1,
      ylim = c(0,1), xlim = c(0,1),
