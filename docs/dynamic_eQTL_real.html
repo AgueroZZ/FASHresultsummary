@@ -399,7 +399,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-04-25
+<strong>Last updated:</strong> 2025-04-27
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -530,15 +530,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreefe55c6d9763b35fb1e41904dde48ff9a8bbf156ctargetblankfe55c6da">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreed9537ceca07833466363056776106a14b1f3bd45targetblankd9537cea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/fe55c6d9763b35fb1e41904dde48ff9a8bbf156c" target="_blank">fe55c6d</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/d9537ceca07833466363056776106a14b1f3bd45" target="_blank">d9537ce</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreefe55c6d9763b35fb1e41904dde48ff9a8bbf156ctargetblankfe55c6da"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreed9537ceca07833466363056776106a14b1f3bd45targetblankd9537cea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -548,7 +548,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/fe55c6d9763b35fb1e41904dde48ff9a8bbf156c" target="_blank">fe55c6d</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/d9537ceca07833466363056776106a14b1f3bd45" target="_blank">d9537ce</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -659,6 +659,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/d9537ceca07833466363056776106a14b1f3bd45/analysis/dynamic_eQTL_real.rmd" target="_blank">d9537ce</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-27
+</td>
+<td>
+workflowr::wflow_publish("analysis/dynamic_eQTL_real.rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/63781dd53f5f599c438cf6897d50da74e59a1a0d/docs/dynamic_eQTL_real.html" target="_blank">63781dd</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1016,7 +1050,7 @@ Ziang Zhang
 model:</p>
 <pre class="r"><code>load(paste0(result_dir, &quot;/min_lfsr_summary1_update.RData&quot;))
 min_lfsr1 &lt;- min_lfsr_summary1_update$min_lfsr[sample_indices]
-lfdr1_vec &lt;- fash_fit1_update$lfdr[min_lfsr_summary1_update$index][sample_indices]
+lfdr1_vec &lt;- fash_fit1_update$lfdr[min_lfsr_summary1_update$index[sample_indices]]
 plot(lfdr1_vec, min_lfsr1, 
      pch = 20, cex = 0.1,
      ylim = c(0,1), xlim = c(0,1),
@@ -1045,6 +1079,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/63781dd53f5f599c438cf6897d50da74e59a1a0d/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-10-1.png" target="_blank">63781dd</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8f406dda943a28f11a8487fbea3afe561eeb673c/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-10-1.png" target="_blank">8f406dd</a>
@@ -1166,14 +1211,14 @@ controlling the min-lfsr:</p>
 <pre class="r"><code>fash_highlighted1_lfsr &lt;- min_lfsr_summary1_update$index[min_lfsr_summary1_update$fsr &lt;= alpha]
 pairs_highlighted1_lfsr &lt;- names(datasets)[fash_highlighted1_lfsr]
 length(pairs_highlighted1_lfsr)</code></pre>
-<pre><code>[1] 7988</code></pre>
+<pre><code>[1] 10095</code></pre>
 <pre class="r"><code>length(pairs_highlighted1_lfsr)/length(datasets)</code></pre>
-<pre><code>[1] 0.007915392</code></pre>
+<pre><code>[1] 0.01000324</code></pre>
 <pre class="r"><code>genes_highlighted1_lfsr &lt;- unique(sapply(strsplit(pairs_highlighted1_lfsr, &quot;_&quot;), &quot;[[&quot;, 1))
 length(genes_highlighted1_lfsr)</code></pre>
-<pre><code>[1] 1088</code></pre>
+<pre><code>[1] 1275</code></pre>
 <pre class="r"><code>length(genes_highlighted1_lfsr)/length(all_genes)</code></pre>
-<pre><code>[1] 0.1710154</code></pre>
+<pre><code>[1] 0.2004087</code></pre>
 <p>It seems like once <span class="math inline">\(\hat{\pi_0}\)</span>
 is adjusted, there is not much difference between measuring significance
 using the min-lfsr or the lfdr. From now on, we will consider the pairs
@@ -1202,6 +1247,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/63781dd53f5f599c438cf6897d50da74e59a1a0d/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-17-1.png" target="_blank">63781dd</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8f406dda943a28f11a8487fbea3afe561eeb673c/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-17-1.png" target="_blank">8f406dd</a>
@@ -1268,6 +1324,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/63781dd53f5f599c438cf6897d50da74e59a1a0d/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-19-1.png" target="_blank">63781dd</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8f406dda943a28f11a8487fbea3afe561eeb673c/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-19-1.png" target="_blank">8f406dd</a>
 </td>
 <td>
@@ -1307,6 +1374,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/63781dd53f5f599c438cf6897d50da74e59a1a0d/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-20-1.png" target="_blank">63781dd</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8f406dda943a28f11a8487fbea3afe561eeb673c/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-20-1.png" target="_blank">8f406dd</a>
@@ -1370,6 +1448,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/63781dd53f5f599c438cf6897d50da74e59a1a0d/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-21-1.png" target="_blank">63781dd</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8f406dda943a28f11a8487fbea3afe561eeb673c/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-21-1.png" target="_blank">8f406dd</a>
@@ -1441,10 +1530,10 @@ dynamic eQTLs?</p>
 <pre class="r"><code>load(paste0(result_dir, &quot;/classify_dyn_eQTLs_early.RData&quot;))
 early_indices &lt;- testing_early_dyn$indices[testing_early_dyn$cfsr &lt;= alpha]
 length(early_indices)</code></pre>
-<pre><code>[1] 123</code></pre>
+<pre><code>[1] 129</code></pre>
 <pre class="r"><code>early_genes &lt;- unique(sapply(strsplit(names(datasets)[early_indices], &quot;_&quot;), &quot;[[&quot;, 1))
 length(early_genes)</code></pre>
-<pre><code>[1] 17</code></pre>
+<pre><code>[1] 18</code></pre>
 <p>Let’s take a look at the top-ranked early dynamic eQTLs:</p>
 <p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-24-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
@@ -1469,6 +1558,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/63781dd53f5f599c438cf6897d50da74e59a1a0d/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-24-1.png" target="_blank">63781dd</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8f406dda943a28f11a8487fbea3afe561eeb673c/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-24-1.png" target="_blank">8f406dd</a>
@@ -1526,10 +1626,10 @@ dynamic eQTLs?</p>
 <pre class="r"><code>load(paste0(result_dir, &quot;/classify_dyn_eQTLs_middle.RData&quot;))
 middle_indices &lt;- testing_middle_dyn$indices[testing_middle_dyn$cfsr &lt;= alpha]
 length(middle_indices)</code></pre>
-<pre><code>[1] 46</code></pre>
+<pre><code>[1] 55</code></pre>
 <pre class="r"><code>middle_genes &lt;- unique(sapply(strsplit(names(datasets)[middle_indices], &quot;_&quot;), &quot;[[&quot;, 1))
 length(middle_genes)</code></pre>
-<pre><code>[1] 13</code></pre>
+<pre><code>[1] 17</code></pre>
 <p>Take a look at their results:</p>
 <pre class="r"><code>par(mfrow = c(2,2))
 for (i in 1:4) {
@@ -1597,6 +1697,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/63781dd53f5f599c438cf6897d50da74e59a1a0d/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-27-1.png" target="_blank">63781dd</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8f406dda943a28f11a8487fbea3afe561eeb673c/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-27-1.png" target="_blank">8f406dd</a>
 </td>
 <td>
@@ -1628,10 +1739,10 @@ dynamic eQTLs?</p>
 <pre class="r"><code>load(paste0(result_dir, &quot;/classify_dyn_eQTLs_late.RData&quot;))
 late_indices &lt;- testing_late_dyn$indices[testing_late_dyn$cfsr &lt;= alpha]
 length(late_indices)</code></pre>
-<pre><code>[1] 39</code></pre>
+<pre><code>[1] 48</code></pre>
 <pre class="r"><code>late_genes &lt;- unique(sapply(strsplit(names(datasets)[late_indices], &quot;_&quot;), &quot;[[&quot;, 1))
 length(late_genes)</code></pre>
-<pre><code>[1] 14</code></pre>
+<pre><code>[1] 17</code></pre>
 <p>Let’s take a look at the top-ranked late dynamic eQTLs:</p>
 <p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-30-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
@@ -1656,6 +1767,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/63781dd53f5f599c438cf6897d50da74e59a1a0d/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-30-1.png" target="_blank">63781dd</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8f406dda943a28f11a8487fbea3afe561eeb673c/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-30-1.png" target="_blank">8f406dd</a>
@@ -1717,10 +1839,10 @@ testing_switch_dyn &lt;- testing_functional(functional_switch,
 <pre class="r"><code>load(paste0(result_dir, &quot;/classify_dyn_eQTLs_switch.RData&quot;))
 switch_indices &lt;- testing_switch_dyn$indices[testing_switch_dyn$cfsr &lt;= alpha]
 length(switch_indices)</code></pre>
-<pre><code>[1] 1097</code></pre>
+<pre><code>[1] 1284</code></pre>
 <pre class="r"><code>switch_genes &lt;- unique(sapply(strsplit(names(datasets)[switch_indices], &quot;_&quot;), &quot;[[&quot;, 1))
 length(switch_genes)</code></pre>
-<pre><code>[1] 259</code></pre>
+<pre><code>[1] 282</code></pre>
 <p>Let’s take a look at the top-ranked switch dynamic eQTLs:</p>
 <p><img src="figure/dynamic_eQTL_real.rmd/unnamed-chunk-33-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
@@ -1745,6 +1867,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/63781dd53f5f599c438cf6897d50da74e59a1a0d/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-33-1.png" target="_blank">63781dd</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-04-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/8f406dda943a28f11a8487fbea3afe561eeb673c/docs/figure/dynamic_eQTL_real.rmd/unnamed-chunk-33-1.png" target="_blank">8f406dd</a>
@@ -1852,13 +1985,15 @@ result@result %&gt;%
   filter(pvalue &lt; 0.05) %&gt;%
   dplyr::select(GeneRatio, BgRatio, pvalue, qvalue)</code></pre>
 <pre><code>                                 GeneRatio BgRatio      pvalue    qvalue
-HALLMARK_HYPOXIA                     11/94 89/1837 0.004584478 0.1774655
-HALLMARK_P53_PATHWAY                 10/94 83/1837 0.008224012 0.1774655
-HALLMARK_MYOGENESIS                   8/94 67/1837 0.018684791 0.1864330
-HALLMARK_PI3K_AKT_MTOR_SIGNALING      7/94 55/1837 0.019821609 0.1864330
-HALLMARK_XENOBIOTIC_METABOLISM        8/94 71/1837 0.025756165 0.1864330
-HALLMARK_TNFA_SIGNALING_VIA_NFKB      7/94 58/1837 0.025918736 0.1864330
-HALLMARK_NOTCH_SIGNALING              3/94 15/1837 0.037724861 0.2325894</code></pre>
+HALLMARK_HYPOXIA                    11/102 89/1837 0.008566586 0.1500070
+HALLMARK_MYOGENESIS                  9/102 67/1837 0.010104910 0.1500070
+HALLMARK_P53_PATHWAY                10/102 83/1837 0.014385474 0.1500070
+HALLMARK_XENOBIOTIC_METABOLISM       9/102 71/1837 0.014616066 0.1500070
+HALLMARK_PI3K_AKT_MTOR_SIGNALING     7/102 55/1837 0.029699816 0.2118564
+HALLMARK_APOPTOSIS                   8/102 70/1837 0.036796404 0.2118564
+HALLMARK_TNFA_SIGNALING_VIA_NFKB     7/102 58/1837 0.038409120 0.2118564
+HALLMARK_HEDGEHOG_SIGNALING          3/102 15/1837 0.046445448 0.2118564
+HALLMARK_NOTCH_SIGNALING             3/102 15/1837 0.046445448 0.2118564</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
