@@ -1,24 +1,12 @@
-name: resultsummary
+name: FASH Tutorial
 output_dir: ../docs
 navbar:
-  title: resultsummary
+  title: FASH Tutorial
   left:
   - text: Home
     href: index.html
   - text: About
     href: about.html
-  - text: Simulation 1
-    href: simulation_pollution.html
-  - text: Simulation 2
-    href: eQTL_sim.html
-  - text: Simulation 3
-    href: simulation_vQTL.html
-  - text: COVID-19 Example
-    href: covid_example.html
-  - text: Gene Expression Example
-    href: expression.html
-  - text: License
-    href: license.html
   right:
   - icon: fab fa-github
     text: Source code

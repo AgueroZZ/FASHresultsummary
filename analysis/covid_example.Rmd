@@ -98,6 +98,7 @@ for (i in 1:37) {
        cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  # Adjust text size as needed
 }
 par(mfrow = c(1, 1), mar = c(5, 4, 4, 2) + 0.1)
+saveRDS(datasets, file = paste0(result_dir, "/all_datasets.rds"))
 ```
 
 ## **Empirical Bayes:**
