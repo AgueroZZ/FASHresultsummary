@@ -1,0 +1,209 @@
+---
+title: "Vignette: Using FASH to study dynamic eQTLs"
+author: "Ziang Zhang"
+date: "2025-06-18"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+
+```{r setup, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(fig.width = 8, fig.height = 6)
+library(fashr)
+result_dir <- paste0(getwd(), "/output/vignette")
+data_dir <- paste0(getwd(), "/data/vignette")
+code_dir <- paste0(getwd(), "/code/vignette")
+```
+
+
+
+## Introduction
+
+
+In this example, we will demonstrate how to use the `fashr` package to implement the FASH method to study dynamic eQTLs. 
+
+To make the computation faster, we only consider **one** variant for each gene, selected based on the significance of the eQTL effect at any time point.
+
+```{r}
+load(paste0(data_dir, "/dynamicQTL.RData"))
+```
+
+As a result, there will be $J = 6362$ pairs of gene and variant, each with a time series of eQTL effect estimates and standard errors. 
+The data is stored in a **list** called `datasets_selected`, where each element is a data frame containing the summary statistics for a single gene-variant pair. 
+Each data frame has three columns: `x` (time), `y` (eQTL effect estimate), and `SE` (standard error of the eQTL effect estimate).
+
+```{r}
+str(datasets_selected[[1]])
+```
+
+Let's record the unique gene names:
+
+```{r}
+all_genes <- unique(sapply(strsplit(names(datasets_selected), "_"), "[[", 1))
+```
+
+
+## Fitting FASH
+
+To fit the FASH model in the default way, we need to specify the following key arguments in the `fash` function call:
+
+- `Y`: the name of the column containing the eQTL effect estimates (here, "y")
+- `smooth_var`: the name of the column containing the time variable (here, "x")
+- `S`: the name of the column containing the standard errors (here, "SE")
+- `data_list`: the list of data frames containing the summary statistics for each gene-variant pair
+- `order`: the order of the Integrated Wiener Process, which can also be viewed as the polynomial order of the corresponding base model (e.g., 0 for constant, 1 for linear, 2 for quadratic, etc.)
+
+
+There are also some optional arguments that can be specified for more customized implementation:
+
+- `grid`: a vector of $K$ (predictive) standard deviations used to construct the $K$ mixture component of the FASH model.
+- `pred_step`: the (predictive) step size that the `grid` vector should be interpreted as. For example, if `pred_step = 1`, then each value in `grid` represents a standard deviation at a time point of 1 unit apart (i.e. $\sigma := SD[\beta(x+1)|\beta(t):t<x]$).
+- `num_basis`: the number of basis functions to approximate each GP component (higher values lead to more accurate approximation but also longer computation time).
+- `betaprec`: the precision of basis function coefficients under the base model. When set to 0, the base model is not penalized, with a diffuse prior on the coefficients. 
+- `penalty`: the penalty parameter to encourage the over-estimation of the prior weight $\pi_0$ that corresponds to the base model. A larger value leads to a more conservative prior weight, and a value of 0 corresponds to no penalty so $\hat{\pi}_0$ is the maximum likelihood estimate.
+
+
+In this example, we are interested in testing whether each effect function $\beta_j(t)$ is constant over time, so we will use a first order FASH (i.e., `order = 1`) and set a relatively dense grid of standard deviations based on a equally spaced grid on the log-precision scale.
+
+```{r}
+log_prec <- seq(0,10, by = 0.2)
+fine_grid <- sort(c(0, exp(-0.5*log_prec)))
+```
+
+We will fit the FASH model with the following parameters:
+
+```{r eval=FALSE}
+fash_fit1 <- fash(Y = "y", smooth_var = "x", S = "SE", data_list = datasets_selected,
+                  num_basis = 20, order = 1, betaprec = 0,
+                  pred_step = 1, penalty = 10, grid = fine_grid,
+                  num_cores = 1, verbose = TRUE)
+saveRDS(fash_fit1, file = paste0(result_dir, "/fash_fit1.rds"))
+```
+
+Let's take a look at the fitted FASH model:
+
+```{r}
+fash_fit1 <- readRDS(file = paste0(result_dir, "/fash_fit1.rds"))
+fash_fit1
+```
+
+The output shows that we started with $K = 52$ mixture components (as specified by the `grid` argument) and ended up with $36$ components with non-zero prior weights after the empirical Bayes estimation.
+
+We can take a look at the estimated prior weights of the FASH model:
+
+```{r}
+fash_fit1$prior_weights
+```
+
+
+## BF-based correction of $\hat\pi$
+
+Note that the computation of local false discovery rate (lfdr) is heavily dependent on the prior weight $\hat{\pi}_0$, so unless we are certain that there is no model misspecification, it is recommended to use a more conservative estimate of $\hat{\pi}_0$ by updating the prior weights using the `BF_update` function. 
+
+This function will re-estimate the prior weights based on the fitted FASH model and return an updated model object.
+
+```{r eval=TRUE}
+fash_fit1_update <- BF_update(fash_fit1, plot = FALSE)
+fash_fit1_update$prior_weights
+```
+
+
+## False discovery rate control
+
+We will use the updated FASH model (1) to detect dynamic eQTLs, at a false discovery rate (FDR) of 0.05.
+The function `fdr_control` will compute the lfdr as well as the cumulative FDR for each gene-variant pair and return the indices of pairs that are detected as dynamic eQTLs based on the specified FDR threshold.
+
+```{r}
+alpha <- 0.05
+test1 <- fdr_control(fash_fit1_update, alpha = alpha, plot = TRUE)
+fash_highlighted1 <- test1$fdr_results$index[test1$fdr_results$FDR <= alpha]
+```
+
+Let's see how many genes and pairs are detected as dynamic eQTLs:
+
+```{r}
+pairs_highlighted1 <- names(datasets_selected)[fash_highlighted1]
+length(pairs_highlighted1)
+length(pairs_highlighted1)/length(datasets_selected)
+```
+
+```{r}
+genes_highlighted1 <- unique(sapply(strsplit(pairs_highlighted1, "_"), "[[", 1))
+length(genes_highlighted1)
+length(genes_highlighted1)/length(all_genes)
+```
+
+
+## Visualization of the posterior
+
+It would often be helpful to visualize the posterior estimates of the eQTL effect functions for the detected dynamic eQTLs (e.g. $P(\beta_j(t)|\boldsymbol{y},\hat{\boldsymbol\pi})$) to see how they change over time.
+
+
+The main function for that is `predict`, which takes the fitted FASH model object, the index of the gene-variant pair, and a vector of time points at which to evaluate the posterior estimates.
+
+Here is an example of how to obtain the posterior for $\beta(t)$ of the first variant in the list:
+
+```{r}
+predict_result <- predict(fash_fit1_update, index = 1)
+str(predict_result)
+```
+
+When `order > 1`, the `predict` function could also take an additional argument `deriv = q` (where q is less than `order`) to return the posterior estimates of the $q$th derivatives of $\beta^{(q)}(t)$.
+
+If we are interested in obtaining the posterior samples of the eQTL effect function, we can set the `only.samples = TRUE` argument in the `predict` function. This will return a list containing the posterior samples of the eQTL effect function at the specified time points.
+
+```{r}
+predict_samps <- predict(fash_fit1_update, index = 1, only.samples = TRUE)
+str(predict_samps)
+```
+
+Let's use the above function to visualize the posterior estimates of the eQTL effect functions for the first four detected dynamic eQTLs:
+
+```{r echo=FALSE}
+par(mfrow = c(2,2))
+for (i in 1:4) {
+  selected_gene <- (genes_highlighted1)[i] #sample(genes_highlighted1, 1)
+  pairs_of_selected_gene <- grep(selected_gene, pairs_highlighted1, value = T)
+  selected_indices <- which(names(datasets_selected) %in% pairs_of_selected_gene)
+  selected_index <- selected_indices[which(fash_fit1_update$lfdr[selected_indices] == min(fash_fit1_update$lfdr[selected_indices]))][1]
+  fitted_result <- predict(fash_fit1_update,
+                           index = selected_index,
+                           smooth_var = seq(0, 15, by = 0.1))
+  plot(
+    datasets_selected[[selected_index]]$x,
+    datasets_selected[[selected_index]]$y,
+    pch = 20,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = paste0(names(datasets_selected)[selected_index]),
+    ylim = c(
+      min(datasets_selected[[selected_index]]$y - 2 * datasets_selected[[selected_index]]$SE),
+      max(datasets_selected[[selected_index]]$y + 2 * datasets_selected[[selected_index]]$SE)
+    )
+  )
+  arrows(
+    datasets_selected[[selected_index]]$x,
+    datasets_selected[[selected_index]]$y - 2 * datasets_selected[[selected_index]]$SE,
+    datasets_selected[[selected_index]]$x,
+    datasets_selected[[selected_index]]$y + 2 * datasets_selected[[selected_index]]$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 2)
+  abline(h = mean(datasets_selected[[selected_index]]$y), col = "blue", lty = 2)
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.3),
+    border = NA
+  )
+}
+par(mfrow = c(1,1))
+```
