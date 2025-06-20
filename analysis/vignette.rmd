@@ -21,7 +21,7 @@ code_dir <- paste0(getwd(), "/code/vignette")
 ## Introduction
 
 
-In this example, we will demonstrate how to use the `fashr` package to implement the FASH method to study dynamic eQTLs. 
+In this example, we will demonstrate how to use the `fashr` package to implement the FASH method (see this [overview of FASH](overview.html)) to study dynamic eQTLs. 
 
 To make the computation faster, we only consider **one** variant for each gene, selected based on the significance of the eQTL effect at any time point.
 
@@ -52,12 +52,12 @@ To fit the FASH model in the default way, we need to specify the following key a
 - `smooth_var`: the name of the column containing the time variable (here, "x")
 - `S`: the name of the column containing the standard errors (here, "SE")
 - `data_list`: the list of data frames containing the summary statistics for each gene-variant pair
-- `order`: the order of the Integrated Wiener Process, which can also be viewed as the polynomial order of the corresponding base model (e.g., 0 for constant, 1 for linear, 2 for quadratic, etc.)
+- `order`: the order of the Integrated Wiener Process, which can also be viewed as the polynomial order of the corresponding base model (e.g., 1 for constant, 2 for linear, 3 for quadratic, etc.)
 
 
 There are also some optional arguments that can be specified for more customized implementation:
 
-- `grid`: a vector of $K$ (predictive) standard deviations used to construct the $K$ mixture component of the FASH model.
+- `grid`: a vector of $K$ (predictive) standard deviations (PSD) used to construct the $K$ mixture component of the FASH model.
 - `pred_step`: the (predictive) step size that the `grid` vector should be interpreted as. For example, if `pred_step = 1`, then each value in `grid` represents a standard deviation at a time point of 1 unit apart (i.e. $\sigma := SD[\beta(x+1)|\beta(t):t<x]$).
 - `num_basis`: the number of basis functions to approximate each GP component (higher values lead to more accurate approximation but also longer computation time).
 - `betaprec`: the precision of basis function coefficients under the base model. When set to 0, the base model is not penalized, with a diffuse prior on the coefficients. 
@@ -99,7 +99,7 @@ fash_fit1$prior_weights
 
 ## BF-based correction of $\hat\pi$
 
-Note that the computation of local false discovery rate (lfdr) is heavily dependent on the prior weight $\hat{\pi}_0$, so unless we are certain that there is no model misspecification, it is recommended to use a more conservative estimate of $\hat{\pi}_0$ by updating the prior weights using the `BF_update` function. 
+Note that the computation of local false discovery rate (lfdr) is heavily dependent on the prior weight $\hat{\pi}_0$, so unless we are certain that there is no model misspecification, it is recommended to use a more conservative estimate of $\hat{\pi}_0$ by updating the prior weights using the `BF_update` function (for details on what this procedure does and why it produces a conservative estimate, please see this [overview](BF_based_control.html)).
 
 This function will re-estimate the prior weights based on the fitted FASH model and return an updated model object.
 
@@ -135,7 +135,7 @@ length(genes_highlighted1)/length(all_genes)
 ```
 
 
-## Visualization of the posterior
+## Visualization of the effect function
 
 It would often be helpful to visualize the posterior estimates of the eQTL effect functions for the detected dynamic eQTLs (e.g. $P(\beta_j(t)|\boldsymbol{y},\hat{\boldsymbol\pi})$) to see how they change over time.
 
@@ -207,3 +207,43 @@ for (i in 1:4) {
 }
 par(mfrow = c(1,1))
 ```
+
+
+## Visualization of the posterior weights
+
+Because FASH by design has the form of a mixture model, that means we can compute the posterior weights of each effect function under each mixture component.
+
+The posterior weights can be obtained through `fash_fit1_update$posterior_weights`.
+Recall that each mixture component represents a IWP with a different standard deviation parameter $\sigma$, which quantifies the level of deviation of the eQTL effect function from the base model (i.e., constant effect).
+
+
+We can visualize the structure plot of posterior weights of all the effect functions using `plot`: 
+```{r}
+plot(fash_fit1_update, ordering = "mean")
+```
+
+The `ordering` argument can be set to "mean" (default) to order the effect functions by their posterior mean of $\sigma$. 
+This option could also be changed to "median" to order the effect functions by their posterior median of $\sigma$, or "lfdr" to order the effect functions by their posterior local false discovery rate (lfdr), or NULL to order them by their index in the original data list.
+
+
+By default, `plot` will label the structure with the PSD treated as a continuous variable colored through a gradient from white (low PSD) to blue (high PSD).
+Alternatively, we can also color the structure by treating the PSD as a discrete categorical variable, by setting `discrete = TRUE` in the `plot` function.
+
+```{r}
+plot(fash_fit1_update, ordering = "mean", discrete = TRUE)
+```
+
+
+When there are a large number of effect functions, the structure plot could be too crowded to interpret. 
+
+In that case, we can use `fash_structure_plot` to plot the structure of the posterior weights of the effect functions, which allows us to select a subset of effect functions to visualize.
+
+For example, we can select the first 100 effect functions and the 1000th to 1100th effect functions to visualize:
+```{r}
+fash_structure_plot(fash_fit1_update, ordering = "mean", discrete = TRUE, selected_indices = c(1:100, 1000:1100))
+```
+
+
+
+
+
