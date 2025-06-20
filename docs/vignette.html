@@ -388,7 +388,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-06-18
+<strong>Last updated:</strong> 2025-06-20
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -519,15 +519,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree9c651409c7b698888b4f80635d1797d2d9e8e5catargetblank9c65140a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreef3bcc8e6cd853af021cc99228ec5cb2d6b579114targetblankf3bcc8ea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/9c651409c7b698888b4f80635d1797d2d9e8e5ca" target="_blank">9c65140</a>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/f3bcc8e6cd853af021cc99228ec5cb2d6b579114" target="_blank">f3bcc8e</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytree9c651409c7b698888b4f80635d1797d2d9e8e5catargetblank9c65140a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomAgueroZZFASHresultsummarytreef3bcc8e6cd853af021cc99228ec5cb2d6b579114targetblankf3bcc8ea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -537,7 +537,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/9c651409c7b698888b4f80635d1797d2d9e8e5ca" target="_blank">9c65140</a>.
+<a href="https://github.com/AgueroZZ/FASHresultsummary/tree/f3bcc8e6cd853af021cc99228ec5cb2d6b579114" target="_blank">f3bcc8e</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -663,6 +663,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/f3bcc8e6cd853af021cc99228ec5cb2d6b579114/analysis/vignette.rmd" target="_blank">f3bcc8e</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-06-20
+</td>
+<td>
+workflowr::wflow_publish("analysis/vignette.rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/AgueroZZ/FASHresultsummary/5429bccd68b311c5cba01a984b51bb9cd19b95c5/docs/vignette.html" target="_blank">5429bcc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-06-18
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/AgueroZZ/FASHresultsummary/blob/9c651409c7b698888b4f80635d1797d2d9e8e5ca/analysis/vignette.rmd" target="_blank">9c65140</a>
 </td>
 <td>
@@ -685,8 +719,8 @@ workflowr::wflow_publish("analysis/vignette.rmd")
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>In this example, we will demonstrate how to use the
-<code>fashr</code> package to implement the FASH method to study dynamic
-eQTLs.</p>
+<code>fashr</code> package to implement the FASH method (see this <a
+href="overview.html">overview of FASH</a>) to study dynamic eQTLs.</p>
 <p>To make the computation faster, we only consider <strong>one</strong>
 variant for each gene, selected based on the significance of the eQTL
 effect at any time point.</p>
@@ -723,15 +757,15 @@ errors (here, “SE”)</li>
 summary statistics for each gene-variant pair</li>
 <li><code>order</code>: the order of the Integrated Wiener Process,
 which can also be viewed as the polynomial order of the corresponding
-base model (e.g., 0 for constant, 1 for linear, 2 for quadratic,
+base model (e.g., 1 for constant, 2 for linear, 3 for quadratic,
 etc.)</li>
 </ul>
 <p>There are also some optional arguments that can be specified for more
 customized implementation:</p>
 <ul>
 <li><code>grid</code>: a vector of <span
-class="math inline">\(K\)</span> (predictive) standard deviations used
-to construct the <span class="math inline">\(K\)</span> mixture
+class="math inline">\(K\)</span> (predictive) standard deviations (PSD)
+used to construct the <span class="math inline">\(K\)</span> mixture
 component of the FASH model.</li>
 <li><code>pred_step</code>: the (predictive) step size that the
 <code>grid</code> vector should be interpreted as. For example, if
@@ -805,7 +839,9 @@ class="math inline">\(\hat{\pi}_0\)</span>, so unless we are certain
 that there is no model misspecification, it is recommended to use a more
 conservative estimate of <span
 class="math inline">\(\hat{\pi}_0\)</span> by updating the prior weights
-using the <code>BF_update</code> function.</p>
+using the <code>BF_update</code> function (for details on what this
+procedure does and why it produces a conservative estimate, please see
+this <a href="BF_based_control.html">overview</a>).</p>
 <p>This function will re-estimate the prior weights based on the fitted
 FASH model and return an updated model object.</p>
 <pre class="r"><code>fash_fit1_update &lt;- BF_update(fash_fit1, plot = FALSE)
@@ -834,6 +870,43 @@ detected as dynamic eQTLs based on the specified FDR threshold.</p>
 test1 &lt;- fdr_control(fash_fit1_update, alpha = alpha, plot = TRUE)</code></pre>
 <pre><code>1440 datasets are significant at alpha level 0.05. Total datasets tested: 6362. </code></pre>
 <p><img src="figure/vignette.rmd/unnamed-chunk-9-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5429bccd68b311c5cba01a984b51bb9cd19b95c5/docs/figure/vignette.rmd/unnamed-chunk-9-1.png" target="_blank">5429bcc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-06-18
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>fash_highlighted1 &lt;- test1$fdr_results$index[test1$fdr_results$FDR &lt;= alpha]</code></pre>
 <p>Let’s see how many genes and pairs are detected as dynamic eQTLs:</p>
 <pre class="r"><code>pairs_highlighted1 &lt;- names(datasets_selected)[fash_highlighted1]
@@ -847,8 +920,8 @@ length(genes_highlighted1)</code></pre>
 <pre class="r"><code>length(genes_highlighted1)/length(all_genes)</code></pre>
 <pre><code>[1] 0.2263439</code></pre>
 </div>
-<div id="visualization-of-the-posterior" class="section level2">
-<h2>Visualization of the posterior</h2>
+<div id="visualization-of-the-effect-function" class="section level2">
+<h2>Visualization of the effect function</h2>
 <p>It would often be helpful to visualize the posterior estimates of the
 eQTL effect functions for the detected dynamic eQTLs (e.g. <span
 class="math inline">\(P(\beta_j(t)|\boldsymbol{y},\hat{\boldsymbol\pi})\)</span>)
@@ -883,6 +956,83 @@ str(predict_samps)</code></pre>
 <p>Let’s use the above function to visualize the posterior estimates of
 the eQTL effect functions for the first four detected dynamic eQTLs:</p>
 <p><img src="figure/vignette.rmd/unnamed-chunk-14-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/AgueroZZ/FASHresultsummary/blob/5429bccd68b311c5cba01a984b51bb9cd19b95c5/docs/figure/vignette.rmd/unnamed-chunk-14-1.png" target="_blank">5429bcc</a>
+</td>
+<td>
+Ziang Zhang
+</td>
+<td>
+2025-06-18
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="visualization-of-the-posterior-weights" class="section level2">
+<h2>Visualization of the posterior weights</h2>
+<p>Because FASH by design has the form of a mixture model, that means we
+can compute the posterior weights of each effect function under each
+mixture component.</p>
+<p>The posterior weights can be obtained through
+<code>fash_fit1_update$posterior_weights</code>. Recall that each
+mixture component represents a IWP with a different standard deviation
+parameter <span class="math inline">\(\sigma\)</span>, which quantifies
+the level of deviation of the eQTL effect function from the base model
+(i.e., constant effect).</p>
+<p>We can visualize the structure plot of posterior weights of all the
+effect functions using <code>plot</code>:</p>
+<pre class="r"><code>plot(fash_fit1_update, ordering = &quot;mean&quot;)</code></pre>
+<p><img src="figure/vignette.rmd/unnamed-chunk-15-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>The <code>ordering</code> argument can be set to “mean” (default) to
+order the effect functions by their posterior mean of <span
+class="math inline">\(\sigma\)</span>. This option could also be changed
+to “median” to order the effect functions by their posterior median of
+<span class="math inline">\(\sigma\)</span>, or “lfdr” to order the
+effect functions by their posterior local false discovery rate (lfdr),
+or NULL to order them by their index in the original data list.</p>
+<p>By default, <code>plot</code> will label the structure with the PSD
+treated as a continuous variable colored through a gradient from white
+(low PSD) to blue (high PSD). Alternatively, we can also color the
+structure by treating the PSD as a discrete categorical variable, by
+setting <code>discrete = TRUE</code> in the <code>plot</code>
+function.</p>
+<pre class="r"><code>plot(fash_fit1_update, ordering = &quot;mean&quot;, discrete = TRUE)</code></pre>
+<p><img src="figure/vignette.rmd/unnamed-chunk-16-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>When there are a large number of effect functions, the structure plot
+could be too crowded to interpret.</p>
+<p>In that case, we can use <code>fash_structure_plot</code> to plot the
+structure of the posterior weights of the effect functions, which allows
+us to select a subset of effect functions to visualize.</p>
+<p>For example, we can select the first 100 effect functions and the
+1000th to 1100th effect functions to visualize:</p>
+<pre class="r"><code>fash_structure_plot(fash_fit1_update, ordering = &quot;mean&quot;, discrete = TRUE, selected_indices = c(1:100, 1000:1100))</code></pre>
+<p><img src="figure/vignette.rmd/unnamed-chunk-17-1.png" width="768" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -913,23 +1063,27 @@ other attached packages:
 [1] fashr_0.1.1     workflowr_1.7.1
 
 loaded via a namespace (and not attached):
- [1] Matrix_1.6-4         jsonlite_2.0.0       compiler_4.3.1      
- [4] promises_1.3.3       Rcpp_1.0.14          stringr_1.5.1       
- [7] git2r_0.33.0         parallel_4.3.1       callr_3.7.6         
-[10] later_1.4.2          jquerylib_0.1.4      yaml_2.3.10         
-[13] fastmap_1.2.0        lattice_0.22-6       R6_2.6.1            
-[16] BayesGP_0.1.3        mixsqp_0.3-54        knitr_1.50          
-[19] tibble_3.2.1         rprojroot_2.0.4      TMB_1.9.15          
-[22] bslib_0.9.0          pillar_1.10.2        rlang_1.1.6         
-[25] cachem_1.1.0         stringi_1.8.7        httpuv_1.6.16       
-[28] xfun_0.52            getPass_0.2-4        fs_1.6.6            
-[31] sass_0.4.10          cli_3.6.5            magrittr_2.0.3      
-[34] ps_1.9.1             grid_4.3.1           digest_0.6.37       
-[37] processx_3.8.6       rstudioapi_0.16.0    irlba_2.3.5.1       
-[40] lifecycle_1.0.4      vctrs_0.6.5          evaluate_1.0.3      
-[43] glue_1.8.0           numDeriv_2016.8-1.1  whisker_0.4.1       
-[46] LaplacesDemon_16.1.6 rmarkdown_2.28       httr_1.4.7          
-[49] tools_4.3.1          pkgconfig_2.0.3      htmltools_0.5.8.1   </code></pre>
+ [1] generics_0.1.4       sass_0.4.10          stringi_1.8.7       
+ [4] lattice_0.22-6       digest_0.6.37        magrittr_2.0.3      
+ [7] BayesGP_0.1.3        RColorBrewer_1.1-3   evaluate_1.0.3      
+[10] grid_4.3.1           fastmap_1.2.0        rprojroot_2.0.4     
+[13] plyr_1.8.9           jsonlite_2.0.0       Matrix_1.6-4        
+[16] processx_3.8.6       whisker_0.4.1        ps_1.9.1            
+[19] mixsqp_0.3-54        promises_1.3.3       httr_1.4.7          
+[22] scales_1.4.0         numDeriv_2016.8-1.1  jquerylib_0.1.4     
+[25] cli_3.6.5            rlang_1.1.6          LaplacesDemon_16.1.6
+[28] withr_3.0.2          cachem_1.1.0         yaml_2.3.10         
+[31] tools_4.3.1          parallel_4.3.1       reshape2_1.4.4      
+[34] dplyr_1.1.4          ggplot2_3.5.2        httpuv_1.6.16       
+[37] vctrs_0.6.5          R6_2.6.1             lifecycle_1.0.4     
+[40] git2r_0.33.0         stringr_1.5.1        fs_1.6.6            
+[43] irlba_2.3.5.1        pkgconfig_2.0.3      callr_3.7.6         
+[46] pillar_1.10.2        bslib_0.9.0          later_1.4.2         
+[49] gtable_0.3.6         glue_1.8.0           Rcpp_1.0.14         
+[52] tidyselect_1.2.1     xfun_0.52            tibble_3.2.1        
+[55] rstudioapi_0.16.0    knitr_1.50           farver_2.1.2        
+[58] htmltools_0.5.8.1    labeling_0.4.3       rmarkdown_2.28      
+[61] TMB_1.9.15           compiler_4.3.1       getPass_0.2-4       </code></pre>
 </div>
 </div>
 </div>
