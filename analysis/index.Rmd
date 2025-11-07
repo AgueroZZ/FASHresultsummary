@@ -20,6 +20,8 @@ The tutorial makes use of the software `fashr`, available on [github](https://gi
 
 **Examples:**
 
++ [Simulated data examples](appendixB.html)
+
 + [Testing dynamic eQTLs using iPSC data](dynamic_eQTL_real.html)
 
 + [Testing nonlinear dynamic eQTLs using iPSC data](nonlinear_dynamic_eQTL_real.html)
