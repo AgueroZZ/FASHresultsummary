@@ -1,0 +1,700 @@
+---
+title: "Appendix B: Simulation"
+author: "Ziang Zhang"
+date: "2025-09-14"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+The simulated datasets look like the following:
+
+```{r}
+library(fashr)
+library(ggplot2)
+set.seed(12345)
+sigma_vec = c(0.1, 0.3, 0.5)
+
+data_sim_list_A <- lapply(1:3, function(i) simulate_process(sd_poly = 1, type = "nondynamic", sd = sigma_vec, normalize = F))
+
+data_sim_list_B <- lapply(1:3, function(i) simulate_process(sd_poly = 1, type = "linear", sd = sigma_vec, normalize = F))
+
+data_sim_list_C <- lapply(1:3, function(i) simulate_process(sd_poly = 0, type = "nonlinear", sd = sigma_vec, sd_fun = 5, p = 2, normalize = F))
+
+datasets <- c(data_sim_list_A, data_sim_list_B, data_sim_list_C)
+labels <- c(rep("A", 3), rep("B", 3), rep("C", 3))
+indices_A <- 1:3
+indices_B <- 4:6
+indices_C <- 7:9
+
+dataset_labels <- rep(as.character(NA),9)
+dataset_labels[indices_A] <- paste0("A",seq(1,length(indices_A)))
+dataset_labels[indices_B] <- paste0("B",seq(1,length(indices_B)))
+dataset_labels[indices_C] <- paste0("C",seq(1,length(indices_C)))
+names(datasets) <- dataset_labels
+
+par(mfrow = c(3, 3))
+for(i in indices_A[1:3]){
+  plot(datasets[[i]]$x, datasets[[i]]$y, 
+       type = "p", col = "black", lwd = 1, pch = 20,
+       xlab = "Time", ylab = "Effect Size", 
+       ylim = c(min(sapply(datasets[indices_A], function(d) min(d$y - 2*d$sd))) - 0.5,
+                max(sapply(datasets[indices_A], function(d) max(d$y + 2*d$sd)))) + 0.5,
+       main = paste("Category A: ", i))
+  lines(datasets[[i]]$x, datasets[[i]]$truef, col = "red", lwd = 2)
+   arrows(
+    datasets[[i]]$x,
+    datasets[[i]]$y - 2 * datasets[[i]]$sd,
+    datasets[[i]]$x,
+    datasets[[i]]$y + 2 * datasets[[i]]$sd,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+}
+
+for(i in indices_B[1:3]){
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = "p", col = "black", 
+       lwd = 1, pch = 20,
+       xlab = "Time", ylab = "Effect Size", 
+       ylim = c(min(sapply(datasets[indices_B], function(d) min(d$y - 2*d$sd))) - 0.5,
+                max(sapply(datasets[indices_B], function(d) max(d$y + 2*d$sd)))) + 0.5,
+       main = paste("Category B: ", i))
+  lines(datasets[[i]]$x,
+        datasets[[i]]$truef,
+        col = "red",
+        lwd = 2)
+  arrows(
+    datasets[[i]]$x,
+    datasets[[i]]$y - 2 * datasets[[i]]$sd,
+    datasets[[i]]$x,
+    datasets[[i]]$y + 2 * datasets[[i]]$sd,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+}
+
+for(i in indices_C[1:3]){
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = "p", 
+       col = "black", lwd = 1, pch = 20,
+       xlab = "Time", ylab = "Effect Size", 
+       ylim = c(min(sapply(datasets[indices_C], function(d) min(d$y - 2*d$sd))) - 0.5,
+                max(sapply(datasets[indices_C], function(d) max(d$y + 2*d$sd)))) + 0.5,
+       main = paste("Category C: ", i))
+  lines(datasets[[i]]$x,
+        datasets[[i]]$truef,
+        col = "red",
+        lwd = 2)
+  arrows(
+    datasets[[i]]$x,
+    datasets[[i]]$y - 2 * datasets[[i]]$sd,
+    datasets[[i]]$x,
+    datasets[[i]]$y + 2 * datasets[[i]]$sd,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+}
+par(mfrow = c(1, 1))
+```
+
+Define the functions to be used for simulation:
+
+```{r}
+get_one_set_of_datasets <- function(J, pho0 = 0.1, pho1 = 0.05, sigma_vec = c(0.05, 0.1, 0.2)){
+  # check if pho0 > pho1
+  if(pho0 <= pho1){
+    stop("pho0 must be greater than pho1")
+  }
+  propA <- 1 - pho0
+  propB <- pho0 - pho1
+  propC <- pho1
+  
+  sizeA <- J * propA
+  data_sim_list_A <- lapply(1:sizeA, function(i) simulate_process(sd_poly = 1, type = "nondynamic", sd = sigma_vec, normalize = F))
+  
+  sizeB <- J * propB
+  if(sizeB > 0){
+    data_sim_list_B <- lapply(1:sizeB, function(i) simulate_process(sd_poly = 1, type = "linear", sd = sigma_vec, normalize = F))
+  }else{
+    data_sim_list_B <- list()
+  }
+  
+  sizeC <- J * propC
+  data_sim_list_C <- lapply(1:sizeC, function(i) simulate_process(sd_poly = 0, type = "nonlinear", sd = sigma_vec, sd_fun = 5, p = 2, normalize = F))
+  
+  datasets <- c(data_sim_list_A, data_sim_list_B, data_sim_list_C)
+  labels <- c(rep("A", sizeA), rep("B", sizeB), rep("C", sizeC))
+  indices_A <- 1:sizeA
+  indices_B <- (sizeA + 1):(sizeA + sizeB)
+  indices_C <- (sizeA + sizeB + 1):(sizeA + sizeB + sizeC)
+  
+  dataset_labels <- rep(as.character(NA),100)
+  dataset_labels[indices_A] <- paste0("A",seq(1,length(indices_A)))
+  dataset_labels[indices_B] <- paste0("B",seq(1,length(indices_B)))
+  dataset_labels[indices_C] <- paste0("C",seq(1,length(indices_C)))
+  names(datasets) <- dataset_labels
+  
+  return(datasets)
+}
+
+get_result_once <- function(J, pho0 = 0.1, pho1 = 0.05, sigma_vec = c(0.05, 0.1, 0.2), 
+                            grid = sort(c(0, exp(-0.5*seq(0,10, by = 0.2)))),
+                            penalty = 10, num_basis = 20, num_cores = 1){
+  
+  pi00 <- 1 - pho0
+  pi01 <- 1 - pho1
+  
+  datasets <- get_one_set_of_datasets(J, pho0, pho1, sigma_vec)
+  
+  fash_fit1 <- fash(Y = "y", smooth_var = "x", S = "sd", data_list = datasets, order = 1,
+                    verbose = FALSE, num_cores = num_cores,
+                    grid = grid, num_basis = num_basis, penalty = penalty)
+  fash_fit2 <- fash(Y = "y", smooth_var = "x", S = "sd", data_list = datasets, order = 2,
+                    verbose = FALSE, num_cores = num_cores,
+                    grid = grid, num_basis = num_basis, penalty = penalty)
+  
+  hat_pi_00 <- fash_fit1$prior_weights$prior_weight[1]
+  hat_pi_01 <- fash_fit2$prior_weights$prior_weight[1]
+  
+  fash_fit1_update <- BF_update(fash_fit1, plot = FALSE)
+  fash_fit2_update <- BF_update(fash_fit2, plot = FALSE)
+  
+  tilde_pi_00 <- fash_fit1_update$prior_weights$prior_weight[1]
+  tilde_pi_01 <- fash_fit2_update$prior_weights$prior_weight[1]
+  
+  data.frame(pi_00 = pi00, pi_01 = pi01,
+             hat_pi_00 = hat_pi_00, hat_pi_01 = hat_pi_01,
+             tilde_pi_00 = tilde_pi_00, tilde_pi_01 = tilde_pi_01)
+  
+}
+```
+
+
+
+## Simulation
+
+### Dense grid
+
+
+In the first setting, consider a relatively dense grid:
+
+```{r eval=FALSE}
+## Setting A:
+set.seed(12345)
+pho_vec <- seq(0.05, 0.5, by = 0.01)
+
+result_all <- lapply(pho_vec, function(pho0){
+  pho1 <- pho0 / 2
+  get_result_once(J = 300, pho0 = pho0, pho1 = pho1, sigma_vec = c(0.1, 0.3, 0.5), 
+                  grid = sort(c(0, exp(-0.5*seq(0,10, by = 0.1)))),
+                  penalty = 1, num_cores = 5,
+                  num_basis = 20)
+})
+result_df <- do.call(rbind, result_all)
+save(result_df, file = "data/simulation_result_denser_grid.RData")
+```
+
+```{r}
+load("data/appendixB/simulation_result_denser_grid.RData")
+```
+
+```{r}
+par(mfrow = c(1, 2))
+plot(result_df$pi_00, result_df$hat_pi_00, 
+     xlab = expression("True " * pi[0]), 
+     ylab = expression("Estimated " * pi[0]),
+     main = expression("Estimated vs True " * pi[0] * " (Order 1)"),
+     pch = 16, col = rgb(0,0,0,0.5), ylim = c(0,1), xlim = c(0.5,1))
+abline(0,1,col='red',lty=2, lwd = 2)
+points(result_df$pi_00, result_df$tilde_pi_00, pch = 17, col = rgb(0,0,1,0.5))
+legend("topleft", legend = c("Before BF update", "After BF update"), pch = c(16,17), col = c(rgb(0,0,0,0.5), rgb(0,0,1,0.5)), bty = "n")
+plot(result_df$pi_01, result_df$hat_pi_01, 
+     xlab = expression("True " * pi[0]), 
+     ylab = expression("Estimated " * pi[0]),
+     main = expression("Estimated vs True " * pi[0] * " (Order 2)"),
+     pch = 16, col = rgb(0,0,0,0.5), ylim = c(0,1), xlim = c(0.75,1))
+abline(0,1,col='red',lty=2, lwd = 2)
+points(result_df$pi_01, result_df$tilde_pi_01, pch = 17, col = rgb(0,0,1,0.5))
+# legend("bottomleft", legend = c("Before BF update", "After BF update"), pch = c(16,17), col = c(rgb(0,0,0,0.5), rgb(0,0,1,0.5)), bty = "n")
+par(mfrow = c(1, 1))
+```
+
+
+
+
+```{r eval=FALSE}
+pdf("output/appendixB/simulation_result_denser_grid.pdf", width = 5, height = 5)
+plot(result_df$pi_00, result_df$hat_pi_00, 
+     xlab = expression("True " * pi[0]), 
+     ylab = expression("Estimated " * pi[0]),
+     pch = 16, col = rgb(0,0,0,0.5), ylim = c(0,1), xlim = c(0.5,1))
+abline(0,1,col='red',lty=2, lwd = 2)
+points(result_df$pi_00, result_df$tilde_pi_00, pch = 17, col = rgb(0,0,1,0.5))
+legend("topleft", legend = c("Before BF update", "After BF update"), pch = c(16,17), col = c(rgb(0,0,0,0.5), rgb(0,0,1,0.5)), bty = "n")
+dev.off()
+
+pdf("output/appendixB/simulation_result_denser_grid_order2.pdf", width = 5, height = 5)
+plot(result_df$pi_01, result_df$hat_pi_01, 
+     xlab = expression("True " * pi[0]), 
+     ylab = expression("Estimated " * pi[0]),
+     pch = 16, col = rgb(0,0,0,0.5), ylim = c(0,1), xlim = c(0.75,1))
+abline(0,1,col='red',lty=2, lwd = 2)
+points(result_df$pi_01, result_df$tilde_pi_01, pch = 17, col = rgb(0,0,1,0.5))
+# legend("bottomleft", legend = c("Before BF update", "After BF update"), pch = c(16,17), col = c(rgb(0,0,0,0.5), rgb(0,0,1,0.5)), bty = "n")
+dev.off()
+```
+
+
+
+### Loose grid
+
+
+In the second setting, consider a relatively loose grid:
+
+```{r eval=FALSE}
+## Setting B:
+set.seed(12345)
+pho_vec <- seq(0.05, 0.5, by = 0.01)
+
+result_all <- lapply(pho_vec, function(pho0){
+  pho1 <- pho0 / 2
+  get_result_once(J = 300, pho0 = pho0, pho1 = pho1, sigma_vec = c(0.1, 0.3, 0.5), 
+                  grid = sort(c(0, exp(-0.5*seq(0,10, by = 0.2)))),
+                  penalty = 1, num_cores = 5,
+                  num_basis = 20)
+})
+result_df <- do.call(rbind, result_all)
+save(result_df, file = "data/simulation_result_dense_grid.RData")
+```
+
+```{r}
+load("data/appendixB/simulation_result_dense_grid.RData")
+```
+
+```{r}
+par(mfrow = c(1, 2))
+plot(result_df$pi_00, result_df$hat_pi_00, 
+     xlab = expression("True " * pi[0]), 
+     ylab = expression("Estimated " * pi[0]),
+     main = expression("Estimated vs True " * pi[0] * " (Order 1)"),
+     pch = 16, col = rgb(0,0,0,0.5), ylim = c(0,1), xlim = c(0.5,1))
+abline(0,1,col='red',lty=2, lwd = 2)
+points(result_df$pi_00, result_df$tilde_pi_00, pch = 17, col = rgb(0,0,1,0.5))
+legend("topleft", legend = c("Before BF update", "After BF update"), pch = c(16,17), col = c(rgb(0,0,0,0.5), rgb(0,0,1,0.5)), bty = "n")
+plot(result_df$pi_01, result_df$hat_pi_01, 
+     xlab = expression("True " * pi[0]), 
+     ylab = expression("Estimated " * pi[0]),
+     main = expression("Estimated vs True " * pi[0] * " (Order 2)"),
+     pch = 16, col = rgb(0,0,0,0.5), ylim = c(0,1), xlim = c(0.75,1))
+abline(0,1,col='red',lty=2, lwd = 2)
+points(result_df$pi_01, result_df$tilde_pi_01, pch = 17, col = rgb(0,0,1,0.5))
+# legend("bottomleft", legend = c("Before BF update", "After BF update"), pch = c(16,17), col = c(rgb(0,0,0,0.5), rgb(0,0,1,0.5)), bty = "n")
+par(mfrow = c(1, 1))
+```
+
+
+```{r eval=FALSE}
+pdf("output/appendixB/simulation_result_dense_grid.pdf", width = 5, height = 5)
+plot(result_df$pi_00, result_df$hat_pi_00, 
+     xlab = "True pi0", 
+     ylab = "Estimated pi0", 
+     pch = 16, col = rgb(0,0,0,0.5), ylim = c(0,1), xlim = c(0.5,1))
+abline(0,1,col='red',lty=2, lwd = 2)
+points(result_df$pi_00, result_df$tilde_pi_00, pch = 17, col = rgb(0,0,1,0.5))
+legend("topleft", legend = c("Before BF update", "After BF update"), pch = c(16,17), col = c(rgb(0,0,0,0.5), rgb(0,0,1,0.5)), bty = "n")
+dev.off()
+
+pdf("output/appendixB/simulation_result_dense_grid_order2.pdf", width = 5, height = 5)
+plot(result_df$pi_01, result_df$hat_pi_01, 
+     xlab = "True pi0", 
+     ylab = "Estimated pi0", 
+     pch = 16, col = rgb(0,0,0,0.5), ylim = c(0,1), xlim = c(0.75,1))
+abline(0,1,col='red',lty=2, lwd = 2)
+points(result_df$pi_01, result_df$tilde_pi_01, pch = 17, col = rgb(0,0,1,0.5))
+# legend("bottomleft", legend = c("Before BF update", "After BF update"), pch = c(16,17), col = c(rgb(0,0,0,0.5), rgb(0,0,1,0.5)), bty = "n")
+dev.off()
+```
+
+## Focusing on one particular replication
+
+We will fix $\pi_0 = 0.2$ and $\pi_1 = 0.1$, and focus on one particular replication to illustrate the inference using FASH.
+
+```{r}
+set.seed(12345)
+J = 1200; pho0 = 0.2; pho1 = 0.1;
+datasets <- get_one_set_of_datasets(J = J, pho0 = pho0, pho1 = pho1, sigma_vec = c(0.1, 0.3, 0.5))
+```
+
+```{r eval=FALSE}
+log_prec <- seq(0,10, by = 0.2)
+fine_grid <- sort(c(0, exp(-0.5*log_prec)))
+num_cores <- 4
+
+fash_fit1 <- fash(Y = "y", smooth_var = "x", S = "sd", data_list = datasets,
+                  num_basis = 20, order = 1, betaprec = 0,
+                  pred_step = 1, penalty = 10, grid = fine_grid,
+                  num_cores = num_cores, verbose = TRUE)
+fash_fit1_update <- BF_update(fash_fit1)
+
+
+fash_fit2 <- fash(Y = "y", smooth_var = "x", S = "sd", data_list = datasets,
+                  num_basis = 20, order = 2, betaprec = 0,
+                  pred_step = 1, penalty = 10, grid = fine_grid,
+                  num_cores = num_cores, verbose = TRUE)
+fash_fit2_update <- BF_update(fash_fit2)
+
+save(fash_fit1, fash_fit1_update, fash_fit2, fash_fit2_update, file = "data/appendixB/fash_fit_example.RData")
+```
+
+```{r}
+load("data/appendixB/fash_fit_example.RData")
+```
+
+
+### Testing dynamic eQTLs:
+
+We will first focus on testing dynamic eQTLs:
+
+```{r}
+alpha <- 0.05
+test1 <- fdr_control(fash_fit1, alpha = alpha, plot = F)
+test1_corrected <- fdr_control(fash_fit1_update, alpha = alpha, plot = F)
+```
+
+What datasets are called significant?
+
+```{r}
+alpha_vec = seq(0.01, 0.2, by = 0.01)
+FDR0 <- c(); FDR0_corrected <- c()
+Power0 <- c(); Power0_corrected <- c()
+
+for (alpha in alpha_vec) {
+  index1 <- test1$fdr_results$index[test1$fdr_results$FDR <= alpha]
+  index1_corrected <- test1_corrected$fdr_results$index[test1_corrected$fdr_results$FDR <= alpha]
+  
+  # True FDR
+  FDR0 <- c(FDR0, mean(index1 <= (J * (1 - pho0))))
+  FDR0_corrected <- c(FDR0_corrected, mean(index1_corrected <= (J * (1 - pho0))))
+  
+  # Power
+  Power0 <- c(Power0, sum(index1 > (J * (1 - pho0))) / (J * pho0))
+  Power0_corrected <- c(Power0_corrected, sum(index1_corrected > (J * (1 - pho0))) / (J * pho0))
+}
+```
+
+```{r}
+pdf("output/appendixB/power_fdr_order1.pdf", width = 5, height = 5)
+# Power plot
+plot(alpha_vec, Power0, type = "o", pch = 16, col = "blue",
+     lty = 1, lwd = 1.5, 
+     xlab = expression(alpha), ylab = "Power", ylim = c(0.75,0.9),
+     # main = "Power vs alpha (Order 1)")
+     )
+points(alpha_vec, Power0_corrected, type = "o", pch = 17, col = "red",
+       lty = 2, lwd = 1.5)
+legend("bottomright", 
+       legend = c("Before BF update", "After BF update"),
+       pch = c(16,17), col = c("blue", "red"), lty = c(1,2), bty = "n")
+dev.off()
+
+# FDR plot
+pdf("output/appendixB/fdr_plot_order1.pdf", width = 5, height = 5)
+plot(alpha_vec, FDR0, type = "o", pch = 16, col = "blue",
+     lty = 1, lwd = 1.5,
+     xlab = expression(alpha), ylab = "true FDR", 
+     ylim = c(0,0.3),
+     # main = "FDR vs alpha (Order 1)"
+     )
+points(alpha_vec, FDR0_corrected, type = "o", pch = 17, col = "red",
+       lty = 2, lwd = 1.5)
+abline(0,1,col='black',lty=2, lwd = 1)
+legend("topleft", 
+       legend = c("Before BF update", "After BF update"),
+       pch = c(16,17), col = c("blue", "red"), lty = c(1,2), bty = "n")
+dev.off()
+```
+
+Showing the cumulative FDR plot:
+
+```{r}
+lfdr <- fash_fit1$posterior_weights[,1]
+sizeA <- J * (1 - pho0); sizeB <- J * (pho0 - pho1); sizeC <- J * pho1
+fdr_df <- data.frame(eQTL = 1:length(lfdr), fdr = lfdr, type = rep(c("A", "B", "C"), times = c(sizeA, sizeB, sizeC)))
+fdr_df <- fdr_df[order(fdr_df$fdr), ] # ordering it
+fdr_df$cumulative_fdr <- cumsum(fdr_df$fdr)/seq_along(fdr_df$fdr)
+fdr_df$rank <- 1:length(lfdr)
+
+ggplot(fdr_df, aes(x = 1:length(lfdr), y = cumulative_fdr, col = type)) +
+  geom_point() +
+  geom_hline(yintercept = 0.05, linetype = "dashed", color = "purple") +
+  labs(x = "Ordered eQTLs", y = "Cumulative FDR", col = "Type") +
+  theme_minimal() +
+  # ggtitle("Cumulative FDR Plot") +
+  scale_color_manual(values = c("red", "blue", "green")) +
+  theme(
+    axis.title = element_text(size = 16),   # xlab size
+    axis.text  = element_text(size = 14),   # x lim size
+    legend.key.size = unit(1.2, 'lines'), # key size
+    legend.title = element_text(size = 14), # legend title size
+    legend.text = element_text(size = 12),  # legend text size
+    legend.position = c(0.8, 0.4),            # move inside
+    legend.background = element_rect(fill = alpha("white", 0.6)) # background
+  )
+
+ggsave("output/appendixB/cumulative_fdr_order1.pdf", width = 5, height = 5)
+```
+
+```{r}
+lfdr <- fash_fit1_update$posterior_weights[,1]
+fdr_df <- data.frame(eQTL = 1:length(lfdr), fdr = lfdr, type = rep(c("A", "B", "C"), times = c(sizeA, sizeB, sizeC)))
+fdr_df <- fdr_df[order(fdr_df$fdr), ] # ordering it
+fdr_df$cumulative_fdr <- cumsum(fdr_df$fdr)/seq_along(fdr_df$fdr)
+fdr_df$rank <- 1:length(lfdr)
+
+ggplot(fdr_df, aes(x = 1:length(lfdr), y = cumulative_fdr, col = type)) +
+  geom_point() +
+  geom_hline(yintercept = 0.05, linetype = "dashed", color = "purple") +
+  labs(x = "Ordered eQTLs", y = "Cumulative FDR", col = "Type") +
+  theme_minimal() +
+  # ggtitle("Cumulative FDR Plot") +
+  scale_color_manual(values = c("red", "blue", "green")) +
+  theme(
+    axis.title = element_text(size = 16),   # xlab size
+    axis.text  = element_text(size = 14),   # x lim size
+    legend.key.size = unit(1.2, 'lines'), # key size
+    legend.title = element_text(size = 14), # legend title size
+    legend.text = element_text(size = 12),  # legend text size
+    legend.position = c(0.8, 0.4),            # move inside
+    legend.background = element_rect(fill = alpha("white", 0.6)) # background
+  )
+
+ggsave("output/appendixB/cumulative_fdr_order1_corrected.pdf", width = 5, height = 5)
+```
+
+A few examples of most significant datasets:
+
+```{r}
+set.seed(1234)
+most_significant_indices <- sample(test1_corrected$fdr_results$index[test1_corrected$fdr_results$FDR <= 0.05], 4)
+pdf("output/appendixB/fitted_curves_order1.pdf", width = 10, height = 8)
+par(mfrow = c(2, 2))
+for (i in most_significant_indices) {
+  fitted_result <- predict(fash_fit1_update,
+                           index = i,
+                           smooth_var = seq(0, 16, by = 0.1))
+  
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = "p", col = "black", 
+       lwd = 1, pch = 20,
+       # increase font size
+       cex.axis = 1.5, cex.lab = 1.5, cex.main = 1.5,
+       xlab = "Time", ylab = "Effect Size", 
+       ylim = c(min(datasets[[i]]$y) - 0.5,
+                max(datasets[[i]]$y) + 0.5),
+       main = paste("Dataset:", names(datasets)[i]))
+  lines(datasets[[i]]$x,
+        datasets[[i]]$truef,
+        col = "blue",
+        lwd = 1, lty = 2)
+  arrows(
+    datasets[[i]]$x,
+    datasets[[i]]$y - 2 * datasets[[i]]$sd,
+    datasets[[i]]$x,
+    datasets[[i]]$y + 2 * datasets[[i]]$sd,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 1.2)
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.1),
+    border = NA
+  )
+}
+par(mfrow = c(1, 1))
+dev.off()
+```
+
+
+### Testing non-linear eQTLs:
+
+We now focus on testing non-linear dynamic eQTLs:
+
+```{r}
+alpha <- 0.05
+test2 <- fdr_control(fash_fit2, alpha = alpha, plot = F)
+test2_corrected <- fdr_control(fash_fit2_update, alpha = alpha, plot = F)
+```
+
+What datasets are called significant?
+
+```{r}
+alpha_vec = seq(0.01, 0.2, by = 0.01)
+FDR1 <- c(); FDR1_corrected <- c()
+Power1 <- c(); Power1_corrected <- c()
+
+for (alpha in alpha_vec) {
+  index2 <- test2$fdr_results$index[test2$fdr_results$FDR <= alpha]
+  index2_corrected <- test2_corrected$fdr_results$index[test2_corrected$fdr_results$FDR <= alpha]
+  
+  # True FDR
+  FDR1 <- c(FDR1, mean(index2 <= (J * (1 - pho1))))
+  FDR1_corrected <- c(FDR1_corrected, mean(index2_corrected <= (J * (1 - pho1))))
+  
+  # Power
+  Power1 <- c(Power1, sum(index2 > (J * (1 - pho1))) / (J * pho1))
+  Power1_corrected <- c(Power1_corrected, sum(index2_corrected > (J * (1 - pho1))) / (J * pho1))
+}
+```
+
+```{r}
+pdf("output/appendixB/power_fdr_order2.pdf", width = 5, height = 5)
+# Power plot
+plot(alpha_vec, Power1, type = "o", pch = 16, col = "blue",
+     lty = 1, lwd = 1.5,
+     xlab = expression(alpha), ylab = "Power", ylim = c(0.7,0.9),
+     # main = "Power vs alpha (Order 2)"
+     )
+points(alpha_vec, Power1_corrected, type = "o", pch = 17, col = "red",
+       lty = 2, lwd = 1.5)
+legend("bottomright", 
+       legend = c("Before BF update", "After BF update"),
+       pch = c(16,17), col = c("blue", "red"), lty = c(1,2), bty = "n")
+dev.off()
+
+
+pdf("output/appendixB/fdr_plot_order2.pdf", width = 5, height = 5)
+# FDR plot
+plot(alpha_vec, FDR1, type = "o", pch = 16, col = "blue",
+     lty = 1, lwd = 1.5,
+     xlab = expression(alpha), ylab = "true FDR", ylim = c(0,0.3),
+     # main = "FDR vs alpha (Order 2)"
+     )
+points(alpha_vec, FDR1_corrected, type = "o", pch = 17, col = "red",
+       lty = 2, lwd = 1.5)
+abline(0,1,col='black',lty=2, lwd = 1)
+legend("topleft", 
+       legend = c("Before BF update", "After BF update"),
+       pch = c(16,17), col = c("blue", "red"), lty = c(1,2), bty = "n")
+dev.off()
+```
+
+Showing the cumulative FDR plot:
+
+```{r}
+lfdr <- fash_fit2$posterior_weights[,1]
+fdr_df <- data.frame(eQTL = 1:length(lfdr), fdr = lfdr, type = rep(c("A", "B", "C"), times = c(sizeA, sizeB, sizeC)))
+fdr_df <- fdr_df[order(fdr_df$fdr), ] # ordering it
+fdr_df$cumulative_fdr <- cumsum(fdr_df$fdr)/seq_along(fdr_df$fdr)
+fdr_df$rank <- 1:length(lfdr)
+
+ggplot(fdr_df, aes(x = 1:length(lfdr), y = cumulative_fdr, col = type)) +
+  geom_point() +
+  geom_hline(yintercept = 0.05, linetype = "dashed", color = "purple") +
+  labs(x = "Ordered eQTLs", y = "Cumulative FDR", col = "Type") +
+  theme_minimal() +
+  # ggtitle("Cumulative FDR Plot") +
+  scale_color_manual(values = c("red", "blue", "green")) +
+  theme(
+    axis.title = element_text(size = 16),   # xlab size
+    axis.text  = element_text(size = 14),   # x lim size
+    legend.key.size = unit(1.2, 'lines'), # key size
+    legend.title = element_text(size = 14), # legend title size
+    legend.text = element_text(size = 12),  # legend text size
+    legend.position = c(0.8, 0.4),            # move inside
+    legend.background = element_rect(fill = alpha("white", 0.6)) # background
+  )
+ggsave("output/appendixB/cumulative_fdr_order2.pdf", width = 5, height = 5)
+```
+
+```{r}
+lfdr <- fash_fit2_update$posterior_weights[,1]
+fdr_df <- data.frame(eQTL = 1:length(lfdr), fdr = lfdr, type = rep(c("A", "B", "C"), times = c(sizeA, sizeB, sizeC)))
+fdr_df <- fdr_df[order(fdr_df$fdr), ] # ordering it
+fdr_df$cumulative_fdr <- cumsum(fdr_df$fdr)/seq_along(fdr_df$fdr)
+fdr_df$rank <- 1:length(lfdr)
+
+ggplot(fdr_df, aes(x = 1:length(lfdr), y = cumulative_fdr, col = type)) +
+  geom_point() +
+  geom_hline(yintercept = 0.05, linetype = "dashed", color = "purple") +
+  labs(x = "Ordered eQTLs", y = "Cumulative FDR", col = "Type") +
+  theme_minimal() +
+  # ggtitle("Cumulative FDR Plot") +
+  scale_color_manual(values = c("red", "blue", "green")) +
+  theme(
+    axis.title = element_text(size = 16),   # xlab size
+    axis.text  = element_text(size = 14),   # x lim size
+    legend.key.size = unit(1.2, 'lines'), # key size
+    legend.title = element_text(size = 14), # legend title size
+    legend.text = element_text(size = 12),  # legend text size
+    legend.position = c(0.8, 0.4),            # move inside
+    legend.background = element_rect(fill = alpha("white", 0.6)) # background
+  )
+ggsave("output/appendixB/cumulative_fdr_order2_corrected.pdf", width = 5, height = 5)
+```
+
+
+A few examples of significant datasets:
+
+```{r}
+set.seed(1234)
+most_significant_indices <- sample(test2_corrected$fdr_results$index[test2_corrected$fdr_results$FDR <= 0.05], 4)
+pdf("output/appendixB/fitted_curves_order2.pdf", width = 10, height = 8)
+par(mfrow = c(2, 2))
+for (i in most_significant_indices) {
+  fitted_result <- predict(fash_fit2_update,
+                           index = i,
+                           smooth_var = seq(0, 16, by = 0.1))
+  
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = "p", col = "black", 
+       lwd = 1, pch = 20,
+       # increase font size
+       cex.axis = 1.5, cex.lab = 1.5, cex.main = 1.5,
+       xlab = "Time", ylab = "Effect Size", 
+       ylim = c(min(datasets[[i]]$y) - 0.5,
+                max(datasets[[i]]$y) + 0.5),
+       main = paste("Dataset:", names(datasets)[i]))
+  lines(datasets[[i]]$x,
+        datasets[[i]]$truef,
+        col = "blue",
+        lwd = 1, lty = 2)
+  arrows(
+    datasets[[i]]$x,
+    datasets[[i]]$y - 2 * datasets[[i]]$sd,
+    datasets[[i]]$x,
+    datasets[[i]]$y + 2 * datasets[[i]]$sd,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 1.2)
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.1),
+    border = NA
+  )
+}
+par(mfrow = c(1, 1))
+dev.off()
+```
+
+
+
+
