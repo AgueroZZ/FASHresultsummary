@@ -14,7 +14,7 @@ simulate_random_function <- function(n_basis = 5, sd_function = 1) {
   x_max <- 5
 
   # Generate equally spaced knots within the range [x_min, x_max]
-  knots <- seq(x_min, x_max, length.out = n_basis - 3)
+  knots <- seq(x_min, x_max, length.out = n_basis)
 
   # Generate random weights for the basis functions
   weights <- rnorm((n_basis), mean = 0, sd = sd_function) # Adjusted to match the number of knots for cubic spline

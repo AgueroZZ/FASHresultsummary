@@ -1,0 +1,306 @@
+---
+title: "Toy Example"
+author: "Ziang Zhang"
+date: "2025-09-29"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+In this toy example, I aim to illustrate the idea of shrinkage toward base models.
+
+In dynamic eQTL studies, we collect effect size estimates and their standard errors in the following way.
+
+```{r}
+knitr::opts_chunk$set(fig.width = 8, fig.height = 6)
+library(fashr)
+result_dir <- paste0(getwd(), "/output/dynamic_eQTL_real")
+data_dir <- paste0(getwd(), "/data/dynamic_eQTL_real")
+code_dir <- paste0(getwd(), "/code/dynamic_eQTL_real")
+log_prec <- seq(0,10, by = 0.2)
+fine_grid <- sort(c(0, exp(-0.5*log_prec)))
+load(paste0(result_dir, "/fash_fit1_update.RData"))
+load(paste0(result_dir, "/fash_fit2_update.RData"))
+```
+
+
+```{r}
+datasets <- fash_fit2_update$fash_data$data_list
+for (i in 1:length(datasets)) {
+  datasets[[i]]$SE <- fash_fit2_update$fash_data$S[[i]]
+}
+all_genes <- unique(sapply(strsplit(names(datasets), "_"), "[[", 1))
+```
+
+
+```{r}
+# An example that is significant in 1 but not 2
+test1 <- fdr_control(fash_fit1_update, alpha = 0.05)
+highlights_1 <- test1$fdr_results$index[test1$fdr_results$FDR <= 0.05]
+test2 <- fdr_control(fash_fit2_update, alpha = 0.05)
+highlights_2 <- test2$fdr_results$index[test2$fdr_results$FDR <= 0.05]
+highlights_1_not_2 <- setdiff(highlights_1, highlights_2)
+
+# An example that is significant in both
+highlights_both <- intersect(highlights_1, highlights_2)
+```
+
+## An example that is significant in FASH(1) but not FASH(2)
+
+```{r}
+selected_index <- highlights_1_not_2[50]
+selected_data <- datasets[[selected_index]]
+```
+
+
+```{r}
+plot(selected_data$x,
+    selected_data$y,
+    pch = 20,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    ylim = c(
+      min(selected_data$y - 2 * selected_data$SE),
+      max(selected_data$y + 2 * selected_data$SE)
+    )
+  )
+  arrows(
+    selected_data$x,
+    selected_data$y - 2 * selected_data$SE,
+    selected_data$x,
+    selected_data$y + 2 * selected_data$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+```
+
+
+From this summary statistics, we want to estimate the true effect sizes at different time points, as well as the true effect size function.
+
+Without any shrinkage or smoothing, the naive estimate is just the observed effect sizes, and their interpolation as the estimate of the effect size function.
+Alternatively, we could get more refined estimates by shrinking toward some base models.
+
+### Shrinking toward constant base model
+
+The result from FASH(1):
+```{r}
+pdf("output/toy_example/toy_example_21.pdf", width = 8, height = 8)
+fitted_result <- predict(fash_fit1_update,
+                           index = selected_index,
+                           smooth_var = seq(0, 16, by = 0.1))
+plot(
+    selected_data$x,
+    selected_data$y,
+    pch = 20,
+    cex = 2,
+    cex.axis = 1.5,
+    cex.lab = 1.5,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = "Penalize toward constant model",
+    ylim = c(
+      min(selected_data$y - 2 * selected_data$SE),
+      max(selected_data$y + 2 * selected_data$SE)
+    )
+  )
+  arrows(
+    selected_data$x,
+    selected_data$y - 2 * selected_data$SE,
+    selected_data$x,
+    selected_data$y + 2 * selected_data$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 1.2)
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.1),
+    border = NA
+  )
+dev.off()
+```
+
+
+```{r}
+mod01 <- fashr:::fash_fit_once(data_i = selected_data, refined_x = seq(0, 16, by = 0.1), psd_iwp = 10, order = 1, likelihood = "gaussian", Si = selected_data$SE, M = 3000)
+mod01 <- apply(mod01, 1, mean)
+
+mod02 <- fashr:::fash_fit_once(data_i = selected_data, refined_x = seq(0, 16, by = 0.1), psd_iwp = 1, order = 1, likelihood = "gaussian", Si = selected_data$SE, M = 3000)
+mod02 <- apply(mod02, 1, mean)
+
+mod03 <- fashr:::fash_fit_once(data_i = selected_data, refined_x = seq(0, 16, by = 0.1), psd_iwp = 0.2, order = 1, likelihood = "gaussian", Si = selected_data$SE, M = 3000)
+mod03 <- apply(mod03, 1, mean)
+
+mod04 <- fashr:::fash_fit_once(data_i = selected_data, refined_x = seq(0, 16, by = 0.1), psd_iwp = 0.001, order = 1, likelihood = "gaussian", Si = selected_data$SE, M = 3000)
+mod04 <- apply(mod04, 1, mean)
+```
+
+```{r}
+pdf("output/toy_example/toy_example_11.pdf", width = 8, height = 8)
+plot(
+    selected_data$x,
+    selected_data$y,
+    pch = 20,
+    cex = 2,
+    cex.axis = 1.5,
+    cex.lab = 1.5,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = "Penalize toward constant model",
+    ylim = c(
+      min(selected_data$y - 2 * selected_data$SE),
+      max(selected_data$y + 2 * selected_data$SE)
+    )
+  )
+  arrows(
+    selected_data$x,
+    selected_data$y - 2 * selected_data$SE,
+    selected_data$x,
+    selected_data$y + 2 * selected_data$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+# Weak shrinkage
+lines(seq(0, 16, by = 0.1), mod01, col = "green", lwd = 3, lty = 2)
+# Moderate shrinkage
+lines(seq(0, 16, by = 0.1), mod02, col = "red", lwd = 2, lty = 1)
+# Strong shrinkage
+lines(seq(0, 16, by = 0.1), mod03, col = "purple", lwd = 3, lty = 4)
+# Very strong shrinkage
+lines(seq(0, 16, by = 0.1), mod04, col = "blue", lwd = 3, lty = 3)
+legend("topleft", 
+       legend = c("Weak shrinkage", "Medium shrinkage", "Strong shrinkage", "Very strong shrinkage"), 
+       col = c("green", "red", "purple", "blue"), 
+       text.font = 4, cex = 1.3,
+       lty = c(2,1,4,3), lwd = c(3,2,3,3))
+dev.off()
+```
+
+
+### Shrinking toward linear base model
+
+
+```{r}
+mod11 <- fashr:::fash_fit_once(data_i = selected_data, refined_x = seq(0, 16, by = 0.1), psd_iwp = 50, order = 2, likelihood = "gaussian", Si = selected_data$SE, M = 3000)
+mod11 <- apply(mod11, 1, mean)
+
+mod12 <- fashr:::fash_fit_once(data_i = selected_data, refined_x = seq(0, 16, by = 0.1), psd_iwp = 1, order = 2, likelihood = "gaussian", Si = selected_data$SE, M = 3000)
+mod12 <- apply(mod12, 1, mean)
+
+mod13 <- fashr:::fash_fit_once(data_i = selected_data, refined_x = seq(0, 16, by = 0.1), psd_iwp = 0.2, order = 2, likelihood = "gaussian", Si = selected_data$SE, M = 3000)
+mod13 <- apply(mod13, 1, mean)
+
+mod14 <- fashr:::fash_fit_once(data_i = selected_data, refined_x = seq(0, 16, by = 0.1), psd_iwp = 0.0001, order = 2, likelihood = "gaussian", Si = selected_data$SE, M = 3000)
+mod14 <- apply(mod14, 1, mean)
+```
+
+
+The result from FASH(2):
+```{r}
+pdf("output/toy_example/toy_example_12.pdf", width = 8, height = 8)
+fitted_result <- predict(fash_fit2_update,
+                           index = selected_index,
+                           smooth_var = seq(0, 16, by = 0.1))
+plot(
+    selected_data$x,
+    selected_data$y,
+    pch = 20,
+    cex = 2,
+    cex.axis = 1.5,
+    cex.lab = 1.5,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = "Penalize toward linear model",
+    ylim = c(
+      min(selected_data$y - 2 * selected_data$SE),
+      max(selected_data$y + 2 * selected_data$SE)
+    )
+  )
+  arrows(
+    selected_data$x,
+    selected_data$y - 2 * selected_data$SE,
+    selected_data$x,
+    selected_data$y + 2 * selected_data$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 1.2)
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.1),
+    border = NA
+  )
+dev.off()
+```
+
+
+```{r}
+pdf("output/toy_example/toy_example_22.pdf", width = 8, height = 8)
+plot(
+    selected_data$x,
+    selected_data$y,
+    pch = 20,
+    cex = 2,
+    cex.axis = 1.5,
+    cex.lab = 1.5,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = "Penalize toward linear model",
+    ylim = c(
+      min(selected_data$y - 2 * selected_data$SE),
+      max(selected_data$y + 2 * selected_data$SE)
+    )
+  )
+  arrows(
+    selected_data$x,
+    selected_data$y - 2 * selected_data$SE,
+    selected_data$x,
+    selected_data$y + 2 * selected_data$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+# Weak shrinkage
+lines(seq(0, 16, by = 0.1), mod11, col = "green", lwd = 3, lty = 2)
+# Moderate shrinkage
+lines(seq(0, 16, by = 0.1), mod12, col = "red", lwd = 2, lty = 1)
+# Strong shrinkage
+lines(seq(0, 16, by = 0.1), mod13, col = "purple", lwd = 3, lty = 4)
+# Very strong shrinkage
+lines(seq(0, 16, by = 0.1), mod14, col = "blue", lwd = 3, lty = 3)
+legend("topleft", 
+       legend = c("Weak shrinkage", "Medium shrinkage", "Strong shrinkage", "Very strong shrinkage"), 
+       col = c("green", "red", "purple", "blue"), 
+       text.font = 4, cex = 1.3,
+       lty = c(2,1,4,3), lwd = c(3,2,3,3))
+dev.off()
+```
+
+
+
+
+

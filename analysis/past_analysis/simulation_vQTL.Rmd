@@ -1,0 +1,456 @@
+---
+title: "Quantile regression for vQTLs"
+author: "Ziang Zhang"
+date: "2024-12-06"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+library(BayesGP)
+library(TMB)
+library(Matrix)
+library(splines)
+library(parallel)
+library(ggplot2)
+library(reshape2)
+library(mixsqp)
+library(tidyverse)
+library(mashr)
+library(quantreg)
+cpp_dir <- paste0(getwd(), "/code/cpp")
+function_dir <- paste0(getwd(), "/code/function")
+result_dir <- paste0(getwd(), "/output/vQTL")
+data_dir <- paste0(getwd(), "/data/vQTL")
+source(paste0(function_dir, "/functions_fitting_Gaussian_unequal.R"))
+TMB::compile(paste0(cpp_dir, "/Gaussian_theta_known_unequal.cpp"))
+TMB::compile(paste0(cpp_dir, "/Gaussian_just_fixed_unequal.cpp"))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Gaussian_theta_known_unequal")))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Gaussian_just_fixed_unequal")))
+```
+
+
+## *Introduction*
+
+In this example, we examined the performance of FASH in detecting vQTLs based on the output from quantile regression. 
+For a given SNP $G$ and a continuous trait $Y$, the quantile regression model is given by
+\[
+Q_Y(\tau|G = g) = g\beta(\tau),
+\]
+where $Q_Y(\tau|G = g)$ is the $\tau$-th quantile of $Y$ given $G = g$, and $\beta(\tau)$ is the effect size of $G$ on the $\tau$-th quantile of $Y$.
+
+In [Miao et al., 2022](https://www.pnas.org/doi/epub/10.1073/pnas.2212959119), the authors proposed an approach called QUAIL, which uses quantile regression to detect vQTLs.
+Specifically, if the SNP $G$ has effect on the variance of $Y$, then its quantile effect $\beta(\tau)$ will be different across different quantiles $\tau$.
+In other words, the effect size $\beta(\tau)$ will not be a constant function of $\tau$.
+
+To test this hypothesis, the quantile effect $\beta(\tau)$ is estimated for each quantile $\tau$, with estimates $\hat{\beta}(\tau)$ and standard errors $SE(\hat{\beta}(\tau))$.
+QUAIL then assesses the evidence of vQTLs by looking at the integrated effect $\beta_{QI} = \int_{0}^{0.5}[\beta(1-\tau) - \beta(\tau)]d\tau$.
+If the null hypothesis of no vQTLs is true, then $\beta_{QI}$ should be close to zero.
+
+The applications of quantile regression on biobank data can also be found at [Pozarickij et al., 2019](https://www.nature.com/articles/s42003-019-0387-5) and [Wang et al., 2024](https://www.nature.com/articles/s41467-024-50726-x), where the detected vQTLs were then linked to evidence of GxE or GxG interactions.
+
+
+## *Using FASH*
+
+Now, we will try to approach this problem using the FASH method.
+Specifically, for each of the $N$ SNPs $\{G_1, ..., G_N\}$, we compute their quantile regression effects $\{\hat{\beta}_i(\tau_j)\}$ and standard errors $\{SE(\hat{\beta}_i(\tau_j))\}$, at a set of quantiles $\{\tau_1, ..., \tau_J\}$.
+We then assume the following model for the estimated quantile effects:
+\[
+\hat{\beta}_i(\tau_j) \overset{ind}{\sim} N(\beta_i(\tau_j), SE(\hat{\beta}_i(\tau_j))^2),
+\]
+where $\beta_i(\tau)|\pi_0,...,\pi_K \overset{iid}{\sim} \sum_{k=0}^{K} \pi_k\text{IWP}_1(\sigma_k)$.
+For a function $g \sim \text{IWP}_1(\sigma)$, the prior is given by:
+\[
+\frac{\partial}{\partial \tau}\beta(\tau) = \sigma_k\xi(\tau),
+\]
+where $\beta(0)$ is assigned a diffuse prior and $\xi(\tau)$ is the standard Gaussian white noise.
+
+The weight $\pi_0$ corresponds to the base model where $\sigma_0 = 0$ and $\beta(\tau) = \text{span}\{1\}$.
+
+## *Simulation Setup*
+
+To assess the performance of FASH, we simulate $N = 10000$ datasets of G and Y.
+
+- In the first $N_A = 1000$ datasets, the G is assumed to affect Y on its variance level (vQTLs).
+- In the next $N_B = 1000$ datasets, the G is assumed to affect Y on its mean lev (not vQTLs).
+- In the next $N_C = 1000$ datasets, the G is assumed to affect Y on its mean and variance levels (vQTLs).
+- For the other $N_D = 7000$ datasets, the G is assumed to have no effect on Y (not vQTLs).
+
+The true effect, if exists, is assumed to be normally distributed with mean 0 and standard deviation `beta_sd`.
+
+Once the data is simulated, we can perform quantile regression on each dataset to obtain the estimates $\hat{\beta}(\tau)$ and standard errors $SE(\hat{\beta}(\tau))$.
+
+```{r eval=TRUE, echo=FALSE}
+perform_rq <- function(data, tau_vec = seq(0.1, 0.9, by = 0.1), bootstrap = FALSE, bootstrap_B = 10000){
+  beta_vec <- c()
+  se_vec <- c()
+  n <- nrow(data)
+
+  if(!bootstrap){
+  # Divide the data into non-overlapping blocks for each tau
+  block_size <- floor(n / length(tau_vec))
+  data_list <- split(data, rep(1:length(tau_vec), each = block_size, length.out = n))
+  }
+  else{
+    data_list <- list()
+    for(i in 1:length(tau_vec)){
+      data_list[[i]] <- data[sample(1:n, bootstrap_B, replace = TRUE), ]
+    }
+  }
+  
+  # Perform quantile regression for each tau
+  for (i in seq_along(tau_vec)) {
+    tau <- tau_vec[i]
+    mod <- rq(Y ~ G, data = data_list[[i]], tau = tau)
+    summ_mod <- summary(mod, se = "boot")$coefficients
+    beta_vec <- c(beta_vec, summ_mod[2, 1])
+    se_vec <- c(se_vec, summ_mod[2, 2])
+  }
+  
+  return(data.frame(tau = tau_vec, beta = beta_vec, se = se_vec))
+}
+simulate_data <- function(n, maf, beta_sd, sigma, case = "none"){
+  # simulate G, with MAF = maf
+  G <- rbinom(n, 2, maf)
+  
+  # simulate Y
+  if(case == "mean"){
+    beta <- rnorm(1, mean = 0, sd = beta_sd)
+    Y <- rnorm(n, mean = beta * G, sd = sigma)
+  } else if(case == "variance"){
+    beta <- rnorm(1, mean = 0, sd = beta_sd)
+    Y <- rnorm(n, mean = 0, sd = sqrt(abs(sigma^2 + (beta * G))))
+  } else if(case == "both"){
+    beta1 <- rnorm(1, mean = 0, sd = beta_sd); beta2 <- rnorm(1, mean = 0, sd = beta_sd)
+    Y <- rnorm(n, mean = beta1 * G, sd = sqrt(abs(sigma^2 + (beta2 * G))))
+  } else {
+    Y <- rnorm(n, mean = 0, sd = sigma)
+  }
+  
+  return(data.frame(G = G, Y = Y))
+}
+```
+
+Here we can visualize one example of the quantile regression results.
+
+```{r eval=TRUE, echo=FALSE}
+set.seed(123)
+data_try <- simulate_data(n = 20000, maf = 0.4, beta_sd = 0.3, sigma = 1, case = "both")
+result <- perform_rq(data_try, tau_vec = seq(0.1, 0.9, by = 0.1), bootstrap = F)
+plot(result$tau, result$beta, ylim = c(-1, 1), ylab = "beta est", xlab = "tau")
+lines(result$tau, result$beta + 1.96 * result$se, lty = 2)
+lines(result$tau, result$beta - 1.96 * result$se, lty = 2)
+# ll <- compute_log_likelihood_ospline_seq2(
+#     x = result$tau,
+#     y = result$beta,
+#     p = 1,
+#     num_knots = 10,
+#     psd_iwp_vector = seq(0, 0.5, length = 50),
+#     pred_step = 1/10,
+#     betaprec = 1e-6,
+#     sd_gaussian = result$se
+#   )
+# ll
+```
+
+Now, let's do the simulation with FASH:
+
+```{r eval=TRUE, echo=FALSE}
+set.seed(123)  # For reproducibility
+n <- 20000      # Number of observations per dataset
+maf <- 0.3     # Minor allele frequency
+beta_sd <- 0.3   # Effect size standard deviation
+sigma <- 1     # Standard deviation
+tau_vec <- seq(0.1, 0.9, by = 0.1)  # Quantiles for regression
+N_A <- 500; N_B <- 500; N_C <- 500; N_D <- 3500  # Number of datasets for each case
+num_datasets <- N_A + N_B + N_C + N_D # Total number of datasets
+```
+
+
+```{r eval=FALSE, echo=TRUE}
+# Parameters
+set.seed(123)  # For reproducibility
+n <- 20000      # Number of observations per dataset
+maf <- 0.3     # Minor allele frequency
+beta_sd <- 0.3   # Effect size standard deviation
+sigma <- 1     # Standard deviation
+tau_vec <- seq(0.1, 0.9, by = 0.1)  # Quantiles for regression
+N_A <- 500; N_B <- 500; N_C <- 500; N_D <- 3500  # Number of datasets for each case
+num_datasets <- N_A + N_B + N_C + N_D # Total number of datasets
+
+# Initialize matrices to store beta estimates and standard errors
+beta_matrix <- matrix(NA, nrow = num_datasets, ncol = length(tau_vec))
+se_matrix <- matrix(NA, nrow = num_datasets, ncol = length(tau_vec))
+
+# Generate datasets and perform quantile regression
+for (i in 1:num_datasets) {
+  if (i <= N_A) {
+    case <- "variance"
+  } else if (i <= (N_A + N_B)) {
+    case <- "mean"
+  } else if (i <= (N_A + N_B + N_C)) {
+    case <- "both"
+  } else {
+    case <- "none"
+  }
+  
+  # Simulate the data
+  data <- simulate_data(n = n, maf = maf, beta_sd = beta_sd, sigma = sigma, case = case)
+  
+  # Perform quantile regression
+  result <- perform_rq(data, tau_vec = tau_vec, bootstrap = F)
+  
+  # print how many datasets have been simulated in a message
+  if(i %% 100 == 0){
+    print(paste0(i, " datasets have been simulated."))
+  }
+  
+  # Store beta estimates and standard errors
+  beta_matrix[i, ] <- result$beta
+  se_matrix[i, ] <- result$se
+}
+
+# Output matrices
+print(dim(beta_matrix))  # Check dimensions
+print(dim(se_matrix))    # Check dimensions
+```
+
+```{r eval=FALSE, echo=FALSE}
+datasets <- list()
+for (i in 1:num_datasets) {
+  datasets[[i]] <- data.frame(tau = tau_vec, beta = beta_matrix[i,], se = se_matrix[i,])
+}
+save(datasets, file = "data/vQTL/datasets.rda")
+```
+
+```{r eval=FALSE, echo=TRUE}
+p_vec <- 1
+psd_vec <- seq(0, 0.5, length = 50)
+
+# Using the FEM:
+L_vecs <- mclapply(datasets, function(dataset) {
+  compute_log_likelihood_ospline_seq2(
+    x = dataset$tau,
+    y = dataset$beta,
+    p = p_vec,
+    num_knots = 10,
+    psd_iwp_vector = psd_vec,
+    pred_step = 1/10,
+    betaprec = 1e-6,
+    sd_gaussian = dataset$se
+  )
+}, mc.cores = 1)
+L_matrix <- do.call(rbind, L_vecs)
+
+save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+set.seed(123)
+p_vec <- 1
+psd_vec <- seq(0, 0.5, length = 50)
+load(paste0(result_dir, "/L_matrix.rda"))
+```
+
+Learning the prior weights by EB: (with possible penalty term)
+
+```{r}
+prior_null_lambda = 1
+if(prior_null_lambda > 1){
+  prior_null <- matrix(0, nrow = (prior_null_lambda-1), ncol = ncol(L_matrix))
+  prior_null[,1] <- 1
+  L_matrix_original <- rbind(exp(L_matrix), prior_null)
+  fit.sqp <- mixsqp(L = L_matrix_original, log = FALSE, control = list(tol.svd = 0))
+}else{
+  fit.sqp <- mixsqp(L = L_matrix, log = TRUE, control = list(tol.svd = 0))
+}
+numiter <- nrow(fit.sqp$progress)
+prior_weight <- data.frame(p = rep(p_vec, each = length(psd_vec)), psd_iwp = psd_vec, prior_weight = fit.sqp$x)
+prior_weight$prior_weight[1]
+posterior_matrix <- matrix(0, nrow = nrow(L_matrix), ncol = ncol(L_matrix))
+for(i in 1:nrow(L_matrix)){
+  posterior_matrix[i,] <- exp(L_matrix[i,] - max(L_matrix[i,]) + log(fit.sqp$x))
+  posterior_matrix[i,] <- posterior_matrix[i,]/sum(posterior_matrix[i,])
+}
+colnames(posterior_matrix) <- paste0(p_vec,"_",psd_vec)
+posterior_weights_matrix <- posterior_matrix
+```
+
+Visualize the posterior probability for each SNP being in each of the $K$ classes:
+
+```{r}
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- 1:nrow(posterior_weights_df)
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- (round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+ggplot(melted_data, aes(x = factor(id, levels = posterior_weights_df$id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "SNPs", y = "Weight", fill = "PSD") +
+  ggtitle("Structure Plot of Posterior Weights") +
+  coord_flip() +
+  scale_fill_gradient(low = "white", high = "blue") +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.background = element_rect(fill = "white", colour = "grey"),
+    plot.background = element_rect(fill = "white", colour = NA)
+  )
+```
+
+
+
+#### *FDR Computed Using FASH*
+
+Compute the local false discovery rate (lfdr):
+
+```{r}
+set.seed(123)
+lfdr <- posterior_weights_matrix[,1]
+fdr_df <- data.frame(eQTL = 1:length(lfdr), fdr = lfdr, type = rep(c("variance", "mean", "both", "none"), times = c(N_A, N_B, N_C, N_D)))
+fdr_df <- fdr_df[order(fdr_df$fdr), ] # ordering it
+fdr_df$cumulative_fdr <- cumsum(fdr_df$fdr)/seq_along(fdr_df$fdr)
+fdr_df$rank <- 1:length(lfdr)
+fdr_df$max_fdr <- cummax(fdr_df$fdr)
+```
+
+#### *FDR Computed Using MASH*
+
+This problem could also be easily solved by MASH, by extracting its components corresponding to `equal_effects`.
+Let's do it and compare the result:
+
+```{r, eval=FALSE}
+fitted_datasets_mash <- list()
+
+# Produce a huge data-matrix, the i-th row being dataset[[i]]$beta
+all_data_matrix <- do.call(rbind, lapply(datasets, function(x) x$beta))
+SE_matrix <- do.call(rbind, lapply(datasets, function(x) x$se))
+
+# now use mashr:
+mash_data <-  mashr::mash_set_data(all_data_matrix, SE_matrix)
+m.1by1 = mashr::mash_1by1(mash_data)
+strong = mashr::get_significant_results(m.1by1, 0.05)
+# keep the top 10%
+strong <- strong[1:round(0.1*length(strong))]
+U.pca = mashr::cov_pca(mash_data, 5, subset = strong)
+U.ed = cov_ed(mash_data, U.pca, subset=strong)
+U.c = cov_canonical(mash_data)
+m   = mash(mash_data, c(U.c,U.ed))
+# m   = mashr::mash(mash_data, U.c)
+save(m, file = paste0(result_dir, "/mash_result.rda"))
+```
+
+```{r}
+load(paste0(result_dir, "/mash_result.rda"))
+mash_post <- m$posterior_weights
+## extract the colnames start with "equal_effects"
+lfdr_mash <- mash_post[, c(1, grep("equal_effects", colnames(mash_post)))]
+# sum each row
+lfdr_mash <- rowSums(lfdr_mash)
+
+fdr_df_mash <- data.frame(SNPs = 1:length(lfdr_mash), fdr = lfdr_mash, type = rep(c("variance", "mean", "both", "none"), times = c(N_A, N_B, N_C, N_D)))
+
+fdr_df_mash <- fdr_df_mash[order(fdr_df_mash$fdr), ] # ordering it
+fdr_df_mash$cumulative_fdr <- cumsum(fdr_df_mash$fdr)/seq_along(fdr_df_mash$fdr)
+fdr_df_mash$rank <- 1:length(lfdr_mash)
+```
+
+
+
+#### *Comparison*
+
+```{r}
+# Calculate true FDR for FASH and MASH
+threshold_vec <- seq(0, 1, by = 0.005)[-1]
+fdr_vec_fash <- numeric(length(threshold_vec))
+fdr_vec_mash <- numeric(length(threshold_vec))
+
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_fash <- sum(fdr_df$cumulative_fdr <= threshold_vec[i])
+  num_false_discoveries_fash <- sum(fdr_df$cumulative_fdr <= threshold_vec[i] & (fdr_df$type == "none" | fdr_df$type == "mean"))
+  fdr_vec_fash[i] <- num_false_discoveries_fash / num_discoveries_fash
+  
+  num_discoveries_mash <- sum(fdr_df_mash$cumulative_fdr <= threshold_vec[i])
+  num_false_discoveries_mash <- sum(fdr_df_mash$cumulative_fdr <= threshold_vec[i] & (fdr_df_mash$type == "none" | fdr_df_mash$type == "mean"))
+  fdr_vec_mash[i] <- num_false_discoveries_mash / num_discoveries_mash
+  
+}
+
+# Create a data frame for plotting
+fdr_df_fash <- data.frame(threshold = threshold_vec, true_fdr = fdr_vec_fash, method = "FASH")
+fdr_df_fash_for_plotting <- data.frame(threshold = threshold_vec, true_fdr = fdr_vec_fash, method = "FASH")
+fd_df_mash <- data.frame(threshold = threshold_vec, true_fdr = fdr_vec_mash, method = "MASH")
+fdr_df_mash_for_plotting <- data.frame(threshold = threshold_vec, true_fdr = fdr_vec_mash, method = "MASH")
+
+# Combine data for plotting
+fdr_df_combined <- rbind(fdr_df_fash_for_plotting, fdr_df_mash_for_plotting)
+
+# Plot the nominal FDR vs true FDR for both methods
+ggplot(fdr_df_combined, aes(x = threshold, y = true_fdr, color = method)) +
+  geom_line() +
+  # geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
+  labs(x = "Nominal False Discovery Rate", y = "Actual False Discovery Rate") +
+  theme_minimal() +
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
+  geom_hline(yintercept = (N_A + N_D)/num_datasets, linetype = "dashed", color = "red") +
+  ggtitle("Nominal FDR vs Actual FDR Curves for FASH and MASH")
+```
+
+
+
+```{r}
+threshold_vec <- seq(0, 1, by = 0.001)
+num_discoveries_vec_fash <- numeric(length(threshold_vec))
+num_false_discoveries_vec_fash <- numeric(length(threshold_vec))
+num_discoveries_vec_mash <- numeric(length(threshold_vec))
+num_false_discoveries_vec_mash <- numeric(length(threshold_vec))
+for (i in 1:length(threshold_vec)) {
+  num_discoveries_vec_fash[i] <- sum(fdr_df$cumulative_fdr < threshold_vec[i])
+  num_false_discoveries_vec_fash[i] <- sum(fdr_df$cumulative_fdr < threshold_vec[i] & (fdr_df$type == "none" | fdr_df$type == "mean"))
+  
+  num_discoveries_vec_mash[i] <- sum(fdr_df_mash$cumulative_fdr < threshold_vec[i])
+  num_false_discoveries_vec_mash[i] <- sum(fdr_df_mash$cumulative_fdr < threshold_vec[i] & (fdr_df_mash$type == "none" | fdr_df_mash$type == "mean"))
+}
+num_discoveries_df_fash <- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec_fash, num_false_discoveries = num_false_discoveries_vec_fash, method = "FASH")
+num_discoveries_df_mash <- data.frame(threshold = threshold_vec, num_discoveries = num_discoveries_vec_mash, num_false_discoveries = num_false_discoveries_vec_mash, method = "MASH")
+
+# combined for plotting
+num_discoveries_df_combined <- rbind(num_discoveries_df_fash, num_discoveries_df_mash)
+
+ggplot(num_discoveries_df_combined, aes(x = num_discoveries, y = num_false_discoveries, color = method)) +
+  geom_line(aes(linetype = method)) +
+  geom_point(size = 0.1) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "purple") +
+  labs(x = "Number of Discoveries", y = "Number of False Discoveries") +
+  theme_minimal() +
+  geom_vline(xintercept = (N_A + N_C), linetype = "dashed", color = "red") +
+  ggtitle("Number of False Discoveries vs Number of Discoveries for FASH") +
+  coord_cartesian(xlim = c(0, num_datasets), ylim = c(0, num_datasets))
+```
+
+
+```{r}
+# plot power versus FDR
+power_vec_fash <- (num_discoveries_df_fash$num_discoveries - num_discoveries_df_fash$num_false_discoveries) / (N_A + N_C)
+power_df_fash <- data.frame(threshold = num_discoveries_df_fash$threshold, power = power_vec_fash, method = "FASH")
+power_vec_mash <- (num_discoveries_df_mash$num_discoveries - num_discoveries_df_mash$num_false_discoveries) / (N_A + N_C)
+power_df_mash <- data.frame(threshold = num_discoveries_df_mash$threshold, power = power_vec_mash, method = "MASH")
+
+power_df_combined <- rbind(power_df_fash, power_df_mash)
+
+ggplot(power_df_combined, aes(x = threshold, y = power, color = method)) +
+  geom_line() +
+  geom_point(size = 0.1) +
+  labs(x = "Nominal False Discovery Rate", y = "Power") +
+  theme_minimal() +
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1)) +
+  ggtitle("Power vs Nominal FDR Curves for FASH and MASH")
+```
+
+
+
+

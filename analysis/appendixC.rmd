@@ -1,0 +1,103 @@
+---
+title: "Effect of model misspecification"
+author: "Ziang Zhang"
+date: "2025-09-26"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+To make the discussion more transparent, let $\boldsymbol{\hat{\beta}}$ denote the observed effect.  
+Define the marginal distributions
+
+\[
+m_k(\boldsymbol{\hat{\beta}}) = \int p(\boldsymbol{\hat{\beta}} \mid \boldsymbol{\beta})\, dP_k(\boldsymbol{\beta}), 
+\qquad 
+m_k^{(t)}(\boldsymbol{\hat{\beta}}) = \int p(\boldsymbol{\hat{\beta}} \mid \boldsymbol{\beta})\, dP_k^{(t)}(\boldsymbol{\beta}),
+\]
+
+for $k \in \{0,1\}$, corresponding to the assumed and true distributions of $\boldsymbol{\beta}$, $P_k$ and $P_k^{(t)}$ respectively.  
+
+The fitted model assumes the following marginal on the observed effects:
+
+\[
+m(\boldsymbol{\hat{\beta}};\pi_0) = \pi_0 m_0(\boldsymbol{\hat{\beta}}) + (1-\pi_0)m_1(\boldsymbol{\hat{\beta}}),
+\]
+
+and the true marginal distribution is
+
+\[
+m^{(t)}(\boldsymbol{\hat{\beta}}) = \pi_0^{(t)} m_0(\boldsymbol{\hat{\beta}}) + (1-\pi_0^{(t)}) m_1^{(t)}(\boldsymbol{\hat{\beta}}).
+\]
+
+The MLE $\hat{\pi}_0$ converges to the maximizer of the expected log-likelihood
+
+\[
+\begin{aligned}
+\ell(\pi_0;m_1) &= 
+\mathbb{E}_{m^{(t)}}\!\Big[\log\{\pi_0 m_0(\boldsymbol{\hat{\beta}})+(1-\pi_0)m_1(\boldsymbol{\hat{\beta}})\}\Big] \\
+&= \pi_0^{(t)}\mathbb{E}_{m_0^{(t)}}\!\Big[\log\{\pi_0 m_0(\boldsymbol{\hat{\beta}})+(1-\pi_0)m_1(\boldsymbol{\hat{\beta}})\}\Big] + \\
+&\pi_1^{(t)}\mathbb{E}_{m_1^{(t)}}\!\Big[\log\{\pi_0 m_0(\boldsymbol{\hat{\beta}})+(1-\pi_0)m_1(\boldsymbol{\hat{\beta}})\}\Big].
+\end{aligned}
+\]
+
+which is strictly concave in $\pi_0$. Under correct specification ($m_1=m_1^{(t)}$), the maximizer is $\pi_0^{(t)}$. With misspecification, the maximizer $\pi_0^\star(m_1)$ may differ.
+
+---
+
+## Case A: $\mathrm{KL}(m_0 \,\|\, m_1^{(t)}) < \mathrm{KL}(m_0 \,\|\, m_1)$
+
+Suppose the true alternative $m_1^{(t)}$ is closer to the null $m_0$ than the misspecified alternative $m_1$.  
+Then, under null observations $\boldsymbol{\hat{\beta}} \sim m_0$, we have
+
+\[
+\mathbb{E}_{m_0}\!\left[\log\frac{m_1^{(t)}(\boldsymbol{\hat{\beta}})}{m_1(\boldsymbol{\hat{\beta}})}\right] 
+= \mathrm{KL}(m_0\|m_1) - \mathrm{KL}(m_0\|m_1^{(t)}) \;>\;0,
+\]
+
+so $m_1^{(t)}$ provides a better fit to null data than $m_1$.  
+
+For alternative samples $\boldsymbol{\hat{\beta}} \sim m_1^{(t)}$, the true distribution also fits better:
+
+\[
+\mathbb{E}_{m^{(t)}_1}\!\left[\log\frac{m_1^{(t)}(\boldsymbol{\hat{\beta}})}{m_1(\boldsymbol{\hat{\beta}})}\right] = \text{KL}(m_1^{(t)}||m_1) >0,
+\]
+
+hence
+
+\[
+\mathbb{E}_{m_1^{(t)}}[\log m_1^{(t)}(\boldsymbol{\hat{\beta}})] \;>\; \mathbb{E}_{m_1^{(t)}}[\log m_1(\boldsymbol{\hat{\beta}})].
+\]
+
+Thus both the $\mathcal{H}_0$ and $\mathcal{H}_1$ contributions to the expected log-likelihood are reduced under misspecification.  
+To compensate, maximizing $\ell(\pi_0;m_1)$ shifts toward larger values of $\pi_0$.  
+Formally,
+
+\[
+\pi_0^\star(m_1) \;\ge\; \pi_0^{(t)}.
+\]
+
+Hence in Case A, the model misspecification will make $\hat\pi_0$ tend to be conservative.
+
+---
+
+## Case B: $\mathrm{KL}(m_0 \,\|\, m_1^{(t)}) > \mathrm{KL}(m_0 \,\|\, m_1)$
+
+If the misspecified alternative $m_1$ is closer to the null $m_0$ than the true $m_1^{(t)}$, then under null observations $\boldsymbol{\hat{\beta}} \sim m_0$,
+
+\[
+\mathbb{E}_{m_0}\!\left[\log\frac{m_1^{(t)}(\boldsymbol{\hat{\beta}})}{m_1(\boldsymbol{\hat{\beta}})}\right] < 0,
+\]
+
+so $m_1$ fits null data better.  
+
+For alternative observations $\boldsymbol{\hat{\beta}} \sim m_1^{(t)}$, however, the true distribution remains superior:
+
+\[
+\mathbb{E}_{m_1^{(t)}}[\log m_1^{(t)}(\boldsymbol{\hat{\beta}})] \;>\; \mathbb{E}_{m_1^{(t)}}[\log m_1(\boldsymbol{\hat{\beta}})].
+\]
+
+The net bias of $\pi_0^\star(m_1)$ depends on the relative weight of these contributions:
+
+1. If null samples dominate, then $\pi_0^\star(m_1)<\pi_0^{(t)}$ (under-estimate).
+2. If alternative samples dominate, then $\pi_0^\star(m_1)>\pi_0^{(t)}$ (over-estimate).

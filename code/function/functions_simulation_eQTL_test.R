@@ -11,18 +11,17 @@ simulate_data <- function(g, sd=0.1, snr = NULL){
 }
 
 ### Write a function, to simulate a random function as g using cubic B-spline basis representation with random basis weights:
-simulate_nonlinear_function <- function(n_basis = 20, sd_function = 1, sd_poly = 0.1) {
+simulate_nonlinear_function <- function(n_basis = 30, sd_function = 1, sd_poly = 0.1, p = 2) {
   if(n_basis < 3) stop("n_basis must be greater than 3")
   # Define the range and knots for the B-spline basis
   x_min <- 0
   x_max <- 16
 
   # Generate equally spaced knots within the range [x_min, x_max]
-  knots <- seq(x_min, x_max, length.out = n_basis - 3)
+  knots <- seq(x_min, x_max, length.out = n_basis)
 
   # Generate random weights for the basis functions
   pred_step = 1
-  p = 1
   sd_function <- sd_function/sqrt((pred_step^((2 * p) - 1)) / (((2 * p) - 1) * (factorial(p - 1)^2)))
   prec_mat <- (1/sd_function^2) * BayesGP:::compute_weights_precision_helper(knots)
   weights <- as.vector(LaplacesDemon::rmvnp(n = 1, mu = rep(0, ncol(prec_mat)), Omega = prec_mat))
@@ -43,8 +42,8 @@ simulate_nonlinear_function <- function(n_basis = 20, sd_function = 1, sd_poly =
 ### Write a function, to simulate a random function as g using constant and linear function
 simulate_linear_function <- function(sd_poly = 1){
   beta0 <- rnorm(1, mean = 0, sd = sd_poly)
-  # beta1 <- rnorm(1, mean = 0, sd = sd_poly)
-  beta1 <- sample(c(-0.5,0.5),1)
+  beta1 <- rnorm(1, mean = 0, sd = sd_poly)
+  # beta1 <- sample(c(-0.5,0.5),1)
   function(x_new) {
     return(beta0 + beta1 * x_new)
   }
@@ -69,7 +68,7 @@ simulate_nondynamic_function <- function(sd_poly = 1){
 }
 
 ### simulate process: first draw a random function g, then draw a dataset from g
-simulate_process <- function(n_basis = 50, sd_fun = 1, sd = 0.1, snr = NULL, sd_poly = 0.1, type = "nonlinear"){
+simulate_process <- function(n_basis = 30, sd_fun = 1, sd = 0.1, snr = NULL, sd_poly = 0.1, type = "nonlinear", p = 2){
   if(type == "linear"){
     g <- simulate_linear_function(sd_poly = sd_poly)
 
@@ -78,7 +77,7 @@ simulate_process <- function(n_basis = 50, sd_fun = 1, sd = 0.1, snr = NULL, sd_
     g <- simulate_quadratic_function(sd_poly = sd_poly)
   }
   else if(type == "nonlinear") {
-    g <- simulate_nonlinear_function(n_basis = n_basis, sd_function = sd_fun, sd_poly = sd_poly)
+    g <- simulate_nonlinear_function(n_basis = n_basis, sd_function = sd_fun, sd_poly = sd_poly, p = p)
   }
   else if(type == "nondynamic") {
     g <- simulate_nondynamic_function(sd_poly = sd_poly)

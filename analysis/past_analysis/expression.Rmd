@@ -1,0 +1,324 @@
+---
+title: "Example: Expression Analysis"
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+### **Setup**
+
+We consider the (raw) gene expression data measured over 16 days as studied in [Strober et al, 2019](https://www.science.org/doi/10.1126/science.aaw0040). 
+For simplicity of the presentation, we consider only one cell-line in this example. 
+The dataset contains the raw expression counts of 16319 genes.
+
+For each of the cell-line indexed by $l$, to model the true (log) expression level $f_i^{(l)}(t_j)$ of the $i$th gene at day $t_j$, we assume that the expression count $y_{i}^{(l)}(t_j)$ is Poisson distributed with mean $o^{(l)}_j\exp \left(f^{(l)}_i\left(t_j\right)\right)$, where $o^{(l)}_j$ is the library size at day $t_j$.
+
+```{r include=FALSE, warning=FALSE, results='hide'}
+options(warn = -1) # Suppress warnings
+library(BayesGP)
+library(TMB)
+library(Matrix)
+library(splines)
+library(parallel)
+library(ggplot2)
+library(reshape2)
+library(mixsqp)
+library(tidyverse)
+library(fashr)
+fig_dir <- paste0(getwd(), "/output/expression")
+result_dir <- paste0(getwd(), "/output/expression")
+function_dir <- paste0(getwd(), "/code/function")
+data_dir <- paste0(getwd(), "/data/expression_data")
+source(paste0(function_dir, "/functions_fitting_Poisson_expression.R"))
+num_cores <- 4
+betaprec <- 1e-6
+# quantile_normalized_no_proj <- read.csv(paste0(data_dir, "/quantile_normalized_no_projection.txt"), sep="")
+```
+
+
+### **Model**
+
+For now, let's focus just on the largest cell-line and drop the index $l$ for simplicity.
+
+Assume most of the gene expression trajectories are expected to be linear, we therefore consider the following finite mixture prior for each gene expression level $f_i(t_j)$:
+$$f_i(t) = \sum_{k=0}^K \pi_k \text{GP}_k(t).$$
+For each $k$, the mixture component has the prior: $$Lf(t) = \sigma_k W(t), $$ with $W(t)$ being a Gaussian white noise process and $\sigma_k$ being the smoothness. 
+Choosing $L = \frac{\partial^2}{\partial t^2}$, the base model that each $f_i$ being shrunk to is therefore $\text{Null}\{L\} = \text{span}\{1,t\}$.
+
+
+
+### **Processing the expression data**
+
+```{r}
+all_data_names <- list.files(data_dir)
+#### let's consider one cell-line for simplicity
+load(paste0(data_dir, "/", all_data_names[1]))
+str(expression_data_one_cell_line) 
+```
+
+Let's create one dataset for each gene:
+```{r eval=FALSE}
+num_knots <- 16
+p <- 2
+datasets <- list()
+all_gene <- unique(expression_data_one_cell_line$Gene_id)
+for (gene in all_gene) {
+  datasets[[gene]] <- expression_data_one_cell_line %>% filter(Gene_id == gene)
+  datasets[[gene]]$x <- as.numeric(datasets[[gene]]$Day)
+  datasets[[gene]]$y <- datasets[[gene]]$value
+}
+save(datasets, file = paste0(result_dir, "/datasets.rda"))
+```
+
+
+```{r echo=FALSE}
+num_knots <- 16
+p <- 2
+datasets <- list()
+all_gene <- unique(expression_data_one_cell_line$Gene_id)
+load(paste0(result_dir, "/datasets.rda"))
+```
+
+
+Compute the library sizes:
+```{r}
+size_vec <- numeric(length = nrow(datasets[[1]]))
+for (i in 1:length(size_vec)) {
+  Day <- datasets[[1]]$Day[i]
+  all_counts <-
+    unlist(lapply(datasets, function(x) {
+      x$y[x$Day == Day]
+    }))
+  size_vec[i] <- sum(all_counts)
+}
+log_size_vec <- log(size_vec)
+
+# Add log_size_vec to each dataset
+for (i in 1:length(datasets)) {
+  datasets[[i]]$log_size <- log_size_vec
+}
+```
+
+
+
+### **Applying empirical Bayes**
+
+```{r eval = FALSE}
+log_prec <- seq(-2,10, by = 0.2)
+psd_vec <- sort(c(0, exp(-0.5*log_prec)))
+
+fash2 <- fash(Y = "y", smooth_var = "x", offset = "log_size", 
+              likelihood = "poisson", grid = psd_vec,
+              data_list = datasets, order = 2, penalty = 10,
+              verbose = TRUE, betaprec = 0)
+
+save(fash2, file = paste0(result_dir, "/fash2.rda"))
+```
+
+```{r echo=FALSE}
+log_prec <- seq(-2,10, by = 0.2)
+psd_vec <- sort(c(0, exp(-0.5*log_prec)))
+load(paste0(result_dir, "/fash2.rda"))
+```
+
+```{r}
+# update the fash object using BF procedure
+fash2_update <- BF_update(fash = fash2)
+save(fash2_update, file = paste0(result_dir, "/fash2_update.rda"))
+```
+
+Take a look at the fitted fash object:
+
+```{r}
+fash2_update$prior_weights[1:5,]
+```
+
+
+
+### **Obtaining posteriors**
+
+
+Plot a sorted version of this, based on the mean PSD in each gene:
+```{r}
+load(paste0(result_dir, "/fash2_update.rda"))
+plot(fash2_update, ordering = "mean", discrete = FALSE)
+```
+
+Cluster based on the most likely PSD:
+```{r}
+classes <- apply(fash2_update$posterior_weights, 1, function(x) {
+  which.max(x)
+})
+table(classes)
+```
+
+For each class, let's show some sample trajectories:
+
+```{r}
+cluster_id <- 1
+sample_id <- sample(which(classes == cluster_id), 4)
+par(mfrow = c(2, 2))
+for (i in 1:length(sample_id)) {
+  predicted_result <- predict(fash2_update, index = sample_id[i], smooth_var = seq(0,16, by = 0.2))
+  plot(mean ~ x, data = predicted_result, type = 'l',
+       ylim = c(min(predicted_result$lower) - 0.5, max(predicted_result$upper) + 0.5),
+       main = paste0("Gene ", sample_id[i], " (class ", cluster_id, ")"), 
+       xlab = "Day", ylab = "Expression",
+       pch = 19, col = "blue", cex = 0.5)
+  polygon(c(predicted_result$x, rev(predicted_result$x)), 
+         c(predicted_result$lower, rev(predicted_result$upper)), 
+         col = rgb(0.2, 0.2, 0.8, 0.2), border = NA)
+}
+par(mfrow = c(1, 1))
+```
+
+Take a look at the gene-enrichment analysis in each class:
+
+```{r}
+library(clusterProfiler)
+library(tidyverse)
+library(msigdbr)
+library(org.Hs.eg.db)  # Assuming human genes
+library(biomaRt)
+library(clusterProfiler)
+library(cowplot)
+# Retrieve Hallmark gene sets for Homo sapiens
+m_t2g <- msigdbr(species = "Homo sapiens", category = "H") %>% 
+  dplyr::select(gs_name, entrez_gene)
+mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+
+## A function to check gene-enrichment
+enrich_set <- function(genes_selected, background_gene, q_val_cutoff = 0.05, pvalueCutoff = 0.05) {
+  
+  genes_converted <- getBM(
+    filters = "ensembl_gene_id", 
+    attributes = c("ensembl_gene_id", "entrezgene_id"), 
+    values = genes_selected, 
+    mart = mart
+  )
+  
+  # Extract Entrez IDs from the converted data
+  entrez_gene_list <- genes_converted$entrezgene_id
+  
+  genes_converted_all <- getBM(
+    filters = "ensembl_gene_id", 
+    attributes = c("ensembl_gene_id", "entrezgene_id"), 
+    values = background_gene, 
+    mart = mart
+  )
+  entrez_universe <- as.character(genes_converted_all$entrezgene_id)
+  entrez_universe <- entrez_universe[!is.na(entrez_universe)]
+  
+  # Perform enrichment analysis using Hallmark gene sets
+  enrich_res <- enricher(pAdjustMethod = "bonferroni", 
+                         entrez_gene_list, 
+                         TERM2GENE = m_t2g, 
+                         qvalueCutoff = q_val_cutoff, 
+                         pvalueCutoff = pvalueCutoff, 
+                         universe = entrez_universe)
+  enrich_res
+}
+```
+
+```{r}
+# Get all unique cluster IDs
+cluster_ids <- sort(unique(classes))
+
+# Create an empty list to store results
+enrichment_results_list <- list()
+
+# Loop through each cluster ID
+for (cluster_id in cluster_ids) {
+  genes_highlighted <- all_gene[which(classes == cluster_id)]
+  
+  result <- enrich_set(genes_selected = genes_highlighted, background_gene = all_gene)
+  
+  if (!is.null(result) && nrow(result@result) > 0) {
+    filtered_result <- result@result %>%
+      filter(pvalue < 0.05) %>%
+      dplyr::select(GeneRatio, BgRatio, pvalue, p.adjust, qvalue)
+  } else {
+    filtered_result <- data.frame()
+  }
+  
+  enrichment_results_list[[paste0("Cluster_", cluster_id)]] <- filtered_result
+}
+```
+
+```{r}
+# Create a named vector of cluster names
+cluster_names <- names(enrichment_results_list)
+
+# Step 1: collect all gene sets with p.adjust < 0.05 in at least one cluster
+significant_gene_sets <- unique(unlist(
+  lapply(enrichment_results_list, function(df) {
+    if (nrow(df) == 0) return(NULL)
+    df_sig <- df %>% filter(p.adjust < 0.05)
+    rownames(df_sig)  # the gene set names are rownames in the enrichment result
+  })
+))
+
+# Step 2: initialize the result matrix
+summary_mat <- matrix(1, 
+                      nrow = length(significant_gene_sets), 
+                      ncol = length(cluster_names), 
+                      dimnames = list(significant_gene_sets, cluster_names))
+
+# Step 3: fill in the matrix with actual p.adjust values
+for (cluster in cluster_names) {
+  df <- enrichment_results_list[[cluster]]
+  if (nrow(df) > 0) {
+    gene_sets_in_cluster <- rownames(df)
+    matched_sets <- intersect(significant_gene_sets, gene_sets_in_cluster)
+    summary_mat[matched_sets, cluster] <- df[matched_sets, "p.adjust"]
+  }
+}
+
+# Convert to data frame if you want to view/export easily
+summary_df <- as.data.frame(summary_mat)
+```
+
+```{r}
+library(knitr)
+library(kableExtra)
+
+# Round p-values to make it cleaner
+summary_df_rounded <- summary_df %>%
+  mutate(across(everything(), ~ round(.x, 5)))
+
+# Display as a scrollable table with kableExtra
+kable(summary_df_rounded, 
+      format = "html", 
+      caption = "Adjusted p-values of gene sets across clusters") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = TRUE, position = "left") %>%
+  scroll_box(width = "100%", height = "500px")
+```
+
+
+### **Classifying Expression Trajectories**
+
+```{r}
+smooth_var_refined = seq(0,15, by = 0.1)
+functional_early <- function(x){
+  max((x[smooth_var_refined <= 3])) - max((x[smooth_var_refined > 3]))
+}
+testing_early_dyn <- testing_functional(functional_early,
+                                              lfsr_cal = function(x){mean(x <= 0)},
+                                              fash = fash2_update,
+                                              indices = 1:length(datasets),
+                                              smooth_var = smooth_var_refined)
+
+```
+
+
+
+
+
+
+
+
+
+

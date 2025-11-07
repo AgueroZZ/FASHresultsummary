@@ -1,0 +1,247 @@
+---
+title: "Appendix B: Additional Analyses"
+author: "Ziang Zhang"
+date: "2025-09-15"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Case A: $KL(H_1, H_0) < KL(\tilde{H}_1, H_0)$
+
+
+```{r}
+library(fashr)
+library(ashr)
+```
+
+When the fitted $H_1$ is closer to the null $H_0$ than the true $\tilde{H}_1$ ($KL(H_0,H_1) <KL(H_0,\tilde{H_1})$), we expect $\hat{\pi}_0$ to be smaller than the true $\pi_0$. 
+
+```{r}
+# simulate J observation from mixture of normals
+set.seed(123)
+J <- 1000
+pi0 <- 0.8
+pi <- c(pi0, 1 - pi0)
+J0 <- round(J * pi0); J1 <- J - J0
+sigma <- c(0,1)
+z <- c(rep(1, J0), rep(2, J1))
+theta <- rnorm(J, 0, sigma[z])
+sigma_vec = c(0.1, 0.3, 0.5)
+s <- sample(sigma_vec, J, replace = TRUE)
+y <- rnorm(J, theta, s)
+fit_ash <- ashr::ash(betahat = y, s = s, mixcompdist = "normal", mixsd = c(0.1), outputlevel = 3)
+hat_pi0 <- fit_ash$fitted_g$pi[1]
+hat_pi0
+```
+
+The BF-adjusted $tilde{\pi}_0$ should still stay conservative ($\tilde{\pi}_0 \geq \pi_0$).
+
+```{r}
+BFs <- fit_ash$fit_details$matrix_lik[,2]/fit_ash$fit_details$matrix_lik[,1]
+tilde_pi0 <- fashr::BF_control(BFs)$pi0_hat_star
+tilde_pi0
+```
+
+
+## Case B: $KL(H_1, H_0) > KL(\tilde{H}_1, H_0)$
+
+
+When the fitted $H_1$ is further away to the null $H_0$ than the true $\tilde{H}_1$ ($KL(H_0,H_1) >KL(H_0,\tilde{H_1})$), we expect $\hat{\pi}_0$ to be larger than the true $\pi_0$. 
+
+```{r}
+# simulate J observation from mixture of normals
+set.seed(123)
+J <- 1000
+pi0 <- 0.8
+pi <- c(pi0, 1 - pi0)
+J0 <- round(J * pi0); J1 <- J - J0
+sigma <- c(0,1)
+z <- c(rep(1, J0), rep(2, J1))
+theta <- rnorm(J, 0, sigma[z])
+sigma_vec = c(0.1, 0.3, 0.5)
+s <- sample(sigma_vec, J, replace = TRUE)
+y <- rnorm(J, theta, s)
+fit_ash <- ashr::ash(betahat = y, s = s, mixcompdist = "normal", mixsd = c(1.1), outputlevel = 3)
+hat_pi0 <- fit_ash$fitted_g$pi[1]
+hat_pi0
+```
+
+The BF-adjusted $tilde{\pi}_0$ should still stay conservative ($\tilde{\pi}_0 \geq \pi_0$).
+
+```{r}
+BFs <- fit_ash$fit_details$matrix_lik[,2]/fit_ash$fit_details$matrix_lik[,1]
+tilde_pi0 <- fashr::BF_control(BFs)$pi0_hat_star
+tilde_pi0
+```
+
+## Simulation
+
+Write a function to plot $\pi_0$, $\hat{\pi}_0$, and $\tilde{\pi}_0$ against different choices of $H_1$.
+
+```{r}
+fit_once <- function(sdH1){
+  fit_ash <- ashr::ash(betahat = y, s = s, mixcompdist = "normal", mixsd = c(sdH1), outputlevel = 3)
+  hat_pi0 <- fit_ash$fitted_g$pi[1]
+  BFs <- fit_ash$fit_details$matrix_lik[,2]/fit_ash$fit_details$matrix_lik[,1]
+  tilde_pi0 <- fashr::BF_control(BFs)$pi0_hat_star
+  data.frame(hat_pi0 = hat_pi0, tilde_pi0 = tilde_pi0)
+}
+fit_one_replicate <- function(pi0, J = 3000, sdH1 = 0.5, truesd = 1) {
+  set.seed(123)
+  pi <- c(pi0, 1 - pi0)
+  J0 <- round(J * pi0)
+  J1 <- J - J0
+  sigma <- c(0, truesd)
+  z <- c(rep(1, J0), rep(2, J1))
+  theta <- rnorm(J, 0, sigma[z])
+  sigma_vec = c(0.1, 0.3, 0.5)
+  s <- sample(sigma_vec, J, replace = TRUE)
+  y <- rnorm(J, theta, s)
+  fit_ash <- ashr::ash(
+    betahat = y,
+    s = s,
+    mixcompdist = "normal",
+    mixsd = c(sdH1),
+    outputlevel = 3
+  )
+  hat_pi0 <- fit_ash$fitted_g$pi[1]
+  BFs <- fit_ash$fit_details$matrix_lik[,2]/fit_ash$fit_details$matrix_lik[,1]
+  tilde_pi0 <- fashr::BF_control(BFs)$pi0_hat_star
+  return(data.frame(pi0 = pi0, hat_pi0 = hat_pi0, tilde_pi0 = tilde_pi0))
+}
+```
+
+```{r}
+sd_H1_vec <- seq(0.05, 4, by = 0.05)
+res <- do.call(rbind, lapply(sd_H1_vec, fit_once))
+```
+
+```{r}
+plot(sd_H1_vec, (rep(pi0, length(sd_H1_vec))), type = "l", col = "black", lwd = 2, 
+     ylim = c(0,1), 
+     ylab = expression(pi[0]), xlab = expression(sd(H[1])))
+lines(sd_H1_vec, (res$hat_pi0), col = "red", lwd = 2)
+lines(sd_H1_vec, (res$tilde_pi0), col = "blue", lwd = 2)
+```
+
+Check with respect to sample size:
+
+```{r}
+pi0_vec <- seq(0.5, 0.95, by = 0.01)
+res2_J3000 <- do.call(
+  rbind,
+  lapply(pi0_vec, function(x) fit_one_replicate(pi0 = x, J = 3000, sdH1 = 0.5))
+)
+res2_J8000 <- do.call(
+  rbind,
+  lapply(pi0_vec, function(x) fit_one_replicate(pi0 = x, J = 8000, sdH1 = 0.5))
+)
+```
+
+```{r}
+par(mfrow = c(1,2))
+plot(pi0_vec, (pi0_vec), type = "l", col = "black", lwd = 2, 
+     ylim = c(0,1), main = expression(J == 8000),
+     ylab = expression(pi[0]), xlab = expression(pi[0]))
+lines(pi0_vec, (res2_J8000$hat_pi0), col = "red", lwd = 2)
+lines(pi0_vec, (res2_J8000$tilde_pi0), col = "blue", lwd = 2)
+legend("topleft", legend = c(expression(pi[0]), expression(hat(pi)[0]), expression(tilde(pi)[0])),
+       col = c("black", "red", "blue"), lwd = 2, bty = "n", cex = 0.8)
+plot(pi0_vec, (pi0_vec), type = "l", col = "black", lwd = 2, 
+     ylim = c(0,1), main = expression(J == 3000),
+     ylab = expression(pi[0]), xlab = expression(pi[0]))
+lines(pi0_vec, (res2_J3000$hat_pi0), col = "red", lwd = 2)
+lines(pi0_vec, (res2_J3000$tilde_pi0), col = "blue", lwd = 2)
+par(mfrow = c(1,1))
+```
+
+Check with respect to fitted SD:
+
+```{r}
+pi0_vec <- seq(0.5, 0.95, by = 0.01)
+res2_sd0.5 <- do.call(
+  rbind,
+  lapply(pi0_vec, function(x) fit_one_replicate(pi0 = x, J = 8000, sdH1 = 0.5))
+)
+res2_sd0.9 <- do.call(
+  rbind,
+  lapply(pi0_vec, function(x) fit_one_replicate(pi0 = x, J = 8000, sdH1 = 0.9))
+)
+```
+
+```{r}
+par(mfrow = c(1,2))
+plot(pi0_vec, (pi0_vec), type = "l", col = "black", lwd = 2, 
+     ylim = c(0,1), main = expression(sd(H[1]) == 0.9),
+     ylab = expression(pi[0]), xlab = expression(pi[0]))
+lines(pi0_vec, (res2_sd0.9$hat_pi0), col = "red", lwd = 2)
+lines(pi0_vec, (res2_sd0.9$tilde_pi0), col = "blue", lwd = 2)
+legend("topleft", legend = c(expression(pi[0]), expression(hat(pi)[0]), expression(tilde(pi)[0])),
+       col = c("black", "red", "blue"), lwd = 2, bty = "n", cex = 0.8)
+plot(pi0_vec, (pi0_vec), type = "l", col = "black", lwd = 2, 
+     ylim = c(0,1), main = expression(sd(H[1]) == 0.5),
+     ylab = expression(pi[0]), xlab = expression(pi[0]))
+lines(pi0_vec, (res2_sd0.5$hat_pi0), col = "red", lwd = 2)
+lines(pi0_vec, (res2_sd0.5$tilde_pi0), col = "blue", lwd = 2)
+par(mfrow = c(1,1))
+```
+
+Check with respect to true SD:
+
+```{r}
+pi0_vec <- seq(0.5, 0.95, by = 0.01)
+res2_truesd0.5 <- do.call(
+  rbind,
+  lapply(pi0_vec, function(x) fit_one_replicate(pi0 = x, J = 8000, truesd = 0.5))
+)
+res2_truesd1 <- do.call(
+  rbind,
+  lapply(pi0_vec, function(x) fit_one_replicate(pi0 = x, J = 8000, truesd = 1))
+)
+res2_truesd2 <- do.call(
+  rbind,
+  lapply(pi0_vec, function(x) fit_one_replicate(pi0 = x, J = 8000, truesd = 2))
+)
+res2_truesd5 <- do.call(
+  rbind,
+  lapply(pi0_vec, function(x) fit_one_replicate(pi0 = x, J = 8000, truesd = 5))
+)
+
+```
+
+```{r}
+par(mfrow = c(2,2))
+plot(pi0_vec, (pi0_vec), type = "l", col = "black", lwd = 2, 
+     ylim = c(0,1), main = expression(sd(tilde(H)[1]) == 0.5),
+     ylab = expression(pi[0]), xlab = expression(pi[0]))
+lines(pi0_vec, (res2_truesd0.5$hat_pi0), col = "red", lwd = 2)
+lines(pi0_vec, (res2_truesd0.5$tilde_pi0), col = "blue", lwd = 2)
+legend("topleft", legend = c(expression(pi[0]), expression(hat(pi)[0]), expression(tilde(pi)[0])),
+       col = c("black", "red", "blue"), lwd = 2, bty = "n", cex = 0.8)
+
+plot(pi0_vec, (pi0_vec), type = "l", col = "black", lwd = 2,
+     ylim = c(0,1), main = expression(sd(tilde(H)[1])  == 1),
+     ylab = expression(pi[0]), xlab = expression(pi[0]))
+lines(pi0_vec, (res2_truesd1$hat_pi0), col = "red", lwd = 2)
+lines(pi0_vec, (res2_truesd1$tilde_pi0), col = "blue", lwd = 2)
+
+plot(pi0_vec, (pi0_vec), type = "l", col = "black", lwd = 2, 
+     ylim = c(0,1), main = expression(sd(tilde(H)[1])  == 2),
+     ylab = expression(pi[0]), xlab = expression(pi[0]))
+lines(pi0_vec, (res2_truesd2$hat_pi0), col = "red", lwd = 2)
+lines(pi0_vec, (res2_truesd2$tilde_pi0), col = "blue", lwd = 2)
+
+plot(pi0_vec, (pi0_vec), type = "l", col = "black", lwd = 2, 
+     ylim = c(0,1), main = expression(sd(tilde(H)[1])  == 5),
+     ylab = expression(pi[0]), xlab = expression(pi[0]))
+lines(pi0_vec, (res2_truesd5$hat_pi0), col = "red", lwd = 2)
+lines(pi0_vec, (res2_truesd5$tilde_pi0), col = "blue", lwd = 2)
+
+par(mfrow = c(1,1))
+```
+
+
+
+
+

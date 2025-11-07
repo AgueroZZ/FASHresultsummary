@@ -1,0 +1,316 @@
+---
+title: "Simulation: Pollution Measurement"
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+```{r include=FALSE}
+library(BayesGP)
+library(TMB)
+library(Matrix)
+library(splines)
+library(parallel)
+library(ggplot2)
+library(reshape2)
+library(mixsqp)
+library(tidyverse)
+cpp_dir <- paste0(getwd(), "/code/cpp")
+fig_dir <- paste0(getwd(), "/output/simulation_pollution")
+result_dir <- paste0(getwd(), "/output/simulation_pollution")
+function_dir <- paste0(getwd(), "/code/function")
+source(paste0(function_dir, "/functions_fitting_Gaussian.R"))
+source(paste0(function_dir, "/functions_simulation.R"))
+compile(paste0(cpp_dir, "/Gaussian_theta_known.cpp"))
+compile(paste0(cpp_dir, "/Gaussian_just_fixed.cpp"))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Gaussian_theta_known")))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Gaussian_just_fixed")))
+num_cores <- detectCores() - 1
+```
+
+
+### **Setup**
+
+In this simulation, we consider the following model:
+$$y_i(x_j) \sim \mathcal{N}\big(f_i(x_j), 0.1\big),$$
+where $y_i(x_j)$ denotes the measured concentration of the $i$-th pollutant at the $j$-th time point, and $f_i$ denotes the true concentration of that pollutant. The measurement is assumed to have a known standard deviation of $0.1$. 
+
+We observe $N = 48$ pollutants at $n = 100$ time points. 
+The time points $\boldsymbol{x}$ for each pollutant are generated from a uniform distribution on the interval $[0, 5]$. 
+
+We are interested in inferring the true concentration of each pollutant as well as grouping them into similar categories.
+
+We assign each true concentration function an independent prior, which is a finite mixture of second order IWP with different $\sigma_k$. So \[f_i |\pi_0,..,\pi_K \overset{d}{=} \sum_{k=0}^K \pi_k \text{GP}_k,\] where each mixture component $\text{GP}_k$ is defined as \[\frac{\partial^2}{\partial x^2}f(x) = \sigma_k W(x).\]
+
+### **Data**
+
+We assume there are three true categories of pollutants (A,B and C), and the true concentration of each pollutant is generated from a random linear combination of the cubic-B spline basis.
+
+- In category A, the true concentration is generated from the cubic-B spline basis with 5 knots. 
+- In category B, the true concentration is generated from the cubic-B spline basis with 10 knots. 
+- In category C, the true concentration is generated from the cubic-B spline basis with 20 knots.
+
+```{r}
+# Generate indices of groups
+group_indices <- rep(1:3, each = 16)
+
+# Generate datasets in parallel
+datasets <- mclapply(1:48, function(i) {
+  set.seed(i)
+  if (i <= 16) {
+    n_basis <- 5
+    sd_fun <- 1
+  } else if (i <= 32) {
+    n_basis <- 10
+    sd_fun <- 1
+  } else {
+    n_basis <- 20
+    sd_fun <- 1
+  }
+  simulate_process(n = 100, n_basis = n_basis, sd_fun = sd_fun, sd = 0.1)
+}, mc.cores = num_cores)
+```
+
+
+The observed time series for each category are shown below (observations in points, true concentration functions in red).
+
+Category A:
+
+```{r}
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
+for (i in 1:16) {
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  
+       main = paste("Dataset", i), xlab = "x", ylab = "y",
+       cex = 0.1,
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
+  lines(datasets[[i]]$x, datasets[[i]]$truef, col = "red")
+}
+```
+
+Category B:
+
+```{r}
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
+for (i in 17:32) {
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  
+       main = paste("Dataset", i), xlab = "x", ylab = "y",
+       cex = 0.1,
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
+  lines(datasets[[i]]$x, datasets[[i]]$truef, col = "red")
+}
+```
+
+
+Category C:
+
+```{r}
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
+for (i in 33:48) {
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  
+       main = paste("Dataset", i), xlab = "x", ylab = "y",
+       cex = 0.1,
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
+  lines(datasets[[i]]$x, datasets[[i]]$truef, col = "red")
+}
+```
+
+
+### **Empirical Bayes**
+
+We setup the grid of $\sigma_k$ as the following: (actually, a scaled version of it, called the predictive standard deviation (PSD)).
+```{r, eval=FALSE}
+set.seed(123)
+p_vec <- 2
+log_prec <- unique(sort(c(Inf, seq(-1,1, by = 0.1), seq(-5,-1, by = 0.5), seq(1,5, by = 0.5), seq(-10,-5, by = 1), seq(5,10, by = 1)), decreasing = T))
+psd_iwp_vec <- 1/exp(.5*log_prec)
+
+# Using the FEM:
+L_vecs <- mclapply(datasets, function(dataset) {
+  compute_log_likelihood_ospline_seq2(
+    x = dataset$x,
+    y = dataset$y,
+    p = p_vec,
+    num_knots = 50,
+    psd_iwp_vector = psd_iwp_vec,
+    pred_step = 1,
+    betaprec = 0.001,
+    sd_gaussian = 0.1
+  )
+}, mc.cores = num_cores)
+L_matrix <- do.call(rbind, L_vecs)
+
+
+# ## Using the exact method:
+# L_vecs <- mclapply(datasets, function(dataset) {
+#   compute_log_likelihood_exact_aug_seq(
+#     x = dataset$x,
+#     y = dataset$y,
+#     p = p_vec,
+#     psd_iwp_vector = psd_iwp_vec,
+#     pred_step = 1,
+#     betaprec = 0.001,
+#     sd_gaussian = 0.1
+#   )
+# }, mc.cores = num_cores)
+# L_matrix <- do.call(rbind, L_vecs)
+
+save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
+```
+
+```{r echo=FALSE}
+set.seed(123)
+p_vec <- 2
+log_prec <- unique(sort(c(Inf, seq(-1,1, by = 0.1), seq(-5,-1, by = 0.5), seq(1,5, by = 0.5), seq(-10,-5, by = 1), seq(5,10, by = 1)), decreasing = T))
+psd_iwp_vec <- 1/exp(.5*log_prec)
+load(paste0(result_dir, "/L_matrix.rda"))
+```
+
+Then, we make use of $\texttt{mixsqp}$ to estimate the prior weights:  
+```{r}
+# which row of L has nan
+nan_rows <- which(apply(L_matrix, 1, function(x) any(is.nan(x))))
+if(length(nan_rows) > 0) {
+  ## warn how many rows being removed
+  warning(paste("Removing", length(nan_rows), "rows with NaN"))
+  L_matrix <- L_matrix[-nan_rows,]
+}
+
+fit.sqp <- mixsqp(L = L_matrix, log = TRUE)
+numiter <- nrow(fit.sqp$progress)
+plot(1:numiter,fit.sqp$progress$objective,type = "b",
+     pch = 20,lwd = 2,xlab = "SQP iteration",
+     ylab = "objective",xaxp = c(1,numiter,numiter - 1))
+prior_weight <- data.frame(p = rep(p_vec, each = length(psd_iwp_vec)), psd_iwp = psd_iwp_vec, prior_weight = fit.sqp$x)
+```
+
+We can take a look at the estimated prior:
+```{r}
+head(prior_weight)
+```
+
+
+### **Posterior Inference**
+
+With the estimated prior, we can now perform the posterior inference for each dataset:
+
+```{r, eval=FALSE}
+num_datasets <- length(datasets)
+num_weights <- sum(prior_weight$prior_weight != 0)
+posterior_weights_matrix <- matrix(nrow = num_datasets, ncol = num_weights)
+
+# Loop through each dataset and perform fitting
+fitted_datasets <- list()
+
+# Using FEM:
+for (i in seq_along(datasets)) {
+  dataset <- datasets[[i]]
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = num_cores,
+    x = dataset$x,
+    y = dataset$y,
+    num_knots = 50,
+    prior_weight = prior_weight,
+    betaprec = 0.001,
+    sd_gaussian = 0.1,
+    pred_step = 1
+  )
+  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final)$summary_df
+  posterior_weights_matrix[i, ] <- fit_result_final$posterior_weights[, "posterior_weight"]
+}
+
+# # Using the exact method:
+# for (i in seq_along(datasets)) {
+#   dataset <- datasets[[i]]
+#   fit_result_final <- fit_exact_aug_with_prior2(
+#     num_cores = num_cores,
+#     x = dataset$x,
+#     y = dataset$y,
+#     prior_weight = prior_weight,
+#     betaprec = 0.001,
+#     sd_gaussian = 0.1,
+#     pred_step = 1
+#   )
+#   fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final)$summary_df
+#   posterior_weights_matrix[i, ] <- fit_result_final$posterior_weights[, "posterior_weight"]
+# }
+
+colnames(posterior_weights_matrix) <- paste(as.character(fit_result_final$posterior_weights[, "p"]),
+                                            as.character(fit_result_final$posterior_weights[, "psd_iwp"]), sep = "_")
+
+save(posterior_weights_matrix, file = paste0(result_dir, "/posterior_weights_matrix.rda"))
+
+save(fitted_datasets, file = paste0(result_dir, "/fitted_datasets.rda"))
+```
+
+```{r echo=FALSE}
+load(paste0(result_dir, "/posterior_weights_matrix.rda"))
+load(paste0(result_dir, "/fitted_datasets.rda"))
+```
+
+
+We can visualize the posterior weights for each dataset:
+```{r}
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- 1:nrow(posterior_weights_df)
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- as.factor(round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+
+ggplot(melted_data, aes(x = as.factor(id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Observation ID", y = "Weight", fill = "PSD") +
+  theme_minimal() +
+  ggtitle("Structure Plot of Posterior Weights") +
+  coord_flip() 
+```
+
+The fitted curves for pollutants in category A:
+
+```{r}
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
+for (i in 1:16) {
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  
+       main = paste("Dataset", i), xlab = "x", ylab = "y",
+       cex = 0.2,
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
+  lines(datasets[[i]]$x, datasets[[i]]$truef, col = "red", lty = "dashed", lwd = 1.5)
+  lines(fitted_datasets[[i]]$x, fitted_datasets[[i]]$mean, col = "blue", lwd = 1.2)
+}
+```
+
+
+The fitted curves for pollutants in category B:
+
+```{r}
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
+for (i in 17:32) {
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  
+       main = paste("Dataset", i), xlab = "x", ylab = "y",
+       cex = 0.2,
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
+  lines(datasets[[i]]$x, datasets[[i]]$truef, col = "red", lty = "dashed", lwd = 1.5)
+  lines(fitted_datasets[[i]]$x, fitted_datasets[[i]]$mean, col = "blue", lwd = 1.2)
+}
+```
+
+
+The fitted curves for pollutants in category C:
+
+```{r}
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
+for (i in 33:48) {
+  plot(datasets[[i]]$x, datasets[[i]]$y, type = 'p',  
+       main = paste("Dataset", i), xlab = "x", ylab = "y",
+       cex = 0.2,
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
+  lines(datasets[[i]]$x, datasets[[i]]$truef, col = "red", lty = "dashed", lwd = 1.5)
+  lines(fitted_datasets[[i]]$x, fitted_datasets[[i]]$mean, col = "blue", lwd = 1.2)
+}
+```
+
+
+
+
+

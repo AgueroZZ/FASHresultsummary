@@ -1,0 +1,498 @@
+---
+title: Comparing two estimators for $\pi_0$
+author: "Ziang Zhang"
+date: "2025-02-24"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+Let $\mathbf{L}$ denote the likelihood matrix of size $N\times (K+1)$, where $N$ is the number of data(sets) and $K+1$ is the number of mixture components.
+Each entry of $\mathbf{L}_{ik}$ is the likelihood of the $i\in[N]$ data under the $k\in\{0,1,...,K\}$ mixture component.
+
+The MLE of $\pi_0$ denoted as $\hat{\pi}_0$ is defined as
+$$
+\hat{\pi}_0 = \arg \max_{\pi_0} \sum_{i=1}^N \log \big[\sum_{k=0}^K \pi_k L_{ik}\big].
+$$
+
+The MOM estimator of $\pi_0$ denoted as $\tilde{\pi}_0$ is defined as
+$$
+\tilde{\pi}_0 = \frac{1}{N} \sum_{i=1}^N \mathbb{I}(\tilde{Z_i}=0),
+$$
+where $\tilde{Z_i} = \arg \max_{k} L_{ik}$.
+
+
+\textbf{Conjecture:}
+
+- Without any model-misspecification, the MLE $\hat{\pi}_0$ is the best estimator for $\pi_0$ (in terms of MSE), whereas the MoM estimator $\tilde{\pi}_0$ is biased.
+
+- With model-misspecification, the MLE $\hat{\pi}_0$ is highly unstable (large variance), whereas the MoM estimator $\tilde{\pi}_0$ is biased but stable.
+
+```{r echo=FALSE}
+library(ggplot2)
+library(dplyr)
+function_dir <- paste0(getwd(), "/code/function")
+source(paste0(function_dir, "/functions_simulating.R"))
+```
+
+```{r}
+pred_step_selected <- 8
+B <- 30
+grid_vec = seq(0, 2, by = 0.5)
+sigma = 0.3
+```
+
+
+```{r echo=FALSE}
+sim_dataset <- function(pi = c(0.7,0.15,0.15), N = 100, sigma = 1, seed = 123, p = 2, plot = F, sd_poly = 1, psd_function = 1, pred_step = 1, snr = NULL){
+  set.seed(seed)
+  propA <- pi[1]
+  propB <- pi[2]
+  propC <- pi[3]
+  sigma <- rep(sigma, N)
+  sizeA <- N * propA
+  data_sim_list_A <- lapply(1:sizeA, function(i)
+    simulate_process(
+      sd_poly = 1,
+      type = "nondynamic",
+      sd = sigma[i]
+    ))
+  sizeB <- N * propB
+  if (sizeB > 0) {
+    data_sim_list_B <- lapply(1:sizeB, function(i)
+      simulate_process(
+        sd_poly = sd_poly/pred_step,
+        type = "linear",
+        sd = sigma[i + sizeA], 
+        snr = snr
+      ))
+  }
+  sizeC <- N * propC
+  data_sim_list_C <- lapply(1:sizeC, function(i)
+    simulate_process(
+      sd_poly = sd_poly/pred_step,
+      type = "nonlinear",
+      sd = sigma[i + sizeA + sizeB],
+      psd_function = psd_function,
+      p = p,
+      pred_step = pred_step, 
+      snr = snr
+    ))
+  datasets <- c(data_sim_list_A, data_sim_list_B, data_sim_list_C)
+  
+  if (plot) {
+    par(mfrow = c(3, 3))
+    for (i in 1:3) {
+      plot(datasets[[i]]$x, datasets[[i]]$y, main = paste("Dataset", i))
+    }
+    for (i in 1:3) {
+      plot(datasets[[i+sizeA]]$x, datasets[[i+sizeA]]$y, main = paste("Dataset", (i+sizeA)))
+    }
+    for (i in 1:3) {
+      plot(datasets[[i+sizeA+sizeB]]$x, datasets[[i+sizeA+sizeB]]$y, main = paste("Dataset", (i+sizeA+sizeB)))
+    }
+    par(mfrow = c(1, 1))
+  }
+  return(datasets)
+}
+getLmat <- function(datasets, grid_vec, order = 2, num_cores = 4, pred_step = 1){
+  fash_fit <- fashr::fash(data_list = datasets, Y = "y", smooth_var = "x", S = "sd", order = order, num_cores = 4, grid = grid_vec, pred_step = pred_step)
+  L_matrix <- fash_fit$L_matrix
+  return(L_matrix)
+}
+compute_estimates <- function(L_matrix, penalty = 1){
+  if (penalty > 1) {
+    prior_null <- matrix(0, nrow = floor(penalty - 1), ncol = ncol(L_matrix))
+    prior_null[, 1] <- 1  # Prior mass on the first grid point
+    L_matrix_original <- rbind(exp(L_matrix), prior_null)
+    fit.sqp <- mixsqp::mixsqp(
+      L = L_matrix_original,
+      log = FALSE,
+      control = list(tol.svd = 0, verbose = FALSE)
+    )
+    pi0_mle <- fit.sqp$x[1]
+    
+  } else{
+    pi0_mle <- mixsqp::mixsqp(L = L_matrix, log = TRUE, control = list(tol.svd = 0, verbose = FALSE))$x[1]
+  }
+  pi0_mom <- sum(apply(L_matrix, 1, function(x) which.max(x) == 1))/nrow(L_matrix)
+  return(data.frame(pi0_mle = pi0_mle, pi0_mom = pi0_mom))
+}
+```
+
+
+
+## Without Model-Misspecification
+
+We will write some functions to carry out the simulation. 
+First, we will consider the case when there is no model-misspecification.
+The data are simulated from mixture of IWP2, and we are fitting the same model.
+
+```{r}
+estimates_higher <- data.frame(pi0_mle = numeric(0), pi0_mom = numeric(0))
+progress <- txtProgressBar(min = 0, max = B, style = 3)
+for (i in 1:B) {
+  setTxtProgressBar(progress, i)
+  datasets <- sim_dataset(
+    pi = c(0.7, 0.15, 0.15),
+    N = 300,
+    sigma = sigma, 
+    snr = 2,
+    seed = i,
+    pred_step = pred_step_selected,
+    plot = F
+  )
+  L_matrix <- getLmat(datasets, grid_vec, order = 2, num_cores = 4, pred_step = pred_step_selected)
+  estimates_new <- compute_estimates(L_matrix, penalty = 1)
+  estimates_higher <- rbind(estimates_higher, estimates_new)
+}
+```
+
+Let's visualize the estimates of $\pi_0$ from MLE and MoM.
+
+```{r}
+estimates_higher %>%
+  ggplot(aes(x = pi0_mle, y = pi0_mom)) +
+  geom_point() +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,1)) +
+  geom_hline(yintercept = 0.85, linetype = "dashed") +
+  geom_vline(xintercept = 0.85, linetype = "dashed") +
+  labs(x = "MLE", y = "MoM", title = "Estimates of pi0 from MLE and MoM") +
+  theme_minimal()
+```
+
+Obviously the MoM estimator has an downward bias (due to $\pi_0 > 0.5$), as well as higher variance compared to the MLE.
+
+We can calculate the mean squared error (MSE) of the two estimators:
+
+```{r}
+estimates_higher %>%
+  summarise(
+    mse_mle = mean((pi0_mle - 0.85)^2),
+    mse_mom = mean((pi0_mom - 0.85)^2)
+  )
+```
+
+The MLE estimator is better in terms of MSE.
+
+Look at the specific bias and variance of the two estimators:
+
+```{r}
+estimates_higher %>%
+  summarise(
+    bias_mle = mean(pi0_mle - 0.85),
+    bias_mom = mean(pi0_mom - 0.85),
+    var_mle = var(pi0_mle),
+    var_mom = var(pi0_mom)
+  )
+```
+
+
+Just to confirm, let's try again when $\pi_0 < 0.5$ without model mis-specification.
+This time, we expect the MLE still performs better, and the MoM suffers from upward bias.
+
+```{r}
+estimates_lower <- data.frame(pi0_mle = numeric(0), pi0_mom = numeric(0))
+progress <- txtProgressBar(min = 0, max = B, style = 3)
+for (i in 1:B) {
+  setTxtProgressBar(progress, i)
+  datasets <- sim_dataset(
+    pi = c(0.1, 0.1, 0.8),
+    N = 300,
+    sigma = sigma,
+    snr = 2,
+    seed = i,
+    pred_step = pred_step_selected,
+    plot = F
+  )
+  L_matrix <- getLmat(datasets, grid_vec, order = 2, num_cores = 4, pred_step = pred_step_selected)
+  estimates_new <- compute_estimates(L_matrix, penalty = 1)
+  estimates_lower <- rbind(estimates_lower, estimates_new)
+}
+```
+
+
+```{r}
+estimates_lower %>%
+  ggplot(aes(x = pi0_mle, y = pi0_mom)) +
+  geom_point() +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,1)) +
+  geom_hline(yintercept = 0.2, linetype = "dashed") +
+  geom_vline(xintercept = 0.2, linetype = "dashed") +
+  labs(x = "MLE", y = "MoM", title = "Estimates of pi0 from MLE and MoM") +
+  theme_minimal()
+```
+
+Compute the mean squared error (MSE) of the two estimators:
+
+```{r}
+estimates_lower %>%
+  summarise(
+    mse_mle = mean((pi0_mle - 0.2)^2),
+    mse_mom = mean((pi0_mom - 0.2)^2)
+  )
+```
+
+
+Compute bias and variance
+
+```{r}
+estimates_lower %>%
+  summarise(
+    bias_mle = mean(pi0_mle - 0.2),
+    bias_mom = mean(pi0_mom - 0.2),
+    var_mle = var(pi0_mle),
+    var_mom = var(pi0_mom)
+  )
+```
+
+Again, the MLE estimator is better in terms of MSE, and the MoM estimator is biased but stable.
+
+
+
+## With Model-Misspecification
+
+
+This type we are fitting mixture of IWP1 even though the data are simulated from mixture of IWP2.
+
+```{r}
+estimates_higher_miss <- data.frame(pi0_mle = numeric(0), pi0_mom = numeric(0))
+progress <- txtProgressBar(min = 0, max = B, style = 3)
+for (i in 1:B) {
+  setTxtProgressBar(progress, i)
+  datasets <- sim_dataset(
+    pi = c(0.7, 0.15, 0.15),
+    N = 300,
+    sigma = sigma,
+    snr = 2,
+    seed = i,
+    pred_step = pred_step_selected,
+    plot = F
+  )
+  L_matrix <- getLmat(datasets, grid_vec, order = 1, num_cores = 4, pred_step = pred_step_selected)
+  estimates_new <- compute_estimates(L_matrix, penalty = 1)
+  estimates_higher_miss <- rbind(estimates_higher_miss, estimates_new)
+}
+```
+
+Let's visualize the estimates of $\pi_0$ from MLE and MoM.
+
+```{r}
+estimates_higher_miss %>%
+  ggplot(aes(x = pi0_mle, y = pi0_mom)) +
+  geom_point() +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,1)) +
+  geom_hline(yintercept = 0.7, linetype = "dashed") +
+  geom_vline(xintercept = 0.7, linetype = "dashed") +
+  labs(x = "MLE", y = "MoM", title = "Estimates of pi0 from MLE and MoM") +
+  theme_minimal()
+```
+
+
+Compute the mean squared error (MSE) of the two estimators:
+
+```{r}
+estimates_higher_miss %>%
+  summarise(
+    mse_mle = mean((pi0_mle - 0.7)^2),
+    mse_mom = mean((pi0_mom - 0.7)^2)
+  )
+```
+
+Now the MoM estimator is better in terms of MSE, although both estimators are biased.
+
+Compute bias and variance
+
+```{r}
+estimates_higher_miss %>%
+  summarise(
+    bias_mle = mean(pi0_mle - 0.7),
+    bias_mom = mean(pi0_mom - 0.7),
+    var_mle = var(pi0_mle),
+    var_mom = var(pi0_mom)
+  )
+```
+
+
+Another example when $\pi_0 < 0.5$ with model mis-specification.
+
+```{r}
+estimates_lower_miss <- data.frame(pi0_mle = numeric(0), pi0_mom = numeric(0))
+progress <- txtProgressBar(min = 0, max = B, style = 3)
+for (i in 1:B) {
+  setTxtProgressBar(progress, i)
+  datasets <- sim_dataset(
+    pi = c(0.2, 0.4, 0.4),
+    N = 300,
+    sigma = sigma,
+    snr = 2,
+    seed = i,
+    pred_step = pred_step_selected,
+    plot = F
+  )
+  L_matrix <- getLmat(datasets, grid_vec, order = 1, num_cores = 4, pred_step = pred_step_selected)
+  estimates_new <- compute_estimates(L_matrix, penalty = 1)
+  estimates_lower_miss <- rbind(estimates_lower_miss, estimates_new)
+}
+```
+
+Let's visualize the estimates of $\pi_0$ from MLE and MoM.
+
+```{r}
+estimates_lower_miss %>%
+  ggplot(aes(x = pi0_mle, y = pi0_mom)) +
+  geom_point() +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,1)) +
+  geom_hline(yintercept = 0.2, linetype = "dashed") +
+  geom_vline(xintercept = 0.2, linetype = "dashed") +
+  labs(x = "MLE", y = "MoM", title = "Estimates of pi0 from MLE and MoM") +
+  theme_minimal()
+```
+
+Compute the mean squared error (MSE) of the two estimators:
+
+```{r}
+estimates_lower_miss %>%
+  summarise(
+    mse_mle = mean((pi0_mle - 0.2)^2),
+    mse_mom = mean((pi0_mom - 0.2)^2)
+  )
+```
+
+Compute bias and variance
+
+```{r}
+estimates_lower_miss %>%
+  summarise(
+    bias_mle = mean(pi0_mle - 0.2),
+    bias_mom = mean(pi0_mom - 0.2),
+    var_mle = var(pi0_mle),
+    var_mom = var(pi0_mom)
+  )
+```
+
+Again, although the MoM estimator has a slight upward bias, it is more stable compared to the MLE estimator, and better in terms of MSE.
+
+
+## As the data becomes noisy...
+
+Here we contrast the two estimators as the data becomes noisier ($\sigma$ increases) without considering model-misspecification.
+
+This time to make the effect of $\sigma$ clear, we will no longer keep the same Signal-to-Noise Ratio (SNR) for datasets under the alternative hypothesis.
+
+First, we consider the case when $\sigma = 0.1$ (not noisy):
+
+```{r}
+estimates_higher_not_noisy <- data.frame(pi0_mle = numeric(0), pi0_mom = numeric(0))
+progress <- txtProgressBar(min = 0, max = B, style = 3)
+for (i in 1:B) {
+  setTxtProgressBar(progress, i)
+  datasets <- sim_dataset(
+    pi = c(0.7, 0.15, 0.15),
+    N = 300,
+    sigma = sigma/3, 
+    seed = i,
+    pred_step = pred_step_selected,
+    plot = F
+  )
+  L_matrix <- getLmat(datasets, grid_vec, order = 2, num_cores = 4, pred_step = pred_step_selected)
+  estimates_new <- compute_estimates(L_matrix, penalty = 1)
+  estimates_higher_not_noisy <- rbind(estimates_higher_not_noisy, estimates_new)
+}
+```
+
+```{r}
+estimates_higher_not_noisy %>%
+  ggplot(aes(x = pi0_mle, y = pi0_mom)) +
+  geom_point() +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,1)) +
+  geom_hline(yintercept = 0.85, linetype = "dashed") +
+  geom_vline(xintercept = 0.85, linetype = "dashed") +
+  labs(x = "MLE", y = "MoM", title = "Estimates of pi0 from MLE and MoM") +
+  theme_minimal()
+```
+
+
+Then, we consider the case when $\sigma = 3$ (very noisy):
+
+```{r}
+estimates_higher_noisy <- data.frame(pi0_mle = numeric(0), pi0_mom = numeric(0))
+progress <- txtProgressBar(min = 0, max = B, style = 3)
+for (i in 1:B) {
+  setTxtProgressBar(progress, i)
+  datasets <- sim_dataset(
+    pi = c(0.7, 0.15, 0.15),
+    N = 300,
+    sigma = sigma*10, 
+    seed = i,
+    pred_step = pred_step_selected,
+    plot = F
+  )
+  L_matrix <- getLmat(datasets, grid_vec, order = 2, num_cores = 4, pred_step = pred_step_selected)
+  estimates_new <- compute_estimates(L_matrix, penalty = 1)
+  estimates_higher_noisy <- rbind(estimates_higher_noisy, estimates_new)
+}
+```
+
+
+```{r}
+estimates_higher_noisy %>%
+  ggplot(aes(x = pi0_mle, y = pi0_mom)) +
+  geom_point() +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,1)) +
+  geom_hline(yintercept = 0.85, linetype = "dashed") +
+  geom_vline(xintercept = 0.85, linetype = "dashed") +
+  labs(x = "MLE", y = "MoM", title = "Estimates of pi0 from MLE and MoM") +
+  theme_minimal()
+```
+
+
+
+It seems like compared to the model-misspecification, the noise has even stronger effect on the MLE estimator, making it even more unstable.
+
+
+## Bias in MoM
+
+To see the bias in the MoM estimator $\tilde{\pi}_0$, we assume that for each dataset $i$, $P[\tilde{Z}_i=0|Z_i=0] = \theta_n$ and $P[\tilde{Z}_i=0|Z_i\neq0] = 1-\alpha_n$.
+It is clear that $\theta_n \rightarrow 1$, and $\alpha_n \rightarrow 1$ as $n\rightarrow\infty$.
+
+
+Based on the classical asymptomatic consistency of the MLE estimator, it is clear that $\tilde{Z_i}$ is consistent for $Z_i$ as $n\to\infty$, hence $\theta_n$ converges to 0.
+
+For now, assume the true expectation $\mathbb{E}[\mathbb{I}(Z_i=0)] = \pi_0$.
+
+The MoM estimator as $N \rightarrow \infty$ converges to 
+$$\tilde{\pi}_0 = \frac{\sum_{i=1}^N\mathbb{I}(\tilde{Z_i} =0)}{N} \overset{p}{\rightarrow} \mathbb{E}[\mathbb{I}(\tilde{Z}_i=0)].$$
+
+Therefore, as $N \rightarrow \infty$, the MoM estimator converges to
+\begin{equation}
+\begin{aligned}
+\tilde{\pi}_0 \overset{p}{\rightarrow} \mathbb{E}[\mathbb{I}(\tilde{Z}_i=0)] &= \mathbb{E}[\mathbb{I}(\tilde{Z}_i=0)|Z_i=0]\pi_0 + \mathbb{E}[\mathbb{I}(\tilde{Z}_i=0)|Z_i\neq0](1-\pi_0) \\
+&= \theta_n\pi_0 + (1-\alpha_n)(1-\pi_0).
+\end{aligned}
+\end{equation}
+
+
+The bias of the MoM estimator is
+\begin{equation}
+\begin{aligned}
+\text{Bias}(\tilde{\pi}_0) &= \mathbb{E}[\tilde{\pi}_0] - \pi_0 \\
+&= \theta_n\pi_0 + (1-\alpha_n)(1-\pi_0) - \pi_0 \\
+&= (1-\alpha_n) - (2-\theta_n-\alpha_n)\pi_0.
+\end{aligned}
+\end{equation}
+
+Assuming for simplicity that $\theta_n \approx \alpha_n$, the bias is approximately
+$$
+\text{Bias}(\tilde{\pi}_0) \approx (1 - \alpha_n) - 2(1-\alpha_n)\pi_0.
+$$
+
+
+
+
+
+
+
+

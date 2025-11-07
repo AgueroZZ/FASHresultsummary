@@ -1,0 +1,451 @@
+---
+title: "Example: COVID Mortality Data Across Countries"
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+```{r include=FALSE}
+library(BayesGP)
+library(TMB)
+library(Matrix)
+library(splines)
+library(parallel)
+library(reshape2)
+library(mixsqp)
+library(ISOweek)
+library(lubridate)
+library(tidyverse)
+cpp_dir <- paste0(getwd(), "/code/cpp")
+figure_dir <- paste0(getwd(), "/output/example")
+data_dir <- paste0(getwd(), "/data")
+result_dir <- paste0(getwd(), "/output/example")
+function_dir <- paste0(getwd(), "/code/function")
+source(paste0(function_dir, "/functions_fitting_Poisson_covid.R"))
+compile(paste0(cpp_dir, "/Poisson_covid.cpp"))
+compile(paste0(cpp_dir, "/Poisson_just_fixed_covid.cpp"))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_covid")))
+dyn.load(TMB::dynlib(paste0(cpp_dir, "/Poisson_just_fixed_covid")))
+num_cores <- detectCores() - 2
+```
+
+## **Setup:**
+
+We consider the daily COVID-19 death count in different (European) countries. The data is obtained from COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University (Dong, Du, and Gardner, 2020).
+
+The number of COVID-19 deaths (per million) in each country is denoted as $y_{i}(x_j)$, where $i$ indexes the country and $j$ indexes the day. 
+
+To model the true (log) mortality rate $f_i(x_j)$, we assume that the death count $y_{i}(x_j)$ is Poisson distributed:
+$$y_{i}(x_j) \sim \text{Poisson}(\exp(v_{ij}^T\boldsymbol{\beta}_i + f_i(x_j))),$$
+where $v_{ij}$ is the fixed effect that denotes the weekdays.
+
+
+## **Model:**
+
+The prior for the $i$th (log) mortality rate over time $f_i(x)$ is the following finite mixture:
+$$f_i(x) = \sum_{k=0}^{K} \pi_{k} \text{GP}_{k}(x),$$
+where for each $k$ the $k$th mixture component has a IWP-3 prior: $$Lf(x) = \sigma_k W(x).$$
+Here $W(x)$ is the Gaussian white noise process and $\sigma_k$ is the smoothness parameter that inversely controls the shrinkage strength. 
+In this case, $L = \frac{\partial^3}{\partial x^3}$, which implies that the target of shrinkage is the base model $\text{Null}\{L\} = \text{span}\{1, x, x^2\}$.
+The prior weights $\pi_k$ are optimized using empirical Bayes.
+
+
+## **Data:**
+
+We filtered out some countries/observations that look suspicious:
+
+```{r}
+full_data_covid <- read.csv(file = paste0(data_dir, "/owid-covid-data.csv"), header = T)
+full_data_covid <- full_data_covid %>% filter(date > "2020-01-01")
+full_data_covid$y <- round(full_data_covid$new_deaths_per_million)
+full_data_covid$quality <- abs((full_data_covid$y-full_data_covid$new_deaths_smoothed_per_million)/(full_data_covid$new_deaths_smoothed_per_million))
+full_data_covid$quality <- ifelse(is.nan(full_data_covid$quality), 0, full_data_covid$quality)
+full_data_covid$Date <- as.Date(full_data_covid$date)
+full_data_covid$x <- (as.Date(full_data_covid$date) %>% as.numeric())/31
+## Assume COVID death rate is approximately 0 at time 2020-01-01, so set intercept being -3. Also, assume the derivatives are all zero at this point.
+full_data_covid$x <- full_data_covid$x - (as.numeric(as.Date("2020-01-01"))/31)
+full_data_covid$weekdays <- weekdays(as.Date(full_data_covid$date))
+full_data_covid$weekdays <- factor(full_data_covid$weekdays,
+                                    levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
+                                    ordered = F)
+full_data_covid_EU <- full_data_covid %>% filter(continent == "Europe") %>% select(Date, x, y, weekdays, location, iso_code, quality, new_deaths_smoothed_per_million)
+```
+
+The final selected countries/data are:
+
+```{r}
+datasets <- list()
+available_countries <- unique(full_data_covid_EU$location)
+selected_countries <- c()
+for (country in available_countries) {
+  full_data <- full_data_covid_EU %>% filter(location == country, !is.na(y))
+  full_data <- full_data %>% filter(quality <= 1.0)
+  if((sum(full_data$y != 0) < 200) | (length(unique(full_data$weekdays)) < 7) ) {
+    next
+  }
+  else{
+    selected_countries <- c(selected_countries, country)
+    datasets[[country]] <- full_data %>% arrange(Date)
+  }
+}
+par(mfrow = c(6, 7), mar = c(2, 2, 1, 1))  # Adjust margins as needed
+for (i in 1:37) {
+  plot(datasets[[i]]$x, (datasets[[i]]$y), type = 'p',  # Change to 'p' for points
+       main = paste0(selected_countries[i]), xlab = "x", ylab = "y",
+       cex = 0.1,
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  # Adjust text size as needed
+}
+par(mfrow = c(1, 1), mar = c(5, 4, 4, 2) + 0.1)
+saveRDS(datasets, file = paste0(result_dir, "/all_datasets.rds"))
+```
+
+## **Empirical Bayes:**
+
+We compute the L-matrix and use EB to optimize the prior weights:
+```{r, eval=FALSE}
+p_vec <- 3
+# log_prec_vec <- sort(unique(c(seq(0, 5, by = 0.1), seq(5, 10, by = 1), seq(-5,0, by = 1))))
+# psd_iwp_vec <- exp(-.5*log_prec_vec)
+psd_iwp_vec <- seq(0,2, by = 0.05)
+L_vecs <- mclapply(datasets, function(dataset) {
+  compute_log_likelihood_ospline_seq2(
+    dataset = dataset,
+    p = p_vec,
+    num_knots = 50,
+    psd_iwp_vector = psd_iwp_vec,
+    pred_step = 1,
+    betaprec = 0.0001
+  )
+}, mc.cores = num_cores)
+L_matrix <- do.call(rbind, L_vecs)
+save(L_matrix, file = paste0(result_dir, "/L_matrix.rda"))
+```
+
+```{r echo=FALSE}
+p_vec <- 3
+# log_prec_vec <- sort(unique(c(seq(0, 5, by = 0.1), seq(5, 10, by = 1), seq(-5,0, by = 1))))
+# psd_iwp_vec <- exp(-.5*log_prec_vec)
+psd_iwp_vec <- seq(0,2, by = 0.05)
+load(paste0(result_dir, "/L_matrix.rda"))
+```
+
+```{r}
+fit.sqp <- mixsqp(L = L_matrix, log = TRUE)
+numiter <- nrow(fit.sqp$progress)
+plot(1:numiter,fit.sqp$progress$objective,type = "b",
+     pch = 20,lwd = 2,xlab = "SQP iteration",
+     ylab = "objective",xaxp = c(1,numiter,numiter - 1))
+prior_weight <- data.frame(p = rep(p_vec, each = length(psd_iwp_vec)), psd_iwp = psd_iwp_vec, prior_weight = fit.sqp$x)
+```
+
+
+## **Posterior Inference:**
+
+We carry out the posterior computation based on Finite Element Method and Laplace approximation:
+```{r, eval=FALSE}
+num_datasets <- length(datasets)
+num_weights <- sum(prior_weight$prior_weight != 0)
+posterior_weights_matrix <- matrix(nrow = num_datasets, ncol = num_weights)
+
+# Loop through each dataset and perform fitting
+fitted_datasets <- list()
+for (i in seq_along(datasets)) {
+  dataset <- datasets[[i]]
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = num_cores,
+    dataset = dataset,
+    num_knots = 50,
+    prior_weight = prior_weight,
+    betaprec = 0.0001,
+    pred_step = 1
+  )
+  posterior_weights_matrix[i, ] <- fit_result_final$posterior_weights[, "posterior_weight"]
+  fitted_datasets[[i]] <- aggregate_fit_with_prior(x = dataset$x, fit_results_with_prior = fit_result_final, original = TRUE)$summary_df
+}
+names(fitted_datasets) <- selected_countries
+colnames(posterior_weights_matrix) <- paste(as.character(fit_result_final$posterior_weights[, "p"]),
+                                            as.character(fit_result_final$posterior_weights[, "psd_iwp"]), sep = "_")
+save(posterior_weights_matrix, file = paste0(result_dir, "/posterior_weights_matrix.rda"))
+save(fitted_datasets, file = paste0(result_dir, "/fitted_datasets.rda"))
+```
+
+```{r echo=FALSE}
+num_datasets <- length(datasets)
+num_weights <- sum(prior_weight$prior_weight != 0)
+load(paste0(result_dir, "/posterior_weights_matrix.rda"))
+load(paste0(result_dir, "/fitted_datasets.rda"))
+```
+
+
+First, take a look at the structure plot of the posterior weights:
+
+```{r}
+posterior_weights_df <- as.data.frame(posterior_weights_matrix)
+posterior_weights_df$id <- 1:nrow(posterior_weights_df)
+melted_data <- melt(posterior_weights_df, id.vars = "id")
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- as.factor(round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+melted_data$id <- selected_countries
+
+ggplot(melted_data, aes(x = as.factor(id), y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Country", y = "Weight", fill = "PSD") +
+  theme_minimal() +
+  ggtitle("Structure Plot of Posterior Weights") +
+  coord_flip()  
+```
+
+There are many suggested structures for the posterior weights. Let's group them into $3$ clusters using the hierarchical clustering method:
+
+```{r}
+kl_divergence <- function(p, q) {
+  sum(p * log(p / q), na.rm = TRUE)
+}
+
+# Symmetric KL divergence
+symmetric_kl <- function(p, q) {
+  (kl_divergence(p, q) + kl_divergence(q, p)) / 2
+}
+
+# Initialize the distance matrix
+n <- nrow(posterior_weights_matrix)
+kl_dist_matrix <- matrix(0, n, n)
+
+# Compute the symmetric KL divergence for each pair of observations
+for (i in 1:n) {
+  for (j in 1:n) {
+    kl_dist_matrix[i, j] <- symmetric_kl(posterior_weights_matrix[i, ], posterior_weights_matrix[j, ])
+  }
+}
+
+# Perform hierarchical clustering using the KL divergence distance matrix
+d_kl <- as.dist(kl_dist_matrix)
+fit <- hclust(d_kl, method = "complete")
+
+clusters <- cutree(fit, k = 3)
+## Recode the factor:
+clusters <- as.numeric(factor(clusters, labels = c(1, 2, 3), levels = c(2, 1, 3)))
+melted_data$cluster <- clusters
+posterior_weights_df$id <- 1:nrow(posterior_weights_df)
+posterior_weights_df$cluster <- clusters
+melted_data <- melt(posterior_weights_df, id.vars = c("id", "cluster"))
+melted_data$variable2 <- sub("_.*", "", melted_data$variable)
+melted_data$variable3 <- as.factor(round(as.numeric(sub("*._", "", melted_data$variable)), 3))
+melted_data$id <- selected_countries
+melted_data <- melted_data %>% arrange(cluster)
+ggplot(melted_data, aes(x = id, y = value, fill = variable3)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~cluster, scales = "free_y") +  # Facet by cluster
+  labs(x = "Country", y = "Weight", fill = "PSD") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +  # Rotate x-axis labels for better readability
+  ggtitle("Structure Plot of Posterior Weights by Cluster") +
+  coord_flip()  
+```
+
+Note that most western European countries were grouped into cluster 1, while almost all of the eastern European countries were grouped into cluster 2 and 3.
+
+Let's visualize the smoothing result for each cluster. 
+For cluster 1:
+```{r}
+cluster1_countries <- selected_countries[clusters == 1]
+cluster2_countries <- selected_countries[clusters == 2]
+cluster3_countries <- selected_countries[clusters == 3]
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
+for (country in cluster1_countries[1:16]) {
+  agg_result <- fitted_datasets[[country]]
+  plot(datasets[[country]]$Date, agg_result$median, type = 'l', 
+       main = paste0(country), xlab = "", ylab = "", col = "blue",
+       cex = 0.5, ylim = c(0,max(datasets[[country]]$y)*1.2),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7)  
+  points(datasets[[country]]$Date, datasets[[country]]$y, col = "black", cex = 0.1)
+  polygon(c(datasets[[country]]$Date, rev(datasets[[country]]$Date)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+```
+
+
+For cluster 2:
+```{r}
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))  
+for (country in cluster2_countries[1:14]) {
+  agg_result <- fitted_datasets[[country]]
+  plot(datasets[[country]]$Date, agg_result$median, type = 'l',  
+       main = paste0(country), xlab = "", ylab = "", col = "blue",
+       cex = 0.5, ylim = c(0,max(datasets[[country]]$y)*1.2),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7) 
+  points(datasets[[country]]$Date, datasets[[country]]$y, col = "black", cex = 0.1)
+  polygon(c(datasets[[country]]$Date, rev(datasets[[country]]$Date)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+```
+
+For cluster 3:
+```{r}
+par(mfrow = c(1, 2), mar = c(2, 2, 1, 1))  
+for (country in cluster3_countries[1:2]) {
+  agg_result <- fitted_datasets[[country]]
+  plot(datasets[[country]]$Date, agg_result$median, type = 'l',  
+       main = paste0(country), xlab = "", ylab = "", col = "blue",
+       cex = 0.5, ylim = c(0,max(datasets[[country]]$y)*1.2),
+       cex.main = 0.8, cex.lab = 0.7, cex.axis = 0.7) 
+  points(datasets[[country]]$Date, datasets[[country]]$y, col = "black", cex = 0.1)
+  polygon(c(datasets[[country]]$Date, rev(datasets[[country]]$Date)),
+          c(agg_result$lower, rev(agg_result$upper)),
+          col = rgb(0.6, 0.8, 1, alpha = 0.3), border = NA)
+}
+```
+
+
+**Summary:** Overall, many countries (mostly western Europe) in cluster 1 were seriously affected by multiple waves (especially the initial wave). Whereas countries in cluster 2 and 3 (mostly eastern Europe) were overall affected by a smaller number of waves.
+
+
+## **Follow-up Question:** 
+What countries were more affected by the Delta wave than the initial wave? Let's define the following time periods as initial wave and Delta wave:
+
+- Initial wave: March 1, 2020 to September 1, 2020
+- Delta wave: July 1, 2021 to January 1, 2022
+
+```{r}
+refined_time <- seq(as.Date("2020-01-01"), as.Date("2022-04-26"), by = 1)
+# refined_time <- datasets[[i]]$Date
+refined_x <- (as.numeric(refined_time)/31) - (as.numeric(as.Date("2020-01-01"))/31)
+
+## Initial time:
+initial_wave <- c(as.Date("2020-03-01"), as.Date("2020-09-01"))
+initial_index <- which(refined_time >= initial_wave[1] & refined_time <= initial_wave[2])
+
+## Delta time:
+delta_wave <- c(as.Date("2021-07-01"), as.Date("2022-01-01"))
+delta_index <- which(refined_time >= delta_wave[1] & refined_time <= delta_wave[2])
+
+extract_posterior <- function(fit_result, refined_x){
+  func <- function(path){
+    max(path[delta_index]) - max(path[initial_index])
+  }
+  intercept <- -3
+  coef_samples <- fit_result$samps_coef
+  B_new <- BayesGP:::local_poly_helper(knots = fit_result$knots, refined_x = refined_x, p = fit_result$p)
+  samps_fitted <- as.matrix(B_new) %*% t(coef_samples[,1:ncol(B_new)])
+  samples <- samps_fitted + intercept
+  apply(samples, 2, func)
+}
+
+aggregate_functional_with_prior <- function(x, fit_results_with_prior) {
+  fit_results <- fit_results_with_prior$fitted_results
+  samples_functional <- lapply(fit_results, extract_posterior, refined_x = x)
+  posterior_weights <- fit_results_with_prior$posterior_weights[["posterior_weight"]]
+  # Sample indices of the fit results based on posterior weights
+  sampled_indices <- sample(seq_along(fit_results), size = 8000, replace = TRUE, prob = posterior_weights)
+
+  # Tabulate the frequency of each index
+  tabulated_indices <- table(sampled_indices)
+
+  # Initialize an empty list to collect samples
+  sampled_fits_list <- vector("list", length = length(tabulated_indices))
+
+  # Retrieve and store the required number of columns from each sampled fit's samps_fitted
+  names(tabulated_indices) <- as.integer(names(tabulated_indices))  # Ensure names are integer
+  for (i in seq_along(tabulated_indices)) {
+    idx <- as.integer(names(tabulated_indices)[i])
+    count <- tabulated_indices[[i]]
+    sampled_fits_list[[i]] <- (samples_functional[[idx]])[1:count]
+  }
+
+  # Combine all samples into one vector
+  sampled_fits <- unlist(sampled_fits_list)
+}
+```
+
+We can compute the posterior samples of the difference between the maximum mortality rate at the Delta wave and the maximum at the initial wave:
+```{r eval=FALSE}
+posterior_weights_matrix <- matrix(nrow = num_datasets, ncol = num_weights)
+functional_datasets <- list()
+for (i in seq_along(datasets)) {
+  fit_result_final <- fit_ospline_with_prior2(
+    num_cores = num_cores,
+    dataset = datasets[[i]],
+    num_knots = 50,
+    prior_weight = prior_weight,
+    betaprec = 0.0001,
+    pred_step = 1
+  )
+  posterior_weights_matrix[i, ] <- fit_result_final$posterior_weights[, "posterior_weight"]
+  functional_datasets[[i]] <- aggregate_functional_with_prior(x = refined_x, fit_results_with_prior = fit_result_final)
+}
+names(functional_datasets) <- selected_countries
+save(posterior_weights_matrix, functional_datasets, file = paste0(result_dir, "/functional_datasets.rda"))
+```
+
+```{r echo=FALSE}
+load(paste0(result_dir, "/functional_datasets.rda"))
+```
+
+Produce a histogram for country in cluster 1:
+```{r}
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))
+for (country in cluster1_countries[1:16]) {
+  samples <- functional_datasets[[country]]
+  hist(samples, main = paste0(country), xlab = "Delta - Initial", ylab = "Frequency", col = "blue", breaks = 50)
+}
+```
+
+Produce a histogram for country in cluster 2:
+```{r}
+par(mfrow = c(4, 4), mar = c(2, 2, 1, 1))
+for (country in cluster2_countries[1:14]) {
+  samples <- functional_datasets[[country]]
+  hist(samples, main = paste0(country), xlab = "Delta - Initial", ylab = "Frequency", col = "blue", breaks = 50)
+}
+```
+
+Produce a histogram for country in cluster 3:
+```{r}
+par(mfrow = c(1, 2), mar = c(2, 2, 1, 1))
+for (country in cluster3_countries[1:2]) {
+  samples <- functional_datasets[[country]]
+  hist(samples, main = paste0(country), xlab = "Delta - Initial", ylab = "Frequency", col = "blue", breaks = 50)
+}
+par(mfrow = c(1, 1), mar = c(5, 4, 4, 2) + 0.1)
+```
+
+To conclude how many countries were more affected by the Delta wave than the initial wave:
+```{r}
+iso2_codes <- c("AL", "AT", "BY", "BE", "BA", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "XK", "LV", "LT", "MT", "MD", "ME", "NL", "MK", "PL", "PT", "RO", "RU", "RS", "SK", "SI", "ES", "CH", "UA", "GB")
+names(functional_datasets) <- iso2_codes
+names(clusters) <- names(functional_datasets)
+loca_false_sign_rate_delta_more <- sapply(functional_datasets, function(samples) {
+  (sum(samples < 0)/length(samples))
+})
+ordered_false_sign_rate_delta_more <- sort(loca_false_sign_rate_delta_more)
+cumulative_false_sign_rate_delta_more <- cumsum(ordered_false_sign_rate_delta_more)/seq_along(ordered_false_sign_rate_delta_more)
+clusters_ordered <- clusters[match(names(ordered_false_sign_rate_delta_more), names(clusters))]
+plot(cumulative_false_sign_rate_delta_more, type = "o", xlab = "Ordered Countries", ylab = "Cumulative False Sign Rate", ylim = c(0,1))
+text(1:length(cumulative_false_sign_rate_delta_more), cumulative_false_sign_rate_delta_more, labels = names(cumulative_false_sign_rate_delta_more), pos = 3, cex = 0.6, col = clusters_ordered)
+legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = c(1, 2, 3, 4))
+abline(h = 0.05, col = "purple", lty = "dashed")
+```
+
+To conclude how many countries were more affected by the initial wave than the Delta wave:
+```{r}
+loca_false_sign_rate_initial_more <- sapply(functional_datasets, function(samples) {
+  (sum(samples > 0)/length(samples))
+})
+ordered_false_sign_rate_initial_more <- sort(loca_false_sign_rate_initial_more)
+cumulative_false_sign_rate_initial_more <- cumsum(ordered_false_sign_rate_initial_more)/seq_along(ordered_false_sign_rate_initial_more)
+cumulative_false_sign_rate_initial_more
+clusters_ordered <- clusters[match(names(ordered_false_sign_rate_initial_more), names(clusters))]
+plot(cumulative_false_sign_rate_initial_more, type = "o", xlab = "Ordered Countries", ylab = "Cumulative False Sign Rate", ylim = c(0,1))
+text(1:length(cumulative_false_sign_rate_initial_more), cumulative_false_sign_rate_initial_more, labels = names(cumulative_false_sign_rate_initial_more), pos = 3, cex = 0.6, col = clusters_ordered)
+legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = c(1, 2, 3, 4))
+abline(h = 0.05, col = "purple", lty = "dashed")
+```
+
+
+
+
+

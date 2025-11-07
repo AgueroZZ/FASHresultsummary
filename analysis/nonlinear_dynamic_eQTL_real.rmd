@@ -24,7 +24,7 @@ fine_grid <- sort(c(0, exp(-0.5*log_prec)))
 We use the processed (expression \& genotype) data of [Strober et.al, 2019](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6623972/) to perform the eQTL analysis.
 
 For the association testing, we use a linear regression model for each gene-variant pair at each time point.
-Following the practice in Strober et.al, we adjust for the first three PCs.
+Following the practice in Strober et.al, we adjust for the first five PCs.
 
 The code to perform this step can be found in the script `dynamic_eQTL_real/00_eQTLs.R` from the code directory.
 
@@ -188,6 +188,60 @@ for (i in 1:4) {
 }
 par(mfrow = c(1,1))
 ```
+
+
+Some examples of null pairs:
+
+```{r}
+genes_not_highlighted2 <- setdiff(all_genes, genes_highlighted2)
+pairs_not_highlighted2 <- setdiff(names(datasets), pairs_highlighted2)
+par(mfrow = c(2,2))
+for (i in 10:13) {
+  selected_gene <- (genes_not_highlighted2)[i] #sample(genes_highlighted2, 1)
+  pairs_of_selected_gene <- grep(selected_gene, pairs_not_highlighted2, value = T)
+  selected_indices <- which(names(datasets) %in% pairs_of_selected_gene)
+  selected_index <- selected_indices[which(fash_fit2_update$lfdr[selected_indices] == max(fash_fit2_update$lfdr[selected_indices]))][1]
+  fitted_result <- predict(fash_fit2_update,
+                           index = selected_index,
+                           smooth_var = seq(0, 15, by = 0.1))
+  plot(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y,
+    pch = 20,
+    col = "black",
+    xlab = "Time",
+    ylab = "Effect Est",
+    main = paste0(names(datasets)[selected_index]),
+    ylim = c(
+      min(datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE),
+      max(datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE)
+    )
+  )
+  arrows(
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y - 2 * datasets[[selected_index]]$SE,
+    datasets[[selected_index]]$x,
+    datasets[[selected_index]]$y + 2 * datasets[[selected_index]]$SE,
+    length = 0.05,
+    angle = 90,
+    code = 3,
+    col = "black"
+  )
+  lines(fitted_result$x,
+        fitted_result$mean,
+        col = "red",
+        lwd = 2)
+  abline(h = mean(datasets[[selected_index]]$y), col = "blue", lty = 2)
+  polygon(
+    c(fitted_result$x, rev(fitted_result$x)),
+    c(fitted_result$lower, rev(fitted_result$upper)),
+    col = rgb(1, 0, 0, 0.3),
+    border = NA
+  )
+}
+par(mfrow = c(1,1))
+```
+
 
 
 ## Comparing with Strober et.al

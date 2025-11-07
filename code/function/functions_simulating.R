@@ -11,8 +11,8 @@ simulate_data <- function(g, sd=0.1, snr = NULL){
 }
 
 ### Write a function, to simulate a random function as g using cubic B-spline basis representation with random basis weights:
-simulate_nonlinear_function <- function(n_basis = 50, psd_function = 1, p = 1, pred_step = 1, sd_poly = 0.1) {
-  x_min <- 0
+simulate_nonlinear_function <- function(n_basis = 30, psd_function = 1, p = 1, pred_step = 1, sd_poly = 0.1) {
+  x_min <- 1
   x_max <- 16
 
   # Generate equally spaced knots within the range [x_min, x_max]
