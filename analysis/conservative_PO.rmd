@@ -1,0 +1,91 @@
+---
+title: Conservative estimate of $\pi_0$ makes conservative log PO
+author: "Ziang Zhang"
+date: "2025-11-12"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+In this note, we show that overestimating \( \pi_0 \) makes the expected log posterior odds (log PO) conservative under mild conditions.
+
+Assume \(0<\pi_0\le \tilde{\pi}_0<1\). Let
+\(p_0=P(D\mid H_0)\), \(p_1=P(D\mid H_1)\), and \(\tilde p_1=P(D\mid \tilde H_1)\).
+Then
+\[
+\log \mathrm{PO}
+= \log\frac{1-\pi_0}{\pi_0} + \log\frac{p_1}{p_0},\qquad
+\log \widetilde{\mathrm{PO}}
+= \log\frac{1-\tilde{\pi}_0}{\tilde{\pi}_0} + \log\frac{\tilde p_1}{p_0}.
+\]
+
+-- 
+**Lemma 1 (conservative under \(H_1\)).** If \(\tilde{\pi}_0 \ge \pi_0\), then
+\[
+\mathbb{E}_{H_1}\big[\log \widetilde{\mathrm{PO}}\big]
+\le
+\mathbb{E}_{H_1}\big[\log \mathrm{PO}\big].
+\]
+
+*Proof.* Under \(H_1\),
+\[
+\begin{aligned}
+\mathbb{E}_{H_1}[\log \widetilde{\mathrm{PO}}]
+&= \log\frac{1-\tilde{\pi}_0}{\tilde{\pi}_0}
+ + \mathbb{E}_{p_1}\bigg[\log \frac{\tilde p_1}{p_0} \bigg] \\
+&= \log\frac{1-\tilde{\pi}_0}{\tilde{\pi}_0}
+ + \Big(\mathbb{E}_{p_1}\bigg[\log \frac{p_1}{p_0} \bigg] - \mathbb{E}_{p_1}\bigg[\log \frac{p_1}{\tilde p_1} \bigg]\Big) \\
+&= \log\frac{1-\tilde{\pi}_0}{\tilde{\pi}_0}
+ + D_{\mathrm{KL}}(p_1\|p_0) - D_{\mathrm{KL}}(p_1\|\tilde p_1) \\
+&\le \log\frac{1-\pi_0}{\pi_0} + D_{\mathrm{KL}}(p_1\|p_0)
+= \mathbb{E}_{H_1}[\log \mathrm{PO}],
+\end{aligned}
+\]
+where the last inequality is because that \(x\mapsto \log\frac{1-x}{x}\) is strictly decreasing on \((0,1)\), and $D_{\mathrm{KL}}$ is non-negative. ∎
+--
+
+Now we show conservativeness under \(H_0\) provided a mild KL side condition.
+
+--
+**Lemma 2 (conservative under \(H_0\)).** If \(\tilde{\pi}_0 \ge \pi_0\) and
+\(D_{\mathrm{KL}}(p_0\|\tilde p_1) \ge D_{\mathrm{KL}}(p_0\|p_1)\), then
+\[
+\mathbb{E}_{H_0}\big[\log \widetilde{\mathrm{PO}}\big]
+\le
+\mathbb{E}_{H_0}\big[\log \mathrm{PO}\big].
+\]
+
+*Proof.* Under \(H_0\),
+\[
+\mathbb{E}_{H_0}[\log \widetilde{\mathrm{PO}}]
+= \log\frac{1-\tilde{\pi}_0}{\tilde{\pi}_0}
+  + \mathbb{E}_{p_0}\Big[\log \frac{\tilde p_1}{p_0}\Big]
+= \log\frac{1-\tilde{\pi}_0}{\tilde{\pi}_0}
+  - D_{\mathrm{KL}}(p_0\|\tilde p_1).
+\]
+Thus
+\[
+\mathbb{E}_{H_0}[\log \widetilde{\mathrm{PO}}]
+\le \log\frac{1-\tilde{\pi}_0}{\tilde{\pi}_0}
+   - D_{\mathrm{KL}}(p_0\|p_1)
+\le \log\frac{1-\pi_0}{\pi_0}
+   - D_{\mathrm{KL}}(p_0\|p_1)
+= \mathbb{E}_{H_0}[\log \mathrm{PO}].\quad ∎
+\]
+
+--
+  
+Combining Lemmas 1–2 gives the overall result.
+
+**Theorem (overall conservativeness).** Let \(P=\pi_0 H_0 + (1-\pi_0) H_1\).
+If \(\tilde{\pi}_0 \ge \pi_0\) and \(D_{\mathrm{KL}}(p_0\|\tilde p_1) \ge D_{\mathrm{KL}}(p_0\|p_1)\), then
+\[
+\mathbb{E}_{P}[\log \widetilde{\mathrm{PO}}] \le \mathbb{E}_{P}[\log \mathrm{PO}].
+\]
+
+*Proof.* Linearity: \(\mathbb{E}_{P}[\cdot]=\pi_0 \mathbb{E}_{H_0}[\cdot] + (1-\pi_0)\mathbb{E}_{H_1}[\cdot]\), then apply Lemmas 1–2. ∎
+
+*Remarks.* 
+(i) Equality holds if \(\tilde{\pi}_0=\pi_0\) and \(\tilde p_1=p_1\).  
+(ii) The KL side condition encodes that the misspecified \(\tilde p_1\) is not closer to \(H_0\) than \(p_1\); without it, the \(H_0\)-side inequality may fail.
+
